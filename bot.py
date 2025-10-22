@@ -6,6 +6,8 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from aiohttp import web
+import sys
+print(f"🐍 Python version: {sys.version}")
 
 # === ENV ===
 TOKEN = os.getenv("DISCORD_TOKEN")
