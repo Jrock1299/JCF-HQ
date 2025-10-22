@@ -1,4 +1,6 @@
 import os
+os.environ["DISCORD_NO_AUDIO"] = "1"
+
 import discord
 from discord.ext import commands
 
