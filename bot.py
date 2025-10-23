@@ -4,7 +4,7 @@ import random
 from math import floor
 from datetime import datetime, timezone
 
-# Keep voice disabled to avoid audioop on cloud
+# Prevent voice/audio deps on cloud images
 os.environ.setdefault("DISCORD_NO_AUDIO", "1")
 
 import discord
@@ -14,17 +14,21 @@ from discord.ext import commands, tasks
 # ENV / CONFIG
 # =========================
 TOKEN = os.getenv("DISCORD_TOKEN")
+if not TOKEN:
+    raise SystemExit("DISCORD_TOKEN is missing.")
 
+# Core channels
 ANNOUNCE_CHANNEL_ID = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or 0)
 CRYPTO_CHANNEL_ID   = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or 0)
 STOCK_CHANNEL_ID    = int(os.getenv("STOCK_SETUPS_CHANNEL_ID", "0") or 0)
 FOREX_CHANNEL_ID    = int(os.getenv("FOREX_SETUPS_CHANNEL_ID", "0") or 0)
 
-CRYPTO_TICKERS = [s.strip().upper() for s in os.getenv("CRYPTO_TICKERS", "BTC,ETH,SOL").split(",") if s.strip()]
-STOCK_TICKERS  = [s.strip().upper() for s in os.getenv("STOCK_TICKERS",  "NVDA,AAPL,TSLA,PLTR,SOFI,MSTR,OKLO").split(",") if s.strip()]
+# Watchlists
+CRYPTO_TICKERS = [s.strip().upper() for s in os.getenv("CRYPTO_TICKERS", "BTC,ETH,SOL,XRP,LINK,ADA").split(",") if s.strip()]
+STOCK_TICKERS  = [s.strip().upper() for s in os.getenv("STOCK_TICKERS",  "NVDA,AAPL,TSLA,PLTR,SOFI,MSTR,OKLO,MSFT,GOOGL,AMZN,META").split(",") if s.strip()]
 FOREX_TICKERS  = [s.strip().upper() for s in os.getenv("FOREX_TICKERS",  "XAUUSD,SPX,US30,USDJPY,EURUSD,GBPUSD").split(",") if s.strip()]
 
-# Risk knobs (fraction e.g. 0.02 = 2%)
+# Risk knobs (fractions, e.g., 0.02 = 2%)
 RISK_PCT_CRYPTO = float(os.getenv("RISK_PCT_CRYPTO", "0.02"))
 RISK_PCT_STOCKS = float(os.getenv("RISK_PCT_STOCKS", "0.01"))
 RISK_PCT_FOREX  = float(os.getenv("RISK_PCT_FOREX",  "0.015"))
@@ -39,33 +43,31 @@ CRYPTO_SCAN_MIN = int(os.getenv("CRYPTO_SCAN_MIN", "15"))
 STOCK_SCAN_MIN  = int(os.getenv("STOCK_SCAN_MIN",  "15"))
 FOREX_SCAN_MIN  = int(os.getenv("FOREX_SCAN_MIN",  "15"))
 
-# Daily caps (max per UTC day)
+# Daily caps (max posts per UTC day)
 CRYPTO_DAILY_CAP = int(os.getenv("CRYPTO_DAILY_CAP", "12"))
 STOCK_DAILY_CAP  = int(os.getenv("STOCK_DAILY_CAP",  "12"))
 FOREX_DAILY_CAP  = int(os.getenv("FOREX_DAILY_CAP",  "12"))
 
-# AI / TP config
+# AI / RR config
 AI_SCAN_LOOP   = int(os.getenv("AI_SCAN_LOOP", "1"))
-AI_TP_MODE     = os.getenv("AI_TP_MODE", "2TP_SL2BE")
+AI_TP_MODE     = os.getenv("AI_TP_MODE", "2TP_SL2BE")  # for crypto/forex shares flow
 AI_TP2_RR      = float(os.getenv("AI_TP2_RR", "2.0"))
 ALLOW_DEMO     = os.getenv("ALLOW_DEMO", "1") == "1"
 
-# Balances (support per-asset)
-ACCOUNT_BALANCE_CRYPTO = os.getenv("ACCOUNT_BALANCE_CRYPTO")
-ACCOUNT_BALANCE_STOCKS = os.getenv("ACCOUNT_BALANCE_STOCKS")
-ACCOUNT_BALANCE_FOREX  = os.getenv("ACCOUNT_BALANCE_FOREX")
-ACCOUNT_BALANCE_CRYPTO = float(ACCOUNT_BALANCE_CRYPTO) if ACCOUNT_BALANCE_CRYPTO else None
-ACCOUNT_BALANCE_STOCKS = float(ACCOUNT_BALANCE_STOCKS) if ACCOUNT_BALANCE_STOCKS else None
-ACCOUNT_BALANCE_FOREX  = float(ACCOUNT_BALANCE_FOREX)  if ACCOUNT_BALANCE_FOREX  else None
+# Balances (optional)
+ACCOUNT_BALANCE_CRYPTO = float(os.getenv("ACCOUNT_BALANCE_CRYPTO")) if os.getenv("ACCOUNT_BALANCE_CRYPTO") else None
+ACCOUNT_BALANCE_STOCKS = float(os.getenv("ACCOUNT_BALANCE_STOCKS")) if os.getenv("ACCOUNT_BALANCE_STOCKS") else None
+ACCOUNT_BALANCE_FOREX  = float(os.getenv("ACCOUNT_BALANCE_FOREX"))  if os.getenv("ACCOUNT_BALANCE_FOREX")  else None
 
-# ===== Stocks vehicle/option settings (your choices) =====
+# ===== Stocks vehicle/option settings (your locked-in choices) =====
 STOCK_VEHICLE_MODE = os.getenv("STOCK_VEHICLE_MODE", "HYBRID").upper()     # SHARES | OPTIONS | HYBRID
 STOCK_OPTION_STYLE = os.getenv("STOCK_OPTION_STYLE", "SWING").upper()       # SWING
 EXP_W_MIN = int(os.getenv("STOCK_OPTION_EXP_WEEKS_MIN", "2"))
 EXP_W_MAX = int(os.getenv("STOCK_OPTION_EXP_WEEKS_MAX", "4"))
-OPT_TP1 = float(os.getenv("OPTIONS_TP1_PCT", "0.25"))   # +25%
-OPT_TP2 = float(os.getenv("OPTIONS_TP2_PCT", "0.55"))   # +55%
-OPT_SL  = float(os.getenv("OPTIONS_SL_PCT",  "0.22"))   # -22%
+# Your profile B: +25 / +55 / -22 for options
+OPT_TP1 = float(os.getenv("OPTIONS_TP1_PCT", "0.25"))
+OPT_TP2 = float(os.getenv("OPTIONS_TP2_PCT", "0.55"))
+OPT_SL  = float(os.getenv("OPTIONS_SL_PCT",  "0.22"))
 
 # =========================
 # DISCORD BOOT
@@ -108,40 +110,37 @@ def suggested_position_text(balance: float | None, entry: float, sl: float, risk
     return f"**Risk $:** ${risk_dollars:,.2f}"
 
 # =========================
-# RENDERERS
+# RENDERERS (full, emoji-styled)
 # =========================
-def render_signal_pro(asset_class: str, sig: dict, risk_pct: float, balance: float | None, is_forex=False) -> str:
+def render_signal_card(asset_class: str, sig: dict, risk_pct: float, balance: float | None, is_forex=False) -> str:
     tp1, tp2, rr1, rr2, _ = rr_targets(sig["entry"], sig["sl"], sig["side"])
     conf = f"{sig['confidence']*100:.0f}%"
     when = now_utc().strftime("%Y-%m-%d %H:%M UTC")
-    style_emoji = "🟢" if sig["style"] == "Confirmed" else "🟡"
+    style_emoji = "🟢 Confirmed" if sig["style"] == "Confirmed" else "🟡 Early"
     side_emoji = "🟩 LONG" if sig["side"] == "LONG" else "🟥 SHORT"
+    header_emoji = {"CRYPTO":"🟧","STOCK":"🟦","FOREX":"🟨"}[asset_class]
+    header = f"**{header_emoji} {asset_class} Setup – {sig['symbol']} ({sig['timeframe']})**"
 
-    header = f"**{style_emoji} {asset_class} Setup – {sig['symbol']} ({sig['timeframe']})**"
     lines = [
         header,
-        f"**Side:** {side_emoji}  |  **Confidence:** {conf}  |  **RR:** 1.0R / {AI_TP2_RR:.1f}R",
+        f"**Mode:** {style_emoji}  |  **Side:** {side_emoji}  |  **Confidence:** {conf}  |  **RR:** 1.0R / {AI_TP2_RR:.1f}R",
         f"**Entry:** `{sig['entry']:.4f}`  |  **SL:** `{sig['sl']:.4f}`  |  **TP1/TP2:** `{tp1:.4f}` / `{tp2:.4f}`",
         f"**Risk:** {fmt_pct(risk_pct)}  |  **Mgmt:** TP1 hit → partial & **SL → Entry**, then target TP2.",
     ]
     pos_line = suggested_position_text(balance, sig["entry"], sig["sl"], risk_pct, is_forex=is_forex)
-    if pos_line:
-        lines.append(pos_line)
+    if pos_line: lines.append(pos_line)
     if sig.get("rationale"):
         lines.append(f"**Why:** {sig['rationale']}")
     lines.append(f"**Time:** {when}")
     return "\n".join(lines)
 
 def render_stock_options(sig: dict, risk_pct: float, balance_stocks: float | None) -> str:
-    """
-    Swing options output (your B profile): TP1 +25%, TP2 +55%, SL -22%.
-    Contract sizing: floor( risk$ / (option_price * 100) ).
-    """
+    """Swing options output per profile B: TP1 +25%, TP2 +55%, SL -22%."""
     when = now_utc().strftime("%Y-%m-%d %H:%M UTC")
-    style_emoji = "🟢" if sig["style"] == "Confirmed" else "🟡"
+    style_emoji = "🟢 Confirmed" if sig["style"] == "Confirmed" else "🟡 Early"
     side_word = "CALL" if sig["side"] == "LONG" else "PUT"
     conf = f"{sig['confidence']*100:.0f}%"
-    # naive option price estimate for demo
+    # rough option price for demo sizing
     opt_price = max(0.25, min(2.50, sig.get("opt_price", random.uniform(0.45, 1.40))))
     risk_line = ""
     contracts_line = ""
@@ -153,8 +152,8 @@ def render_stock_options(sig: dict, risk_pct: float, balance_stocks: float | Non
 
     lines = [
         f"**🟦 STOCK OPTIONS (SWING) – {sig['symbol']} {side_word} ({sig['timeframe']})**",
-        f"**Confidence:** {conf}  |  **Style:** {style_emoji.replace('🟢','Confirmed').replace('🟡','Early')}",
-        f"**Entry Zone (shares ref):** `{sig['entry']:.2f}` ± noise  |  **Expiration:** {random.randint(EXP_W_MIN, EXP_W_MAX)} weeks out",
+        f"**Confidence:** {conf}  |  **Style:** {style_emoji}",
+        f"**Ref Entry (shares level):** `{sig['entry']:.2f}`  |  **Expiration:** {random.randint(EXP_W_MIN, EXP_W_MAX)} weeks out",
         f"**TP1 / TP2 / SL:** +{int(OPT_TP1*100)}%  /  +{int(OPT_TP2*100)}%  /  -{int(OPT_SL*100)}%",
         f"**Risk per trade:** {fmt_pct(risk_pct)}",
     ]
@@ -166,11 +165,12 @@ def render_stock_options(sig: dict, risk_pct: float, balance_stocks: float | Non
     return "\n".join(lines)
 
 # =========================
-# AI CANDIDATES (demo)
+# AI CANDIDATES (demo generator)
 # =========================
 def ai_generate_candidates(tickers, asset_class: str):
     out = []
-    for symbol in random.sample(tickers, k=min(len(tickers), random.randint(0, 3))):
+    count = min(len(tickers), random.randint(0, 3))
+    for symbol in random.sample(tickers, k=count):
         side = random.choice(["LONG", "SHORT"])
         base = random.uniform(50, 5000) if asset_class != "FOREX" else random.uniform(0.5, 150)
         entry = round(base, 2 if asset_class == "STOCK" else 4)
@@ -185,19 +185,12 @@ def ai_generate_candidates(tickers, asset_class: str):
             "Momentum bounce off demand",
             "Mean reversion into VWAP + structure"
         ])
-        # lightweight “market context” flags
-        high_iv = random.choice([True, False, False])  # skew slightly to False
+        high_iv = random.choice([True, False, False])
         out.append({
-            "symbol": symbol,
-            "timeframe": tf,
-            "side": side,
-            "entry": entry,
-            "sl": sl,
-            "confidence": confidence,
-            "style": style,
-            "rationale": rationale,
-            "high_iv": high_iv,
-            "opt_price": random.uniform(0.45, 1.40)  # for options sizing
+            "symbol": symbol, "timeframe": tf, "side": side,
+            "entry": entry, "sl": sl, "confidence": confidence,
+            "style": style, "rationale": rationale, "high_iv": high_iv,
+            "opt_price": random.uniform(0.45, 1.40)
         })
     return out
 
@@ -232,23 +225,20 @@ async def post_signals(channel: discord.TextChannel, asset_class: str, signals: 
     to_send = signals[:remaining]
     for sig in to_send:
         if asset_class == "CRYPTO":
-            text = render_signal_pro("CRYPTO", sig, risk_pct, ACCOUNT_BALANCE_CRYPTO, is_forex=False)
+            text = render_signal_card("CRYPTO", sig, RISK_PCT_CRYPTO, ACCOUNT_BALANCE_CRYPTO, is_forex=False)
         elif asset_class == "FOREX":
-            text = render_signal_pro("FOREX", sig, risk_pct, ACCOUNT_BALANCE_FOREX, is_forex=True)
+            text = render_signal_card("FOREX", sig, RISK_PCT_FOREX, ACCOUNT_BALANCE_FOREX, is_forex=True)
         else:
-            # STOCKS: Hybrid vehicle selection
             vehicle = STOCK_VEHICLE_MODE
             if vehicle == "HYBRID":
-                # choose OPTIONS when high IV or very strong confidence; else SHARES
                 vehicle = "OPTIONS" if (sig.get("high_iv") or sig["confidence"] >= 0.75) else "SHARES"
             if vehicle == "OPTIONS":
                 text = render_stock_options(sig, RISK_PCT_STOCKS, ACCOUNT_BALANCE_STOCKS)
             else:
-                text = render_signal_pro("STOCK", sig, RISK_PCT_STOCKS, ACCOUNT_BALANCE_STOCKS, is_forex=False)
-                text = "🟪 **Shares Version**\n" + text  # tag it clearly
+                text = "🟪 **Shares Version**\n" + render_signal_card("STOCK", sig, RISK_PCT_STOCKS, ACCOUNT_BALANCE_STOCKS, is_forex=False)
         await channel.send(text)
         _daily_counts[asset_class] += 1
-        await asyncio.sleep(1.2)
+        await asyncio.sleep(1.1)
 
 # =========================
 # SCAN LOOPS
@@ -278,7 +268,7 @@ async def forex_scan_loop():
     await post_signals(ch, "FOREX", picks, RISK_PCT_FOREX, FOREX_DAILY_CAP)
 
 # =========================
-# COMMANDS
+# COMMANDS / EVENTS
 # =========================
 @bot.event
 async def on_ready():
@@ -295,20 +285,38 @@ async def on_ready():
         print("✅ Scan loops started.")
 
 @bot.command()
-async def ping(ctx): await ctx.reply("Pong 🏓")
+async def ping(ctx):
+    await ctx.reply("Pong 🏓")
+
+@bot.command()
+async def help(ctx):
+    msg = (
+        "**JCF HQ – Commands**\n"
+        "• `!ping` – heartbeat\n"
+        "• `!status` – show scan cadence, confidence gates, daily caps\n"
+        "• `!scanonce` – run one manual scan for all 3 assets\n"
+        "• `!testsig_c` – send demo Crypto setups to #🎯-crypto-setups\n"
+        "• `!testsig_s` – send demo Stock setups to #📈-stock-setups\n"
+        "• `!testsig_f` – send demo Forex setups to #💱-forex-setups\n"
+    )
+    await ctx.reply(msg)
 
 @bot.command()
 async def status(ctx):
     _roll_daily()
+    balances = []
+    if ACCOUNT_BALANCE_CRYPTO is not None: balances.append(f"CRYPTO ${ACCOUNT_BALANCE_CRYPTO:,.0f}")
+    if ACCOUNT_BALANCE_STOCKS is not None: balances.append(f"STOCKS ${ACCOUNT_BALANCE_STOCKS:,.0f}")
+    if ACCOUNT_BALANCE_FOREX  is not None: balances.append(f"FOREX ${ACCOUNT_BALANCE_FOREX:,.0f}")
+    bal_line = ("• Balances — " + " | ".join(balances) + "\n") if balances else ""
     msg = (
         "**JCF HQ Status**\n"
         f"• AI_SCAN_LOOP: {AI_SCAN_LOOP}\n"
         f"• Crypto: scan {CRYPTO_SCAN_MIN}m | min conf {MIN_CONF_CRYPTO:.2f} | daily { _daily_counts['CRYPTO'] } / {CRYPTO_DAILY_CAP}\n"
         f"• Stocks: scan {STOCK_SCAN_MIN}m | min conf {MIN_CONF_STOCKS:.2f} | daily { _daily_counts['STOCK'] } / {STOCK_DAILY_CAP}\n"
-        f"  └ Vehicle: {STOCK_VEHICLE_MODE} | Option swing TP1/TP2/SL: +{int(OPT_TP1*100)}% / +{int(OPT_TP2*100)}% / -{int(OPT_SL*100)}%\n"
+        f"  └ Vehicle: {STOCK_VEHICLE_MODE} | Swing options: TP1+{int(OPT_TP1*100)}% / TP2+{int(OPT_TP2*100)}% / SL-{int(OPT_SL*100)}%\n"
         f"• Forex:  scan {FOREX_SCAN_MIN}m | min conf {MIN_CONF_FOREX:.2f} | daily { _daily_counts['FOREX'] } / {FOREX_DAILY_CAP}\n"
-        + (f"• Balances — CRYPTO ${ACCOUNT_BALANCE_CRYPTO:,.0f} | STOCKS ${ACCOUNT_BALANCE_STOCKS:,.0f} | FOREX ${ACCOUNT_BALANCE_FOREX:,.0f}\n"
-           if all([ACCOUNT_BALANCE_CRYPTO, ACCOUNT_BALANCE_STOCKS, ACCOUNT_BALANCE_FOREX]) else "")
+        + bal_line
     )
     await ctx.reply(msg)
 
@@ -323,21 +331,24 @@ async def _do_testsig(ctx, asset_class: str):
     }
     tickers, chan_id, risk_pct, min_conf = mapping[asset_class]
     ch = bot.get_channel(chan_id)
+    if ch is None:
+        await ctx.reply(f"Channel for {asset_class} is not configured.")
+        return
     picks = choose_top_signals(ai_generate_candidates(tickers, asset_class), top_k=2, min_conf=min_conf)
     if not picks:
         await ctx.reply(f"No {asset_class.lower()} test signals passed the confidence filter.")
         return
     await post_signals(ch, asset_class, picks, risk_pct, daily_cap=9999)
-    await ctx.reply(f"Sent {len(picks)} test {asset_class.lower()} signal(s).")
+    await ctx.reply(f"Sent {len(picks)} test {asset_class.lower()} signal(s) to {ch.mention}.")
 
-@bot.command(name="testsig_crypto")
-async def testsig_crypto(ctx): await _do_testsig(ctx, "CRYPTO")
+@bot.command(name="testsig_c")
+async def testsig_c(ctx): await _do_testsig(ctx, "CRYPTO")
 
-@bot.command(name="testsig_stock")
-async def testsig_stock(ctx):  await _do_testsig(ctx, "STOCK")
+@bot.command(name="testsig_s")
+async def testsig_s(ctx): await _do_testsig(ctx, "STOCK")
 
-@bot.command(name="testsig_forex")
-async def testsig_forex(ctx):  await _do_testsig(ctx, "FOREX")
+@bot.command(name="testsig_f")
+async def testsig_f(ctx): await _do_testsig(ctx, "FOREX")
 
 @bot.command()
 async def scanonce(ctx):
@@ -352,11 +363,10 @@ async def scanonce(ctx):
         picks = choose_top_signals(ai_generate_candidates(tickers, asset_class), top_k=2, min_conf=min_conf)
         if picks:
             await post_signals(ch, asset_class, picks, risk_pct, cap)
+        await asyncio.sleep(0.5)
     await ctx.reply("Manual scan completed.")
 
 # =========================
 # RUN
 # =========================
-if not TOKEN:
-    raise SystemExit("DISCORD_TOKEN is missing.")
 bot.run(TOKEN)
