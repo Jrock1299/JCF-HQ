@@ -1,142 +1,209 @@
 import os
-os.environ["DISCORD_NO_AUDIO"] = "1"   # prevent audio import
-
+import math
 import asyncio
-from datetime import datetime, timedelta, timezone
-
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 
-import pandas as pd
-import yfinance as yf
+# -------------------------------------------------------------------
+# Environment / Config
+# -------------------------------------------------------------------
+# Avoid audio dependency on Python ≥3.13 (Railway)
+os.environ["DISCORD_NO_AUDIO"] = "1"
 
-# ---------- ENV ----------
 TOKEN = os.getenv("DISCORD_TOKEN")
-ANNOUNCE_ID = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or 0)
 
-CRYPTO_CH_ID = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or 0)
-STOCKS_CH_ID = int(os.getenv("STOCK_SETUPS_CHANNEL_ID", "0") or 0)
-FOREX_CH_ID  = int(os.getenv("FOREX_SETUPS_CHANNEL_ID", "0") or 0)
+# Optional announce channel (startup message)
+ANNOUNCE_CHANNEL_ID = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or 0)
 
-# Watchlists (you can add envs later; these defaults are fine for testing)
-DEFAULT_STOCKS = ["AAPL", "NVDA", "TSLA", "AMD", "PLTR", "MSTR", "SOFI"]
-DEFAULT_CRYPTO = ["BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "LINK-USD"]
-DEFAULT_FOREX  = ["EURUSD=X", "USDJPY=X", "XAUUSD=X", "GBPUSD=X"]
+# Channel routing (set these in Railway → Variables)
+CRYPTO_CH = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or 0)
+STOCK_CH  = int(os.getenv("STOCK_SETUPS_CHANNEL_ID", "0") or 0)
+FOREX_CH  = int(os.getenv("FOREX_SETUPS_CHANNEL_ID", "0") or 0)
 
-stocks_list = [s.strip() for s in os.getenv("AI_STOCKS", ",".join(DEFAULT_STOCKS)).split(",") if s.strip()]
-crypto_list = [s.strip() for s in os.getenv("AI_CRYPTO", ",".join(DEFAULT_CRYPTO)).split(",") if s.strip()]
-forex_list  = [s.strip() for s in os.getenv("AI_FOREX",  ",".join(DEFAULT_FOREX)).split(",") if s.strip()]
+# AI / Signal knobs (read from Railway variables)
+TP_MODE   = int(os.getenv("AI_TP_MODE", "2"))            # 1 or 2 targets
+TP1_RR    = float(os.getenv("AI_TP1_RR", "1.0"))         # ≈1R
+TP2_RR    = float(os.getenv("AI_TP2_RR", "2.0"))         # ≈2R
+TF_TAGS   = os.getenv("AI_TIMEFRAME_TAGS", "1") == "1"   # show TF tags in title
+CONF_FMT  = os.getenv("AI_CONF_FORMAT", "decimal")       # 'decimal' | 'rounded'
+RISK_PCT  = float(os.getenv("AI_DEFAULT_RISK_PCT", "2.0"))
+AI_SIGNAL_TIMING = os.getenv("AI_SIGNAL_TIMING", "hybrid").lower()  # 'early'|'confirmed'|'hybrid'
 
-# ---------- DISCORD ----------
+# -------------------------------------------------------------------
+# Discord Bot Setup
+# -------------------------------------------------------------------
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="!", intents=intents)
 
-def pick_channel(*ids):
-    for i in ids:
-        if i:
-            ch = bot.get_channel(i)
-            if ch:
-                return ch
-    return None
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    ch = pick_channel(ANNOUNCE_ID, CRYPTO_CH_ID, STOCKS_CH_ID, FOREX_CH_ID)
-    if ch:
-        await ch.send("✅ **JCFWatchBot ONLINE** — AI scanner loaded. Use `!scanonce` to test.")
-    print(f"Logged in as {bot.user} ({bot.user.id})")
+    print(f"✅ Logged in as {bot.user} (id: {bot.user.id})")
+    await bot.change_presence(activity=discord.Game(name="JCF HQ online"))
+    if ANNOUNCE_CHANNEL_ID:
+        ch = bot.get_channel(ANNOUNCE_CHANNEL_ID)
+        if ch:
+            await ch.send("✅ **JCFWatchBot ONLINE** — Systems initialized. Monitoring markets…")
+    print("✅ Startup message sent (if channel set).")
 
-@bot.command()
-async def ping(ctx):
+# Optional: simple error echo so we can see command issues in chat
+@bot.event
+async def on_command_error(ctx, error):
+    # keep it brief; useful during setup
+    await ctx.send(f"⚠️ `{type(error).__name__}: {error}`")
+
+# -------------------------------------------------------------------
+# Helpers: TP math, formatting, labels
+# -------------------------------------------------------------------
+def compute_tps(entry: float, sl: float, side: str, rr1: float, rr2: float):
+    """Derive TP1/TP2 from RR multiples."""
+    side = side.lower()
+    if side not in ("long", "short"):
+        return None, None
+    risk_per_unit = (entry - sl) if side == "long" else (sl - entry)
+    if risk_per_unit == 0:
+        return None, None
+    if side == "long":
+        tp1 = entry + rr1 * abs(risk_per_unit)
+        tp2 = entry + rr2 * abs(risk_per_unit) if TP_MODE == 2 else None
+    else:
+        tp1 = entry - rr1 * abs(risk_per_unit)
+        tp2 = entry - rr2 * abs(risk_per_unit) if TP_MODE == 2 else None
+    return tp1, tp2
+
+def _fmt_conf(conf: float) -> str:
+    """confidence display (0..1 → 0..5 one decimal)"""
+    score_5 = max(0.0, min(5.0, round(conf * 5.0, 1)))
+    return f"{score_5}/5"
+
+def signal_phase_label(phase: str | None) -> str:
+    if phase == "early":
+        return "⏳ Early Scout"
+    if phase == "confirmed":
+        return "✅ Confirmed"
+    return "Setup"
+
+def clamp_phase(phase: str | None) -> str:
+    """
+    Respects AI_SIGNAL_TIMING policy:
+    - 'early' => always early
+    - 'confirmed' => always confirmed
+    - 'hybrid' => use provided phase; default to confirmed
+    """
+    p = (phase or "").lower()
+    m = AI_SIGNAL_TIMING
+    if m == "early":
+        return "early"
+    if m == "confirmed":
+        return "confirmed"
+    # hybrid
+    return p if p in ("early", "confirmed") else "confirmed"
+
+def format_signal_b(
+    symbol: str,
+    side: str,            # "LONG" | "SHORT"
+    entry: float,
+    sl: float,
+    confidence: float,    # 0..1
+    timeframe: str,       # e.g., "15M","1H","4H"
+    reasons: list,        # 2–4 short bullet strings
+    rr1: float = None,
+    rr2: float = None,
+):
+    """Beginner-friendly signal card (Option B)."""
+    side = side.upper()
+    rr1 = rr1 if rr1 is not None else TP1_RR
+    rr2 = rr2 if rr2 is not None else TP2_RR
+
+    tp1, tp2 = compute_tps(entry, sl, side, rr1, rr2)
+
+    tf_tag = f" — {timeframe}" if (TF_TAGS and timeframe) else ""
+    phase = clamp_phase(globals().get("_CURRENT_PHASE", None))
+    phase_tag = signal_phase_label(phase)
+
+    lines = []
+    lines.append(f"📈 **{symbol} – {side} {phase_tag}{tf_tag}**")
+    lines.append(f"• **Buy around:** {entry:,.2f}" if side == "LONG" else f"• **Sell around:** {entry:,.2f}")
+    lines.append(f"• **Stop Loss (exit if wrong):** {sl:,.2f}")
+    if tp1:
+        lines.append(f"• **Take Profit 1 (≈{TP1_RR:.1f}R):** {tp1:,.2f}")
+    if TP_MODE == 2 and tp2:
+        lines.append(f"• **Take Profit 2 (≈{TP2_RR:.1f}R):** {tp2:,.2f}")
+    lines.append("")
+    lines.append("**Why this trade?**")
+    for r in (reasons or [])[:4]:
+        lines.append(f"• {r}")
+    lines.append("")
+    lines.append(f"**Confidence:** {_fmt_conf(confidence)}")
+    lines.append(f"**Suggested Risk:** {RISK_PCT:.1f}% of account")
+    return "\n".join(lines)
+
+async def send_signal_card(b, channel_id: int, content: str):
+    ch = b.get_channel(channel_id)
+    if ch:
+        await ch.send(content)
+
+# -------------------------------------------------------------------
+# Commands
+# -------------------------------------------------------------------
+@bot.command(name="ping")
+async def ping_cmd(ctx):
     await ctx.reply("Pong 🏓")
 
-@bot.command()
-async def scanonce(ctx):
-    """Run one quick pass and post sample setups."""
-    await ctx.reply("🔎 Running a quick scan…")
-    await run_scan_once()
-
-async def run_scan_once():
-    # Simple rules:
-    # - Stocks/Forex: 20/50 SMA cross + RSI(14) extremes
-    # - Crypto: 20/50 SMA cross + strong 24h move
-    async def scan(tickers, kind):
-        ideas = []
-        period = "60d"
-        interval = "1h" if kind != "forex" else "1h"
-        for t in tickers[:12]:  # cap for speed
-            try:
-                df = yf.download(t, period=period, interval=interval, progress=False, auto_adjust=True)
-                if df is None or df.empty or len(df) < 60:
-                    continue
-                df["sma20"] = df["Close"].rolling(20).mean()
-                df["sma50"] = df["Close"].rolling(50).mean()
-                df["rsi"] = rsi(df["Close"], 14)
-
-                last = df.iloc[-1]
-                prev = df.iloc[-2]
-
-                cross_up = prev["sma20"] <= prev["sma50"] and last["sma20"] > last["sma50"]
-                cross_dn = prev["sma20"] >= prev["sma50"] and last["sma20"] < last["sma50"]
-
-                rsi_low = last["rsi"] <= 35
-                rsi_high = last["rsi"] >= 65
-
-                move_24h = (last["Close"] / df["Close"].iloc[-24] - 1.0) * 100 if len(df) >= 24 else 0.0
-
-                if cross_up or (rsi_low and move_24h > 1.5 and kind == "crypto"):
-                    ideas.append(("LONG", t, float(last["Close"]), float(last["sma20"]), float(last["sma50"]), float(last["rsi"]), move_24h))
-                elif cross_dn or (rsi_high and move_24h < -1.5 and kind == "crypto"):
-                    ideas.append(("SHORT", t, float(last["Close"]), float(last["sma20"]), float(last["sma50"]), float(last["rsi"]), move_24h))
-            except Exception as e:
-                print(f"scan error {t}: {e}")
-        return ideas
-
-    # run scans
-    stock_ideas = await scan(stocks_list, "stocks")
-    crypto_ideas = await scan(crypto_list, "crypto")
-    forex_ideas  = await scan(forex_list,  "forex")
-
-    # post results
-    await post_setups(stock_ideas, STOCKS_CH_ID, "📈 **AI Stock Setups**")
-    await post_setups(crypto_ideas, CRYPTO_CH_ID, "🎯 **AI Crypto Setups**")
-    await post_setups(forex_ideas,  FOREX_CH_ID,  "💱 **AI Forex Setups**")
-
-async def post_setups(ideas, channel_id, title):
-    ch = pick_channel(channel_id, ANNOUNCE_ID)
-    if not ch:
-        print(f"No channel available for {title}")
-        return
-    if not ideas:
-        await ch.send(f"{title}\n_No strong signals right now. I’ll keep watching._")
-        return
-
-    lines = [title]
-    for side, sym, price, sma20, sma50, rsi_val, m24 in ideas[:6]:
-        lines.append(
-            f"• **{sym}** → **{side}**  | Px: `{price:.4g}`  | SMA20/50: `{sma20:.4g}/{sma50:.4g}`  | RSI14: `{rsi_val:.1f}`  | 24h: `{m24:.1f}%`"
+@bot.command(name="status", aliases=["cfg", "ai_status"])
+async def status_cmd(ctx):
+    try:
+        await ctx.send(
+            "🧠 **AI Config**\n"
+            f"- Timeframe tags: {'ON' if TF_TAGS else 'OFF'}\n"
+            f"- TP Mode: {TP_MODE} target(s)\n"
+            f"- TP1 RR: {TP1_RR:.1f}\n"
+            f"- TP2 RR: {TP2_RR:.1f}\n"
+            f"- Confidence format: {CONF_FMT}\n"
+            f"- Default risk text: {RISK_PCT:.1f}%\n"
+            f"- Signal timing: {AI_SIGNAL_TIMING}\n"
+            f"- Channels set ➜ Crypto={bool(CRYPTO_CH)}  Stocks={bool(STOCK_CH)}  Forex={bool(FOREX_CH)}"
         )
-    await ch.send("\n".join(lines))
+    except Exception as e:
+        await ctx.send(f"⚠️ status error: `{type(e).__name__}: {e}`")
 
-# --- helpers ---
-def rsi(series: pd.Series, length: int = 14) -> pd.Series:
-    delta = series.diff()
-    gain = delta.clip(lower=0)
-    loss = -delta.clip(upper=0)
-    avg_gain = gain.rolling(length).mean()
-    avg_loss = loss.rolling(length).mean()
-    rs = avg_gain / (avg_loss.replace(0, 1e-9))
-    return 100 - (100 / (1 + rs))
+@bot.command(name="testsig_b")
+async def testsig_b(ctx, market: str = "crypto", phase: str = "confirmed"):
+    """
+    Preview an Option-B card (beginner-friendly).
+    Usage:
+      !testsig_b
+      !testsig_b stocks
+      !testsig_b forex early
+    """
+    symbol = "BTC/USDT" if market == "crypto" else ("AAPL" if market == "stocks" else "XAUUSD")
+    side = "LONG"
+    entry = 67150.0
+    sl    = 66720.0
+    conf  = 0.86          # 0..1 → shows as ~4.3/5
+    tf    = "1H"
+    reasons = [
+        "Trend looks bullish",
+        "Momentum improving on 1H & 4H",
+        "Liquidity sweep and reclaim",
+    ]
 
-# Optional: background loop (off by default). Turn on by setting AI_SCAN_LOOP=1.
-@tasks.loop(minutes=15)
-async def background_scan():
-    await run_scan_once()
+    globals()["_CURRENT_PHASE"] = phase  # 'early' or 'confirmed'
+    card = format_signal_b(symbol, side, entry, sl, conf, tf, reasons)
+    globals().pop("_CURRENT_PHASE", None)
 
-@bot.event
-async def on_connect():
-    if os.getenv("AI_SCAN_LOOP", "0") == "1" and not background_scan.is_running():
-        background_scan.start()
+    target_channel = CRYPTO_CH if market == "crypto" else (STOCK_CH if market == "stocks" else FOREX_CH)
+    if not target_channel:
+        await ctx.send("⚠️ Target channel ID not set in Railway vars for this market.")
+        return
 
+    await send_signal_card(bot, target_channel, card)
+    await ctx.send("✅ Test signal (Option B) posted.")
+
+# -------------------------------------------------------------------
+# Boot
+# -------------------------------------------------------------------
+if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN not set in environment variables.")
 bot.run(TOKEN)
