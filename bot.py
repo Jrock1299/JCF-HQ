@@ -74,7 +74,8 @@ OPT_SL  = float(os.getenv("OPTIONS_SL_PCT",  "0.22"))
 # =========================
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="!", intents=intents)
+
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 # =========================
 # UTIL
