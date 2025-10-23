@@ -1,287 +1,142 @@
 import os
-# must be before importing discord to avoid 'audioop' on Py3.13
-os.environ["DISCORD_NO_AUDIO"] = "1"
+os.environ["DISCORD_NO_AUDIO"] = "1"   # prevent audio import
 
 import asyncio
-import logging
-from datetime import datetime, time as dtime
-import pytz
+from datetime import datetime, timedelta, timezone
 
 import discord
 from discord.ext import commands, tasks
 
-import numpy as np
 import pandas as pd
 import yfinance as yf
-import ccxt
 
 # ---------- ENV ----------
 TOKEN = os.getenv("DISCORD_TOKEN")
-ANNOUNCE_CHANNEL_ID = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or 0)
+ANNOUNCE_ID = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or 0)
 
-CHAN_CRYPTO = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or 0)
-CHAN_STOCKS = int(os.getenv("STOCK_SETUPS_CHANNEL_ID", "0") or 0)
-CHAN_FOREX  = int(os.getenv("FOREX_SETUPS_CHANNEL_ID", "0") or 0)
+CRYPTO_CH_ID = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or 0)
+STOCKS_CH_ID = int(os.getenv("STOCK_SETUPS_CHANNEL_ID", "0") or 0)
+FOREX_CH_ID  = int(os.getenv("FOREX_SETUPS_CHANNEL_ID", "0") or 0)
 
-RISK_CRYPTO = float(os.getenv("RISK_PCT_CRYPTO", "2"))
-RISK_STOCKS = float(os.getenv("RISK_PCT_STOCKS", "1"))
-RISK_FOREX  = float(os.getenv("RISK_PCT_FOREX", "1"))
+# Watchlists (you can add envs later; these defaults are fine for testing)
+DEFAULT_STOCKS = ["AAPL", "NVDA", "TSLA", "AMD", "PLTR", "MSTR", "SOFI"]
+DEFAULT_CRYPTO = ["BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "LINK-USD"]
+DEFAULT_FOREX  = ["EURUSD=X", "USDJPY=X", "XAUUSD=X", "GBPUSD=X"]
 
-def _split_env(name, default=""):
-    raw = os.getenv(name, default)
-    parts = [p.strip() for p in raw.split(",") if p.strip()]
-    return parts
-
-WL_CRYPTO = _split_env("CRYPTO_TICKERS")
-WL_STOCKS = _split_env("STOCK_TICKERS")
-WL_FOREX  = _split_env("FOREX_TICKERS")
-
-# ---------- LOGGING ----------
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("jcf-ai")
+stocks_list = [s.strip() for s in os.getenv("AI_STOCKS", ",".join(DEFAULT_STOCKS)).split(",") if s.strip()]
+crypto_list = [s.strip() for s in os.getenv("AI_CRYPTO", ",".join(DEFAULT_CRYPTO)).split(",") if s.strip()]
+forex_list  = [s.strip() for s in os.getenv("AI_FOREX",  ",".join(DEFAULT_FOREX)).split(",") if s.strip()]
 
 # ---------- DISCORD ----------
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ---------- HELPERS ----------
-NY = pytz.timezone("America/New_York")
+def pick_channel(*ids):
+    for i in ids:
+        if i:
+            ch = bot.get_channel(i)
+            if ch:
+                return ch
+    return None
 
-def now_ny():
-    return datetime.now(NY)
-
-def market_open():
-    # US equity market hours (approx): 9:30–16:00 NY, Mon–Fri
-    n = now_ny()
-    if n.weekday() >= 5:  # Sat/Sun
-        return False
-    return dtime(9, 30) <= n.time() <= dtime(16, 0)
-
-def ema(arr, n):
-    return pd.Series(arr).ewm(span=n, adjust=False).mean().to_numpy()
-
-def atr(high, low, close, n=14):
-    high = pd.Series(high); low = pd.Series(low); close = pd.Series(close)
-    prev_close = close.shift(1)
-    tr = pd.concat([
-        (high - low),
-        (high - prev_close).abs(),
-        (low - prev_close).abs()
-    ], axis=1).max(axis=1)
-    return tr.rolling(n).mean().to_numpy()
-
-# basic “hybrid” logic for intraday, trend-continuation & breakout-retest
-def scan_series(symbol, o, h, l, c, v, risk_pct):
-    if len(c) < 200:
-        return None
-    e20, e50, e200 = ema(c, 20), ema(c, 50), ema(c, 200)
-    last = -1
-    up_trend = e20[last] > e50[last] > e200[last] and c[last] > e20[last]
-    down_trend = e20[last] < e50[last] < e200[last] and c[last] < e20[last]
-    a = atr(h, l, c, 14)
-    if np.isnan(a[last]) or a[last] == 0:
-        return None
-
-    # Breakout detection: new 20-bar high/low
-    hh = pd.Series(c).rolling(20).max().to_numpy()
-    ll = pd.Series(c).rolling(20).min().to_numpy()
-    signal = None
-
-    # Long case: trend up + recent breakout with retest near EMA20 within 1.2*ATR
-    if up_trend and c[last] >= hh[last] * 0.999:
-        # lookback for a pullback tag to EMA20 within last 10 bars
-        window = slice(-10, None)
-        pullback_ok = (np.min(np.abs(pd.Series(c[window]) - e20[window])) <= 1.2 * a[last])
-        if pullback_ok:
-            entry = float(c[last])
-            stop  = float(max(e50[last], c[last] - 1.5 * a[last]))
-            target1 = float(entry + 1.0 * a[last])
-            target2 = float(entry + 2.0 * a[last])
-            rr = round((entry - stop) / (target1 - entry), 2) if (target1 - entry) > 0 else None
-            signal = {
-                "side": "LONG", "symbol": symbol,
-                "entry": entry, "stop": stop,
-                "t1": target1, "t2": target2, "atr": float(a[last]),
-                "rr": rr, "reason": "Trend continuation + breakout-retest near EMA20"
-            }
-
-    # Short case: mirror
-    if signal is None and down_trend and c[last] <= ll[last] * 1.001:
-        window = slice(-10, None)
-        pullback_ok = (np.min(np.abs(pd.Series(c[window]) - e20[window])) <= 1.2 * a[last])
-        if pullback_ok:
-            entry = float(c[last])
-            stop  = float(min(e50[last], c[last] + 1.5 * a[last]))
-            target1 = float(entry - 1.0 * a[last])
-            target2 = float(entry - 2.0 * a[last])
-            rr = round((stop - entry) / (entry - target1), 2) if (entry - target1) > 0 else None
-            signal = {
-                "side": "SHORT", "symbol": symbol,
-                "entry": entry, "stop": stop,
-                "t1": target1, "t2": target2, "atr": float(a[last]),
-                "rr": rr, "reason": "Trend continuation + breakdown-retest near EMA20"
-            }
-
-    return signal
-
-async def post_setup(channel_id: int, title: str, sig: dict, timeframe: str, risk_pct: float):
-    if not channel_id:
-        return
-    ch = bot.get_channel(channel_id)
-    if not ch:
-        return
-    emoji = "🚀" if sig["side"] == "LONG" else "🛑"
-    msg = (
-        f"**{title}** {emoji}\n"
-        f"**{sig['symbol']}** · {timeframe}\n"
-        f"Side: **{sig['side']}** · Reason: {sig['reason']}\n"
-        f"Entry: **{sig['entry']:.4f}**  |  Stop: **{sig['stop']:.4f}**  "
-        f"|  T1: **{sig['t1']:.4f}**, T2: **{sig['t2']:.4f}**\n"
-        f"ATR: {sig['atr']:.4f}  |  Est. Risk: **{risk_pct}%**  |  R/R≈**{sig['rr']}**\n"
-        f"_Automated intraday scan (trend-continuation & breakout-retest)._"
-    )
-    await ch.send(msg)
-
-# ---------- DATA SOURCES ----------
-binance = ccxt.binance({'enableRateLimit': True})
-
-async def fetch_crypto(symbol: str, timeframe="15m", limit=220):
-    # symbol like "BTC/USDT"
-    ohlcv = await asyncio.to_thread(binance.fetch_ohlcv, symbol, timeframe=timeframe, limit=limit)
-    df = pd.DataFrame(ohlcv, columns=["ts","o","h","l","c","v"])
-    return df
-
-def fetch_yf(ticker: str, interval="15m", period="5d"):
-    df = yf.download(tickers=ticker, interval=interval, period=period, progress=False, prepost=False)
-    if df is None or df.empty:
-        return None
-    df = df.rename(columns=str.lower).reset_index(drop=False)
-    df["v"] = df["volume"]
-    df["o"], df["h"], df["l"], df["c"] = df["open"], df["high"], df["low"], df["close"]
-    return df[["Datetime","o","h","l","c","v"]].rename(columns={"Datetime":"ts"})
-
-# ---------- SCHEDULED SCANS ----------
-@tasks.loop(minutes=10)
-async def scan_crypto_loop():
-    if not WL_CRYPTO: return
-    for sym in WL_CRYPTO:
-        try:
-            df = await fetch_crypto(sym, timeframe="15m")
-            sig = scan_series(sym, df.o, df.h, df.l, df.c, df.v, RISK_CRYPTO)
-            if sig: await post_setup(CHAN_CRYPTO, "Crypto Setup", sig, "15m", RISK_CRYPTO)
-            await asyncio.sleep(0.5)
-        except Exception as e:
-            log.warning(f"crypto scan error {sym}: {e}")
-
-@tasks.loop(minutes=10)
-async def scan_stocks_loop():
-    if not WL_STOCKS or not market_open(): return
-    for t in WL_STOCKS:
-        try:
-            df = fetch_yf(t, interval="15m", period="5d")
-            if df is None or df.empty: continue
-            sig = scan_series(t, df.o, df.h, df.l, df.c, df.v, RISK_STOCKS)
-            if sig: await post_setup(CHAN_STOCKS, "Stock Setup", sig, "15m", RISK_STOCKS)
-            await asyncio.sleep(0.5)
-        except Exception as e:
-            log.warning(f"stock scan error {t}: {e}")
-
-@tasks.loop(minutes=10)
-async def scan_forex_loop():
-    # yfinance symbols for FX: "USDJPY=X", "XAUUSD=X", etc.
-    mapping = {
-        "XAUUSD":"XAUUSD=X",
-        "USDJPY":"USDJPY=X",
-        "EURUSD":"EURUSD=X",
-        "GBPUSD":"GBPUSD=X",
-        "SPX500USD":"^GSPC"  # proxy for S&P 500 cash index
-    }
-    for t in WL_FOREX:
-        yft = mapping.get(t, f"{t}=X")
-        try:
-            df = fetch_yf(yft, interval="15m", period="5d")
-            if df is None or df.empty: continue
-            sig = scan_series(t, df.o, df.h, df.l, df.c, df.v, RISK_FOREX)
-            if sig: await post_setup(CHAN_FOREX, "Forex Setup", sig, "15m", RISK_FOREX)
-            await asyncio.sleep(0.5)
-        except Exception as e:
-            log.warning(f"forex scan error {t}: {e}")
-
-# ---------- BOT EVENTS & COMMANDS ----------
 @bot.event
 async def on_ready():
-    log.info(f"✅ Logged in as {bot.user} (id: {bot.user.id})")
-    await bot.change_presence(activity=discord.Game(name="JCF HQ scanners"))
-    if ANNOUNCE_CHANNEL_ID:
-        ch = bot.get_channel(ANNOUNCE_CHANNEL_ID)
-        if ch:
-            await ch.send("✅ **JCFWatchBot ONLINE** — AI scanners armed. (15-min cycle)")
-
-    if not scan_crypto_loop.is_running(): scan_crypto_loop.start()
-    if not scan_stocks_loop.is_running(): scan_stocks_loop.start()
-    if not scan_forex_loop.is_running():  scan_forex_loop.start()
+    ch = pick_channel(ANNOUNCE_ID, CRYPTO_CH_ID, STOCKS_CH_ID, FOREX_CH_ID)
+    if ch:
+        await ch.send("✅ **JCFWatchBot ONLINE** — AI scanner loaded. Use `!scanonce` to test.")
+    print(f"Logged in as {bot.user} ({bot.user.id})")
 
 @bot.command()
-async def status(ctx):
-    msg = (
-        f"Crypto: {'ON' if scan_crypto_loop.is_running() else 'OFF'} | "
-        f"Stocks: {'ON' if scan_stocks_loop.is_running() else 'OFF'} | "
-        f"Forex: {'ON' if scan_forex_loop.is_running() else 'OFF'}\n"
-        f"WL Crypto: {', '.join(WL_CRYPTO) or '-'}\n"
-        f"WL Stocks: {', '.join(WL_STOCKS) or '-'}\n"
-        f"WL Forex: {', '.join(WL_FOREX) or '-'}"
-    )
-    await ctx.reply(msg)
+async def ping(ctx):
+    await ctx.reply("Pong 🏓")
 
 @bot.command()
-async def scan(ctx, asset_class: str = "all"):
-    asset_class = asset_class.lower()
-    await ctx.reply(f"Manual scan kicked off for **{asset_class}**…")
-    if asset_class in ("all","crypto"): await run_manual_crypto()
-    if asset_class in ("all","stocks"): await run_manual_stocks()
-    if asset_class in ("all","forex"):  await run_manual_forex()
-    await ctx.reply("Done ✅")
+async def scanonce(ctx):
+    """Run one quick pass and post sample setups."""
+    await ctx.reply("🔎 Running a quick scan…")
+    await run_scan_once()
 
-async def run_manual_crypto():
-    for sym in WL_CRYPTO:
-        try:
-            df = await fetch_crypto(sym, "15m")
-            sig = scan_series(sym, df.o, df.h, df.l, df.c, df.v, RISK_CRYPTO)
-            if sig: await post_setup(CHAN_CRYPTO, "Crypto Setup (manual)", sig, "15m", RISK_CRYPTO)
-            await asyncio.sleep(0.2)
-        except Exception as e:
-            log.warning(f"manual crypto error {sym}: {e}")
+async def run_scan_once():
+    # Simple rules:
+    # - Stocks/Forex: 20/50 SMA cross + RSI(14) extremes
+    # - Crypto: 20/50 SMA cross + strong 24h move
+    async def scan(tickers, kind):
+        ideas = []
+        period = "60d"
+        interval = "1h" if kind != "forex" else "1h"
+        for t in tickers[:12]:  # cap for speed
+            try:
+                df = yf.download(t, period=period, interval=interval, progress=False, auto_adjust=True)
+                if df is None or df.empty or len(df) < 60:
+                    continue
+                df["sma20"] = df["Close"].rolling(20).mean()
+                df["sma50"] = df["Close"].rolling(50).mean()
+                df["rsi"] = rsi(df["Close"], 14)
 
-async def run_manual_stocks():
-    if not market_open(): return
-    for t in WL_STOCKS:
-        try:
-            df = fetch_yf(t, "15m", "5d")
-            if df is None or df.empty: continue
-            sig = scan_series(t, df.o, df.h, df.c, df.c, df.v, RISK_STOCKS)
-            if sig: await post_setup(CHAN_STOCKS, "Stock Setup (manual)", sig, "15m", RISK_STOCKS)
-            await asyncio.sleep(0.2)
-        except Exception as e:
-            log.warning(f"manual stock error {t}: {e}")
+                last = df.iloc[-1]
+                prev = df.iloc[-2]
 
-async def run_manual_forex():
-    mapping = {
-        "XAUUSD":"XAUUSD=X",
-        "USDJPY":"USDJPY=X",
-        "EURUSD":"EURUSD=X",
-        "GBPUSD":"GBPUSD=X",
-        "SPX500USD":"^GSPC"
-    }
-    for t in WL_FOREX:
-        yft = mapping.get(t, f"{t}=X")
-        try:
-            df = fetch_yf(yft, "15m", "5d")
-            if df is None or df.empty: continue
-            sig = scan_series(t, df.o, df.h, df.l, df.c, df.v, RISK_FOREX)
-            if sig: await post_setup(CHAN_FOREX, "Forex Setup (manual)", sig, "15m", RISK_FOREX)
-            await asyncio.sleep(0.2)
-        except Exception as e:
-            log.warning(f"manual forex error {t}: {e}")
+                cross_up = prev["sma20"] <= prev["sma50"] and last["sma20"] > last["sma50"]
+                cross_dn = prev["sma20"] >= prev["sma50"] and last["sma20"] < last["sma50"]
+
+                rsi_low = last["rsi"] <= 35
+                rsi_high = last["rsi"] >= 65
+
+                move_24h = (last["Close"] / df["Close"].iloc[-24] - 1.0) * 100 if len(df) >= 24 else 0.0
+
+                if cross_up or (rsi_low and move_24h > 1.5 and kind == "crypto"):
+                    ideas.append(("LONG", t, float(last["Close"]), float(last["sma20"]), float(last["sma50"]), float(last["rsi"]), move_24h))
+                elif cross_dn or (rsi_high and move_24h < -1.5 and kind == "crypto"):
+                    ideas.append(("SHORT", t, float(last["Close"]), float(last["sma20"]), float(last["sma50"]), float(last["rsi"]), move_24h))
+            except Exception as e:
+                print(f"scan error {t}: {e}")
+        return ideas
+
+    # run scans
+    stock_ideas = await scan(stocks_list, "stocks")
+    crypto_ideas = await scan(crypto_list, "crypto")
+    forex_ideas  = await scan(forex_list,  "forex")
+
+    # post results
+    await post_setups(stock_ideas, STOCKS_CH_ID, "📈 **AI Stock Setups**")
+    await post_setups(crypto_ideas, CRYPTO_CH_ID, "🎯 **AI Crypto Setups**")
+    await post_setups(forex_ideas,  FOREX_CH_ID,  "💱 **AI Forex Setups**")
+
+async def post_setups(ideas, channel_id, title):
+    ch = pick_channel(channel_id, ANNOUNCE_ID)
+    if not ch:
+        print(f"No channel available for {title}")
+        return
+    if not ideas:
+        await ch.send(f"{title}\n_No strong signals right now. I’ll keep watching._")
+        return
+
+    lines = [title]
+    for side, sym, price, sma20, sma50, rsi_val, m24 in ideas[:6]:
+        lines.append(
+            f"• **{sym}** → **{side}**  | Px: `{price:.4g}`  | SMA20/50: `{sma20:.4g}/{sma50:.4g}`  | RSI14: `{rsi_val:.1f}`  | 24h: `{m24:.1f}%`"
+        )
+    await ch.send("\n".join(lines))
+
+# --- helpers ---
+def rsi(series: pd.Series, length: int = 14) -> pd.Series:
+    delta = series.diff()
+    gain = delta.clip(lower=0)
+    loss = -delta.clip(upper=0)
+    avg_gain = gain.rolling(length).mean()
+    avg_loss = loss.rolling(length).mean()
+    rs = avg_gain / (avg_loss.replace(0, 1e-9))
+    return 100 - (100 / (1 + rs))
+
+# Optional: background loop (off by default). Turn on by setting AI_SCAN_LOOP=1.
+@tasks.loop(minutes=15)
+async def background_scan():
+    await run_scan_once()
+
+@bot.event
+async def on_connect():
+    if os.getenv("AI_SCAN_LOOP", "0") == "1" and not background_scan.is_running():
+        background_scan.start()
 
 bot.run(TOKEN)
