@@ -1,433 +1,496 @@
-# ---------------------------
-# JCF WatchBot - full drop-in
-# ---------------------------
-
-# Force "no audio" BEFORE importing discord to avoid audioop on Py 3.11/3.13
 import os
+import asyncio
+import math
+from datetime import datetime, timezone
+import json
+import re
+
+# Force Discord.py to not load voice / audio stack
 os.environ["DISCORD_NO_AUDIO"] = "1"
 
-import asyncio
-import datetime as dt
-import json
-import math
-import random
-import traceback
-
+import aiohttp
 import discord
 from discord.ext import commands, tasks
 
-# Data stack
-import requests
-import numpy as np
-import pandas as pd
-import yfinance as yf
-
-# ====== ENV / CONFIG ======
+# ---------------------------
+# Config & defaults
+# ---------------------------
 TOKEN = os.getenv("DISCORD_TOKEN", "")
+AV_KEY = os.getenv("ALPHAVANTAGE_API_KEY", "")
 
-# Channel IDs (ints, optional)
-def _to_int(s):
-    try:
-        return int(str(s))
-    except Exception:
-        return None
+CHANNEL_CRYPTO_ID = int(os.getenv("CHANNEL_CRYPTO_ID", "0") or 0)
+CHANNEL_STOCKS_ID = int(os.getenv("CHANNEL_STOCKS_ID", "0") or 0)
+CHANNEL_FOREX_ID  = int(os.getenv("CHANNEL_FOREX_ID",  "0") or 0)
 
-CHANNEL_CRYPTO_ID = _to_int(os.getenv("CHANNEL_CRYPTO_ID"))
-CHANNEL_STOCKS_ID = _to_int(os.getenv("CHANNEL_STOCKS_ID"))
-CHANNEL_FOREX_ID  = _to_int(os.getenv("CHANNEL_FOREX_ID"))
+WATCH_CRYPTO = [s.strip().upper() for s in os.getenv("AI_WATCH_CRYPTO", "ETHUSD,XRPUSD,SOLUSD").split(",") if s.strip()]
+WATCH_STOCKS = [s.strip().upper() for s in os.getenv("AI_WATCH_STOCKS", "SOFI,AFRM").split(",") if s.strip()]
+WATCH_FOREX  = [s.strip().upper() for s in os.getenv("AI_WATCH_FOREX",  "XAUUSD,EURUSD,USDJPY").split(",") if s.strip()]
 
-# Watchlists (CSV)
-def _csv_list(name, default):
-    raw = os.getenv(name, default)
-    return [x.strip() for x in raw.split(",") if x.strip()]
+SCAN_LOOPS = os.getenv("AI_SCAN_LOOP", "0") == "1"
 
-WATCHLIST_CRYPTO = _csv_list("WATCHLIST_CRYPTO", "BTC-USD,ETH-USD,SOL-USD,MSTR")
-WATCHLIST_STOCKS = _csv_list("WATCHLIST_STOCKS", "AAPL,NVDA,TSLA,SPY,AMD,PLTR,SOFI,MSTR")
-WATCHLIST_FOREX  = _csv_list("WATCHLIST_FOREX", "EURUSD,GBPUSD,USDJPY,XAUUSD")
+CRYPTO_LOOP_MIN = int(os.getenv("CRYPTO_LOOP_MIN", "25"))
+STOCKS_LOOP_MIN = int(os.getenv("STOCKS_LOOP_MIN", "45"))
+FOREX_LOOP_MIN  = int(os.getenv("FOREX_LOOP_MIN",  "45"))
 
-# Risk knobs
-RISK_CRYPTO_PCT = float(os.getenv("RISK_CRYPTO_PCT", "2"))      # You said 2% for crypto
-RISK_STOCKS_PCT = float(os.getenv("RISK_STOCKS_PCT", "1"))      # default 1% stocks
-RISK_FOREX_PCT  = float(os.getenv("RISK_FOREX_PCT", "1"))       # default 1% fx
-
-# Signal tuning
-CONF_THRESHOLD   = float(os.getenv("SIGNAL_CONF_THRESHOLD", "0.75"))  # 0..1
-EARLY_VS_CONFIRMED = os.getenv("SIGNAL_TIMING", "hybrid").lower()     # early|confirmed|hybrid
-INTRADAY_FOCUS  = os.getenv("INTRADAY_FOCUS", "1") == "1"             # bias faster signals
-
-# Loop controls
-AI_SCAN_LOOP    = os.getenv("AI_SCAN_LOOP", "1") == "1"
-LOOP_MIN_CRYPTO = int(os.getenv("LOOP_MIN_CRYPTO", "25"))
-LOOP_MIN_STOCKS = int(os.getenv("LOOP_MIN_STOCKS", "45"))
-LOOP_MIN_FOREX  = int(os.getenv("LOOP_MIN_FOREX", "45"))
-
-# TP / RR preferences (you picked 2 TPs, text only; early vs confirmed included)
-TP_MODE     = os.getenv("TPMODE", "two")  # "two" or "single"
-TP1_RR      = float(os.getenv("TP1_RR", "1.0"))  # risk:reward tp1
-TP2_RR      = float(os.getenv("TP2_RR", "2.0"))  # risk:reward tp2
-
-# Alpha Vantage fallback
-ALPHAVANTAGE_KEY   = os.getenv("ALPHAVANTAGE_KEY", "")
-USE_ALPHA_FALLBACK = os.getenv("USE_ALPHA_FALLBACK", "1") == "1"
-
-# ====== DISCORD SETUP ======
+# Discord intents
 intents = discord.Intents.default()
 intents.message_content = True
 
-# Disable the default !help (we had a registration conflict earlier)
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="!", intents=intents)
+bot.remove_command("help")  # avoid collision with default help
 
-# ====== DATA HELPERS ======
-ALIAS_YAHOO = {
-    # Indices/FX common aliases -> Yahoo symbols
-    "SPX": "^GSPC",
-    "XAUUSD": "XAUUSD=X",
-    "EURUSD": "EURUSD=X",
-    "GBPUSD": "GBPUSD=X",
-    "USDJPY": "USDJPY=X",
-}
+# ---------------------------
+# Helpers: symbol parsing
+# ---------------------------
 
-def get_ohlc(symbol: str, period_days: int = 180, interval="1d"):
+def split_fx_pair(pair: str):
+    """EURUSD -> EUR, USD (also handles XAUUSD, etc.)"""
+    pair = pair.upper().replace("=", "")
+    if len(pair) == 6:
+        return pair[:3], pair[3:]
+    # fallback: try regex (e.g., 'USDJPY')
+    m = re.fullmatch(r"([A-Z]{3})([A-Z]{3})", pair)
+    if m:
+        return m.group(1), m.group(2)
+    # As last resort, assume XXXUSD
+    return pair[:3], "USD"
+
+def split_crypto_pair(symbol: str):
+    """ETHUSD -> (ETH, USD)"""
+    symbol = symbol.upper().replace("-", "")
+    if symbol.endswith("USDT"):
+        return symbol[:-4], "USDT"
+    if symbol.endswith("USD"):
+        return symbol[:-3], "USD"
+    # default USD
+    return symbol, "USD"
+
+# ---------------------------
+# Alpha Vantage fetchers (rate-limit friendly)
+# ---------------------------
+
+class AlphaClient:
+    BASE = "https://www.alphavantage.co/query"
+
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+
+    async def _get(self, session: aiohttp.ClientSession, params: dict):
+        params["apikey"] = self.api_key
+        for attempt in range(3):
+            try:
+                async with session.get(self.BASE, params=params, timeout=30) as r:
+                    text = await r.text()
+                    # Handle empty or non-JSON
+                    if not text or text.strip() == "":
+                        await asyncio.sleep(2 * (attempt + 1))
+                        continue
+                    data = json.loads(text)
+                    # AV throttle message
+                    if "Note" in data or "Information" in data:
+                        await asyncio.sleep(12)  # back off
+                        continue
+                    return data
+            except Exception:
+                await asyncio.sleep(2 * (attempt + 1))
+        return None
+
+    async def daily_stock(self, session, symbol: str):
+        # TIME_SERIES_DAILY_ADJUSTED gives us OHLC + adjusted close
+        params = {"function": "TIME_SERIES_DAILY_ADJUSTED", "symbol": symbol}
+        return await self._get(session, params)
+
+    async def fx_daily(self, session, from_sym: str, to_sym: str):
+        params = {"function": "FX_DAILY", "from_symbol": from_sym, "to_symbol": to_sym, "outputsize": "compact"}
+        return await self._get(session, params)
+
+    async def fx_rate(self, session, from_sym: str, to_sym: str):
+        params = {"function": "CURRENCY_EXCHANGE_RATE", "from_currency": from_sym, "to_currency": to_sym}
+        return await self._get(session, params)
+
+    async def crypto_daily(self, session, base: str, quote: str):
+        # DIGITAL_CURRENCY_DAILY requires symbol (e.g., ETH) and market (e.g., USD/USDT)
+        params = {"function": "DIGITAL_CURRENCY_DAILY", "symbol": base, "market": quote}
+        return await self._get(session, params)
+
+av = AlphaClient(AV_KEY) if AV_KEY else None
+
+# ---------------------------
+# Light TA utilities (SMA, RSI)
+# ---------------------------
+
+def sma(values, n):
+    if len(values) < n: return None
+    return sum(values[-n:]) / n
+
+def rsi(values, n=14):
+    # Classic Wilder's RSI
+    if len(values) <= n: return None
+    gains, losses = [], []
+    for i in range(1, len(values)):
+        ch = values[i] - values[i-1]
+        gains.append(max(ch, 0.0))
+        losses.append(abs(min(ch, 0.0)))
+    avg_gain = sum(gains[:n]) / n
+    avg_loss = sum(losses[:n]) / n
+    if avg_loss == 0: return 100.0
+    rs = avg_gain / avg_loss
+    return 100.0 - (100.0 / (1 + rs))
+
+def pct(a, b):
+    if b == 0: return 0.0
+    return (a - b) / b * 100.0
+
+# ---------------------------
+# Parsing AV payloads to close series
+# ---------------------------
+
+def parse_daily_closes(data: dict, kind: str, quote: str = "USD"):
     """
-    Returns list of dict OHLC candles (newest last):
-    [{time, open, high, low, close}, ...]
-    Tries Yahoo via yfinance, then Alpha Vantage as fallback (if enabled).
+    kind: 'stock', 'fx', 'crypto'
+    returns (dates_sorted, closes_sorted_recent_first_list)
     """
-    # 1) Yahoo try
-    try:
-        end = dt.datetime.utcnow()
-        start = end - dt.timedelta(days=period_days + 10)
-        ysym = ALIAS_YAHOO.get(symbol.upper(), symbol)
-        df = yf.download(
-            ysym,
-            start=start.date().isoformat(),
-            end=end.date().isoformat(),
-            interval=interval,
-            progress=False
-        )
-        if df is not None and not df.empty and {"Open","High","Low","Close"}.issubset(df.columns):
-            out = []
-            for ts, row in df.iterrows():
-                # Some intervals return timezone-aware index
-                if hasattr(ts, "to_pydatetime"):
-                    ts = ts.to_pydatetime()
-                out.append({
-                    "time": ts,
-                    "open": float(row["Open"]),
-                    "high": float(row["High"]),
-                    "low":  float(row["Low"]),
-                    "close":float(row["Close"]),
-                })
-            if out:
-                return out
-    except Exception as e:
-        print(f"[yf] {symbol} error: {e}")
+    if not data or not isinstance(data, dict):
+        return [], []
 
-    # 2) Alpha fallback
-    if not (USE_ALPHA_FALLBACK and ALPHAVANTAGE_KEY):
-        return []
+    if kind == "stock":
+        key = "Time Series (Daily)"
+        if key not in data: return [], []
+        series = data[key]
+        items = sorted(series.items())  # ascending by date
+        dates = [datetime.fromisoformat(d) for d, _ in items]
+        closes = [float(v.get("4. close") or v.get("5. adjusted close") or v.get("4. close", 0.0)) for _, v in items]
+        return dates, closes
 
-    try:
-        if symbol.upper() in ("EURUSD","GBPUSD","USDJPY","XAUUSD"):
-            from_sym, to_sym = symbol[:3].upper(), symbol[3:].upper()
-            if symbol.upper() == "XAUUSD":
-                # Alpha uses "XAU" as from_symbol with FX_DAILY too
-                from_sym, to_sym = "XAU", "USD"
-            url = ("https://www.alphavantage.co/query"
-                   f"?function=FX_DAILY&from_symbol={from_sym}&to_symbol={to_sym}"
-                   f"&apikey={ALPHAVANTAGE_KEY}&outputsize=full")
-            r = requests.get(url, timeout=15)
-            data = r.json().get("Time Series FX (Daily)", {})
-        else:
-            sym = "SPY" if symbol.upper() in ("^GSPC", "SPX") else symbol.upper()
-            url = ("https://www.alphavantage.co/query"
-                   f"?function=TIME_SERIES_DAILY_ADJUSTED&symbol={sym}"
-                   f"&apikey={ALPHAVANTAGE_KEY}&outputsize=full")
-            r = requests.get(url, timeout=15)
-            data = r.json().get("Time Series (Daily)", {})
+    if kind == "fx":
+        key = "Time Series FX (Daily)"
+        if key not in data: return [], []
+        series = data[key]
+        items = sorted(series.items())
+        dates = [datetime.fromisoformat(d) for d, _ in items]
+        closes = [float(v.get("4. close", 0.0)) for _, v in items]
+        return dates, closes
 
-        rows = []
-        for dstr, row in sorted(data.items()):
-            rows.append({
-                "time": dt.datetime.strptime(dstr, "%Y-%m-%d"),
-                "open": float(row.get("1. open") or row.get("1. Open", 0.0)),
-                "high": float(row.get("2. high") or row.get("2. High", 0.0)),
-                "low":  float(row.get("3. low")  or row.get("3. Low",  0.0)),
-                "close":float(row.get("4. close") or row.get("4. Close", 0.0)),
-            })
-        return rows[-period_days:]
-    except Exception as e:
-        print(f"[alpha] {symbol} error: {e}")
-        return []
+    if kind == "crypto":
+        # DIGITAL_CURRENCY_DAILY uses keys like '4a. close (USD)' and '4b. close (USD)'
+        # We'll try '4a. close (QUOTE)'
+        # Fallback to any close if needed.
+        key = "Time Series (Digital Currency Daily)"
+        if key not in data: return [], []
+        series = data[key]
+        items = sorted(series.items())
+        dates = [datetime.fromisoformat(d) for d, _ in items]
+        close_key = f"4a. close ({quote})"
+        closes = []
+        for _, v in items:
+            if close_key in v:
+                closes.append(float(v[close_key]))
+            else:
+                # try to find any close key
+                ck = next((vv for kk, vv in v.items() if kk.startswith("4a. close")), None)
+                closes.append(float(ck) if ck else 0.0)
+        return dates, closes
 
-def sma(series, length):
-    if len(series) < length:
-        return [np.nan]*len(series)
-    s = pd.Series(series, dtype=float)
-    return s.rolling(length).mean().tolist()
+    return [], []
 
-def rsi(series, length=14):
-    # Simple RSI implementation on closes
-    if len(series) < length + 1:
-        return [np.nan]*len(series)
-    s = pd.Series(series, dtype=float)
-    delta = s.diff()
-    gain = delta.clip(lower=0.0)
-    loss = (-delta).clip(lower=0.0)
-    avg_gain = gain.rolling(length).mean()
-    avg_loss = loss.rolling(length).mean()
-    rs = avg_gain / (avg_loss.replace(0, np.nan))
-    rsi = 100 - (100 / (1 + rs))
-    return rsi.fillna(50).tolist()
+# ---------------------------
+# Signal logic (simple + clear)
+# ---------------------------
 
-def assess_signal(symbol, candles):
+def build_signal(symbol: str, closes: list):
     """
-    Very light 'AI-ish' heuristic:
-      - Trend continuation + breakout-retest vibe
-      - Uses SMA(20/50) slope + last close vs recent range + RSI
-    Returns (is_signal, direction, confidence, context_dict)
+    Returns dict with basic signal info or None if not actionable.
+    Rules:
+      - Need at least 50 candles
+      - Compute SMA20, SMA50, RSI14
+      - Actionable if:
+          * Bullish: SMA20 > SMA50 and RSI between 45-70
+          * Bearish: SMA20 < SMA50 and RSI between 30-55
+      - Confidence A/B/C based on slope & distance of SMAs
+      - Early vs Confirmed: if cross happened in last 3 bars -> Early else Confirmed
     """
-    if len(candles) < 60:
-        return (False, None, 0.0, {})
-
-    closes = [c["close"] for c in candles]
-    highs  = [c["high"]  for c in candles]
-    lows   = [c["low"]   for c in candles]
-    times  = [c["time"]  for c in candles]
+    if len(closes) < 50:
+        return None
 
     sma20 = sma(closes, 20)
     sma50 = sma(closes, 50)
     rsi14 = rsi(closes, 14)
 
-    last = -1
-    c = closes[last]
-    s20 = sma20[last]
-    s50 = sma50[last]
-    r  = rsi14[last]
+    if sma20 is None or sma50 is None or rsi14 is None:
+        return None
 
-    # Slopes
-    def slope(arr, k=5):
-        if len(arr) < k+1 or any(np.isnan(arr[-i]) for i in range(1,k+1)):
-            return 0.0
-        y1, y2 = arr[-k], arr[-1]
-        return (y2 - y1) / max(1e-9, k)
-
-    slope20 = slope(sma20, 5)
-    slope50 = slope(sma50, 5)
-
-    # Range breakout check
-    recent_high = max(highs[-20:])
-    recent_low  = min(lows[-20:])
-
-    bull_bias = slope20 > 0 and slope50 > 0 and s20 >= s50
-    bear_bias = slope20 < 0 and slope50 < 0 and s20 <= s50
-
-    long_break  = c >= recent_high * 0.999
-    short_break = c <= recent_low  * 1.001
-
-    direction = None
-    score = 0.0
-    notes = []
-
-    if bull_bias and long_break:
-        direction = "LONG"
-        score += 0.55
-        notes.append("Uptrend + breakout")
-    if bear_bias and short_break:
-        direction = "SHORT"
-        score += 0.55
-        notes.append("Downtrend + breakdown")
-
-    # RSI confirmation
-    if direction == "LONG" and 50 <= r <= 70:
-        score += 0.2
-        notes.append("RSI supportive")
-    if direction == "SHORT" and 30 <= r <= 50:
-        score += 0.2
-        notes.append("RSI supportive")
-
-    # Early vs confirmed: adjust threshold or score
-    if EARLY_VS_CONFIRMED == "early":
-        score += 0.1
-    elif EARLY_VS_CONFIRMED == "confirmed":
-        score -= 0.05
-
-    # Intraday bias: slightly boost frequent signals
-    if INTRADAY_FOCUS:
-        score += 0.05
-
-    confidence = max(0.0, min(0.99, score))
-    return (confidence >= CONF_THRESHOLD and direction is not None, direction, confidence, {
-        "rsi": round(r, 1),
-        "sma20": s20,
-        "sma50": s50,
-        "recent_high": recent_high,
-        "recent_low": recent_low,
-        "last_close": c,
-        "notes": notes
-    })
-
-def calc_tp_sl(entry, direction, risk_pct=1.0, rr1=1.0, rr2=2.0, atr_like=None):
-    """
-    Simple TP/SL using synthetic 'ATR-like' measure (recent range).
-    Returns dict with sl, tp1, tp2 (if two).
-    """
-    # Use last 14 bars range as poor-man ATR
-    vol = atr_like if atr_like and atr_like > 0 else None
-    if vol is None:
-        vol = 0.0
-    # Fallback: 1% of entry if no range info
-    if vol == 0.0:
-        vol = entry * 0.01
-
-    # Stop = 1x 'vol', TP multiples by RR
-    if direction == "LONG":
-        sl   = entry - vol
-        tp1  = entry + vol * rr1
-        tp2  = entry + vol * rr2 if TP_MODE == "two" else None
+    bias = "NEUTRAL"
+    if sma20 > sma50 and 45 <= rsi14 <= 70:
+        bias = "BULLISH"
+    elif sma20 < sma50 and 30 <= rsi14 <= 55:
+        bias = "BEARISH"
     else:
-        sl   = entry + vol
-        tp1  = entry - vol * rr1
-        tp2  = entry - vol * rr2 if TP_MODE == "two" else None
+        return None
 
-    return {"sl": sl, "tp1": tp1, "tp2": tp2}
+    # Cross check: did 20/50 cross recently?
+    recent_sma20 = sma(closes[:-1], 20)
+    recent_sma50 = sma(closes[:-1], 50)
+    crossed_recently = False
+    if recent_sma20 and recent_sma50:
+        # crude: if sign changed between (sma20 - sma50) from previous to now
+        prev_diff = (recent_sma20 - recent_sma50)
+        now_diff = (sma20 - sma50)
+        if (prev_diff <= 0 < now_diff) or (prev_diff >= 0 > now_diff):
+            crossed_recently = True
 
-async def post_signal(channel: discord.TextChannel, symbol: str, direction: str, conf: float, ctx: dict, risk_pct: float):
-    entry = ctx["last_close"]
-    rng   = (ctx["recent_high"] - ctx["recent_low"]) / 14.0  # crude ATR-like
-    tps   = calc_tp_sl(entry, direction, risk_pct=risk_pct, rr1=TP1_RR, rr2=TP2_RR, atr_like=rng)
+    timing = "Early" if crossed_recently else "Confirmed"
 
-    early_or_conf = {"early":"EARLY", "confirmed":"CONFIRMED"}.get(EARLY_VS_CONFIRMED, "HYBRID")
-    lines = [
-        f"**{symbol}** — {direction}  |  Confidence: **{int(conf*100)}%**  ({early_or_conf})",
-        f"Entry (mkt): **{entry:.2f}**",
-        f"Stop: **{tps['sl']:.2f}**",
-        f"TP1 (RR {TP1_RR:.1f}): **{tps['tp1']:.2f}**",
-    ]
-    if TP_MODE == "two" and tps["tp2"] is not None:
-        lines.append(f"TP2 (RR {TP2_RR:.1f}): **{tps['tp2']:.2f}**")
-    lines += [
-        "",
-        f"Risk per trade: **{risk_pct:.1f}%**",
-        f"RSI: **{ctx['rsi']}**",
-        f"Notes: _{', '.join(ctx['notes']) or '—'}_"
-    ]
-    await channel.send("\n".join(lines))
+    # Confidence
+    dist = abs((sma20 - sma50) / sma50) * 100.0 if sma50 else 0.0
+    if dist >= 1.0:
+        conf = "A"
+    elif dist >= 0.4:
+        conf = "B"
+    else:
+        conf = "C"
 
-async def scan_and_post(kind: str):
-    """
-    kind in {"crypto","stocks","forex"}
-    """
-    channel_id = {
-        "crypto": CHANNEL_CRYPTO_ID,
-        "stocks": CHANNEL_STOCKS_ID,
-        "forex":  CHANNEL_FOREX_ID
-    }.get(kind)
+    # Pct changes as context
+    last = closes[-1]
+    prev = closes[-2] if len(closes) > 1 else last
+    pct1d = pct(last, prev)
+    pct5d = pct(last, closes[-6]) if len(closes) > 6 else 0.0
 
-    if not channel_id:
-        print(f"⚠️ No CHANNEL_{kind.upper()}_ID set; skipping {kind} scan.")
-        return
+    return {
+        "symbol": symbol,
+        "bias": bias,
+        "timing": timing,
+        "confidence": conf,
+        "sma20": sma20,
+        "sma50": sma50,
+        "rsi14": rsi14,
+        "last": last,
+        "pct1d": pct1d,
+        "pct5d": pct5d,
+    }
 
-    channel = bot.get_channel(channel_id)
-    if channel is None:
-        print(f"⚠️ Channel id {channel_id} not found in cache for {kind}.")
-        return
+def format_signal_embed(kind: str, info: dict) -> discord.Embed:
+    title = f"{kind.upper()} setup · {info['symbol']}"
+    color = 0x2ecc71 if info["bias"] == "BULLISH" else 0xe74c3c
+    e = discord.Embed(title=title, color=color, timestamp=datetime.now(timezone.utc))
+    e.add_field(name="Bias", value=f"{info['bias']} ({info['timing']})", inline=True)
+    e.add_field(name="Confidence", value=info["confidence"], inline=True)
+    e.add_field(name="RSI(14)", value=f"{info['rsi14']:.1f}", inline=True)
+    e.add_field(name="Last", value=f"{info['last']:.4f}", inline=True)
+    e.add_field(name="SMA20", value=f"{info['sma20']:.4f}", inline=True)
+    e.add_field(name="SMA50", value=f"{info['sma50']:.4f}", inline=True)
+    e.add_field(name="Change", value=f"1d {info['pct1d']:.2f}% · 5d {info['pct5d']:.2f}%", inline=False)
+    e.set_footer(text="JCFWatchBot · AI Scan")
+    return e
 
-    watch = {
-        "crypto": WATCHLIST_CRYPTO,
-        "stocks": WATCHLIST_STOCKS,
-        "forex":  WATCHLIST_FOREX
-    }[kind]
+# ---------------------------
+# Scanners
+# ---------------------------
 
-    risk_pct = {
-        "crypto": RISK_CRYPTO_PCT,
-        "stocks": RISK_STOCKS_PCT,
-        "forex":  RISK_FOREX_PCT
-    }[kind]
-
-    hits = 0
-    for sym in watch:
-        candles = get_ohlc(sym, period_days=180, interval="1d")
-        if not candles:
-            print(f"[scan:{kind}] {sym} -> no data (yf/alpha both empty).")
+async def scan_crypto(session, channel: discord.TextChannel):
+    results = []
+    for sym in WATCH_CRYPTO:
+        base, quote = split_crypto_pair(sym)
+        data = await av.crypto_daily(session, base, quote) if av else None
+        dates, closes = parse_daily_closes(data, "crypto", quote=quote)
+        if not closes:
+            print(f"[scan:crypto] {sym} -> no data (AV empty).")
             continue
+        sig = build_signal(f"{base}{quote}", closes)
+        if sig: results.append(sig)
 
-        ok, direction, conf, ctx = assess_signal(sym, candles)
-        if ok:
-            await post_signal(channel, sym, direction, conf, ctx, risk_pct)
-            hits += 1
+    if not results:
+        await channel.send("🧪 **Crypto scan:** no strong signals.")
+        return
 
-    if hits == 0:
-        await channel.send("🟨 No strong signals on my latest pass.")
+    for sig in results:
+        await channel.send(embed=format_signal_embed("crypto", sig))
 
-# ====== LOOPS ======
-@tasks.loop(minutes=LOOP_MIN_CRYPTO)
-async def crypto_loop():
-    try:
-        await scan_and_post("crypto")
-    except Exception:
-        traceback.print_exc()
+async def scan_stocks(session, channel: discord.TextChannel):
+    results = []
+    for sym in WATCH_STOCKS:
+        data = await av.daily_stock(session, sym) if av else None
+        dates, closes = parse_daily_closes(data, "stock")
+        if not closes:
+            print(f"[scan:stocks] {sym} -> no data (AV empty).")
+            continue
+        sig = build_signal(sym, closes)
+        if sig: results.append(sig)
 
-@tasks.loop(minutes=LOOP_MIN_STOCKS)
-async def stocks_loop():
-    try:
-        await scan_and_post("stocks")
-    except Exception:
-        traceback.print_exc()
+    if not results:
+        await channel.send("🧪 **Stocks scan:** no strong signals.")
+        return
 
-@tasks.loop(minutes=LOOP_MIN_FOREX)
-async def forex_loop():
-    try:
-        await scan_and_post("forex")
-    except Exception:
-        traceback.print_exc()
+    for sig in results:
+        await channel.send(embed=format_signal_embed("stocks", sig))
 
-# ====== COMMANDS ======
-@bot.event
-async def on_ready():
-    print(f"✅ Logged in as {bot.user} ({bot.user.id})")
-    if AI_SCAN_LOOP:
-        print("🧠 AI scan loops started.")
-        if LOOP_MIN_CRYPTO > 0:
-            print(f"♻️ Crypto loop every {LOOP_MIN_CRYPTO}m enabled.")
-            crypto_loop.start()
-        if LOOP_MIN_STOCKS > 0:
-            print(f"♻️ Stocks loop every {LOOP_MIN_STOCKS}m enabled.")
-            stocks_loop.start()
-        if LOOP_MIN_FOREX > 0:
-            print(f"♻️ Forex loop every {LOOP_MIN_FOREX}m enabled.")
-            forex_loop.start()
+async def scan_forex(session, channel: discord.TextChannel):
+    results = []
+    for pair in WATCH_FOREX:
+        base, quote = split_fx_pair(pair)
+        data = await av.fx_daily(session, base, quote) if av else None
+        # If no history (e.g., metals sometimes), try just a spot rate
+        dates, closes = parse_daily_closes(data, "fx")
+        if not closes:
+            rate = await av.fx_rate(session, base, quote) if av else None
+            try:
+                r = float(rate["Realtime Currency Exchange Rate"]["5. Exchange Rate"])
+                closes = [r] * 60  # fake sequence for TA (flat)
+            except Exception:
+                print(f"[scan:forex] {pair} -> no data (AV empty).")
+                continue
+
+        sig = build_signal(f"{base}{quote}", closes)
+        if sig: results.append(sig)
+
+    if not results:
+        await channel.send("🧪 **Forex scan:** no strong signals.")
+        return
+
+    for sig in results:
+        await channel.send(embed=format_signal_embed("forex", sig))
+
+# ---------------------------
+# Commands
+# ---------------------------
+
+@bot.command()
+async def help(ctx):
+    await ctx.reply(
+        "**Commands**\n"
+        "`!ping` — check bot\n"
+        "`!price <ticker>` — quick price via Alpha Vantage (e.g., !price SOFI, !price ETHUSD, !price EURUSD)\n"
+        "`!scanonce [crypto|stocks|forex|all]` — run a one-off AI scan\n"
+    )
 
 @bot.command()
 async def ping(ctx):
     await ctx.reply("Pong 🏓")
 
-@bot.command(name="price")
-async def price_cmd(ctx, symbol: str):
-    """!price AAPL  -> shows latest close"""
-    candles = get_ohlc(symbol, period_days=5, interval="1d")
-    if not candles:
-        await ctx.reply(f"Couldn’t load data for `{symbol}`.")
+@bot.command()
+async def price(ctx, ticker: str):
+    """Get a quick latest price using AV."""
+    if not AV_KEY:
+        await ctx.reply("Alpha Vantage key not configured.")
         return
-    last = candles[-1]
-    await ctx.reply(f"**{symbol.upper()}** last close: **{last['close']:.4f}** (on {last['time'].date()})")
 
-@bot.command(name="scan")
-async def scan_cmd(ctx, which: str):
-    """!scan once <crypto|stocks|forex>"""
+    t = ticker.strip().upper()
+    async with aiohttp.ClientSession() as session:
+        price_value = None
+        label = t
+
+        # Guess asset class
+        if re.fullmatch(r"[A-Z]{3}[A-Z]{3}", t):  # FX like EURUSD, XAUUSD
+            f, to = split_fx_pair(t)
+            data = await av.fx_rate(session, f, to)
+            try:
+                price_value = float(data["Realtime Currency Exchange Rate"]["5. Exchange Rate"])
+            except Exception:
+                price_value = None
+
+        elif re.fullmatch(r"[A-Z]{2,5}", t):  # Likely stock
+            d = await av.daily_stock(session, t)
+            dates, closes = parse_daily_closes(d, "stock")
+            if closes: price_value = closes[-1]
+
+        else:  # try crypto (ETHUSD etc.)
+            base, quote = split_crypto_pair(t)
+            d = await av.crypto_daily(session, base, quote)
+            dates, closes = parse_daily_closes(d, "crypto", quote=quote)
+            if closes:
+                price_value = closes[-1]
+                label = f"{base}{quote}"
+
+        if price_value is None:
+            await ctx.reply(f"Couldn't fetch price for `{ticker}`.")
+        else:
+            await ctx.reply(f"`{label}` → **{price_value:.6f}**")
+
+@bot.command()
+async def scanonce(ctx, which: str = "all"):
+    """Run a one-off scan."""
     which = which.lower()
-    if which not in ("crypto","stocks","forex"):
-        await ctx.reply("Use `!scan <crypto|stocks|forex>`")
+    if not AV_KEY:
+        await ctx.reply("Alpha Vantage key not configured.")
         return
-    await ctx.reply(f"Scanning **{which}** watchlist…")
-    await scan_and_post(which)
 
-@bot.command(name="scanonce")
-async def scanonce_alias(ctx, which: str):
-    await scan_cmd(ctx, which)
+    async with aiohttp.ClientSession() as session:
+        if which in ("crypto", "all"):
+            ch = ctx.channel if CHANNEL_CRYPTO_ID == 0 else bot.get_channel(CHANNEL_CRYPTO_ID)
+            if ch:
+                await scan_crypto(session, ch)
+        if which in ("stocks", "equities", "all"):
+            ch = ctx.channel if CHANNEL_STOCKS_ID == 0 else bot.get_channel(CHANNEL_STOCKS_ID)
+            if ch:
+                await scan_stocks(session, ch)
+        if which in ("forex", "fx", "all"):
+            ch = ctx.channel if CHANNEL_FOREX_ID == 0 else bot.get_channel(CHANNEL_FOREX_ID)
+            if ch:
+                await scan_forex(session, ch)
 
-# ====== RUN ======
-if __name__ == "__main__":
-    if not TOKEN:
-        raise SystemExit("Missing DISCORD_TOKEN env var.")
-    bot.run(TOKEN)
+# ---------------------------
+# Background loops
+# ---------------------------
+
+@tasks.loop(minutes=CRYPTO_LOOP_MIN)
+async def crypto_loop():
+    if not SCAN_LOOPS or not AV_KEY or CHANNEL_CRYPTO_ID == 0:
+        return
+    ch = bot.get_channel(CHANNEL_CRYPTO_ID)
+    if not ch:
+        return
+    async with aiohttp.ClientSession() as session:
+        await scan_crypto(session, ch)
+
+@tasks.loop(minutes=STOCKS_LOOP_MIN)
+async def stocks_loop():
+    if not SCAN_LOOPS or not AV_KEY or CHANNEL_STOCKS_ID == 0:
+        return
+    ch = bot.get_channel(CHANNEL_STOCKS_ID)
+    if not ch:
+        return
+    async with aiohttp.ClientSession() as session:
+        await scan_stocks(session, ch)
+
+@tasks.loop(minutes=FOREX_LOOP_MIN)
+async def forex_loop():
+    if not SCAN_LOOPS or not AV_KEY or CHANNEL_FOREX_ID == 0:
+        return
+    ch = bot.get_channel(CHANNEL_FOREX_ID)
+    if not ch:
+        return
+    async with aiohttp.ClientSession() as session:
+        await scan_forex(session, ch)
+
+# ---------------------------
+# Events
+# ---------------------------
+
+@bot.event
+async def on_ready():
+    print(f"✅ Logged in as {bot.user} ({bot.user.id})")
+    await bot.change_presence(activity=discord.Game(name="JCFWatchBot · AI scans"))
+    # Start loops if enabled
+    if SCAN_LOOPS and AV_KEY:
+        crypto_loop.change_interval(minutes=CRYPTO_LOOP_MIN)
+        stocks_loop.change_interval(minutes=STOCKS_LOOP_MIN)
+        forex_loop.change_interval(minutes=FOREX_LOOP_MIN)
+        crypto_loop.start()
+        stocks_loop.start()
+        forex_loop.start()
+        print("🧠 AI scan loops started.")
+        if CHANNEL_CRYPTO_ID == 0:
+            print("⚠️ No CHANNEL_CRYPTO_ID set; crypto loop will skip.")
+        if CHANNEL_STOCKS_ID == 0:
+            print("⚠️ No CHANNEL_STOCKS_ID set; stocks loop will skip.")
+        if CHANNEL_FOREX_ID == 0:
+            print("⚠️ No CHANNEL_FOREX_ID set; forex loop will skip.")
+    else:
+        print("ℹ️ Loops disabled or AV key missing; use !scanonce to test.")
+
+# ---------------------------
+# Boot
+# ---------------------------
+
+if not TOKEN:
+    raise SystemExit("DISCORD_TOKEN is not set.")
+bot.run(TOKEN)
