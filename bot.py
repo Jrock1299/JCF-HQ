@@ -1,149 +1,112 @@
+# bot.py
+# JCFWatchBot — Alpha Vantage powered scanner
+# Python 3.11 / discord.py 2.4.x
+
 import os
+import re
 import asyncio
-import time
-import json
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple, Dict, List
 
-# --- keep Discord from trying to load voice/audio pieces on hosts without audioop ---
-os.environ["DISCORD_NO_AUDIO"] = "1"
-
+import aiohttp
 import discord
 from discord.ext import commands, tasks
-import aiohttp
 
-# ----------------------
-# Logging
-# ----------------------
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)8s] %(name)s: %(message)s")
-log = logging.getLogger("jcf-bot")
+# ---------- Logging ----------
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)7s] %(name)s: %(message)s')
+log = logging.getLogger("jcfwatch")
 
-# ----------------------
-# Environment / Config
-# ----------------------
-TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
+# ---------- ENV ----------
+DISCORD_TOKEN           = os.getenv("DISCORD_TOKEN", "").strip()
+ANNOUNCE_CHANNEL_ID     = int(os.getenv("ANNOUNCE_CHANNEL_ID", "0") or "0")
 
-# Channel IDs (strings or ints are fine)
-CHANNEL_CRYPTO_ID = os.getenv("CHANNEL_CRYPTO_ID", "").strip()
-CHANNEL_STOCKS_ID = os.getenv("CHANNEL_STOCKS_ID", "").strip()
-CHANNEL_FOREX_ID  = os.getenv("CHANNEL_FOREX_ID", "").strip()
+# Channel targets for auto posts (optional but recommended)
+CHANNEL_CRYPTO_ID       = int(os.getenv("CHANNEL_CRYPTO_ID", "0") or "0")
+CHANNEL_STOCKS_ID       = int(os.getenv("CHANNEL_STOCKS_ID", "0") or "0")
+CHANNEL_FOREX_ID        = int(os.getenv("CHANNEL_FOREX_ID", "0") or "0")
 
-# Alpha Vantage
-AV_KEY = os.getenv("ALPHAVANTAGE_API_KEY", "").strip()
+# Watchlists: comma-separated strings (case-insensitive; dashes/spaces are OK)
+AI_WATCH_CRYPTO_TICKERS = os.getenv("AI_WATCH_CRYPTO_TICKERS", "")
+AI_WATCH_STOCKS_TICKERS = os.getenv("AI_WATCH_STOCKS_TICKERS", "")
+AI_WATCH_FOREX_TICKERS  = os.getenv("AI_WATCH_FOREX_TICKERS", "")
 
-# Watchlists (CSV; spaces allowed)
-def _split_csv(s: str) -> List[str]:
-    if not s:
+# Alpha Vantage API key
+AV_API_KEY              = os.getenv("ALPHAVANTAGE_API_KEY", "").strip()
+
+# Enable background loops? "1" to enable
+AI_SCAN_LOOP            = os.getenv("AI_SCAN_LOOP", "0").strip() == "1"
+
+# ---------- Helpers ----------
+def clean_symbol(symbol: str) -> str:
+    """Uppercase, strip spaces, remove common separators."""
+    s = symbol.upper().strip()
+    s = s.replace("-", "").replace("_", "").replace("/", "")
+    return s
+
+def split_csv_symbols(raw: str) -> List[str]:
+    if not raw:
         return []
-    return [x.strip().upper() for x in s.replace(";", ",").split(",") if x.strip()]
+    out: List[str] = []
+    for part in raw.split(","):
+        p = clean_symbol(part)
+        if p:
+            out.append(p)
+    # Deduplicate while preserving order
+    seen = set()
+    deduped = []
+    for s in out:
+        if s not in seen:
+            seen.add(s)
+            deduped.append(s)
+    return deduped
 
-AI_WATCH_CRYPTO_TICKERS = _split_csv(os.getenv("AI_WATCH_CRYPTO_TICKERS", os.getenv("AI_WATCH_CRYPTO", "")))
-AI_WATCH_STOCKS_TICKERS = _split_csv(os.getenv("AI_WATCH_STOCKS_TICKERS", os.getenv("AI_WATCH_STOCKS", "")))
-AI_WATCH_FOREX_TICKERS  = _split_csv(os.getenv("AI_WATCH_FOREX_TICKERS",  os.getenv("AI_WATCH_FOREX", "")))
+WATCH_CRYPTO = split_csv_symbols(AI_WATCH_CRYPTO_TICKERS)  # e.g. ["XRPUSD","ETHUSD","SOLUSD"]
+WATCH_STOCKS = split_csv_symbols(AI_WATCH_STOCKS_TICKERS)  # e.g. ["SOFI","AFRM"]
+WATCH_FOREX  = split_csv_symbols(AI_WATCH_FOREX_TICKERS)   # e.g. ["USDJPY","EURUSD","XAUUSD"]
 
-# Loop toggle
-AI_SCAN_LOOP = os.getenv("AI_SCAN_LOOP", "0").strip() in ("1", "true", "TRUE", "yes", "YES")
+def looks_like_forex_pair(sym: str) -> bool:
+    # 6 letters (e.g., EURUSD, USDJPY, XAUUSD, XAGUSD, USDCAD)
+    return bool(re.fullmatch(r"[A-Z]{6}", sym))
 
-# Loop cadences (minutes)
-CRYPTO_LOOP_MIN = int(os.getenv("AI_CRYPTO_LOOP_MIN", "25"))
-STOCKS_LOOP_MIN = int(os.getenv("AI_STOCKS_LOOP_MIN", "45"))
-FOREX_LOOP_MIN  = int(os.getenv("AI_FOREX_LOOP_MIN",  "45"))
+def looks_like_crypto(sym: str) -> bool:
+    # Heuristic: ends with USD/USDT and is not in pure 6-letter (forex) if len != 6
+    return sym.endswith("USD") or sym.endswith("USDT")
 
-# ----------------------
-# Discord setup
-# ----------------------
-intents = discord.Intents.default()
-intents.message_content = True
-
-# If you ever add a custom help command, leave help_command=None
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
-
-# ----------------------
-# Small utils
-# ----------------------
-def clean_symbol(sym: str) -> str:
-    """
-    Normalize user-entered symbols:
-    - uppercase
-    - remove hyphens, slashes, spaces
-    """
-    return sym.upper().replace("-", "").replace("/", "").replace(" ", "")
-
-def is_forex_pair(sym: str) -> bool:
-    s = clean_symbol(sym)
-    return len(s) == 6 and s.isalpha()
-
-def forex_split(sym: str) -> Tuple[str, str]:
-    s = clean_symbol(sym)
-    return s[:3], s[3:]
-
-def is_crypto_sym(sym: str) -> bool:
-    # We'll treat these as crypto if they are in the configured crypto list
-    s = clean_symbol(sym)
-    return s in [clean_symbol(x) for x in AI_WATCH_CRYPTO_TICKERS]
-
-# ----------------------
-# Alpha Vantage helpers
-# ----------------------
+# ---------- Alpha Vantage Client ----------
 class AVClient:
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.lock = asyncio.Lock()
-        self.last_call_ts = 0.0
+    BASE = "https://www.alphavantage.co/query"
 
-    async def _ensure(self):
-        if self.session is None:
-            self.session = aiohttp.ClientSession()
+    def __init__(self, api_key: str, session: Optional[aiohttp.ClientSession] = None):
+        self.api_key = api_key
+        self.session = session or aiohttp.ClientSession()
 
     async def close(self):
-        if self.session:
+        if self.session and not self.session.closed:
             await self.session.close()
-            self.session = None
 
-    async def _rate_limit(self):
-        # Free AV keys are very limited (5 calls/min). Space requests a bit.
-        # Adjust if you have premium.
-        elapsed = time.time() - self.last_call_ts
-        if elapsed < 13:  # ~4-5 calls/min
-            await asyncio.sleep(13 - elapsed)
-
-    async def _get(self, params: Dict[str, str]) -> Dict:
-        if not self.api_key:
-            return {}
-        await self._ensure()
-        async with self.lock:
-            await self._rate_limit()
-            url = "https://www.alphavantage.co/query"
-            params = dict(params)
-            params["apikey"] = self.api_key
-            try:
-                async with self.session.get(url, params=params, timeout=30) as r:
-                    self.last_call_ts = time.time()
-                    txt = await r.text()
-                    try:
-                        data = json.loads(txt)
-                    except Exception:
-                        log.error("AV JSON parse failed: %s", txt[:200])
-                        return {}
+    async def _get(self, params: Dict) -> Dict:
+        params = {**params, "apikey": self.api_key}
+        try:
+            async with self.session.get(self.BASE, params=params, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+                resp.raise_for_status()
+                data = await resp.json(content_type=None)
+                # Alpha Vantage error messages
+                if isinstance(data, dict):
                     if "Note" in data:
-                        log.warning("AV throttle note: %s", data["Note"])
+                        log.warning("AV note (throttle/usage): %s", data["Note"])
                     if "Information" in data:
                         log.warning("AV info: %s", data["Information"])
-                    return data
-            except Exception as e:
-                log.error("AV GET error: %s", e)
-                return {}
+                return data
+        except Exception as e:
+            log.error("AV GET error: %s", e)
+            return {}
 
-        async def price_equity(self, symbol: str) -> Optional[Tuple[float, Optional[float]]]:
+    async def price_equity(self, symbol: str) -> Optional[Tuple[float, Optional[float]]]:
         """
-        Primary: GLOBAL_QUOTE
-        Fallback: TIME_SERIES_DAILY (latest close vs prior close)
+        Use GLOBAL_QUOTE for equities.
         Returns (price, change_percent)
         """
         sym = clean_symbol(symbol)
-
-        # 1) Try GLOBAL_QUOTE
         data = await self._get({"function": "GLOBAL_QUOTE", "symbol": sym})
         q = data.get("Global Quote", {})
         try:
@@ -152,280 +115,259 @@ class AVClient:
             chg_pct_f = float(chg_pct.replace("%", "")) if chg_pct and "%" in chg_pct else None
             return price, chg_pct_f
         except Exception:
-            pass  # fall through
-
-        # 2) Fallback to TIME_SERIES_DAILY
-        daily = await self._get({
-            "function": "TIME_SERIES_DAILY",
-            "symbol": sym,
-            "outputsize": "compact"
-        })
-        ts = daily.get("Time Series (Daily)", {})
-        if not ts or len(ts) < 2:
             return None
-        dates = sorted(ts.keys(), reverse=True)
-        d0, d1 = dates[0], dates[1]
+
+    async def price_fx(self, pair: str) -> Optional[float]:
+        """
+        6-letter pair like EURUSD, USDJPY, XAUUSD -> uses CURRENCY_EXCHANGE_RATE
+        """
+        p = clean_symbol(pair)
+        if not looks_like_forex_pair(p):
+            return None
+        from_cur = p[0:3]
+        to_cur   = p[3:6]
+        data = await self._get({"function": "CURRENCY_EXCHANGE_RATE", "from_currency": from_cur, "to_currency": to_cur})
+        q = data.get("Realtime Currency Exchange Rate", {})
         try:
-            p0 = float(ts[d0]["4. close"])
-            p1 = float(ts[d1]["4. close"])
-            chg_pct = ((p0 - p1) / p1) * 100 if p1 else None
-            return (p0, chg_pct)
-        except Exception:
-            return None
-            price = float(q.get("05. price"))
-            chg_pct = q.get("10. change percent")
-            chg_pct_f = float(chg_pct.replace("%", "")) if chg_pct and "%" in chg_pct else None
-            return price, chg_pct_f
+            rate = float(q.get("5. Exchange Rate"))
+            return rate
         except Exception:
             return None
 
-    async def price_forex(self, pair: str) -> Optional[Tuple[float, Optional[float]]]:
+    async def price_crypto(self, symbol: str) -> Optional[float]:
         """
-        Use CURRENCY_EXCHANGE_RATE for quick price.
-        For % change, fallback to FX_DAILY (yesterday close vs latest).
-        Returns (price, change_percent)
+        Crypto vs USD/USDT using CURRENCY_EXCHANGE_RATE (works for most majors).
+        Examples: XRPUSD, ETHUSD, SOLUSD
         """
-        base, quote = forex_split(pair)
-        data = await self._get({
-            "function": "CURRENCY_EXCHANGE_RATE",
-            "from_currency": base,
-            "to_currency": quote
-        })
-        r = data.get("Realtime Currency Exchange Rate", {})
+        s = clean_symbol(symbol)
+        if s.endswith("USDT"):
+            base, quote = s[:-4], "USDT"
+        elif s.endswith("USD"):
+            base, quote = s[:-3], "USD"
+        else:
+            # Try defaulting to USD if they passed plain base like "BTC"
+            base, quote = s, "USD"
+
+        data = await self._get({"function": "CURRENCY_EXCHANGE_RATE", "from_currency": base, "to_currency": quote})
+        q = data.get("Realtime Currency Exchange Rate", {})
         try:
-            price = float(r.get("5. Exchange Rate"))
+            rate = float(q.get("5. Exchange Rate"))
+            return rate
         except Exception:
             return None
 
-        # Try to get a simple pct change from FX_DAILY
-        daily = await self._get({
-            "function": "FX_DAILY",
-            "from_symbol": base,
-            "to_symbol": quote,
-            "outputsize": "compact"
-        })
-        ts = daily.get("Time Series FX (Daily)", {})
-        if not ts or len(ts) < 2:
-            return (price, None)
-        dates = sorted(ts.keys(), reverse=True)
-        latest = float(ts[dates[0]]["4. close"])
-        prev = float(ts[dates[1]]["4. close"])
-        chg_pct = ((latest - prev) / prev) * 100 if prev else None
-        return (price, chg_pct)
+# ---------- Discord Bot ----------
+intents = discord.Intents.default()
+intents.message_content = True
 
-    async def price_crypto(self, symbol: str) -> Optional[Tuple[float, Optional[float]]]:
-        """
-        DIGITAL_CURRENCY_DAILY with market=USD
-        Returns (latest_close_usd, change_percent_vs_prev_day)
-        """
-        sym = clean_symbol(symbol)
-        data = await self._get({
-            "function": "DIGITAL_CURRENCY_DAILY",
-            "symbol": sym,
-            "market": "USD"
-        })
-        ts = data.get("Time Series (Digital Currency Daily)", {})
-        if not ts or len(ts) < 2:
-            return None
-        dates = sorted(ts.keys(), reverse=True)
-        d0, d1 = dates[0], dates[1]
-        try:
-            p0 = float(ts[d0]["4a. close (USD)"])
-            p1 = float(ts[d1]["4a. close (USD)"])
-            chg_pct = ((p0 - p1) / p1) * 100 if p1 else None
-            return (p0, chg_pct)
-        except Exception:
-            return None
+# Disable default help to avoid CommandRegistrationError
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
+# Shared AV client
+av: Optional[AVClient] = None
 
-av = AVClient(AV_KEY)
-
-# ----------------------
-# Discord helpers
-# ----------------------
-async def get_channel(ch_id: str) -> Optional[discord.TextChannel]:
-    if not ch_id:
-        return None
-    try:
-        ch = bot.get_channel(int(ch_id))
-        if ch:
-            return ch  # cached
-        # fetch if not cached
-        return await bot.fetch_channel(int(ch_id))
-    except Exception as e:
-        log.error("Failed to fetch channel %s: %s", ch_id, e)
-        return None
-
-def fmt_price_line(symbol: str, price: Optional[float], chg_pct: Optional[float]) -> str:
-    if price is None:
-        return f"• **{symbol}** — _no data_"
-    if chg_pct is None:
-        return f"• **{symbol}** — **{price:.4f}**"
-    arrow = "🟢" if chg_pct >= 0 else "🔻"
-    return f"• **{symbol}** — **{price:.4f}**  {arrow} {chg_pct:+.2f}%"
-
-async def fetch_price_auto(sym: str) -> Tuple[str, Optional[float], Optional[float]]:
-    """
-    Decide which AV endpoint to use based on symbol & configured watchlists.
-    Returns (normalized_symbol, price, chg_pct)
-    """
-    s = clean_symbol(sym)
-
-    # If explicitly listed in crypto watchlist, treat as crypto
-    if s in [clean_symbol(x) for x in AI_WATCH_CRYPTO_TICKERS]:
-        data = await av.price_crypto(s)
-        return (s, None, None) if not data else (s, data[0], data[1])
-
-    # Forex if 6 letters and alpha
-    if is_forex_pair(s):
-        data = await av.price_forex(s)
-        return (s, None, None) if not data else (s, data[0], data[1])
-
-    # Otherwise assume equity
-    data = await av.price_equity(s)
-    return (s, None, None) if not data else (s, data[0], data[1])
-
-async def scan_group(title: str, symbols: List[str]) -> str:
-    """
-    Fetch a short multi-line summary for a group of tickers.
-    """
-    if not symbols:
-        return f"**{title}** — _no symbols configured_"
-
-    lines = [f"**{title}**"]
-    for sym in symbols:
-        s, p, c = await fetch_price_auto(sym)
-        lines.append(fmt_price_line(s, p, c))
-    return "\n".join(lines)
-
-# ----------------------
-# Commands
-# ----------------------
+# ---------- Startup / Shutdown ----------
 @bot.event
 async def on_ready():
-    log.info("✅ Logged in as %s (%s)", bot.user, bot.user.id)
-    if AI_SCAN_LOOP and AV_KEY:
-        log.info("🧠 AI scan loops started.")
-        if AI_WATCH_CRYPTO_TICKERS and CHANNEL_CRYPTO_ID:
-            crypto_loop.change_interval(minutes=CRYPTO_LOOP_MIN)
+    global av
+    if av is None:
+        av = AVClient(AV_API_KEY) if AV_API_KEY else None
+
+    me = bot.user
+    log.info("✅ Logged in as %s (%s)", me, me.id if me else "?")
+
+    # Announce (optional)
+    if ANNOUNCE_CHANNEL_ID:
+        ch = bot.get_channel(ANNOUNCE_CHANNEL_ID)
+        if ch:
+            try:
+                await ch.send("✅ **JCFWatchBot ONLINE** — Systems initialized. Monitoring markets...")
+            except Exception as e:
+                log.warning("Announce failed: %s", e)
+
+    # Start loops if enabled and key present
+    if AI_SCAN_LOOP and AV_API_KEY:
+        try:
             crypto_loop.start()
-            log.info("♻️ Crypto loop every %sm enabled.", CRYPTO_LOOP_MIN)
-        if AI_WATCH_STOCKS_TICKERS and CHANNEL_STOCKS_ID:
-            stocks_loop.change_interval(minutes=STOCKS_LOOP_MIN)
             stocks_loop.start()
-            log.info("♻️ Stocks loop every %sm enabled.", STOCKS_LOOP_MIN)
-        if AI_WATCH_FOREX_TICKERS and CHANNEL_FOREX_ID:
-            forex_loop.change_interval(minutes=FOREX_LOOP_MIN)
             forex_loop.start()
-            log.info("♻️ Forex loop every %sm enabled.", FOREX_LOOP_MIN)
+            log.info("🧠 AI scan loops started.")
+        except RuntimeError:
+            # already running
+            pass
     else:
-        log.info("ℹ️ Loops disabled or AV key missing; use !scanonce / !price to test.")
+        log.info("ℹ️ Loops disabled or AV key missing; use !scanonce/!scanall to test.")
+
+@bot.event
+async def on_close():
+    if av:
+        await av.close()
+
+# ---------- Commands ----------
+@bot.command(name="helpme")
+async def helpme(ctx: commands.Context):
+    """Show commands (custom help)."""
+    txt = (
+        "**Commands**\n"
+        "`!ping` — pong check\n"
+        "`!helpme` — this help\n"
+        "`!price <symbol>` — live price (use symbols like XRPUSD, ETHUSD, SOLUSD, SOFI, AFRM, EURUSD, USDJPY, XAUUSD)\n"
+        "`!scancrypto` / `!scanstocks` / `!scanforex` — scan current watchlists\n"
+        "`!scanall` — scan all watchlists\n"
+        "`!scanonce` — same as !scanall but compact output\n"
+    )
+    await ctx.reply(txt)
 
 @bot.command()
-async def ping(ctx):
+async def ping(ctx: commands.Context):
     await ctx.reply("Pong 🏓")
 
 @bot.command()
-async def help(ctx):
-    msg = (
-        "**Commands**\n"
-        "• `!ping` — test the bot\n"
-        "• `!price <symbol>` — get price (e.g., `!price sofi`, `!price xrp`, `!price eurusd`)\n"
-        "• `!scancrypto` — summarize your crypto watchlist\n"
-        "• `!scanstocks` — summarize your stocks watchlist\n"
-        "• `!scanforex` — summarize your forex watchlist\n"
-        "• `!scanall` — summarize all three groups\n"
-        "\n"
-        "_Tip: Symbols are case-insensitive. For crypto, use base coin only (e.g., `XRP`, `ETH`, `SOL`). For forex, use pairs like `EURUSD`, `USDJPY`, `XAUUSD`._"
-    )
-    await ctx.reply(msg)
+async def price(ctx: commands.Context, symbol: str):
+    """Fetch live price via Alpha Vantage."""
+    if not AV_API_KEY:
+        await ctx.reply("❌ Alpha Vantage key not configured.")
+        return
+
+    sym = clean_symbol(symbol)
+    out = None
+    kind = "equity"
+
+    if looks_like_forex_pair(sym):
+        rate = await av.price_fx(sym)  # type: ignore
+        if rate is not None:
+            out = f"**{sym}** — `{rate:,.6f}`"
+            kind = "forex"
+    elif looks_like_crypto(sym):
+        px = await av.price_crypto(sym)  # type: ignore
+        if px is not None:
+            out = f"**{sym}** — `${px:,.6f}`"
+            kind = "crypto"
+    else:
+        eq = await av.price_equity(sym)  # type: ignore
+        if eq is not None:
+            price, chg = eq
+            delta = f" ({chg:+.2f}%)" if chg is not None else ""
+            out = f"**{sym}** — `${price:,.2f}`{delta}"
+            kind = "equity"
+
+    if out:
+        await ctx.reply(f"📈 {out}  *({kind})*")
+    else:
+        await ctx.reply(f"⚠️ Could not fetch price for **{symbol}**.")
+
+# ---------- Scan helpers ----------
+async def scan_list(kind: str, symbols: List[str]) -> List[str]:
+    """
+    Returns a list of formatted lines for a scan section.
+    For now we report price (and % change for equities).
+    """
+    if not AV_API_KEY:
+        return [f"{kind} — Alpha Vantage key missing."]
+    if not symbols:
+        return [f"{kind} — *no symbols configured*"]
+
+    lines: List[str] = []
+    for s in symbols:
+        if kind == "Crypto Watch":
+            px = await av.price_crypto(s)  # type: ignore
+            if px is None:
+                lines.append(f"• **{s}** — n/a")
+            else:
+                lines.append(f"• **{s}** — `${px:,.6f}`")
+        elif kind == "Stocks Watch":
+            r = await av.price_equity(s)  # type: ignore
+            if r is None:
+                lines.append(f"• **{s}** — n/a")
+            else:
+                price, chg = r
+                delta = f" ({chg:+.2f}%)" if chg is not None else ""
+                lines.append(f"• **{s}** — `${price:,.2f}`{delta}")
+        elif kind == "Forex Watch":
+            px = await av.price_fx(s)  # type: ignore
+            if px is None:
+                lines.append(f"• **{s}** — n/a")
+            else:
+                lines.append(f"• **{s}** — `{px:,.6f}`")
+    return lines
+
+async def build_scan_embed(title: str = "Market Scan") -> discord.Embed:
+    e = discord.Embed(title=title, color=0x3AA3E3)
+    # Crypto
+    crypto_lines = await scan_list("Crypto Watch", WATCH_CRYPTO)
+    e.add_field(name="Crypto Watch", value="\n".join(crypto_lines) or "—", inline=False)
+    # Stocks
+    stock_lines = await scan_list("Stocks Watch", WATCH_STOCKS)
+    e.add_field(name="Stocks Watch", value="\n".join(stock_lines) or "—", inline=False)
+    # Forex
+    fx_lines = await scan_list("Forex Watch", WATCH_FOREX)
+    e.add_field(name="Forex Watch", value="\n".join(fx_lines) or "—", inline=False)
+    return e
+
+# ---------- Scan commands ----------
+@bot.command()
+async def scanall(ctx: commands.Context):
+    """Scan all watchlists and post an embed."""
+    embed = await build_scan_embed("Market Scan — All")
+    await ctx.reply(embed=embed)
 
 @bot.command()
-async def price(ctx, *, which: str):
-    sym = clean_symbol(which)
-    s, p, c = await fetch_price_auto(sym)
-    await ctx.reply(fmt_price_line(s, p, c))
+async def scanonce(ctx: commands.Context):
+    """Quick compact scan (same as scanall, just different title)."""
+    embed = await build_scan_embed("Quick Scan")
+    await ctx.reply(embed=embed)
 
 @bot.command()
-async def scancrypto(ctx):
-    text = await scan_group("Crypto Watch", AI_WATCH_CRYPTO_TICKERS)
-    await ctx.reply(text)
+async def scancrypto(ctx: commands.Context):
+    lines = await scan_list("Crypto Watch", WATCH_CRYPTO)
+    await ctx.reply("**Crypto Watch**\n" + "\n".join(lines))
 
 @bot.command()
-async def scanstocks(ctx):
-    text = await scan_group("Stocks Watch", AI_WATCH_STOCKS_TICKERS)
-    await ctx.reply(text)
+async def scanstocks(ctx: commands.Context):
+    lines = await scan_list("Stocks Watch", WATCH_STOCKS)
+    await ctx.reply("**Stocks Watch**\n" + "\n".join(lines))
 
 @bot.command()
-async def scanforex(ctx):
-    text = await scan_group("Forex Watch", AI_WATCH_FOREX_TICKERS)
-    await ctx.reply(text)
+async def scanforex(ctx: commands.Context):
+    lines = await scan_list("Forex Watch", WATCH_FOREX)
+    await ctx.reply("**Forex Watch**\n" + "\n.join(lines)")
 
-@bot.command()
-async def scanall(ctx):
-    parts = []
-    parts.append(await scan_group("Crypto Watch", AI_WATCH_CRYPTO_TICKERS))
-    parts.append(await scan_group("Stocks Watch", AI_WATCH_STOCKS_TICKERS))
-    parts.append(await scan_group("Forex Watch", AI_WATCH_FOREX_TICKERS))
-    await ctx.reply("\n\n".join(parts))
-
-# ----------------------
-# Background loops (optional)
-# ----------------------
-@tasks.loop(minutes=25.0)
+# ---------- Background loops (optional) ----------
+@tasks.loop(minutes=25)
 async def crypto_loop():
-    ch = await get_channel(CHANNEL_CRYPTO_ID)
-    if not ch:
+    if not CHANNEL_CRYPTO_ID:
+        log.info("⚠️ No CHANNEL_CRYPTO_ID set; skipping crypto scan.")
         return
-    text = await scan_group("Crypto Watch", AI_WATCH_CRYPTO_TICKERS)
-    try:
-        await ch.send(text)
-    except Exception as e:
-        log.error("crypto_loop send failed: %s", e)
+    ch = bot.get_channel(CHANNEL_CRYPTO_ID)
+    if not isinstance(ch, (discord.TextChannel, discord.Thread)):
+        return
+    embed = await build_scan_embed("Auto Scan — Crypto Focus")
+    await ch.send(embed=embed)
 
-@tasks.loop(minutes=45.0)
+@tasks.loop(minutes=45)
 async def stocks_loop():
-    ch = await get_channel(CHANNEL_STOCKS_ID)
-    if not ch:
+    if not CHANNEL_STOCKS_ID:
+        log.info("⚠️ No CHANNEL_STOCKS_ID set; skipping stocks scan.")
         return
-    text = await scan_group("Stocks Watch", AI_WATCH_STOCKS_TICKERS)
-    try:
-        await ch.send(text)
-    except Exception as e:
-        log.error("stocks_loop send failed: %s", e)
+    ch = bot.get_channel(CHANNEL_STOCKS_ID)
+    if not isinstance(ch, (discord.TextChannel, discord.Thread)):
+        return
+    embed = await build_scan_embed("Auto Scan — Stocks Focus")
+    await ch.send(embed=embed)
 
-@tasks.loop(minutes=45.0)
+@tasks.loop(minutes=45)
 async def forex_loop():
-    ch = await get_channel(CHANNEL_FOREX_ID)
-    if not ch:
+    if not CHANNEL_FOREX_ID:
+        log.info("⚠️ No CHANNEL_FOREX_ID set; skipping forex scan.")
         return
-    text = await scan_group("Forex Watch", AI_WATCH_FOREX_TICKERS)
-    try:
-        await ch.send(text)
-    except Exception as e:
-        log.error("forex_loop send failed: %s", e)
+    ch = bot.get_channel(CHANNEL_FOREX_ID)
+    if not isinstance(ch, (discord.TextChannel, discord.Thread)):
+        return
+    embed = await build_scan_embed("Auto Scan — Forex Focus")
+    await ch.send(embed=embed)
 
-# ----------------------
-# Startup
-# ----------------------
-async def _shutdown():
-    try:
-        await av.close()
-    except Exception:
-        pass
-
-def _validate_envs():
-    if not TOKEN:
-        log.error("Missing DISCORD_TOKEN")
-    if not AV_KEY:
-        log.warning("ALPHAVANTAGE_API_KEY is empty — price/scan commands will return 'no data'.")
-
-try:
-    _validate_envs()
-    bot.run(TOKEN)
-finally:
-    # ensure AV session closes if bot stops
-    try:
-        asyncio.get_event_loop().run_until_complete(_shutdown())
-    except Exception:
-        pass
+# ---------- Entrypoint ----------
+if __name__ == "__main__":
+    if not DISCORD_TOKEN:
+        raise SystemExit("DISCORD_TOKEN is not set.")
+    bot.run(DISCORD_TOKEN)
