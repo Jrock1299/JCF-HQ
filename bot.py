@@ -382,6 +382,14 @@ async def debug_watchlists(ctx):
     msg += f"**Stocks:** {stocks if stocks else '❌ None loaded'}\n"
     msg += f"**Forex:** {forex if forex else '❌ None loaded'}"
 
+@bot.command(name="envgrep")
+async def envgrep(ctx, prefix: str = "AIWATCH"):
+    keys = [k for k in os.environ.keys() if k.upper().startswith(prefix.upper())]
+    if keys:
+        await ctx.send("Found env keys:\n" + "\n".join(sorted(keys)))
+    else:
+        await ctx.send("No env keys found with that prefix.")
+
     await ctx.send(msg)
 
 # ---------- Entrypoint ----------
