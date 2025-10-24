@@ -135,15 +135,43 @@ class AVClient:
                 log.error("AV GET error: %s", e)
                 return {}
 
-    async def price_equity(self, symbol: str) -> Optional[Tuple[float, Optional[float]]]:
+        async def price_equity(self, symbol: str) -> Optional[Tuple[float, Optional[float]]]:
         """
-        Use GLOBAL_QUOTE for equities.
+        Primary: GLOBAL_QUOTE
+        Fallback: TIME_SERIES_DAILY (latest close vs prior close)
         Returns (price, change_percent)
         """
         sym = clean_symbol(symbol)
+
+        # 1) Try GLOBAL_QUOTE
         data = await self._get({"function": "GLOBAL_QUOTE", "symbol": sym})
         q = data.get("Global Quote", {})
         try:
+            price = float(q.get("05. price"))
+            chg_pct = q.get("10. change percent")
+            chg_pct_f = float(chg_pct.replace("%", "")) if chg_pct and "%" in chg_pct else None
+            return price, chg_pct_f
+        except Exception:
+            pass  # fall through
+
+        # 2) Fallback to TIME_SERIES_DAILY
+        daily = await self._get({
+            "function": "TIME_SERIES_DAILY",
+            "symbol": sym,
+            "outputsize": "compact"
+        })
+        ts = daily.get("Time Series (Daily)", {})
+        if not ts or len(ts) < 2:
+            return None
+        dates = sorted(ts.keys(), reverse=True)
+        d0, d1 = dates[0], dates[1]
+        try:
+            p0 = float(ts[d0]["4. close"])
+            p1 = float(ts[d1]["4. close"])
+            chg_pct = ((p0 - p1) / p1) * 100 if p1 else None
+            return (p0, chg_pct)
+        except Exception:
+            return None
             price = float(q.get("05. price"))
             chg_pct = q.get("10. change percent")
             chg_pct_f = float(chg_pct.replace("%", "")) if chg_pct and "%" in chg_pct else None
