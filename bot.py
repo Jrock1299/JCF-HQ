@@ -366,6 +366,24 @@ async def forex_loop():
     embed = await build_scan_embed("Auto Scan — Forex Focus")
     await ch.send(embed=embed)
 
+@bot.command(name="debugwatch")
+async def debug_watchlists(ctx):
+    """Show what tickers the bot has loaded from env vars."""
+    crypto_raw = os.getenv("AIWATCH_CRYPTO_TICKERS", "")
+    stocks_raw = os.getenv("AIWATCH_STOCKS_TICKERS", "")
+    forex_raw = os.getenv("AIWATCH_FOREX_TICKERS", "")
+
+    crypto = [c.strip() for c in crypto_raw.split(",") if c.strip()]
+    stocks = [s.strip() for s in stocks_raw.split(",") if s.strip()]
+    forex = [f.strip() for f in forex_raw.split(",") if f.strip()]
+
+    msg = "**🔍 DEBUG WATCHLISTS**\n"
+    msg += f"**Crypto:** {crypto if crypto else '❌ None loaded'}\n"
+    msg += f"**Stocks:** {stocks if stocks else '❌ None loaded'}\n"
+    msg += f"**Forex:** {forex if forex else '❌ None loaded'}"
+
+    await ctx.send(msg)
+
 # ---------- Entrypoint ----------
 if __name__ == "__main__":
     if not DISCORD_TOKEN:
