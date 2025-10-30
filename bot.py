@@ -1,457 +1,404 @@
 import os
-import re
-import json
-import math
 import asyncio
+import json
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple, List
 
 import aiohttp
 import discord
 from discord.ext import commands, tasks
 
-# -------------------------
-# Logging
-# -------------------------
+# ---------- Logging ----------
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)7s] %(name)s: %(message)s"
+    format="%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
 )
 log = logging.getLogger("ai-bot")
 
-# -------------------------
-# Env & helpers
-# -------------------------
-TOKEN = os.getenv("DISCORD_BOT_TOKEN", "").strip()
-FREECRYPTO_KEY = os.getenv("FREECRYPTO_API_KEY", "").strip()
-ALPHAVANTAGE_KEY = os.getenv("ALPHAVANTAGE_API_KEY", "").strip()
+# ---------- Env helpers ----------
+def getenv(name: str, default: Optional[str] = None) -> str:
+    v = os.getenv(name, default if default is not None else "")
+    return v.strip() if isinstance(v, str) else v
 
-CRYPTO_LOOP_ENABLED = os.getenv("AI_CRYPTO_LOOP", "1").strip() == "1"
-FOREX_LOOP_ENABLED  = os.getenv("AI_FOREX_LOOP", "1").strip() == "1"
-
-CRYPTO_LOOP_MIN = int(os.getenv("CRYPTO_LOOP_MIN", "25"))
-FOREX_LOOP_MIN  = int(os.getenv("FOREX_LOOP_MIN", "45"))
-
-CHANNEL_CRYPTO = os.getenv("DISCORD_CHANNEL_CRYPTO", "").strip()
-CHANNEL_FOREX  = os.getenv("DISCORD_CHANNEL_FOREX", "").strip()
-
-def _parse_symbols(env_name: str, default: str = "") -> List[str]:
-    raw = os.getenv(env_name, default).strip()
-    if not raw:
+def get_csv(name: str) -> List[str]:
+    v = getenv(name, "")
+    if not v:
         return []
-    parts = [p.strip().upper() for p in re.split(r"[,\s]+", raw) if p.strip()]
-    # de-dup preserve order
-    seen, out = set(), []
-    for p in parts:
-        if p not in seen:
-            seen.add(p); out.append(p)
-    return out
+    return [s.strip() for s in v.split(",") if s.strip()]
 
-CRYPTO_LIST = _parse_symbols("AI_CRYPTO_AI_TICKERS", "")
-FOREX_LIST  = _parse_symbols("AI_FOREX_AI_TICKERS", "")
+# Required tokens
+DISCORD_TOKEN = getenv("DISCORD_BOT_TOKEN")
+FC_API_KEY = getenv("FREECRYPTO_API_KEY")
+AV_API_KEY = getenv("ALPHAVANTAGE_API_KEY")
 
-if not TOKEN:
-    log.error("Missing DISCORD_BOT_TOKEN")
+# Lists
+CRYPTO_LIST = get_csv("AI_CRYPTO_AI_TICKERS")
+FOREX_LIST  = get_csv("AI_FOREX_AI_TICKERS")
 
-# -------------------------
-# Discord intents & bot
-# -------------------------
+# Pair formatting
+SYM_STYLE = getenv("FREECRYPTO_SYMBOL_STYLE", "pair").lower()  # pair|dash|slash
+PAIR_QUOTE = getenv("FREECRYPTO_QUOTE", "USD").upper()
+PAIR_SEP = getenv("FREECRYPTO_PAIR_SEP", "")
+
+# FreeCrypto endpoints (templates must contain {pair} and {apikey})
+DEFAULT_FC_ENDPOINTS = [
+    # Adjust or override via FREECRYPTO_ENDPOINTS env if their docs differ
+    "https://freecryptoapi.com/api/v1/ticker?symbol={pair}&apikey={apikey}",
+    "https://freecryptoapi.com/api/v1/price?symbol={pair}&apikey={apikey}",
+    "https://freecryptoapi.com/v1/price?symbol={pair}&apikey={apikey}",
+]
+FC_ENDPOINTS = get_csv("FREECRYPTO_ENDPOINTS") or DEFAULT_FC_ENDPOINTS
+
+# Loops
+CRYPTO_LOOP_ON = getenv("AI_CRYPTO_LOOP", "0") in ("1", "true", "True")
+FOREX_LOOP_ON  = getenv("AI_FOREX_LOOP",  "0") in ("1", "true", "True")
+CRYPTO_EVERY_MIN = int(getenv("AI_CRYPTO_INTERVAL_MIN", "25"))
+FOREX_EVERY_MIN  = int(getenv("AI_FOREX_INTERVAL_MIN", "45"))
+
+# Channels
+CHAN_CRYPTO = int(getenv("DISCORD_CHANNEL_CRYPTO", "0") or 0)
+CHAN_FOREX  = int(getenv("DISCORD_CHANNEL_FOREX",  "0") or 0)
+
+# Backoffs
+FC_BACKOFF_BASE = 2
+FC_BACKOFF_MAXS = 32
+AV_BACKOFF_SEC  = 15
+
+# ---------- Discord intents / bot ----------
 intents = discord.Intents.default()
-intents.message_content = True  # needed for command text
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
+# If you enabled Message Content Intent in the Discord Developer Portal,
+# this will allow reading the content for prefix commands:
+intents.message_content = True
 
-# Single shared aiohttp session
-_session: Optional[aiohttp.ClientSession] = None
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-async def get_session() -> aiohttp.ClientSession:
-    global _session
-    if _session is None or _session.closed:
-        _session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=12))
-    return _session
+# Keep one aiohttp session
+_http_session: Optional[aiohttp.ClientSession] = None
 
-# -------------------------
-# Providers
-# -------------------------
-class CryptoProvider:
-    """Fetch crypto prices (USD) from FreeCryptoAPI."""
-    BASES = [
-        # Common patterns people try; we’ll attempt in order
-        "https://api.freecryptoapi.com/v1/price?symbol={base}&convert=USD",
-        "https://api.freecryptoapi.com/v1/quotes?symbols={base}&convert=USD",
-        # fallback path-like
-        "https://api.freecryptoapi.com/v1/price/{base}-USD",
-    ]
-
-    @staticmethod
-    def normalize(symbol: str) -> str:
-        s = symbol.upper().replace("-", "").replace("/", "")
-        # If it already ends with USD, keep base = before USD
-        if s.endswith("USD"):
-            base = s[:-3]
-        else:
-            base = s
-        return base
-
-    @staticmethod
-    async def get_price(symbol: str) -> Optional[float]:
-        if not FREECRYPTO_KEY:
-            log.error("[crypto] FREECRYPTO_API_KEY missing")
-            return None
-        base = CryptoProvider.normalize(symbol)
-        sess = await get_session()
-        headers = {
-            "X-API-KEY": FREECRYPTO_KEY,
-            "Accept": "application/json",
-            "User-Agent": "hunxho-bot/1.0"
-        }
-
-        # Try a couple of likely endpoints
-        for url_tpl in CryptoProvider.BASES:
-            url = url_tpl.format(base=base)
-            try:
-                async with sess.get(url, headers=headers) as resp:
-                    if resp.status == 429:
-                        log.warning("[crypto] 429 rate limit from FreeCryptoAPI; backing off")
-                        await asyncio.sleep(2.5)
-                        continue
-                    if resp.status >= 400:
-                        txt = await resp.text()
-                        log.error("[crypto] bad status %s url=%s body=%s", resp.status, url, txt[:300])
-                        continue
-                    data = await resp.json(content_type=None)
-
-                    # Try to locate a price in a few likely shapes:
-                    # 1) {"symbol":"XRP","price_usd":0.55}
-                    if isinstance(data, dict):
-                        for k in ("price", "price_usd", "usd", "PRICE_USD", "PRICE"):
-                            if k in data and isinstance(data[k], (int, float, str)):
-                                try:
-                                    return float(data[k])
-                                except:
-                                    pass
-
-                        # 2) {"data":{"XRP":{"USD":0.55}}}
-                        d = data.get("data") if "data" in data else data
-                        if isinstance(d, dict):
-                            # Try nested dicts
-                            for key in (base, base+"USD", f"{base}-USD"):
-                                if key in d and isinstance(d[key], dict):
-                                    inner = d[key]
-                                    for k in ("USD", "usd", "price", "price_usd"):
-                                        if k in inner:
-                                            try:
-                                                return float(inner[k])
-                                            except:
-                                                pass
-
-                            # Or "quotes": {"XRP":{"USD": {... "price": 0.55}}}
-                            quotes = d.get("quotes") if "quotes" in d else None
-                            if isinstance(quotes, dict):
-                                q = quotes.get(base)
-                                if isinstance(q, dict):
-                                    usd = q.get("USD")
-                                    if isinstance(usd, dict) and "price" in usd:
-                                        try:
-                                            return float(usd["price"])
-                                        except:
-                                            pass
-
-                    # 3) array of quotes
-                    if isinstance(data, list) and data:
-                        # look for first number-ish field
-                        item = data[0]
-                        if isinstance(item, dict):
-                            for k in ("price", "price_usd", "USD", "usd"):
-                                if k in item:
-                                    try:
-                                        return float(item[k])
-                                    except:
-                                        pass
-
-            except asyncio.TimeoutError:
-                log.error("[crypto] timeout for %s", url)
-            except Exception as e:
-                log.error("[crypto] exception %r for %s", e, url)
-
-        log.info("[crypto] %s -> no data", base)
-        return None
-
-
-class ForexProvider:
-    """Fetch FX/XAU with AlphaVantage CURRENCY_EXCHANGE_RATE."""
-    @staticmethod
-    def split_pair(pair: str) -> Optional[Tuple[str, str]]:
-        s = pair.upper().replace("-", "").replace("/", "")
-        if len(s) < 6:
-            return None
-        # treat XAUUSD, USDJPY, EURUSD, etc.
-        if s.startswith("XAU") or s.startswith("XAG"):
-            return s[:3], s[3:]
-        # default 3+3
-        return s[:3], s[3:]
-
-    @staticmethod
-    async def get_price(pair: str) -> Optional[float]:
-        if not ALPHAVANTAGE_KEY:
-            log.error("[forex] ALPHAVANTAGE_API_KEY missing")
-            return None
-
-        parts = ForexProvider.split_pair(pair)
-        if not parts:
-            return None
-        base, quote = parts
-        url = "https://www.alphavantage.co/query"
-        params = {
-            "function": "CURRENCY_EXCHANGE_RATE",
-            "from_currency": base,
-            "to_currency": quote,
-            "apikey": ALPHAVANTAGE_KEY
-        }
-        sess = await get_session()
-        try:
-            async with sess.get(url, params=params) as resp:
-                txt = await resp.text()
-                if resp.status >= 400:
-                    log.error("[forex] bad status %s body=%s", resp.status, txt[:300])
-                    return None
-                # AV returns a JSON with "Realtime Currency Exchange Rate"
-                try:
-                    data = json.loads(txt)
-                except Exception:
-                    log.error("[forex] non-json: %s", txt[:200])
-                    return None
-
-                if "Note" in data or "Information" in data:
-                    # rate limited
-                    log.warning("[forex] AV throttled: %s", (data.get("Note") or data.get("Information"))[:200])
-                    await asyncio.sleep(15)
-                    return None
-
-                r = data.get("Realtime Currency Exchange Rate") or data.get("Realtime Currency Exchange Rate".lower())
-                if isinstance(r, dict):
-                    for k in ("5. Exchange Rate", "Exchange Rate", "EXCHANGE_RATE", "exchange_rate"):
-                        if k in r:
-                            try:
-                                return float(r[k])
-                            except:
-                                pass
-        except asyncio.TimeoutError:
-            log.error("[forex] timeout")
-        except Exception as e:
-            log.error("[forex] exception %r", e)
-        return None
-
-# -------------------------
-# Utility: pretty formatters
-# -------------------------
-def now_utc_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
-
-def fmt_price(p: float) -> str:
-    if p >= 100:
-        return f"{p:,.2f}"
-    if p >= 1:
-        return f"{p:,.4f}"
-    return f"{p:.8f}"
-
-# -------------------------
-# Commands
-# -------------------------
 @bot.event
 async def on_ready():
+    global _http_session
+    if _http_session is None or _http_session.closed:
+        _http_session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15))
     log.info("✅ Logged in as %s (%s)", bot.user, bot.user.id if bot.user else "?")
     log.info("🧠 AI scan loops status:")
-    log.info("    - Crypto loop: %s every %sm, symbols=%s", CRYPTO_LOOP_ENABLED, CRYPTO_LOOP_MIN, CRYPTO_LIST)
-    log.info("    - Forex loop:  %s every %sm, symbols=%s", FOREX_LOOP_ENABLED, FOREX_LOOP_MIN, FOREX_LIST)
+    log.info("    - Crypto loop: %s every %dm, symbols=%s", CRYPTO_LOOP_ON, CRYPTO_EVERY_MIN, CRYPTO_LIST)
+    log.info("    - Forex loop:  %s every %dm, symbols=%s", FOREX_LOOP_ON,  FOREX_EVERY_MIN,  FOREX_LIST)
 
-    # Start loops only once
-    if CRYPTO_LOOP_ENABLED and not crypto_loop.is_running():
-        crypto_loop.change_interval(minutes=CRYPTO_LOOP_MIN)
-        crypto_loop.start()
-    if FOREX_LOOP_ENABLED and not forex_loop.is_running():
-        forex_loop.change_interval(minutes=FOREX_LOOP_MIN)
-        forex_loop.start()
+    if CRYPTO_LOOP_ON and CRYPTO_LIST:
+        if not crypto_loop.is_running():
+            crypto_loop.change_interval(minutes=CRYPTO_EVERY_MIN)
+            crypto_loop.start()
+    if FOREX_LOOP_ON and FOREX_LIST:
+        if not forex_loop.is_running():
+            forex_loop.change_interval(minutes=FOREX_EVERY_MIN)
+            forex_loop.start()
 
-@bot.command(name="help")
-async def help_cmd(ctx: commands.Context):
-    msg = (
-        "**Hunxho Bot — Commands**\n"
-        "`!ping` — quick health check\n"
-        "`!price <symbol>` — crypto (XRP/ETH/SOL/… or XRPUSD/XRP-USD) or forex (USDJPY/EURUSD/XAUUSD)\n"
-        "`!scancrypto` — scan configured crypto list\n"
-        "`!scanforex` — scan configured forex list\n"
-        "`!scanall` — scan both\n"
-        "\n"
-        f"**Crypto list:** {', '.join(CRYPTO_LIST) if CRYPTO_LIST else '—'}\n"
-        f"**Forex list:**  {', '.join(FOREX_LIST) if FOREX_LIST else '—'}"
+@bot.event
+async def on_close():
+    global _http_session
+    if _http_session and not _http_session.closed:
+        await _http_session.close()
+
+# ---------- Symbol tools ----------
+def build_pair(base: str) -> str:
+    base = base.upper()
+    q = PAIR_QUOTE
+    if SYM_STYLE == "pair":
+        # e.g., XRPUSD  (PAIR_SEP typically "")
+        return f"{base}{PAIR_SEP}{q}"
+    if SYM_STYLE == "dash":
+        # e.g., XRP-USD
+        sep = PAIR_SEP or "-"
+        return f"{base}{sep}{q}"
+    if SYM_STYLE == "slash":
+        # e.g., XRP/USD
+        sep = PAIR_SEP or "/"
+        return f"{base}{sep}{q}"
+    # Fallback
+    return f"{base}{q}"
+
+def split_fx_pair(pair: str) -> Optional[Tuple[str, str]]:
+    p = pair.upper().replace("/", "").replace("-", "")
+    # Handle MT4/MT5 style XAUUSD etc.
+    if len(p) == 6 or len(p) == 7:  # allow weirds like XAGUSD (6) or add 7 just in case
+        return p[:3], p[3:]
+    # If already separated like EUR/USD
+    if "/" in pair:
+        a, b = pair.upper().split("/", 1)
+        return a, b
+    if "-" in pair:
+        a, b = pair.upper().split("-", 1)
+        return a, b
+    # If user typed e.g. "EURUSD=X" (Yahoo style), strip suffix
+    if pair.endswith("=X"):
+        p2 = pair[:-2].upper()
+        if len(p2) == 6:
+            return p2[:3], p2[3:]
+    return None
+
+# ---------- FreeCrypto API fetch ----------
+async def fetch_freecrypto_price(symbol: str) -> Optional[float]:
+    """
+    Try several endpoint templates; accept varied JSON shapes.
+    Requires FREECRYPTO_API_KEY and env-based pair formatting.
+    """
+    if not FC_API_KEY:
+        return None
+    global _http_session
+    if _http_session is None or _http_session.closed:
+        _http_session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15))
+
+    pair = build_pair(symbol)
+    # Try two pair styles if first fails: plain pair and dash
+    pair_candidates = [pair]
+    # Provide an automatic alternate format to maximize chance of success
+    if PAIR_SEP != "-":
+        pair_candidates.append(pair.replace(PAIR_SEP, "-") if PAIR_SEP else f"{symbol.upper()}-{PAIR_QUOTE}")
+    if PAIR_SEP != "/":
+        pair_candidates.append(pair.replace(PAIR_SEP, "/") if PAIR_SEP else f"{symbol.upper()}/{PAIR_QUOTE}")
+
+    # Deduplicate while preserving order
+    seen = set()
+    pair_candidates = [p for p in pair_candidates if not (p in seen or seen.add(p))]
+
+    # Exponential backoff on 429; small retries per endpoint/pair
+    for cand in pair_candidates:
+        for tmpl in FC_ENDPOINTS:
+            url = tmpl.format(pair=cand, apikey=FC_API_KEY)
+            backoff = FC_BACKOFF_BASE
+            for attempt in range(5):
+                try:
+                    async with _http_session.get(url, headers={"Accept": "application/json"}) as r:
+                        if r.status == 429:
+                            log.error("[cg] bad status 429")
+                            await asyncio.sleep(backoff)
+                            backoff = min(backoff * 2, FC_BACKOFF_MAXS)
+                            continue
+                        if r.status >= 400:
+                            text = await r.text()
+                            log.error("[freecrypto] HTTP %s for %s -> %s", r.status, url, text[:240])
+                            break  # try next template
+                        data = await r.json(content_type=None)
+                        # Try common shapes
+                        price = (
+                            data.get("price")
+                            or data.get("last")
+                            or data.get("rate")
+                        )
+                        if price is None and isinstance(data, dict):
+                            # sometimes { "data": { "price": "..." } }
+                            inner = data.get("data") or data.get("result") or data.get(cand) or {}
+                            if isinstance(inner, dict):
+                                price = inner.get("price") or inner.get("last") or inner.get("rate")
+                            # arrays like [{symbol:..., price:...}]
+                            if price is None and isinstance(data.get("data"), list) and data["data"]:
+                                first = data["data"][0]
+                                if isinstance(first, dict):
+                                    price = first.get("price") or first.get("last") or first.get("rate")
+                        if price is None:
+                            # Try numeric in string
+                            txt = json.dumps(data)[:240]
+                            log.info("[crypto] %s -> could not locate price key in %s", cand, txt)
+                            break
+                        try:
+                            return float(price)
+                        except Exception:
+                            # maybe price is nested string with commas
+                            try:
+                                return float(str(price).replace(",", ""))
+                            except Exception:
+                                log.info("[crypto] %s -> unparsable price %s", cand, price)
+                                break
+                except asyncio.TimeoutError:
+                    log.error("[freecrypto] timeout for %s", url)
+                except Exception as e:
+                    log.error("[freecrypto] error: %s", e)
+                # brief pause between attempts
+                await asyncio.sleep(0.4)
+    return None
+
+# ---------- Alpha Vantage FX fetch ----------
+async def fetch_fx_price(pair: str) -> Optional[float]:
+    if not AV_API_KEY:
+        return None
+    parts = split_fx_pair(pair)
+    if not parts:
+        return None
+    base, quote = parts
+    url = (
+        "https://www.alphavantage.co/query"
+        f"?function=CURRENCY_EXCHANGE_RATE&from_currency={base}&to_currency={quote}&apikey={AV_API_KEY}"
     )
-    await ctx.reply(msg)
+    global _http_session
+    if _http_session is None or _http_session.closed:
+        _http_session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15))
 
+    try:
+        async with _http_session.get(url, headers={"Accept": "application/json"}) as r:
+            if r.status >= 400:
+                log.error("[av] HTTP %s for %s", r.status, url)
+                return None
+            data = await r.json(content_type=None)
+            key = "Realtime Currency Exchange Rate"
+            if key in data and isinstance(data[key], dict):
+                ex = data[key].get("5. Exchange Rate")
+                if ex:
+                    try:
+                        return float(ex)
+                    except Exception:
+                        return float(str(ex).replace(",", ""))
+            # Rate limited or bad; AV is strict (5 req/min). Wait and retry once.
+            await asyncio.sleep(AV_BACKOFF_SEC)
+            # one retry
+            async with _http_session.get(url, headers={"Accept": "application/json"}) as r2:
+                data2 = await r2.json(content_type=None)
+                if key in data2 and isinstance(data2[key], dict):
+                    ex2 = data2[key].get("5. Exchange Rate")
+                    if ex2:
+                        try:
+                            return float(ex2)
+                        except Exception:
+                            return float(str(ex2).replace(",", ""))
+    except Exception as e:
+        log.error("[av] error: %s", e)
+    return None
+
+# ---------- Classification ----------
+def is_forex_token(sym: str) -> bool:
+    u = sym.upper()
+    if u in (s.upper() for s in FOREX_LIST):
+        return True
+    # heuristics
+    if len(u.replace("=X", "").replace("/", "").replace("-", "")) in (6, 7):
+        return True
+    return False
+
+# ---------- Commands ----------
 @bot.command(name="ping")
-async def ping_cmd(ctx: commands.Context):
-    await ctx.reply(f"pong — {now_utc_iso()}")
+async def ping(ctx: commands.Context):
+    await ctx.reply("pong")
 
 @bot.command(name="price")
-async def price_cmd(ctx: commands.Context, symbol: Optional[str] = None):
-    if not symbol:
-        await ctx.reply("Usage: `!price <symbol>` e.g. `!price XRP` or `!price USDJPY`")
-        return
-
-    s = symbol.strip().upper()
-    price = None
-    source = ""
-
-    # Decide if it's forex or crypto by pattern
-    is_forex = False
-    s_clean = s.replace("-", "").replace("/", "")
-    if len(s_clean) >= 6 and s_clean[:3].isalpha() and s_clean[3:6].isalpha():
-        is_forex = True
-
-    if is_forex:
-        price = await ForexProvider.get_price(s)
-        source = "AlphaVantage FX"
+async def price(ctx: commands.Context, symbol: str):
+    symbol = symbol.strip().upper()
+    price_val: Optional[float] = None
+    src = ""
+    if is_forex_token(symbol):
+        price_val = await fetch_fx_price(symbol)
+        src = "AlphaVantage FX"
     else:
-        price = await CryptoProvider.get_price(s)
-        source = "FreeCryptoAPI"
-
-    if price is None:
-        await ctx.reply(f"Could not fetch a price for `{s}`.")
-        return
-    await ctx.reply(f"**{s}** = **{fmt_price(price)}**  *(via {source})*")
+        price_val = await fetch_freecrypto_price(symbol)
+        src = "FreeCryptoAPI"
+    if price_val is None:
+        await ctx.reply(f"Couldn’t fetch a price for `{symbol}`.")
+    else:
+        await ctx.reply(f"`{symbol}` price: **{price_val:,.6f}**  _(via {src})_")
 
 @bot.command(name="scancrypto")
-async def scan_crypto_cmd(ctx: commands.Context):
+async def scancrypto(ctx: commands.Context):
     if not CRYPTO_LIST:
-        await ctx.reply("No crypto symbols configured. Set `AI_CRYPTO_AI_TICKERS` in Railway.")
+        await ctx.reply("No crypto symbols configured.")
         return
-    msgs = await scan_group("crypto", CRYPTO_LIST)
-    if not msgs:
-        await ctx.reply("No crypto data found (rate limit or provider down).")
-        return
-    await send_batched(ctx, msgs)
+    lines = []
+    for sym in CRYPTO_LIST:
+        px = await fetch_freecrypto_price(sym)
+        if px is None:
+            lines.append(f"• {sym}: _no data_")
+        else:
+            lines.append(f"• {sym}: **{px:,.6f}**")
+        await asyncio.sleep(0.15)
+    msg = "__Crypto scan__\n" + "\n".join(lines)
+    await ctx.reply(msg)
 
 @bot.command(name="scanforex")
-async def scan_forex_cmd(ctx: commands.Context):
+async def scanforex(ctx: commands.Context):
     if not FOREX_LIST:
-        await ctx.reply("No forex symbols configured. Set `AI_FOREX_AI_TICKERS` in Railway.")
+        await ctx.reply("No forex symbols configured.")
         return
-    msgs = await scan_group("forex", FOREX_LIST)
-    if not msgs:
-        await ctx.reply("No forex data found (rate limit or provider down).")
-        return
-    await send_batched(ctx, msgs)
+    lines = []
+    for pair in FOREX_LIST:
+        px = await fetch_fx_price(pair)
+        if px is None:
+            lines.append(f"• {pair}: _no data_")
+        else:
+            lines.append(f"• {pair}: **{px:,.6f}**")
+        await asyncio.sleep(0.15)
+    msg = "__Forex scan__\n" + "\n".join(lines)
+    await ctx.reply(msg)
 
 @bot.command(name="scanall")
-async def scan_all_cmd(ctx: commands.Context):
-    msgs: List[str] = []
+async def scanall(ctx: commands.Context):
+    # Run both; show whichever lists exist
+    parts = []
     if CRYPTO_LIST:
-        msgs += await scan_group("crypto", CRYPTO_LIST)
+        c_lines = []
+        for sym in CRYPTO_LIST:
+            px = await fetch_freecrypto_price(sym)
+            c_lines.append(f"• {sym}: {'_no data_' if px is None else f'**{px:,.6f}**'}")
+            await asyncio.sleep(0.15)
+        parts.append("__Crypto__\n" + "\n".join(c_lines))
     if FOREX_LIST:
-        msgs += await scan_group("forex", FOREX_LIST)
-
-    if not msgs:
-        await ctx.reply("No data found (rate limit or providers down).")
+        f_lines = []
+        for pair in FOREX_LIST:
+            px = await fetch_fx_price(pair)
+            f_lines.append(f"• {pair}: {'_no data_' if px is None else f'**{px:,.6f}**'}")
+            await asyncio.sleep(0.15)
+        parts.append("__Forex__\n" + "\n".join(f_lines))
+    if not parts:
+        await ctx.reply("No symbols configured.")
         return
-    await send_batched(ctx, msgs)
+    await ctx.reply("\n\n".join(parts))
 
-async def send_batched(ctx_or_channel, lines: List[str], batch: int = 12):
-    for i in range(0, len(lines), batch):
-        chunk = lines[i:i+batch]
-        text = "\n".join(chunk)
-        if isinstance(ctx_or_channel, commands.Context):
-            await ctx_or_channel.reply(text)
-        else:
-            await ctx_or_channel.send(text)
-        await asyncio.sleep(0.6)
+# ---------- Auto loops ----------
+async def post_to_channel(channel_id: int, content: str):
+    if not channel_id:
+        log.info("[post] channel not set; skipping message: %s", content[:120])
+        return
+    ch = bot.get_channel(channel_id)
+    if ch is None:
+        try:
+            ch = await bot.fetch_channel(channel_id)
+        except Exception as e:
+            log.error("[post] cannot fetch channel %s: %s", channel_id, e)
+            return
+    try:
+        await ch.send(content)
+    except Exception as e:
+        log.error("[post] send failed: %s", e)
 
-# -------------------------
-# Scanning logic (lightweight)
-# -------------------------
-async def scan_group(kind: str, symbols: List[str]) -> List[str]:
-    msgs: List[str] = []
-    # Simple per-provider pacing to avoid burst 429s
-    for s in symbols:
-        if kind == "crypto":
-            p = await CryptoProvider.get_price(s)
-            src = "CG"  # label short (we swapped, but keep short tag)
-            if p is not None:
-                msgs.append(f"🟢 **{s}** = **{fmt_price(p)}**  *(crypto)*")
-            else:
-                msgs.append(f"⚪ **{s}** — no data *(crypto)*")
-            await asyncio.sleep(0.3)  # small pause between calls
-
-        elif kind == "forex":
-            p = await ForexProvider.get_price(s)
-            if p is not None:
-                msgs.append(f"🔵 **{s}** = **{fmt_price(p)}**  *(forex)*")
-            else:
-                msgs.append(f"⚪ **{s}** — no data *(forex)*")
-            await asyncio.sleep(1.5)  # AV is stricter; go slower
-    return msgs
-
-# -------------------------
-# Loops (post to fixed channels if provided, else do nothing until commands used)
-# -------------------------
-@tasks.loop(minutes=CRYPTO_LOOP_MIN)
+@tasks.loop(minutes=25)
 async def crypto_loop():
-    if not CRYPTO_LIST or not CRYPTO_LOOP_ENABLED:
+    if not CRYPTO_LIST:
         return
-    channel = None
-    if CHANNEL_CRYPTO:
-        try:
-            channel = await bot.fetch_channel(int(CHANNEL_CRYPTO))
-        except Exception:
-            log.warning("crypto_loop: could not fetch channel %s", CHANNEL_CRYPTO)
-    if not channel:
-        # No fixed channel; skip auto-posting
-        return
+    lines = []
+    for sym in CRYPTO_LIST:
+        px = await fetch_freecrypto_price(sym)
+        if px is None:
+            lines.append(f"• {sym}: _no data_")
+        else:
+            lines.append(f"• {sym}: **{px:,.6f}**")
+        await asyncio.sleep(0.1)
+    content = "📈 __Crypto update__\n" + "\n".join(lines)
+    await post_to_channel(CHAN_CRYPTO, content)
 
-    msgs = await scan_group("crypto", CRYPTO_LIST)
-    if msgs:
-        await send_batched(channel, [f"**📡 Crypto scan — {now_utc_iso()}**"] + msgs)
-
-@tasks.loop(minutes=FOREX_LOOP_MIN)
+@tasks.loop(minutes=45)
 async def forex_loop():
-    if not FOREX_LIST or not FOREX_LOOP_ENABLED:
+    if not FOREX_LIST:
         return
-    channel = None
-    if CHANNEL_FOREX:
-        try:
-            channel = await bot.fetch_channel(int(CHANNEL_FOREX))
-        except Exception:
-            log.warning("forex_loop: could not fetch channel %s", CHANNEL_FOREX)
-    if not channel:
-        return
+    lines = []
+    for pair in FOREX_LIST:
+        px = await fetch_fx_price(pair)
+        if px is None:
+            lines.append(f"• {pair}: _no data_")
+        else:
+            lines.append(f"• {pair}: **{px:,.6f}**")
+        await asyncio.sleep(0.1)
+    content = "💱 __Forex update__\n" + "\n".join(lines)
+    await post_to_channel(CHAN_FOREX, content)
 
-    msgs = await scan_group("forex", FOREX_LIST)
-    if msgs:
-        await send_batched(channel, [f"**📡 Forex scan — {now_utc_iso()}**"] + msgs)
-
-# -------------------------
-# Graceful shutdown
-# -------------------------
-async def _close_session():
-    global _session
-    try:
-        if _session and not _session.closed:
-            await _session.close()
-    except Exception:
-        pass
-
-def main():
-    if not TOKEN:
-        log.error("Missing DISCORD_BOT_TOKEN")
-        return
-    try:
-        bot.run(TOKEN)
-    finally:
-        try:
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(_close_session())
-        except Exception:
-            pass
-
-if __name__ == "__main__":
-    log.info("🚀 Starting bot...")
-    main()
+# ---------- Run ----------
+if not DISCORD_TOKEN:
+    log.error("Missing DISCORD_BOT_TOKEN")
+else:
+    bot.run(DISCORD_TOKEN)
