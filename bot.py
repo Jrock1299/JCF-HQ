@@ -1,7 +1,9 @@
 import os, json, asyncio, logging, math, statistics as stats
 from datetime import datetime, timezone
 import requests
-
+import os
+import json
+from datetime import datetime, timezone
 import discord
 from discord.ext import commands, tasks
 
