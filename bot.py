@@ -1,455 +1,400 @@
 import os
-import json
+import asyncio
 import time
 import math
-import asyncio
 import logging
-import threading
-from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 import requests
+import pandas as pd
+
 import discord
 from discord.ext import commands, tasks
 
-# ===============================
-# Environment / Config
-# ===============================
+# ---------- Config & Logging ----------
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "").strip()
-CRYPTO_SETUP_CHANNEL_ID = int(os.getenv("CRYPTO_SETUP_CHANNEL_ID", "0") or "0")
+TOKEN = os.getenv("DISCORD_TOKEN", "")
+CHANNEL_ID = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or "0")
 
-# Comma-separated CoinGecko IDs, e.g. "bitcoin,ethereum,solana,cardano,chainlink,hedera-hashgraph,sui"
-COIN_IDS_RAW = os.getenv("COIN_IDS", "") or ""
-COIN_IDS: List[str] = [c.strip().lower() for c in COIN_IDS_RAW.split(",") if c.strip()]
+ANALYSIS_COINS = [s.strip().upper() for s in os.getenv("ANALYSIS_COINS", "ETHUSDT,SOLUSDT").split(",") if s.strip()]
+TIMEFRAME = os.getenv("ANALYSIS_TIMEFRAME", "30m").strip().lower()
 
-# CoinGecko free/demo key header: x-cg-demo-api-key
-COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY", "").strip()
+EMA_PERIODS = [int(x) for x in os.getenv("EMA_PERIODS", "20,50,200").split(",")]
+EMA_FAST, EMA_MED, EMA_SLOW = sorted(EMA_PERIODS)[0], sorted(EMA_PERIODS)[1], sorted(EMA_PERIODS)[2]
 
-RISK_MODE = (os.getenv("RISK_MODE", "conservative") or "conservative").lower()
+BB_PERIOD = int(os.getenv("BB_PERIOD", "20"))
+BB_STD = float(os.getenv("BB_STD", "2.0"))
+
+RISK_MODE = os.getenv("RISK_MODE", "balanced").strip().lower()
+SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300") or "300")  # default 5 min
+DUPLICATE_COOLDOWN_MIN = int(os.getenv("DUPLICATE_COOLDOWN_MIN", "120"))
 
-# Discord intents
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
+log = logging.getLogger("jcfhq-crypto")
+
+# ---------- Discord Bot ----------
+
 intents = discord.Intents.default()
 intents.message_content = True
-
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ===============================
-# Logging
-# ===============================
+# State: open setups (per symbol) – survives while process runs
+open_setups: Dict[str, Dict] = {}
+# Recently alerted signatures to avoid spam on restarts
+recent_alerts: Dict[str, float] = {}  # key: f"{symbol}:{side}:{t0}" -> last_ts
 
-logger = logging.getLogger("jcf-hq")
-logging.basicConfig(
-    level=getattr(logging, LOG_LEVEL, logging.INFO),
-    format="%(levelname)s:%(name)s:%(message)s",
-)
+# ---------- Helpers ----------
 
-# ===============================
-# Persistence: AlertGuard
-# ===============================
+BINANCE_BASE = "https://api.binance.com/api/v3"
 
-STATE_FILE = Path("state.json")
-STATE_LOCK = threading.Lock()
-
-
-def _load_state():
-    if STATE_FILE.exists():
-        try:
-            with STATE_FILE.open("r") as f:
-                return json.load(f)
-        except Exception:
-            return {"active": {}, "history": []}
-    return {"active": {}, "history": []}
-
-
-def _save_state(state):
-    tmp = STATE_FILE.with_suffix(".tmp")
-    with tmp.open("w") as f:
-        json.dump(state, f, indent=2)
-    tmp.replace(STATE_FILE)
-
-
-def _setup_key(symbol: str, tf: str, side: str, entry_lo: float, entry_hi: float, sl: float, tp1: float) -> str:
-    return f"{symbol}|{tf}|{side}|{entry_lo:.6f}:{entry_hi:.6f}|SL:{sl:.6f}|TP1:{tp1:.6f}"
-
-
-class AlertGuard:
-    """Keeps exactly one active alert per unique setup; resolves on TP/SL."""
-    def __init__(self):
-        self.state = _load_state()
-
-    def should_alert(self, key: str) -> bool:
-        with STATE_LOCK:
-            return key not in self.state["active"]
-
-    def register_alert(self, key: str, payload: dict):
-        payload = dict(payload)
-        payload["created_ts"] = int(time.time())
-        payload["status"] = "active"
-        with STATE_LOCK:
-            self.state["active"][key] = payload
-            _save_state(self.state)
-
-    def resolve(self, key: str, resolution: str):
-        with STATE_LOCK:
-            if key in self.state["active"]:
-                item = self.state["active"].pop(key)
-                item["status"] = resolution
-                item["resolved_ts"] = int(time.time())
-                self.state["history"].append(item)
-                _save_state(self.state)
-
-    def active_for_symbol(self, symbol: str):
-        with STATE_LOCK:
-            return {k: v for k, v in self.state["active"].items() if k.startswith(symbol + "|")}
-
-    def all_active(self):
-        with STATE_LOCK:
-            return dict(self.state["active"])
-
-
-ALERT_GUARD = AlertGuard()
-
-# ===============================
-# Market helpers (CoinGecko free)
-# ===============================
-
-CG_BASE = "https://api.coingecko.com/api/v3/simple/price"
-
-
-def fetch_prices(ids: List[str]) -> Dict[str, Dict[str, float]]:
-    """Get {id: {'usd': price, 'usd_24h_change': change}}"""
-    if not ids:
-        return {}
-
-    headers = {}
-    if COINGECKO_API_KEY:
-        # Free/demo header
-        headers["x-cg-demo-api-key"] = COINGECKO_API_KEY
-
-    params = {
-        "ids": ",".join(ids),
-        "vs_currencies": "usd",
-        "include_24hr_change": "true",
-    }
-    r = requests.get(CG_BASE, params=params, headers=headers, timeout=20)
+def fetch_klines(symbol: str, interval: str, limit: int = 300) -> pd.DataFrame:
+    url = f"{BINANCE_BASE}/klines"
+    params = {"symbol": symbol, "interval": interval, "limit": min(limit, 1000)}
+    r = requests.get(url, params=params, timeout=15)
     r.raise_for_status()
-    data = r.json() or {}
-    # Normalize: ensure 'usd' and 'usd_24h_change' keys exist
-    out = {}
-    for cid in ids:
-        row = data.get(cid, {})
-        if "usd" in row:
-            out[cid] = {
-                "usd": float(row.get("usd", 0.0)),
-                "usd_24h_change": float(row.get("usd_24h_change", 0.0)),
-            }
-    return out
-
-
-# ===============================
-# Setup logic (simple, risk-aware)
-# ===============================
-
-def compute_setup_from_price(symbol: str, price: float, change_24h: float) -> Tuple[str, Dict]:
-    """
-    Very lightweight heuristic setup builder using only last price + 24h change.
-    - If change <= -3% => bearish setup (short bias)
-    - If change >= +3% => bullish setup (long bias)
-    - Else: None (no setup)
-    Entry/SL/TP scaled by RISK_MODE.
-    """
-    tf = "30m"
-    momentum = "Strong" if abs(change_24h) >= 6 else ("Moderate" if abs(change_24h) >= 3 else "Calm")
-
-    if RISK_MODE == "conservative":
-        band = 0.006  # 0.6%
-        rr_tp2 = 1.33
-        conf = 86
-    elif RISK_MODE == "balanced":
-        band = 0.009
-        rr_tp2 = 1.5
-        conf = 80
-    else:  # aggressive
-        band = 0.012
-        rr_tp2 = 1.7
-        conf = 72
-
-    if change_24h <= -3.0:
-        side = "short"
-        entry_lo = price * (1 - band * 0.8)
-        entry_hi = price * (1 + band * 0.2)
-        sl = price * (1 + band * 2.1)
-        tp1 = price * (1 - band * 1.0)
-        tp2 = price * (1 - band * 2.0)
-        tp3 = price * (1 - band * 3.0)
-        label = "Bearish Move Setup"
-    elif change_24h >= 3.0:
-        side = "long"
-        entry_lo = price * (1 - band * 0.2)
-        entry_hi = price * (1 + band * 0.8)
-        sl = price * (1 - band * 2.1)
-        tp1 = price * (1 + band * 1.0)
-        tp2 = price * (1 + band * 2.0)
-        tp3 = price * (1 + band * 3.0)
-        label = "Bullish Move Setup"
-    else:
-        return ("none", {})
-
-    doc = {
-        "symbol": symbol.upper(),
-        "tf": tf,
-        "momentum": momentum,
-        "side": side,  # 'long' or 'short'
-        "entry_low": entry_lo,
-        "entry_high": entry_hi,
-        "sl": sl,
-        "targets": [tp1, tp2, tp3],
-        "rr_to_tp2": rr_tp2,
-        "confidence": conf,
-        "price_now": price,
-        "change_24h": change_24h,
-        "label": label,
-    }
-    return ("ok", doc)
-
-
-def fmt_price(x: float) -> str:
-    # Pretty rounded price
-    if x == 0 or math.isnan(x):
-        return "0"
-    if x >= 100:
-        return f"{x:,.2f}"
-    if x >= 1:
-        return f"{x:,.4f}"
-    return f"{x:.6f}"
-
-
-async def send_setup_card(ch: discord.TextChannel, setup: Dict):
-    side = setup["side"]
-    title_icon = "🚀" if side == "long" else "🔻"
-    name = setup["symbol"].replace("-", "").upper()
-
-    lines = [
-        f"{title_icon} **{name} — {setup['label']} ( {RISK_MODE} )**",
-        f"Timeframe: **{setup['tf']}** | Momentum: **{setup['momentum']}**",
-        "",
-        f"• **Entry Zone:** {fmt_price(setup['entry_low'])} — {fmt_price(setup['entry_high'])}",
-        f"• **Stop Loss:** {fmt_price(setup['sl'])}",
-        f"• **Targets:** {fmt_price(setup['targets'][0])} / {fmt_price(setup['targets'][1])} / {fmt_price(setup['targets'][2])}",
-        f"• **R:R (to TP2):** {setup['rr_to_tp2']}",
-        f"• **Confidence:** {setup['confidence']}%",
+    data = r.json()
+    cols = [
+        "open_time","open","high","low","close","volume",
+        "close_time","quote_asset_volume","number_of_trades",
+        "taker_buy_base","taker_buy_quote","ignore"
     ]
+    df = pd.DataFrame(data, columns=cols)
+    for c in ["open","high","low","close","volume"]:
+        df[c] = df[c].astype(float)
+    df["open_time"] = pd.to_datetime(df["open_time"], unit="ms")
+    df["close_time"] = pd.to_datetime(df["close_time"], unit="ms")
+    return df
 
-    await ch.send("\n".join(lines))
+def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    # EMAs
+    df[f"ema_{EMA_FAST}"] = df["close"].ewm(span=EMA_FAST, adjust=False).mean()
+    df[f"ema_{EMA_MED}"]  = df["close"].ewm(span=EMA_MED, adjust=False).mean()
+    df[f"ema_{EMA_SLOW}"] = df["close"].ewm(span=EMA_SLOW, adjust=False).mean()
 
+    # Bollinger Bands
+    rolling = df["close"].rolling(BB_PERIOD)
+    ma = rolling.mean()
+    std = rolling.std(ddof=0)
+    df["bb_mid"] = ma
+    df["bb_up"] = ma + BB_STD * std
+    df["bb_dn"] = ma - BB_STD * std
 
-async def send_resolution_card(ch: discord.TextChannel, payload: Dict, last_price: float, resolution: str):
-    sym = payload["symbol"]
-    tf = payload["tf"]
-    side = payload["side"].upper()
-    if resolution == "tp_hit":
-        txt = f"✅ **TP hit — setup closed**\n**{sym} {tf} {side}** @ **{fmt_price(last_price)}**"
+    # Candle body and range
+    df["body"] = (df["close"] - df["open"]).abs()
+    df["range"] = df["high"] - df["low"]
+    return df
+
+def risk_params(mode: str) -> Dict:
+    mode = mode.lower()
+    if mode == "conservative":
+        return {
+            "min_displacement": 1.25,  # multiple of ATR-ish proxy (range avg)
+            "min_rr": 1.8,
+            "require_ema_slow_alignment": True,
+            "use_tighter_sl": True,
+        }
+    if mode == "aggressive":
+        return {
+            "min_displacement": 0.9,
+            "min_rr": 1.2,
+            "require_ema_slow_alignment": False,
+            "use_tighter_sl": False,
+        }
+    # balanced default
+    return {
+        "min_displacement": 1.1,
+        "min_rr": 1.5,
+        "require_ema_slow_alignment": True,
+        "use_tighter_sl": False,
+    }
+
+def displacement_strength(df: pd.DataFrame, idx: int, lookback: int = 20) -> float:
+    """
+    Rough displacement score: last candle range / avg range(lookback).
+    """
+    if idx < 1:
+        return 0.0
+    recent = df.iloc[idx]
+    avg_range = df["range"].iloc[max(0, idx - lookback):idx].mean()
+    if not avg_range or math.isnan(avg_range):
+        return 0.0
+    return float(recent["range"] / avg_range)
+
+def last_opposing_candle(df: pd.DataFrame, idx: int, direction: str, search_back: int = 10) -> Optional[pd.Series]:
+    """
+    For long: last strong red candle before breakout.
+    For short: last strong green candle before breakdown.
+    """
+    start = max(0, idx - search_back)
+    window = df.iloc[start:idx]
+    if direction == "long":
+        # red candles: close < open; pick largest body
+        reds = window[window["close"] < window["open"]].copy()
+        if reds.empty: 
+            return None
+        reds["body_size"] = (reds["open"] - reds["close"]).abs()
+        return reds.iloc[reds["body_size"].idxmax()]
     else:
-        txt = f"🛑 **Stop Loss hit — setup closed**\n**{sym} {tf} {side}** @ **{fmt_price(last_price)}**"
-    await ch.send(txt)
+        greens = window[window["close"] > window["open"]].copy()
+        if greens.empty:
+            return None
+        greens["body_size"] = (greens["close"] - greens["open"]).abs()
+        return greens.iloc[greens["body_size"].idxmax()]
 
+def make_setup(symbol: str, side: str, entry: float, sl: float, tps: List[float], ts: pd.Timestamp, reason: str) -> Dict:
+    return {
+        "symbol": symbol,
+        "side": side,
+        "entry": entry,
+        "sl": sl,
+        "tps": tps,
+        "created_at": ts,
+        "active": True,
+        "reason": reason,
+    }
 
-def price_hit_short(sl: float, tp_levels: List[float], last_price: float):
-    if last_price >= sl:
-        return "sl_hit"
-    if any(last_price <= tp for tp in tp_levels):
-        return "tp_hit"
-    return None
+def format_setup_card(setup: Dict, timeframe: str) -> str:
+    side_emoji = "🟢 LONG" if setup["side"] == "long" else "🔴 SHORT"
+    tps_txt = " / ".join([f"{tp:.4f}" for tp in setup["tps"]])
+    rr = max( (max(setup["tps"]) - setup["entry"]) / (setup["entry"] - setup["sl"]), 0.0001 ) if setup["side"]=="long" else \
+         max( (setup["entry"] - min(setup["tps"])) / (setup["sl"] - setup["entry"]), 0.0001 )
+    return (
+        f"**{side_emoji} – {setup['symbol']} ({timeframe})**\n"
+        f"Entry: **{setup['entry']:.5f}**   SL: **{setup['sl']:.5f}**   TP(s): **{tps_txt}**\n"
+        f"Est. RR: **{rr:.2f}**\n"
+        f"Reason: {setup['reason']}\n"
+        f"⌚ {setup['created_at']}"
+    )
 
+def signature_key(symbol: str, side: str, created_at: pd.Timestamp) -> str:
+    return f"{symbol}:{side}:{int(created_at.value/1e9)}"
 
-def price_hit_long(sl: float, tp_levels: List[float], last_price: float):
-    if last_price <= sl:
-        return "sl_hit"
-    if any(last_price >= tp for tp in tp_levels):
-        return "tp_hit"
-    return None
+def price_touches(value: float, price: float, tol_bps: float = 5.0) -> bool:
+    """
+    Considered 'touched' if within tolerance (basis points).
+    """
+    if value == 0: 
+        return False
+    diff = abs(price - value) / value * 10000  # bps
+    return diff <= tol_bps
 
+# ---------- Core Strategy (OB-flavored EMA+BB) ----------
 
-# ===============================
-# Discord events & commands
-# ===============================
+def find_setups(symbol: str, df: pd.DataFrame) -> List[Dict]:
+    """
+    Detects potential long/short setups using:
+      - Trend via EMAs (fast>med>(slow) for longs; inverse for shorts)
+      - Displacement breakout: close beyond recent high/low with strong range
+      - Order-block heuristic: last opposing candle defines retest zone
+      - Entry on mid/upper/lower BB retest depending on side
+      - SL just beyond OB candle extreme (tighter SL in conservative)
+      - TPs at 1R / 1.5R / 2R from entry
+    """
+    pars = risk_params(RISK_MODE)
+    setups: List[Dict] = []
+
+    if len(df) < max(EMA_SLOW, BB_PERIOD) + 5:
+        return setups
+
+    i = len(df) - 1  # use last CLOSED candle
+    c = df.iloc[i]
+    prev = df.iloc[i-1]
+
+    ema_f = df[f"ema_{EMA_FAST}"].iloc[i]
+    ema_m = df[f"ema_{EMA_MED}"].iloc[i]
+    ema_s = df[f"ema_{EMA_SLOW}"].iloc[i]
+
+    disp = displacement_strength(df, i)
+
+    # Long bias
+    long_trend_ok = ema_f > ema_m and (ema_m > ema_s if pars["require_ema_slow_alignment"] else True)
+    # Short bias
+    short_trend_ok = ema_f < ema_m and (ema_m < ema_s if pars["require_ema_slow_alignment"] else True)
+
+    # Recent swing window for breakout check
+    look = 10
+    recent_high = df["high"].iloc[i-look:i].max()
+    recent_low  = df["low"].iloc[i-look:i].min()
+
+    # --- LONG candidate: close breaks above recent high with displacement ---
+    if long_trend_ok and c["close"] > recent_high and disp >= pars["min_displacement"]:
+        ob = last_opposing_candle(df, i, "long", search_back=10)
+        if ob is not None:
+            # OB zone = body of last red candle
+            ob_low = min(ob["open"], ob["close"])
+            ob_high = max(ob["open"], ob["close"])
+            # Entry on BB mid/upper retest: choose mid if available, else ob_high
+            entry_candidate = float(df["bb_mid"].iloc[i]) if not math.isnan(df["bb_mid"].iloc[i]) else float(ob_high)
+            # SL tucked below OB low; tighter in conservative
+            pad = 0.0005 if pars["use_tighter_sl"] else 0.0010
+            sl = float(ob_low) * (1 - pad)
+            # Ensure valid
+            if entry_candidate > sl:
+                r1 = entry_candidate + (entry_candidate - sl) * 1.0
+                r15 = entry_candidate + (entry_candidate - sl) * 1.5
+                r2 = entry_candidate + (entry_candidate - sl) * 2.0
+                rr = (r1 - entry_candidate) / (entry_candidate - sl)
+                if rr >= pars["min_rr"]:
+                    reason = f"Trend up (EMA {EMA_FAST}>{EMA_MED}{'>EMA_'+str(EMA_SLOW) if pars['require_ema_slow_alignment'] else ''}), breakout w/ displacement {disp:.2f}, OB retest."
+                    setups.append(make_setup(symbol, "long", entry_candidate, sl, [r1, r15, r2], c["close_time"], reason))
+
+    # --- SHORT candidate: close breaks below recent low with displacement ---
+    if short_trend_ok and c["close"] < recent_low and disp >= pars["min_displacement"]:
+        ob = last_opposing_candle(df, i, "short", search_back=10)
+        if ob is not None:
+            ob_low = min(ob["open"], ob["close"])
+            ob_high = max(ob["open"], ob["close"])
+            entry_candidate = float(df["bb_mid"].iloc[i]) if not math.isnan(df["bb_mid"].iloc[i]) else float(ob_low)
+            pad = 0.0005 if pars["use_tighter_sl"] else 0.0010
+            sl = float(ob_high) * (1 + pad)
+            if entry_candidate < sl:
+                r1 = entry_candidate - (sl - entry_candidate) * 1.0
+                r15 = entry_candidate - (sl - entry_candidate) * 1.5
+                r2 = entry_candidate - (sl - entry_candidate) * 2.0
+                rr = (entry_candidate - r1) / (sl - entry_candidate)
+                if rr >= pars["min_rr"]:
+                    reason = f"Trend down (EMA {EMA_FAST}<{EMA_MED}{'<EMA_'+str(EMA_SLOW) if pars['require_ema_slow_alignment'] else ''}), breakdown w/ displacement {disp:.2f}, OB retest."
+                    setups.append(make_setup(symbol, "short", entry_candidate, sl, [r1, r15, r2], c["close_time"], reason))
+
+    return setups
+
+async def post_to_channel(text: str):
+    ch = bot.get_channel(CHANNEL_ID)
+    if ch:
+        await ch.send(text)
+    else:
+        log.error("Channel not found; check CRYPTO_SETUPS_CHANNEL_ID")
+
+def latest_price(symbol: str) -> Optional[float]:
+    url = f"{BINANCE_BASE}/ticker/price"
+    try:
+        r = requests.get(url, params={"symbol": symbol}, timeout=10)
+        r.raise_for_status()
+        return float(r.json()["price"])
+    except Exception as e:
+        log.error(f"price fetch error {symbol}: {e}")
+        return None
+
+def should_suppress(setup: Dict) -> bool:
+    sig = signature_key(setup["symbol"], setup["side"], setup["created_at"])
+    last = recent_alerts.get(sig)
+    if not last:
+        return False
+    return (time.time() - last) < (DUPLICATE_COOLDOWN_MIN * 60)
+
+def mark_alerted(setup: Dict):
+    sig = signature_key(setup["symbol"], setup["side"], setup["created_at"])
+    recent_alerts[sig] = time.time()
+
+def check_tp_sl_progress(symbol: str):
+    """Close active setups if TP/SL hit; avoids repeat alerts."""
+    if symbol not in open_setups:
+        return
+    st = open_setups[symbol]
+    if not st.get("active"):
+        return
+    price = latest_price(symbol)
+    if price is None:
+        return
+    if st["side"] == "long":
+        # SL first
+        if price <= st["sl"]:
+            st["active"] = False
+            st["closed_reason"] = "Stop Loss hit"
+        # TPs ascending
+        elif any(price_touches(tp, price, tol_bps=8.0) or price >= tp for tp in st["tps"]):
+            st["active"] = False
+            st["closed_reason"] = "Take Profit reached"
+    else:
+        if price >= st["sl"]:
+            st["active"] = False
+            st["closed_reason"] = "Stop Loss hit"
+        elif any(price_touches(tp, price, tol_bps=8.0) or price <= tp for tp in st["tps"]):
+            st["active"] = False
+            st["closed_reason"] = "Take Profit reached"
+
+# ---------- Scanner Task ----------
+
+async def scan_once():
+    found_any = False
+    for symbol in ANALYSIS_COINS:
+        try:
+            df = fetch_klines(symbol, TIMEFRAME, limit=max(EMA_SLOW, BB_PERIOD) + 120)
+            df = add_indicators(df)
+
+            # Close setups if TP/SL hit
+            check_tp_sl_progress(symbol)
+
+            setups = find_setups(symbol, df)
+            if not setups:
+                continue
+
+            for s in setups:
+                if should_suppress(s):
+                    continue
+                # Don’t stack setups: only one active per symbol
+                if symbol in open_setups and open_setups[symbol].get("active"):
+                    continue
+
+                msg = format_setup_card(s, TIMEFRAME)
+                await post_to_channel(msg)
+                open_setups[symbol] = s
+                mark_alerted(s)
+                found_any = True
+        except Exception as e:
+            log.exception(f"[scan] {symbol}: {e}")
+            continue
+
+    if not found_any:
+        log.info("No notable crypto setups this scan.")
+
+@tasks.loop(seconds=max(SCAN_INTERVAL_SEC, 60))
+async def scanner():
+    await scan_once()
+
+@scanner.before_loop
+async def before_scanner():
+    await bot.wait_until_ready()
+    log.info("Scanner started.")
+
+# ---------- Commands ----------
 
 @bot.event
 async def on_ready():
-    logger.info("✅ Logged in as %s#%s (%s)", bot.user.name, bot.user.discriminator, bot.user.id)
-    await bot.change_presence(activity=discord.Game(name="JCF HQ — Crypto Scan"))
-    if CRYPTO_SETUP_CHANNEL_ID:
-        ch = bot.get_channel(CRYPTO_SETUP_CHANNEL_ID)
-        if ch:
-            await ch.send("✅ **Crypto scanner online** — listening for setups…")
+    log.info(f"✅ Logged in as {bot.user} (id: {bot.user.id})")
+    await bot.change_presence(activity=discord.Game(name="JCF HQ – crypto radar"))
+    ch = bot.get_channel(CHANNEL_ID)
+    if ch:
+        await ch.send("✅ **Crypto scanner online** — EMA+BB+OB mode activated.")
+    if not scanner.is_running():
+        scanner.start()
 
-
-@bot.command(name="ping")
-async def ping_cmd(ctx):
-    await ctx.reply("Pong 🏓")
-
-
-@bot.command(name="status")
-async def status_cmd(ctx):
+@bot.command()
+async def status(ctx):
+    active = [k for k,v in open_setups.items() if v.get("active")]
     await ctx.reply(
-        f"**Status**\n"
-        f"- Coins: `{', '.join(COIN_IDS) or 'none'}`\n"
-        f"- Risk: `{RISK_MODE}` | Interval: `{SCAN_INTERVAL_SEC}s`\n"
-        f"- Active setups: `{len(ALERT_GUARD.all_active())}`"
+        f"🛰️ Scanner: **{TIMEFRAME}**, coins: **{len(ANALYSIS_COINS)}**, risk: **{RISK_MODE}**\n"
+        f"Active setups: **{len(active)}** ({', '.join(active) if active else 'none'})"
     )
 
+@bot.command()
+async def scan(ctx):
+    await ctx.reply("🔎 Scanning now…")
+    await scan_once()
+    await ctx.reply("✅ Scan complete.")
 
-@bot.command(name="testcrypto")
-async def testcrypto_cmd(ctx):
-    """Send a single mock setup for ETH (no guard)."""
-    ch = bot.get_channel(CRYPTO_SETUP_CHANNEL_ID)
-    if not ch:
-        await ctx.reply("Crypto channel not configured.")
-        return
-    mock = {
-        "symbol": "ETHEREUM",
-        "tf": "30m",
-        "momentum": "Moderate",
-        "side": "long",
-        "entry_low": 3000 * 0.995,
-        "entry_high": 3000 * 1.005,
-        "sl": 3000 * 0.985,
-        "targets": [3000 * 1.01, 3000 * 1.02, 3000 * 1.03],
-        "rr_to_tp2": 1.33,
-        "confidence": 86,
-        "price_now": 3000,
-        "change_24h": 6.2,
-        "label": "Bullish Move Setup",
-    }
-    await send_setup_card(ch, mock)
-    await ctx.reply("Test crypto alert sent ✅")
+@bot.command()
+async def coins(ctx):
+    await ctx.reply(f"🪙 Tracking: {', '.join(ANALYSIS_COINS)} | TF: {TIMEFRAME}")
 
+@bot.command()
+async def reset_open(ctx):
+    open_setups.clear()
+    await ctx.reply("♻️ Cleared tracked open setups.")
 
-@bot.command(name="state")
-async def state_cmd(ctx, symbol: str = None):
-    if symbol:
-        act = ALERT_GUARD.active_for_symbol(symbol.upper())
-    else:
-        act = ALERT_GUARD.all_active()
-    if not act:
-        await ctx.reply("No active setups.")
-        return
-    lines = []
-    for _, v in act.items():
-        lines.append(
-            f"- {v['symbol']} {v['tf']} {v['side']} | SL {fmt_price(v['sl'])} | "
-            f"TP1 {fmt_price(v['targets'][0])}"
-        )
-    await ctx.reply("Active setups:\n" + "\n".join(lines))
-
-
-@bot.command(name="clearsetup")
-async def clearsetup_cmd(ctx, symbol: str):
-    symbol = symbol.upper()
-    to_clear = []
-    active = ALERT_GUARD.all_active()
-    for k in list(active.keys()):
-        if k.startswith(symbol + "|"):
-            to_clear.append(k)
-    for k in to_clear:
-        ALERT_GUARD.resolve(k, "manual_clear")
-    await ctx.reply(f"Cleared {len(to_clear)} active setup(s) for {symbol}.")
-
-
-# ===============================
-# Scan loop
-# ===============================
-
-@tasks.loop(seconds=max(30, SCAN_INTERVAL_SEC))
-async def crypto_scan_loop():
-    if not COIN_IDS:
-        logger.warning("No COIN_IDS configured; skipping scan.")
-        return
-    try:
-        prices = fetch_prices(COIN_IDS)  # {id: {usd, usd_24h_change}}
-    except requests.HTTPError as e:
-        logger.error("[scan] HTTPError: %s", e)
-        return
-    except Exception as e:
-        logger.exception("[scan] unexpected error: %s", e)
-        return
-
-    ch = bot.get_channel(CRYPTO_SETUP_CHANNEL_ID) if CRYPTO_SETUP_CHANNEL_ID else None
-    if not ch:
-        logger.warning("CRYPTO_SETUP_CHANNEL_ID not set or channel not found.")
-        return
-
-    # 1) Build new setups (if any) and post (guarded)
-    for cid, row in prices.items():
-        price = float(row.get("usd", 0.0))
-        chg = float(row.get("usd_24h_change", 0.0))
-        if price <= 0:
-            continue
-
-        status, setup = compute_setup_from_price(cid, price, chg)
-        if status != "ok":
-            continue
-
-        key = _setup_key(setup["symbol"], setup["tf"], setup["side"], setup["entry_low"], setup["entry_high"], setup["sl"], setup["targets"][0])
-        if ALERT_GUARD.should_alert(key):
-            await send_setup_card(ch, setup)
-            ALERT_GUARD.register_alert(key, setup)
-        else:
-            # duplicate of an active setup — skip
-            pass
-
-    # 2) Resolve any active setups (TP/SL) using latest prices
-    latest_by_symbol = {}
-    # Map our active symbols (stored uppercase) back to lowercase ids for the price dict
-    for cid, row in prices.items():
-        latest_by_symbol[cid.upper()] = float(row.get("usd", 0.0))
-
-    active_copy = ALERT_GUARD.all_active()
-    for key, payload in active_copy.items():
-        sym = payload["symbol"].upper()
-        last_price = latest_by_symbol.get(sym)
-        if not last_price:
-            continue
-        side = payload["side"]
-        sl = float(payload["sl"])
-        tps = [float(x) for x in payload["targets"]]
-
-        if side == "short":
-            hit = price_hit_short(sl, tps, last_price)
-        else:
-            hit = price_hit_long(sl, tps, last_price)
-
-        if hit in ("tp_hit", "sl_hit"):
-            await send_resolution_card(ch, payload, last_price, hit)
-            ALERT_GUARD.resolve(key, hit)
-
-
-@crypto_scan_loop.before_loop
-async def before_scan():
-    await bot.wait_until_ready()
-    logger.info("🛰️  crypto_scan_loop started: every %ss", SCAN_INTERVAL_SEC)
-
-
-# ===============================
-# Main
-# ===============================
-
-def validate_env():
-    problems = []
-    if not DISCORD_TOKEN:
-        problems.append("DISCORD_TOKEN missing")
-    if not CRYPTO_SETUP_CHANNEL_ID:
-        problems.append("CRYPTO_SETUP_CHANNEL_ID missing or invalid")
-    if not COIN_IDS:
-        problems.append("COIN_IDS empty")
-    if problems:
-        raise RuntimeError("Config error: " + ", ".join(problems))
-
-
+# ---------- Run ----------
 if __name__ == "__main__":
-    validate_env()
-    crypto_scan_loop.start()
-    bot.run(DISCORD_TOKEN)
+    if not TOKEN or CHANNEL_ID == 0:
+        raise SystemExit("Missing DISCORD_TOKEN or CRYPTO_SETUPS_CHANNEL_ID")
+    bot.run(TOKEN)
