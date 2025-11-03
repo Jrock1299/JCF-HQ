@@ -1,9 +1,6 @@
-import os, json, asyncio, logging, math, statistics as stats
+import os, json, asyncio, logging, math
 from datetime import datetime, timezone
 import requests
-import os
-import json
-from datetime import datetime, timezone
 import discord
 from discord.ext import commands, tasks
 
@@ -11,6 +8,7 @@ from discord.ext import commands, tasks
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 CRYPTO_SETUP_CHANNEL_ID = int(os.getenv("CRYPTO_SETUP_CHANNEL_ID", "0"))
 TRADE_HISTORY_CHANNEL_ID = int(os.getenv("TRADE_HISTORY_CHANNEL_ID", "0"))
+
 COIN_IDS = [c.strip().lower() for c in os.getenv("COIN_IDS", "").split(",") if c.strip()]
 SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
 RISK_MODE = os.getenv("RISK_MODE", "conservative").lower()
@@ -23,8 +21,10 @@ if CG_KEY:
     # CoinGecko demo key header
     HEADERS["x-cg-demo-api-key"] = CG_KEY
 
-logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO),
-                    format="%(levelname)s:%(name)s:%(message)s")
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL, logging.INFO),
+    format="%(levelname)s:%(name)s:%(message)s"
+)
 log = logging.getLogger("jcf-hq")
 
 # ───────── DISCORD BOT ─────────
@@ -51,7 +51,7 @@ def save_state(state):
     except Exception as e:
         log.warning(f"could not save state: {e}")
 
-open_trades = load_state()   # { key: { … } }
+open_trades = load_state()   # { key: {..., log_msg_id:int} }
 next_scan_eta = "n/a"
 
 # ───────── TECH UTILS ─────────
@@ -84,7 +84,7 @@ def recent_pivot(series, lookback=5, mode="high"):
     else:
         return mid if mid == min(window) else None
 
-# Risk presets (in % of price)
+# Risk presets (% of price)
 RISK_PRESETS = {
     "conservative": {"stop": 1.8, "tp1": 0.7, "tp2": 1.2, "tp3": 1.8},
     "balanced":     {"stop": 2.2, "tp1": 1.0, "tp2": 1.6, "tp3": 2.4},
@@ -94,7 +94,6 @@ R = RISK_PRESETS.get(RISK_MODE, RISK_PRESETS["conservative"])
 
 # ───────── DATA FETCH ─────────
 def get_market_prices(coin_id, days="1", interval="minute"):
-    # returns list of floats [p1, p2, ..., pN]
     url = f"{API_BASE}/coins/{coin_id}/market_chart"
     params = {"vs_currency": "usd", "days": days, "interval": interval}
     r = requests.get(url, params=params, headers=HEADERS, timeout=20)
@@ -108,7 +107,6 @@ def get_market_prices(coin_id, days="1", interval="minute"):
     return prices
 
 def get_simple_changes(ids):
-    # 24h change using simple/price for the header block
     url = f"{API_BASE}/simple/price"
     params = {"ids": ",".join(ids), "vs_currencies": "usd", "include_24hr_change": "true"}
     r = requests.get(url, params=params, headers=HEADERS, timeout=20)
@@ -117,21 +115,10 @@ def get_simple_changes(ids):
 
 # ───────── SIGNAL LOGIC ─────────
 def build_setup(coin, prices):
-    """
-    Returns dict or None:
-      {
-        'direction': 'bull'|'bear',
-        'entry_low': float, 'entry_high': float,
-        'stop': float, 'targets':[t1,t2,t3],
-        'confidence': int, 'tf': '30m', 'momentum':'Moderate'
-      }
-    """
     if len(prices) < 120:
         return None
 
-    # use last ~900 points → emulate 30m by sampling
-    tail = prices[-600:]  # keep load modest
-    # quick “downsample” to smooth: take every 5th
+    tail = prices[-600:]
     ds = tail[::5]
 
     ema50  = ema(ds, 50)  if len(ds) >= 50  else None
@@ -142,11 +129,9 @@ def build_setup(coin, prices):
     if not all([ema50, ema200, lb, ub]):
         return None
 
-    # pivot proxy for order block direction bias
     piv_hi = recent_pivot(ds, lookback=5, mode="high")
     piv_lo = recent_pivot(ds, lookback=5, mode="low")
 
-    # confluence rules
     bull_bias = price > ema50 and price > ema200 and price <= lb * 1.01 and piv_lo is not None
     bear_bias = price < ema50 and price < ema200 and price >= ub * 0.99 and piv_hi is not None
 
@@ -154,10 +139,10 @@ def build_setup(coin, prices):
         return None
 
     direction = "bull" if bull_bias else "bear"
-    # entries/targets/stop as % bands around current price
+
     if direction == "bull":
-        entry_low  = price * (1 - 0.003)   # -0.3%
-        entry_high = price * (1 + 0.003)   # +0.3%
+        entry_low  = price * (1 - 0.003)
+        entry_high = price * (1 + 0.003)
         stop       = price * (1 - R["stop"]/100.0)
         t1         = price * (1 + R["tp1"]/100.0)
         t2         = price * (1 + R["tp2"]/100.0)
@@ -170,11 +155,10 @@ def build_setup(coin, prices):
         t2         = price * (1 - R["tp2"]/100.0)
         t3         = price * (1 - R["tp3"]/100.0)
 
-    # simple confidence score (0–100)
     dist_bb = abs(price - (lb if direction == "bull" else ub)) / price
     ema_sep = abs(ema50 - ema200) / price
     conf = 60 + int(min(30, ema_sep * 1000)) - int(min(10, dist_bb * 1000))
-    conf = max(60, min(95, conf))  # clamp; we only post high-confluence
+    conf = max(60, min(95, conf))
 
     return {
         "direction": direction,
@@ -197,7 +181,7 @@ def rr_to_tp2(setup):
         reward = setup["entry_high"] - setup["targets"][1]
     return round(reward / risk, 2) if risk > 0 else 0.0
 
-# ───────── MESSAGE BUILDERS ─────────
+# ───────── MESSAGE BUILDERS (setups) ─────────
 def fmt_setup_block(name, setup, change_24h):
     arrow = "🚀" if setup["direction"] == "bull" else "🔻"
     title = f"{arrow} {name.upper()} — {'Bullish' if setup['direction']=='bull' else 'Bearish'} Move Setup Detected ({RISK_MODE})"
@@ -214,22 +198,89 @@ def fmt_setup_block(name, setup, change_24h):
     ]
     return f"**{title}**\n```• " + "\n• ".join(lines) + "```"
 
-def fmt_trade_open(name, setup):
-    icon = "📈" if setup["direction"] == "bull" else "📉"
-    return (
-        f"{icon} **TRADE OPENED — {name.upper()} ({'Bullish' if setup['direction']=='bull' else 'Bearish'})**\n"
-        f"Entry: {setup['entry_low']:.4f} – {setup['entry_high']:.4f}\n"
-        f"Stop Loss: {setup['stop']:.4f}\n"
-        f"Targets: {setup['targets'][0]:.4f} / {setup['targets'][1]:.4f} / {setup['targets'][2]:.4f}\n"
-        f"Confidence: {setup['confidence']}%"
+# ───────── TRADE HISTORY LOGGER ─────────
+def _fmt_dt(ts: float | None = None):
+    dt = datetime.fromtimestamp(ts or datetime.now(timezone.utc).timestamp(), tz=timezone.utc)
+    return dt.strftime("%Y-%m-%d %H:%M UTC")
+
+def _trade_key(symbol: str, side: str):
+    return f"{symbol.upper()}|{side.lower()}"
+
+async def post_trade_open(bot_obj, trade: dict):
+    """
+    trade = {
+      "symbol": "ETH", "timeframe": "30m", "side": "long",
+      "entry": "3000.00 – 3008.00", "sl": "2975.00",
+      "targets": ["3020.00","3040.00","3060.00"],
+      "rr": 1.8, "confidence": 90, "reason": "EMA+BB+OB", "id": "ETH-30m-..."
+    }
+    """
+    ch = bot_obj.get_channel(TRADE_HISTORY_CHANNEL_ID)
+    if not ch:
+        return
+
+    header = f"📗 **OPEN** {trade['symbol']} — {trade['side'].upper()} ({trade.get('timeframe','')})"
+    body = (
+        f"• Entry: {trade['entry']}\n"
+        f"• Stop: {trade['sl']}\n"
+        f"• Targets: {' / '.join(trade['targets'])}\n"
+        f"• R:R: {trade.get('rr','–')}\n"
+        f"• Confidence: {trade.get('confidence','–')}%\n"
+        f"• Reason: {trade.get('reason','–')}\n"
+        f"• Opened: {_fmt_dt()}\n"
+        f"• ID: `{trade.get('id','n/a')}`"
     )
+    msg = await ch.send(f"{header}\n```{body}```")
 
-def fmt_trade_close(name, direction, reason, pnl_pct):
-    badge = "✅" if "TP" in reason else "❌"
-    arrow = "Bullish" if direction == "bull" else "Bearish"
-    return f"{badge} **TRADE CLOSED — {name.upper()} ({reason})**\nPnL: {pnl_pct:+.2f}% ({arrow})"
+    key = _trade_key(trade["symbol"], trade["side"])
+    open_trades[key] = {
+        "trade": trade,
+        "opened_at": datetime.now(timezone.utc).timestamp(),
+        "log_msg_id": msg.id,
+    }
+    save_state(open_trades)
 
-# ───────── POST HELPERS ─────────
+async def post_trade_close(bot_obj, symbol: str, side: str, result: str, price: str, pnl: str, note: str = ""):
+    ch = bot_obj.get_channel(TRADE_HISTORY_CHANNEL_ID)
+    if not ch:
+        return
+
+    key = _trade_key(symbol, side)
+    rec = open_trades.pop(key, None)
+    save_state(open_trades)
+
+    tag = "✅" if result.upper().startswith("TP") else "❌" if result.upper()=="SL" else "🟨"
+    duration = ""
+
+    if rec:
+        opened_ts = rec.get("opened_at")
+        if opened_ts:
+            dur_sec = int(datetime.now(timezone.utc).timestamp() - opened_ts)
+            hrs = dur_sec // 3600
+            mins = (dur_sec % 3600) // 60
+            duration = f" • Duration: {hrs}h {mins}m"
+
+        try:
+            msg = await ch.fetch_message(rec["log_msg_id"])
+            trade = rec["trade"]
+            header = f"📕 **CLOSED** {trade['symbol']} — {trade['side'].upper()} ({trade.get('timeframe','')})"
+            body = (
+                f"• Entry: {trade['entry']}\n"
+                f"• Stop: {trade['sl']}\n"
+                f"• Targets: {' / '.join(trade['targets'])}\n"
+                f"• Result: {result} at {price}\n"
+                f"• PnL: {pnl}{duration}\n"
+                f"• Reason: {note or trade.get('reason','–')}\n"
+                f"• Closed: {_fmt_dt()}\n"
+                f"• ID: `{trade.get('id','n/a')}`"
+            )
+            await msg.edit(content=f"{header}\n```{body}```")
+        except Exception:
+            pass
+
+    await ch.send(f"{tag} **CLOSE** {symbol.upper()} — {side.upper()} • {result} at {price} • PnL {pnl}" + duration + (f" — {note}" if note else ""))
+
+# ───────── SIMPLE POST HELPER ─────────
 async def post(channel_id: int, content: str):
     ch = bot.get_channel(channel_id)
     if ch:
@@ -264,27 +315,29 @@ async def crypto_scan_loop():
             if isinstance(change_map.get(coin), dict):
                 change_24h = float(change_map[coin].get("usd_24h_change", 0.0))
 
-            # First, manage any existing open trade
+            # Manage existing open trade for this coin
             to_delete = []
-            for key, trade in open_trades.items():
-                if trade["coin"] != coin:
+            for key, trade in list(open_trades.items()):
+                if trade.get("coin") != coin:
                     continue
                 dirn = trade["direction"]
                 if dirn == "bull":
-                    # TP hit?
                     if last_price >= trade["targets"][1]:
-                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(coin, dirn, "TP2 HIT", (trade["targets"][1] / trade["entry_mid"] - 1)*100))
+                        pnl_pct = (trade["targets"][1] / trade["entry_mid"] - 1) * 100
+                        await post_trade_close(bot, coin, "long", "TP2", f"{trade['targets'][1]:.4f}", f"{pnl_pct:+.2f}%")
                         to_delete.append(key)
-                    # SL?
                     elif last_price <= trade["stop"]:
-                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(coin, dirn, "STOP LOSS HIT", (trade["stop"] / trade["entry_mid"] - 1)*100))
+                        pnl_pct = (trade["stop"] / trade["entry_mid"] - 1) * 100
+                        await post_trade_close(bot, coin, "long", "SL", f"{trade['stop']:.4f}", f"{pnl_pct:+.2f}%")
                         to_delete.append(key)
                 else:
                     if last_price <= trade["targets"][1]:
-                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(coin, dirn, "TP2 HIT", (1 - trade["targets"][1] / trade["entry_mid"])*100))
+                        pnl_pct = (1 - trade["targets"][1] / trade["entry_mid"]) * 100
+                        await post_trade_close(bot, coin, "short", "TP2", f"{trade['targets'][1]:.4f}", f"{pnl_pct:+.2f}%")
                         to_delete.append(key)
                     elif last_price >= trade["stop"]:
-                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(coin, dirn, "STOP LOSS HIT", (1 - trade["stop"] / trade["entry_mid"])*100))
+                        pnl_pct = (1 - trade["stop"] / trade["entry_mid"]) * 100
+                        await post_trade_close(bot, coin, "short", "SL", f"{trade['stop']:.4f}", f"{pnl_pct:+.2f}%")
                         to_delete.append(key)
 
             for k in to_delete:
@@ -292,16 +345,31 @@ async def crypto_scan_loop():
             if to_delete:
                 save_state(open_trades)
 
-            # Then, maybe open a new setup (dedupe key check)
+            # Maybe open new trade
             if setup:
                 key = f"{coin}|{setup['direction']}"
                 if key not in open_trades:
-                    # Post to setups channel
+                    # Post to setups
                     await post(CRYPTO_SETUP_CHANNEL_ID, fmt_setup_block(coin, setup, change_24h))
-                    # Log open in history channel
-                    await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_open(coin, setup))
-                    # Save state
+
+                    # Build trade dict for logger
+                    side = "long" if setup["direction"] == "bull" else "short"
                     entry_mid = (setup["entry_low"] + setup["entry_high"]) / 2
+                    trade_dict = {
+                        "symbol": coin.upper(),
+                        "timeframe": setup["tf"],
+                        "side": side,
+                        "entry": f"{setup['entry_low']:.4f} – {setup['entry_high']:.4f}",
+                        "sl": f"{setup['stop']:.4f}",
+                        "targets": [f"{setup['targets'][0]:.4f}", f"{setup['targets'][1]:.4f}", f"{setup['targets'][2]:.4f}"],
+                        "rr": rr_to_tp2(setup),
+                        "confidence": setup["confidence"],
+                        "reason": "EMA+BB+OB",
+                        "id": f"{coin}-{setup['tf']}-{int(datetime.now(timezone.utc).timestamp())}"
+                    }
+                    await post_trade_open(bot, trade_dict)
+
+                    # Persist open
                     open_trades[key] = {
                         "coin": coin,
                         "direction": setup["direction"],
@@ -311,6 +379,8 @@ async def crypto_scan_loop():
                         "stop": setup["stop"],
                         "targets": setup["targets"],
                         "opened_at": datetime.now(timezone.utc).isoformat(),
+                        # post_trade_open() also stores log_msg_id in open_trades via trade key with side;
+                        # keep this minimal record for scanner checks:
                     }
                     save_state(open_trades)
 
@@ -360,6 +430,39 @@ async def resetstate(ctx):
     open_trades = {}
     save_state(open_trades)
     await ctx.reply("State cleared ✅")
+
+# --- NEW: trade-history test & manual close ---
+@bot.command()
+async def logtest(ctx):
+    """Posts a sample OPEN to 📜-trade-history then auto-closes it after 10s."""
+    sample = {
+        "symbol": "ETH",
+        "timeframe": "30m",
+        "side": "long",
+        "entry": "3000.00 – 3008.00",
+        "sl": "2975.00",
+        "targets": ["3020.00","3040.00","3060.00"],
+        "rr": 1.8,
+        "confidence": 90,
+        "reason": "EMA+BB+OB confluence",
+        "id": "ETH-30m-demo"
+    }
+    await post_trade_open(bot, sample)
+    await ctx.reply("Posted sample OPEN to 📜-trade-history.")
+    try:
+        await asyncio.sleep(10)
+        await post_trade_close(bot, "ETH", "long", "TP2", "3040.00", "+1.3%", "demo close")
+    except Exception:
+        pass
+
+@bot.command()
+async def closeit(ctx, symbol: str, side: str, result: str, price: str, pnl: str, *, note: str = ""):
+    """
+    Manually close and log an open trade.
+    Example: !closeit eth long TP1 3040 +1.2% partials hit
+    """
+    await post_trade_close(bot, symbol, side, result, price, pnl, note)
+    await ctx.reply("Close logged.")
 
 # ───────── LIFECYCLE ─────────
 @bot.event
