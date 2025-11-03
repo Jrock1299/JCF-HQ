@@ -43,8 +43,8 @@ def threshold_for_risk(mode: str) -> float:
 
 def fetch_prices(coin_ids: List[str]) -> dict:
     """Call CoinGecko /simple/price for the given ids."""
-    url = "https://pro-api.coingecko.com/api/v3/simple/price"
-    headers = {"x-cg-pro-api-key": COINGECKO_API_KEY}
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    headers = {"x-cg-demo-api-key": COINGECKO_API_KEY}
     params = {
         "ids": ",".join(coin_ids),
         "vs_currencies": "usd",
