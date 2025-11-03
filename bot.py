@@ -123,15 +123,14 @@ R = RISK_PRESETS.get(RISK_MODE, RISK_PRESETS["conservative"])
 # ──────────────────────────────
 # COINGECKO FETCHERS
 # ──────────────────────────────
-def cg_market_prices(coin_id, days="1", interval="minute"):
-    """Return list of floats [prices...] for given coin via CoinGecko market_chart."""
+def cg_market_prices(coin_id, days="1"):
+    """
+    Free CoinGecko demo-compatible price fetch (uses 5m~1h granularity).
+    Returns [price1, price2, ...]
+    """
     url = f"{CG_API_BASE}/coins/{coin_id}/market_chart"
-    params = {"vs_currency": "usd", "days": days, "interval": interval}
+    params = {"vs_currency": "usd", "days": days}  # <-- no interval param
     r = requests.get(url, params=params, headers=CG_HEADERS, timeout=20)
-    if r.status_code == 400:
-        # demo plan often rejects minute interval → retry without interval
-        params = {"vs_currency": "usd", "days": days}
-        r = requests.get(url, params=params, headers=CG_HEADERS, timeout=20)
     r.raise_for_status()
     data = r.json()
     return [p[1] for p in data.get("prices", [])]
