@@ -1,17 +1,11 @@
-import os
-import asyncio
-import time
-import math
-import logging
-from typing import Dict, List, Tuple, Optional
-
-import requests
-import pandas as pd
+import os, asyncio, time, math, logging
+from typing import Dict, List, Optional, Tuple
+import requests, pandas as pd
 
 import discord
 from discord.ext import commands, tasks
 
-# ---------- Config & Logging ----------
+# ==================== ENV / CONFIG ====================
 
 TOKEN = os.getenv("DISCORD_TOKEN", "")
 CHANNEL_ID = int(os.getenv("CRYPTO_SETUPS_CHANNEL_ID", "0") or "0")
@@ -25,6 +19,9 @@ EMA_FAST, EMA_MED, EMA_SLOW = sorted(EMA_PERIODS)[0], sorted(EMA_PERIODS)[1], so
 BB_PERIOD = int(os.getenv("BB_PERIOD", "20"))
 BB_STD = float(os.getenv("BB_STD", "2.0"))
 
+OB_LENGTH = int(os.getenv("OB_LENGTH", "5"))             # Pine: Volume Pivot Length
+MITIGATION_METHOD = os.getenv("MITIGATION_METHOD", "wick").strip().lower()  # 'wick' or 'close'
+
 RISK_MODE = os.getenv("RISK_MODE", "balanced").strip().lower()
 SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -33,243 +30,283 @@ DUPLICATE_COOLDOWN_MIN = int(os.getenv("DUPLICATE_COOLDOWN_MIN", "120"))
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
 log = logging.getLogger("jcfhq-crypto")
 
-# ---------- Discord Bot ----------
+# ==================== DISCORD ====================
 
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# State: open setups (per symbol) – survives while process runs
+# tracked setups & duplicate suppression
 open_setups: Dict[str, Dict] = {}
-# Recently alerted signatures to avoid spam on restarts
-recent_alerts: Dict[str, float] = {}  # key: f"{symbol}:{side}:{t0}" -> last_ts
+recent_alerts: Dict[str, float] = {}
 
-# ---------- Helpers ----------
+# ==================== DATA ====================
 
 BINANCE_BASE = "https://api.binance.com/api/v3"
 
-def fetch_klines(symbol: str, interval: str, limit: int = 300) -> pd.DataFrame:
+def fetch_klines(symbol: str, interval: str, limit: int = 600) -> pd.DataFrame:
     url = f"{BINANCE_BASE}/klines"
     params = {"symbol": symbol, "interval": interval, "limit": min(limit, 1000)}
     r = requests.get(url, params=params, timeout=15)
     r.raise_for_status()
     data = r.json()
-    cols = [
-        "open_time","open","high","low","close","volume",
-        "close_time","quote_asset_volume","number_of_trades",
-        "taker_buy_base","taker_buy_quote","ignore"
-    ]
+    cols = ["open_time","open","high","low","close","volume",
+            "close_time","quote_asset_volume","number_of_trades",
+            "taker_buy_base","taker_buy_quote","ignore"]
     df = pd.DataFrame(data, columns=cols)
     for c in ["open","high","low","close","volume"]:
         df[c] = df[c].astype(float)
-    df["open_time"] = pd.to_datetime(df["open_time"], unit="ms")
-    df["close_time"] = pd.to_datetime(df["close_time"], unit="ms")
+    df["open_time"] = pd.to_datetime(df["open_time"], unit="ms", utc=True)
+    df["close_time"] = pd.to_datetime(df["close_time"], unit="ms", utc=True)
     return df
 
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    # EMAs
     df[f"ema_{EMA_FAST}"] = df["close"].ewm(span=EMA_FAST, adjust=False).mean()
-    df[f"ema_{EMA_MED}"]  = df["close"].ewm(span=EMA_MED, adjust=False).mean()
+    df[f"ema_{EMA_MED}"]  = df["close"].ewm(span=EMA_MED,  adjust=False).mean()
     df[f"ema_{EMA_SLOW}"] = df["close"].ewm(span=EMA_SLOW, adjust=False).mean()
 
-    # Bollinger Bands
     rolling = df["close"].rolling(BB_PERIOD)
     ma = rolling.mean()
     std = rolling.std(ddof=0)
     df["bb_mid"] = ma
-    df["bb_up"] = ma + BB_STD * std
-    df["bb_dn"] = ma - BB_STD * std
+    df["bb_up"]  = ma + BB_STD * std
+    df["bb_dn"]  = ma - BB_STD * std
 
-    # Candle body and range
-    df["body"] = (df["close"] - df["open"]).abs()
+    df["body"]  = (df["close"] - df["open"]).abs()
     df["range"] = df["high"] - df["low"]
     return df
 
 def risk_params(mode: str) -> Dict:
     mode = mode.lower()
     if mode == "conservative":
-        return {
-            "min_displacement": 1.25,  # multiple of ATR-ish proxy (range avg)
-            "min_rr": 1.8,
-            "require_ema_slow_alignment": True,
-            "use_tighter_sl": True,
-        }
+        return {"min_rr": 1.8, "pad": 0.0005, "require_slow": True}
     if mode == "aggressive":
-        return {
-            "min_displacement": 0.9,
-            "min_rr": 1.2,
-            "require_ema_slow_alignment": False,
-            "use_tighter_sl": False,
-        }
-    # balanced default
-    return {
-        "min_displacement": 1.1,
-        "min_rr": 1.5,
-        "require_ema_slow_alignment": True,
-        "use_tighter_sl": False,
-    }
+        return {"min_rr": 1.2, "pad": 0.0015, "require_slow": False}
+    return {"min_rr": 1.5, "pad": 0.0010, "require_slow": True}
 
-def displacement_strength(df: pd.DataFrame, idx: int, lookback: int = 20) -> float:
-    """
-    Rough displacement score: last candle range / avg range(lookback).
-    """
-    if idx < 1:
-        return 0.0
-    recent = df.iloc[idx]
-    avg_range = df["range"].iloc[max(0, idx - lookback):idx].mean()
-    if not avg_range or math.isnan(avg_range):
-        return 0.0
-    return float(recent["range"] / avg_range)
+# ==================== LUX-STYLE OB DETECTOR ====================
 
-def last_opposing_candle(df: pd.DataFrame, idx: int, direction: str, search_back: int = 10) -> Optional[pd.Series]:
+def _pivot_high_volume_mask(vol: pd.Series, length: int) -> pd.Series:
     """
-    For long: last strong red candle before breakout.
-    For short: last strong green candle before breakdown.
+    Pine: phv = ta.pivothigh(volume, length, length)
+    True when vol[idx] is the highest within a centered window of size 2*length+1.
+    We emulate with rolling max and compare the central value.
     """
-    start = max(0, idx - search_back)
-    window = df.iloc[start:idx]
-    if direction == "long":
-        # red candles: close < open; pick largest body
-        reds = window[window["close"] < window["open"]].copy()
-        if reds.empty: 
-            return None
-        reds["body_size"] = (reds["open"] - reds["close"]).abs()
-        return reds.iloc[reds["body_size"].idxmax()]
+    win = 2*length + 1
+    # centered rolling max (approx by comparing with past window shifted)
+    max_back = vol.rolling(win, center=True).max()
+    return (vol == max_back)
+
+def compute_ob_fields(df: pd.DataFrame, length: int) -> pd.DataFrame:
+    """
+    Implements the same state used in the Pine script:
+      upper = highest(length), lower = lowest(length)
+      os := high[length] > upper ? 0 : low[length] < lower ? 1 : os[1]
+    We approximate by shifting by 'length' to look back.
+    """
+    df = df.copy()
+
+    # highest/lowest over last 'length' bars (Pine evaluates at the bar using [length] indexing)
+    df["upper"] = df["high"].rolling(length).max()
+    df["lower"] = df["low"].rolling(length).min()
+
+    # shifted references like high[length], low[length], hl2[length]
+    df["high_l"] = df["high"].shift(length)
+    df["low_l"]  = df["low"].shift(length)
+    df["hl2"]    = (df["high"] + df["low"]) / 2.0
+    df["hl2_l"]  = df["hl2"].shift(length)
+
+    # volume pivot high (centered window)
+    df["phv"] = _pivot_high_volume_mask(df["volume"], length)
+
+    # os state (0 when prior high broke above upper; 1 when prior low broke below lower; else keep previous)
+    os_vals = []
+    prev = 0
+    for idx, row in df.iterrows():
+        cond0 = (not pd.isna(row["high_l"])) and (not pd.isna(row["upper"])) and (row["high_l"] > row["upper"])
+        cond1 = (not pd.isna(row["low_l"]))  and (not pd.isna(row["lower"])) and (row["low_l"]  < row["lower"])
+        if cond0:
+            prev = 0
+        elif cond1:
+            prev = 1
+        os_vals.append(prev)
+    df["os"] = os_vals
+
+    # mitigation targets
+    if MITIGATION_METHOD == "close":
+        df["target_bull"] = df["close"].rolling(length).min()
+        df["target_bear"] = df["close"].rolling(length).max()
     else:
-        greens = window[window["close"] > window["open"]].copy()
-        if greens.empty:
-            return None
-        greens["body_size"] = (greens["close"] - greens["open"]).abs()
-        return greens.iloc[greens["body_size"].idxmax()]
+        df["target_bull"] = df["low"].rolling(length).min()
+        df["target_bear"] = df["high"].rolling(length).max()
 
-def make_setup(symbol: str, side: str, entry: float, sl: float, tps: List[float], ts: pd.Timestamp, reason: str) -> Dict:
-    return {
-        "symbol": symbol,
-        "side": side,
-        "entry": entry,
-        "sl": sl,
-        "tps": tps,
-        "created_at": ts,
-        "active": True,
-        "reason": reason,
-    }
+    # Bullish OB coordinate event (on formation bar) per Pine:
+    # get_coordinates(phv and os == 1, hl2[length], low[length], low[length])
+    df["bull_ob_top"]   = df["hl2_l"]
+    df["bull_ob_btm"]   = df["low_l"]
+    df["bull_ob_value"] = df["low_l"]
+    df["bull_form"]     = df["phv"] & (df["os"] == 1)
 
-def format_setup_card(setup: Dict, timeframe: str) -> str:
-    side_emoji = "🟢 LONG" if setup["side"] == "long" else "🔴 SHORT"
-    tps_txt = " / ".join([f"{tp:.4f}" for tp in setup["tps"]])
-    rr = max( (max(setup["tps"]) - setup["entry"]) / (setup["entry"] - setup["sl"]), 0.0001 ) if setup["side"]=="long" else \
-         max( (setup["entry"] - min(setup["tps"])) / (setup["sl"] - setup["entry"]), 0.0001 )
-    return (
-        f"**{side_emoji} – {setup['symbol']} ({timeframe})**\n"
-        f"Entry: **{setup['entry']:.5f}**   SL: **{setup['sl']:.5f}**   TP(s): **{tps_txt}**\n"
-        f"Est. RR: **{rr:.2f}**\n"
-        f"Reason: {setup['reason']}\n"
-        f"⌚ {setup['created_at']}"
-    )
+    # Bearish OB:
+    # get_coordinates(phv and os == 0, high[length], hl2[length], high[length])
+    df["bear_ob_top"]   = df["high_l"]
+    df["bear_ob_btm"]   = df["hl2_l"]
+    df["bear_ob_value"] = df["high_l"]
+    df["bear_form"]     = df["phv"] & (df["os"] == 0)
 
-def signature_key(symbol: str, side: str, created_at: pd.Timestamp) -> str:
-    return f"{symbol}:{side}:{int(created_at.value/1e9)}"
+    return df
 
-def price_touches(value: float, price: float, tol_bps: float = 5.0) -> bool:
+def _latest_unmitigated_zone(df: pd.DataFrame, side: str) -> Optional[Tuple[float,float,pd.Timestamp]]:
     """
-    Considered 'touched' if within tolerance (basis points).
+    Walk backward to find the most recent OB 'box' and consider it unmitigated
+    until target breaches into it (per Pine's remove_mitigated logic).
+    For trading, we want a signal WHEN mitigation occurs (touch), so we return the most recent OB
+    and let the caller check if current bar has mitigated it.
     """
-    if value == 0: 
-        return False
-    diff = abs(price - value) / value * 10000  # bps
-    return diff <= tol_bps
+    if side == "long":
+        mask = df["bull_form"].fillna(False)
+        top_col, btm_col = "bull_ob_top", "bull_ob_btm"
+    else:
+        mask = df["bear_form"].fillna(False)
+        top_col, btm_col = "bear_ob_top", "bear_ob_btm"
 
-# ---------- Core Strategy (OB-flavored EMA+BB) ----------
+    idxs = df.index[mask]
+    if len(idxs) == 0:
+        return None
+    last_idx = idxs[-1]
+    top = float(df.loc[last_idx, top_col])
+    btm = float(df.loc[last_idx, btm_col])
+    ts  = df.loc[last_idx, "close_time"]
+    if math.isnan(top) or math.isnan(btm):
+        return None
+    # ensure proper ordering (top >= bottom)
+    hi, lo = max(top, btm), min(top, btm)
+    return (hi, lo, ts)
+
+def _is_mitigated_now(df: pd.DataFrame, side: str, hi: float, lo: float) -> bool:
+    """
+    True if the LATEST CLOSED candle has 'touched' the OB zone per mitigation method.
+    """
+    c = df.iloc[-1]
+    if side == "long":
+        # price revisits the bullish OB: touch between lo..hi
+        if MITIGATION_METHOD == "close":
+            return (lo <= c["close"] <= hi)
+        else:
+            return not (c["low"] > hi or c["high"] < lo)  # wick overlap with box
+    else:
+        if MITIGATION_METHOD == "close":
+            return (lo <= c["close"] <= hi)
+        else:
+            return not (c["low"] > hi or c["high"] < lo)
+
+# ==================== STRATEGY WRAPPER ====================
+
+def _trend_ok(df: pd.DataFrame, require_slow: bool, side: str) -> bool:
+    emaf = df[f"ema_{EMA_FAST}"].iloc[-1]
+    emam = df[f"ema_{EMA_MED}"].iloc[-1]
+    emas = df[f"ema_{EMA_SLOW}"].iloc[-1]
+    if side == "long":
+        return (emaf > emam) and (emam > emas if require_slow else True)
+    else:
+        return (emaf < emam) and (emam < emas if require_slow else True)
+
+def _make_tp_series(entry: float, sl: float, side: str) -> Tuple[List[float], float]:
+    risk = abs(entry - sl)
+    if side == "long":
+        tps = [entry + risk*1.0, entry + risk*1.5, entry + risk*2.0]
+        rr  = (tps[0]-entry)/risk if risk>0 else 0
+    else:
+        tps = [entry - risk*1.0, entry - risk*1.5, entry - risk*2.0]
+        rr  = (entry-tps[0])/risk if risk>0 else 0
+    return tps, rr
 
 def find_setups(symbol: str, df: pd.DataFrame) -> List[Dict]:
     """
-    Detects potential long/short setups using:
-      - Trend via EMAs (fast>med>(slow) for longs; inverse for shorts)
-      - Displacement breakout: close beyond recent high/low with strong range
-      - Order-block heuristic: last opposing candle defines retest zone
-      - Entry on mid/upper/lower BB retest depending on side
-      - SL just beyond OB candle extreme (tighter SL in conservative)
-      - TPs at 1R / 1.5R / 2R from entry
+    Lux-style OB flow:
+      1) Detect most recent OB (bull/bear) per Pine conditions.
+      2) When price mitigates the OB (touch by wick/close), that is our entry trigger.
+      3) Entry = BB mid (if available) or OB avg; SL beyond opposite side w/ padding; TP 1R/1.5R/2R.
+      4) Gate by EMA trend and optional BB contextual sanity (optional, kept soft).
     """
+    out: List[Dict] = []
     pars = risk_params(RISK_MODE)
-    setups: List[Dict] = []
+    require_slow = pars["require_slow"]
+    pad = pars["pad"]
 
-    if len(df) < max(EMA_SLOW, BB_PERIOD) + 5:
-        return setups
+    if len(df) < max(EMA_SLOW, BB_PERIOD) + OB_LENGTH + 5:
+        return out
 
-    i = len(df) - 1  # use last CLOSED candle
-    c = df.iloc[i]
-    prev = df.iloc[i-1]
+    df = compute_ob_fields(df, OB_LENGTH)
+    df = add_indicators(df)
 
-    ema_f = df[f"ema_{EMA_FAST}"].iloc[i]
-    ema_m = df[f"ema_{EMA_MED}"].iloc[i]
-    ema_s = df[f"ema_{EMA_SLOW}"].iloc[i]
+    now = df.iloc[-1]
+    bb_mid = float(df["bb_mid"].iloc[-1]) if not math.isnan(df["bb_mid"].iloc[-1]) else None
 
-    disp = displacement_strength(df, i)
-
-    # Long bias
-    long_trend_ok = ema_f > ema_m and (ema_m > ema_s if pars["require_ema_slow_alignment"] else True)
-    # Short bias
-    short_trend_ok = ema_f < ema_m and (ema_m < ema_s if pars["require_ema_slow_alignment"] else True)
-
-    # Recent swing window for breakout check
-    look = 10
-    recent_high = df["high"].iloc[i-look:i].max()
-    recent_low  = df["low"].iloc[i-look:i].min()
-
-    # --- LONG candidate: close breaks above recent high with displacement ---
-    if long_trend_ok and c["close"] > recent_high and disp >= pars["min_displacement"]:
-        ob = last_opposing_candle(df, i, "long", search_back=10)
-        if ob is not None:
-            # OB zone = body of last red candle
-            ob_low = min(ob["open"], ob["close"])
-            ob_high = max(ob["open"], ob["close"])
-            # Entry on BB mid/upper retest: choose mid if available, else ob_high
-            entry_candidate = float(df["bb_mid"].iloc[i]) if not math.isnan(df["bb_mid"].iloc[i]) else float(ob_high)
-            # SL tucked below OB low; tighter in conservative
-            pad = 0.0005 if pars["use_tighter_sl"] else 0.0010
-            sl = float(ob_low) * (1 - pad)
-            # Ensure valid
-            if entry_candidate > sl:
-                r1 = entry_candidate + (entry_candidate - sl) * 1.0
-                r15 = entry_candidate + (entry_candidate - sl) * 1.5
-                r2 = entry_candidate + (entry_candidate - sl) * 2.0
-                rr = (r1 - entry_candidate) / (entry_candidate - sl)
+    # ---------- Bullish OB path ----------
+    bull_zone = _latest_unmitigated_zone(df, "long")
+    if bull_zone and _trend_ok(df, require_slow, "long"):
+        hi, lo, ts = bull_zone
+        if _is_mitigated_now(df, "long", hi, lo):
+            entry = bb_mid if bb_mid else (hi + lo)/2.0
+            sl    = lo * (1 - pad)
+            if entry > sl:
+                tps, rr = _make_tp_series(entry, sl, "long")
                 if rr >= pars["min_rr"]:
-                    reason = f"Trend up (EMA {EMA_FAST}>{EMA_MED}{'>EMA_'+str(EMA_SLOW) if pars['require_ema_slow_alignment'] else ''}), breakout w/ displacement {disp:.2f}, OB retest."
-                    setups.append(make_setup(symbol, "long", entry_candidate, sl, [r1, r15, r2], c["close_time"], reason))
+                    reason = f"🟢 Bullish OB mitigated ({MITIGATION_METHOD}); EMA trend up; entry on BB-mid/zone."
+                    out.append({
+                        "symbol": symbol, "side": "long",
+                        "entry": entry, "sl": sl, "tps": tps,
+                        "created_at": now["close_time"], "active": True, "reason": reason
+                    })
 
-    # --- SHORT candidate: close breaks below recent low with displacement ---
-    if short_trend_ok and c["close"] < recent_low and disp >= pars["min_displacement"]:
-        ob = last_opposing_candle(df, i, "short", search_back=10)
-        if ob is not None:
-            ob_low = min(ob["open"], ob["close"])
-            ob_high = max(ob["open"], ob["close"])
-            entry_candidate = float(df["bb_mid"].iloc[i]) if not math.isnan(df["bb_mid"].iloc[i]) else float(ob_low)
-            pad = 0.0005 if pars["use_tighter_sl"] else 0.0010
-            sl = float(ob_high) * (1 + pad)
-            if entry_candidate < sl:
-                r1 = entry_candidate - (sl - entry_candidate) * 1.0
-                r15 = entry_candidate - (sl - entry_candidate) * 1.5
-                r2 = entry_candidate - (sl - entry_candidate) * 2.0
-                rr = (entry_candidate - r1) / (sl - entry_candidate)
+    # ---------- Bearish OB path ----------
+    bear_zone = _latest_unmitigated_zone(df, "short")
+    if bear_zone and _trend_ok(df, require_slow, "short"):
+        hi, lo, ts = bear_zone
+        if _is_mitigated_now(df, "short", hi, lo):
+            entry = bb_mid if bb_mid else (hi + lo)/2.0
+            sl    = hi * (1 + pad)
+            if entry < sl:
+                tps, rr = _make_tp_series(entry, sl, "short")
                 if rr >= pars["min_rr"]:
-                    reason = f"Trend down (EMA {EMA_FAST}<{EMA_MED}{'<EMA_'+str(EMA_SLOW) if pars['require_ema_slow_alignment'] else ''}), breakdown w/ displacement {disp:.2f}, OB retest."
-                    setups.append(make_setup(symbol, "short", entry_candidate, sl, [r1, r15, r2], c["close_time"], reason))
+                    reason = f"🔴 Bearish OB mitigated ({MITIGATION_METHOD}); EMA trend down; entry on BB-mid/zone."
+                    out.append({
+                        "symbol": symbol, "side": "short",
+                        "entry": entry, "sl": sl, "tps": tps,
+                        "created_at": now["close_time"], "active": True, "reason": reason
+                    })
+    return out
 
-    return setups
+# ==================== ALERTING / STATE ====================
+
+def format_setup_card(setup: Dict, timeframe: str) -> str:
+    side_emoji = "🟢 LONG" if setup["side"] == "long" else "🔴 SHORT"
+    tps_txt = " / ".join([f"{tp:.6f}" for tp in setup["tps"]])
+    # RR shown for first TP
+    if setup["side"] == "long":
+        rr = (setup["tps"][0] - setup["entry"]) / max(setup["entry"] - setup["sl"], 1e-12)
+    else:
+        rr = (setup["entry"] - setup["tps"][0]) / max(setup["sl"] - setup["entry"], 1e-12)
+    return (
+        f"**{side_emoji} – {setup['symbol']} ({timeframe})**\n"
+        f"Entry: **{setup['entry']:.6f}**   SL: **{setup['sl']:.6f}**   TP(s): **{tps_txt}**\n"
+        f"Est. RR(→TP1): **{rr:.2f}**\n"
+        f"{setup['reason']}\n"
+        f"📅 {setup['created_at']}"
+    )
+
+def signature_key(setup: Dict) -> str:
+    return f"{setup['symbol']}:{setup['side']}:{int(pd.Timestamp(setup['created_at']).value/1e9)}"
 
 async def post_to_channel(text: str):
     ch = bot.get_channel(CHANNEL_ID)
-    if ch:
-        await ch.send(text)
-    else:
-        log.error("Channel not found; check CRYPTO_SETUPS_CHANNEL_ID")
+    if ch: await ch.send(text)
+    else: log.error("Channel not found; check CRYPTO_SETUPS_CHANNEL_ID")
 
 def latest_price(symbol: str) -> Optional[float]:
-    url = f"{BINANCE_BASE}/ticker/price"
     try:
-        r = requests.get(url, params={"symbol": symbol}, timeout=10)
+        r = requests.get(f"{BINANCE_BASE}/ticker/price", params={"symbol": symbol}, timeout=10)
         r.raise_for_status()
         return float(r.json()["price"])
     except Exception as e:
@@ -277,76 +314,64 @@ def latest_price(symbol: str) -> Optional[float]:
         return None
 
 def should_suppress(setup: Dict) -> bool:
-    sig = signature_key(setup["symbol"], setup["side"], setup["created_at"])
+    sig = signature_key(setup)
     last = recent_alerts.get(sig)
-    if not last:
-        return False
+    if not last: return False
     return (time.time() - last) < (DUPLICATE_COOLDOWN_MIN * 60)
 
 def mark_alerted(setup: Dict):
-    sig = signature_key(setup["symbol"], setup["side"], setup["created_at"])
-    recent_alerts[sig] = time.time()
+    recent_alerts[signature_key(setup)] = time.time()
+
+def price_touches(value: float, price: float, tol_bps: float = 8.0) -> bool:
+    diff = abs(price - value) / max(value, 1e-12) * 10000
+    return diff <= tol_bps
 
 def check_tp_sl_progress(symbol: str):
-    """Close active setups if TP/SL hit; avoids repeat alerts."""
-    if symbol not in open_setups:
-        return
+    if symbol not in open_setups: return
     st = open_setups[symbol]
-    if not st.get("active"):
-        return
+    if not st.get("active"): return
     price = latest_price(symbol)
-    if price is None:
-        return
+    if price is None: return
     if st["side"] == "long":
-        # SL first
         if price <= st["sl"]:
-            st["active"] = False
-            st["closed_reason"] = "Stop Loss hit"
-        # TPs ascending
-        elif any(price_touches(tp, price, tol_bps=8.0) or price >= tp for tp in st["tps"]):
-            st["active"] = False
-            st["closed_reason"] = "Take Profit reached"
+            st["active"] = False; st["closed_reason"] = "Stop Loss hit"
+        elif any(price >= tp or price_touches(tp, price) for tp in st["tps"]):
+            st["active"] = False; st["closed_reason"] = "Take Profit reached"
     else:
         if price >= st["sl"]:
-            st["active"] = False
-            st["closed_reason"] = "Stop Loss hit"
-        elif any(price_touches(tp, price, tol_bps=8.0) or price <= tp for tp in st["tps"]):
-            st["active"] = False
-            st["closed_reason"] = "Take Profit reached"
+            st["active"] = False; st["closed_reason"] = "Stop Loss hit"
+        elif any(price <= tp or price_touches(tp, price) for tp in st["tps"]):
+            st["active"] = False; st["closed_reason"] = "Take Profit reached"
 
-# ---------- Scanner Task ----------
+# ==================== SCANNER ====================
 
 async def scan_once():
-    found_any = False
+    found = False
     for symbol in ANALYSIS_COINS:
         try:
-            df = fetch_klines(symbol, TIMEFRAME, limit=max(EMA_SLOW, BB_PERIOD) + 120)
+            df = fetch_klines(symbol, TIMEFRAME, limit=max(EMA_SLOW, BB_PERIOD) + 2*OB_LENGTH + 150)
             df = add_indicators(df)
 
-            # Close setups if TP/SL hit
+            # close active setups
             check_tp_sl_progress(symbol)
 
+            # find fresh setups
             setups = find_setups(symbol, df)
-            if not setups:
-                continue
-
             for s in setups:
-                if should_suppress(s):
-                    continue
-                # Don’t stack setups: only one active per symbol
+                # one active per symbol
                 if symbol in open_setups and open_setups[symbol].get("active"):
                     continue
-
+                if should_suppress(s):
+                    continue
                 msg = format_setup_card(s, TIMEFRAME)
                 await post_to_channel(msg)
                 open_setups[symbol] = s
                 mark_alerted(s)
-                found_any = True
+                found = True
         except Exception as e:
             log.exception(f"[scan] {symbol}: {e}")
-            continue
 
-    if not found_any:
+    if not found:
         log.info("No notable crypto setups this scan.")
 
 @tasks.loop(seconds=max(SCAN_INTERVAL_SEC, 60))
@@ -358,24 +383,25 @@ async def before_scanner():
     await bot.wait_until_ready()
     log.info("Scanner started.")
 
-# ---------- Commands ----------
+# ==================== COMMANDS ====================
 
 @bot.event
 async def on_ready():
     log.info(f"✅ Logged in as {bot.user} (id: {bot.user.id})")
-    await bot.change_presence(activity=discord.Game(name="JCF HQ – crypto radar"))
+    await bot.change_presence(activity=discord.Game(name="JCF HQ – OB/EMA/BB scanner"))
     ch = bot.get_channel(CHANNEL_ID)
     if ch:
-        await ch.send("✅ **Crypto scanner online** — EMA+BB+OB mode activated.")
+        await ch.send(f"✅ **Crypto scanner online** — OB_LENGTH={OB_LENGTH}, mitigation={MITIGATION_METHOD}.")
     if not scanner.is_running():
         scanner.start()
 
 @bot.command()
 async def status(ctx):
-    active = [k for k,v in open_setups.items() if v.get("active")]
+    act = [k for k,v in open_setups.items() if v.get("active")]
     await ctx.reply(
-        f"🛰️ Scanner: **{TIMEFRAME}**, coins: **{len(ANALYSIS_COINS)}**, risk: **{RISK_MODE}**\n"
-        f"Active setups: **{len(active)}** ({', '.join(active) if active else 'none'})"
+        f"🛰️ TF: **{TIMEFRAME}** | Coins: **{len(ANALYSIS_COINS)}** | Risk: **{RISK_MODE}** | "
+        f"OB_LENGTH: **{OB_LENGTH}** | Mitigation: **{MITIGATION_METHOD}**\n"
+        f"Active setups: **{len(act)}** ({', '.join(act) if act else 'none'})"
     )
 
 @bot.command()
@@ -393,7 +419,8 @@ async def reset_open(ctx):
     open_setups.clear()
     await ctx.reply("♻️ Cleared tracked open setups.")
 
-# ---------- Run ----------
+# ==================== RUN ====================
+
 if __name__ == "__main__":
     if not TOKEN or CHANNEL_ID == 0:
         raise SystemExit("Missing DISCORD_TOKEN or CRYPTO_SETUPS_CHANNEL_ID")
