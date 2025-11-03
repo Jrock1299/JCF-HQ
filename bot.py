@@ -1,158 +1,200 @@
-# bot.py  — JCF-HQ Crypto Setups (CoinGecko) ✅
-# Env vars used (exact names):
-# DISCORD_TOKEN, CRYPTO_SETUP_CHANNEL_ID, COINGECKO_API_KEY,
-# COIN_IDS, RISK_MODE, SCAN_INTERVAL_SEC, LOG_LEVEL
-
+# bot.py
 import os
-os.environ["DISCORD_NO_AUDIO"] = "1"  # avoid audio deps on hosts
-
 import asyncio
 import logging
-from typing import List, Tuple
+from typing import Dict, List
 
-import requests
+# Prevent discord.py from touching voice deps
+os.environ["DISCORD_NO_AUDIO"] = "1"
+
 import discord
 from discord.ext import commands, tasks
+import aiohttp
 
-# ---------- Config from ENV ----------
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-CRYPTO_SETUP_CHANNEL_ID = int(os.getenv("CRYPTO_SETUP_CHANNEL_ID", "0"))
-COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY", "")
+# -----------------------------
+# Environment / Config
+# -----------------------------
+TOKEN = os.getenv("DISCORD_TOKEN")
+CRYPTO_CHANNEL_ID = int(os.getenv("CRYPTO_SETUP_CHANNEL_ID", "0"))
 COIN_IDS = [c.strip().lower() for c in os.getenv("COIN_IDS", "").split(",") if c.strip()]
-RISK_MODE = os.getenv("RISK_MODE", "conservative").strip().lower()  # conservative|balanced|aggressive
-SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))  # default 5 min
+CG_KEY = os.getenv("COINGECKO_API_KEY", "").strip()
+SCAN_INTERVAL = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
+RISK_MODE = os.getenv("RISK_MODE", "conservative").lower()
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-# ---------- Logging ----------
-logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO))
+logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO),
+                    format="%(levelname)s:%(name)s:%(message)s")
 log = logging.getLogger("jcf-hq")
 
-# ---------- Discord Setup ----------
+if not TOKEN:
+    raise RuntimeError("DISCORD_TOKEN is missing")
+if not CRYPTO_CHANNEL_ID:
+    raise RuntimeError("CRYPTO_SETUP_CHANNEL_ID is missing")
+if not COIN_IDS:
+    raise RuntimeError("COIN_IDS is empty (comma-separated CoinGecko ids expected)")
+
+# Decide CoinGecko base URL & headers based on key type
+if CG_KEY.startswith("cg-pro-"):
+    CG_BASE = "https://pro-api.coingecko.com/api/v3"
+    CG_HEADERS = {"x-cg-pro-api-key": CG_KEY}
+else:
+    # Free/demo keys use the public endpoint (header not required/used)
+    CG_BASE = "https://api.coingecko.com/api/v3"
+    CG_HEADERS = {}
+
+# -----------------------------
+# Discord Bot
+# -----------------------------
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ---------- Helpers ----------
-def threshold_for_risk(mode: str) -> float:
-    """returns 24h % change threshold for signaling"""
-    if mode == "aggressive":
-        return 1.5
-    if mode == "balanced":
-        return 3.5
-    return 6.0  # conservative (default)
-
-def fetch_prices(coin_ids: List[str]) -> dict:
-    """Call CoinGecko /simple/price for the given ids."""
-    url = "https://api.coingecko.com/api/v3/simple/price"
-    headers = {"x-cg-demo-api-key": COINGECKO_API_KEY}
-    params = {
-        "ids": ",".join(coin_ids),
-        "vs_currencies": "usd",
-        "include_24hr_change": "true"
-    }
-    r = requests.get(url, params=params, headers=headers, timeout=20)
-    r.raise_for_status()
-    return r.json()
-
-def analyze_setups(data: dict, risk_mode: str) -> List[Tuple[str, float, float]]:
-    """Return list of (coin, price, change%) that exceed the risk threshold."""
-    thr = threshold_for_risk(risk_mode)
-    notable = []
-    for coin, info in data.items():
-        price = float(info.get("usd", 0) or 0)
-        chg = float(info.get("usd_24h_change", 0) or 0)
-        if abs(chg) >= thr and price > 0:
-            notable.append((coin, price, chg))
-    return notable
-
-def fmt_signal(coin: str, price: float, chg: float) -> str:
-    direction = "🚀 **BULLISH MOVE**" if chg >= 0 else "🔻 **BEARISH MOVE**"
+# ------------- Formatting helpers (Format A) -------------
+def build_setup_message(symbol: str, direction: str,
+                        entry_low: float, entry_high: float,
+                        stop: float, tp1: float, tp2: float, tp3: float,
+                        rr_to_tp2: float, confidence: int,
+                        timeframe: str = "30m",
+                        momentum: str = "Neutral",
+                        risk_mode: str = "conservative") -> str:
+    arrow = "🚀" if direction.lower().startswith("bull") else "🔻"
     return (
-        f"**{coin.upper()} — Setup Detected**\n"
-        f"Price: **${price:,.4f}**\n"
-        f"24h Change: **{chg:+.2f}%**\n"
-        f"Risk Mode: `{RISK_MODE}`\n"
-        f"{direction}"
+        "```"
+        f"\n{arrow} {symbol.upper()} — {direction.title()} Setup Detected ({risk_mode})"
+        f"\nTimeframe: {timeframe} | Momentum: {momentum}"
+        "\n"
+        f"\n• Entry Zone: {entry_low:.4f} – {entry_high:.4f}"
+        f"\n• Stop Loss: {stop:.4f}"
+        f"\n• Targets: {tp1:.4f} / {tp2:.4f} / {tp3:.4f}"
+        f"\n• R:R (to TP2): {rr_to_tp2:.2f}"
+        f"\n• Confidence: {confidence}%"
+        "\n```"
     )
 
-# ---------- Scanner Task ----------
-@tasks.loop(seconds=SCAN_INTERVAL_SEC)
+def make_levels(price: float, is_bull: bool, risk_mode: str):
+    """
+    Lightweight placeholder math for entry/stop/targets.
+    Replace with real TA later (ATR/Keltner/EMA/etc.).
+    """
+    zone_pct = 0.006 if risk_mode == "conservative" else 0.010
+    entry_low  = price * (1 - zone_pct/2)
+    entry_high = price * (1 + zone_pct/2)
+
+    stop = price * (0.985 if is_bull else 1.015)
+    tp1  = price * (1.010 if is_bull else 0.990)
+    tp2  = price * (1.020 if is_bull else 0.980)
+    tp3  = price * (1.035 if is_bull else 0.965)
+
+    rr_to_tp2 = abs(tp2 - price) / max(1e-9, abs(price - stop))
+    momentum  = "Strong" if rr_to_tp2 >= 1.8 else "Moderate"
+    confidence = max(60, min(95, 60 + int(20 * rr_to_tp2)))
+
+    return entry_low, entry_high, stop, tp1, tp2, tp3, rr_to_tp2, momentum, confidence
+
+async def post_formatted_crypto_alert(channel: discord.TextChannel,
+                                      symbol: str,
+                                      price: float,
+                                      is_bull: bool,
+                                      risk_mode: str):
+    entry_low, entry_high, stop, tp1, tp2, tp3, rr, momentum, conf = make_levels(price, is_bull, risk_mode)
+    direction = "Bullish move" if is_bull else "Bearish move"
+    msg = build_setup_message(symbol, direction, entry_low, entry_high, stop, tp1, tp2, tp3, rr, conf,
+                              timeframe="30m", momentum=momentum, risk_mode=risk_mode)
+    await channel.send(msg)
+
+# ------------- CoinGecko client -------------
+async def cg_simple_price(session: aiohttp.ClientSession, ids: List[str]) -> Dict:
+    """
+    Calls /simple/price for multiple ids with 24h change.
+    Returns dict like:
+      { "ethereum": {"usd": 3000.12, "usd_24h_change": 3.2}, ... }
+    """
+    url = f"{CG_BASE}/simple/price"
+    params = {
+        "ids": ",".join(ids),
+        "vs_currencies": "usd",
+        "include_24hr_change": "true",
+    }
+    async with session.get(url, params=params, headers=CG_HEADERS, timeout=20) as r:
+        if r.status != 200:
+            text = await r.text()
+            raise aiohttp.ClientResponseError(r.request_info, r.history, status=r.status, message=text)
+        return await r.json()
+
+# ------------- Scanning task -------------
+@tasks.loop(seconds=SCAN_INTERVAL)
 async def crypto_scan_loop():
+    await bot.wait_until_ready()
+    ch = bot.get_channel(CRYPTO_CHANNEL_ID)
+    if not isinstance(ch, discord.TextChannel):
+        log.error("Crypto channel not found or wrong type: %s", CRYPTO_CHANNEL_ID)
+        return
+
     try:
-        if not COIN_IDS:
-            log.warning("No COIN_IDS set; skipping scan.")
-            return
-        data = fetch_prices(COIN_IDS)
-        notable = analyze_setups(data, RISK_MODE)
-
-        channel = bot.get_channel(CRYPTO_SETUP_CHANNEL_ID)
-        if channel is None:
-            log.error("CRYPTO_SETUP_CHANNEL_ID invalid or bot lacks access.")
-            return
-
-        if not notable:
-            log.info("[scan] no notable crypto setups this cycle")
-            return
-
-        for coin, price, chg in notable:
-            await channel.send(fmt_signal(coin, price, chg))
-
-        log.info("[scan] posted %d crypto setups", len(notable))
-
-    except requests.HTTPError as e:
-        log.error("[scan] HTTPError: %s", e)
+        async with aiohttp.ClientSession() as session:
+            data = await cg_simple_price(session, COIN_IDS)
     except Exception as e:
-        log.exception("[scan] unexpected error: %s", e)
+        log.error("[scan] HTTPError: %s", e)
+        return
 
-# ---------- Bot Events & Commands ----------
+    # Very simple “conservative” gate: only alert on strong ± moves
+    # You can tighten/loosen per coin later.
+    threshold = 5.0 if RISK_MODE == "conservative" else 3.0
+
+    any_alerts = False
+    for coin_id in COIN_IDS:
+        info = data.get(coin_id)
+        if not info:
+            continue
+        price = float(info.get("usd", 0.0) or 0.0)
+        chg = float(info.get("usd_24h_change", 0.0) or 0.0)
+
+        # Decide direction from 24h momentum
+        if abs(chg) >= threshold and price > 0:
+            is_bull = chg > 0
+            symbol = coin_id.upper().replace("-", "")
+            await post_formatted_crypto_alert(ch, symbol, price, is_bull, RISK_MODE)
+            any_alerts = True
+
+    if not any_alerts:
+        await ch.send("`No notable crypto setups this scan.`")
+
+# -----------------------------
+# Events / Commands
+# -----------------------------
 @bot.event
 async def on_ready():
     log.info("✅ Logged in as %s (%s)", bot.user, bot.user.id)
-    # kick off the loop (start once)
+    await bot.change_presence(activity=discord.Game(name="JCF HQ online"))
     if not crypto_scan_loop.is_running():
         crypto_scan_loop.start()
-        log.info("🔁 crypto_scan_loop started: every %ss", SCAN_INTERVAL_SEC)
+        log.info("📡 crypto_scan_loop started: every %ss", SCAN_INTERVAL)
+
+@bot.command(name="ping")
+async def ping(ctx: commands.Context):
+    await ctx.reply("Pong 🏓", mention_author=False)
 
 @bot.command(name="status")
-async def status(ctx: commands.Context):
-    """Show live config status."""
-    await ctx.reply(
-        "**JCF-HQ Crypto Watch — Status**\n"
-        f"Risk: `{RISK_MODE}` | Interval: `{SCAN_INTERVAL_SEC}s`\n"
-        f"Coins: `{', '.join(COIN_IDS)}`\n"
-        f"Channel: `{CRYPTO_SETUP_CHANNEL_ID}`\n"
-        f"Loop running: `{crypto_scan_loop.is_running()}`"
+async def status_cmd(ctx: commands.Context):
+    cfg = (
+        f"```\n"
+        f"Coins: {', '.join(COIN_IDS)}\n"
+        f"Risk: {RISK_MODE}\n"
+        f"Scan Interval: {SCAN_INTERVAL}s\n"
+        f"CG Base: {CG_BASE}\n"
+        f"Channel: {CRYPTO_CHANNEL_ID}\n"
+        f"```"
     )
+    await ctx.reply(cfg, mention_author=False)
 
 @bot.command(name="testcrypto")
 async def testcrypto(ctx: commands.Context):
-    """Push a sample alert to the setups channel."""
-    channel = bot.get_channel(CRYPTO_SETUP_CHANNEL_ID) or ctx.channel
-    await channel.send(
-        "**ETHEREUM — Setup Detected (TEST)**\n"
-        "Price: **$3,000.00**\n"
-        "24h Change: **+6.20%**\n"
-        f"Risk Mode: `{RISK_MODE}`\n"
-        "🚀 **BULLISH MOVE**"
-    )
-    await ctx.reply("Test crypto alert sent ✅")
+    # ETH sample test in the current channel
+    price = 3000.0
+    await post_formatted_crypto_alert(ctx.channel, "ETHUSDT", price, True, RISK_MODE)
+    await ctx.reply("Test crypto alert sent ✅", mention_author=False)
 
-# ---------- Startup guards ----------
-def _validate_env():
-    problems = []
-    if not DISCORD_TOKEN:
-        problems.append("DISCORD_TOKEN missing")
-    if not COINGECKO_API_KEY:
-        problems.append("COINGECKO_API_KEY missing")
-    if not CRYPTO_SETUP_CHANNEL_ID:
-        problems.append("CRYPTO_SETUP_CHANNEL_ID missing")
-    if not COIN_IDS:
-        problems.append("COIN_IDS missing or empty")
-    if problems:
-        for p in problems:
-            log.error("ENV ERROR: %s", p)
-        raise SystemExit("Fix env variables above and redeploy.")
-
-if __name__ == "__main__":
-    _validate_env()
-    bot.run(DISCORD_TOKEN)
+# -----------------------------
+# Run
+# -----------------------------
+bot.run(TOKEN)
