@@ -161,7 +161,17 @@ async def scan_now(ctx):
     except Exception as e:
         await ctx.reply(f"⚠️ Scan failed: `{e}`")
         log.exception("manual scan error")
-
+@bot.command()
+async def status(ctx):
+    """Shows current scan settings & next scan time."""
+    await ctx.send(
+        f"🛰️ **JCF Crypto Scanner Status**\n"
+        f"- Watching coins: {COIN_LIST}\n"
+        f"- Scan interval: {SCAN_INTERVAL_SEC} sec\n"
+        f"- Risk mode: {RISK_MODE}\n"
+        f"- Source: CoinGecko Pro\n"
+        f"- Next scan runs automatically.\n"
+    )
 # ========= TASK LOOP =========
 @tasks.loop(seconds=5)
 async def start_scanner():
