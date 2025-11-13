@@ -442,7 +442,95 @@ async def crypto_scan_loop():
 async def before_crypto_loop():
     await bot.wait_until_ready()
     log.info("crypto_scan_loop starting…")
+@tasks.loop(seconds=FOREX_SCAN_INTERVAL_SEC)
+async def forex_scan_loop():
+    global open_trades
+    if not (FMP_API_KEY and FOREX_CHANNEL_ID and FOREX_PAIRS):
+        return  # misconfigured, do nothing
 
+    try:
+        for pair in FOREX_PAIRS:
+            try:
+                prices = get_fx_prices(pair, timeseries=400)
+            except Exception as e:
+                log.error(f"[fx scan] {pair}: {e}")
+                await asyncio.sleep(0.2)
+                continue
+
+            if len(prices) < 120:
+                continue
+
+            setup = build_setup(pair, prices)
+            last_price = prices[-1]
+
+            # crude “24h change” from first to last in our slice
+            change_24h = 0.0
+            if len(prices) > 1:
+                change_24h = (last_price / prices[0] - 1) * 100.0
+
+            # manage open trades for this pair
+            to_delete = []
+            for key, trade in open_trades.items():
+                if trade.get("coin") != pair:
+                    continue
+                dirn = trade["direction"]
+
+                if dirn == "bull":
+                    # TP2 hit
+                    if last_price >= trade["targets"][1]:
+                        pnl = (trade["targets"][1] / trade["entry_mid"] - 1) * 100
+                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(pair, dirn, "TP2 HIT", pnl))
+                        to_delete.append(key)
+                    # SL hit
+                    elif last_price <= trade["stop"]:
+                        pnl = (trade["stop"] / trade["entry_mid"] - 1) * 100
+                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(pair, dirn, "STOP LOSS HIT", pnl))
+                        to_delete.append(key)
+                else:
+                    # bearish
+                    if last_price <= trade["targets"][1]:
+                        pnl = (1 - trade["targets"][1] / trade["entry_mid"]) * 100
+                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(pair, dirn, "TP2 HIT", pnl))
+                        to_delete.append(key)
+                    elif last_price >= trade["stop"]:
+                        pnl = (1 - trade["stop"] / trade["entry_mid"]) * 100
+                        await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_close(pair, dirn, "STOP LOSS HIT", pnl))
+                        to_delete.append(key)
+
+            for k in to_delete:
+                open_trades.pop(k, None)
+            if to_delete:
+                save_state(open_trades)
+
+            # maybe open a new trade if we have a setup & none open in that direction
+            if setup:
+                key = f"{pair}|{setup['direction']}"
+                if key not in open_trades:
+                    msg = fmt_setup_block(pair, setup, change_24h)
+                    await post(FOREX_CHANNEL_ID, msg)
+                    await post(TRADE_HISTORY_CHANNEL_ID, fmt_trade_open(pair, setup))
+
+                    entry_mid = (setup["entry_low"] + setup["entry_high"]) / 2
+                    open_trades[key] = {
+                        "coin": pair,  # reusing 'coin' field to avoid changing other code
+                        "direction": setup["direction"],
+                        "entry_low": setup["entry_low"],
+                        "entry_high": setup["entry_high"],
+                        "entry_mid": entry_mid,
+                        "stop": setup["stop"],
+                        "targets": setup["targets"],
+                        "opened_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                    save_state(open_trades)
+
+    except Exception as e:
+        log.exception(f"[fx scan] unhandled: {e}")
+
+
+@forex_scan_loop.before_loop
+async def before_forex_loop():
+    await bot.wait_until_ready()
+    log.info("forex_scan_loop starting…")
 # ───────── FMP HELPERS (EARNINGS) ─────────
 def fmp_get_earnings_for_date(d: date):
     if not FMP_API_KEY:
