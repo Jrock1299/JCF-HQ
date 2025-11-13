@@ -155,7 +155,26 @@ def get_market_prices(coin_id, days="1", interval="minute", max_retries=3):
             sleep_s *= 2
 
     raise RuntimeError(f"{coin_id}: failed after retries") from last_exc
+def get_fx_prices(pair: str, timeseries: int = 400):
+    """
+    Fetch recent forex closes for a pair like 'XAUUSD' from FMP.
+    Uses Historical-Forex-Quote style endpoint.
+    Returns list of closes sorted oldest -> newest.
+    """
+    if not FMP_API_KEY:
+        raise RuntimeError("FMP_API_KEY missing for forex scan")
 
+    url = f"https://financialmodelingprep.com/api/v3/historical-price-full/forex/{pair.upper()}"
+    params = {"timeseries": timeseries, "apikey": FMP_API_KEY}
+    r = requests.get(url, params=params, timeout=20)
+    r.raise_for_status()
+    data = r.json()
+
+    hist = data.get("historical") or []
+    # sort by date ascending, just to be safe
+    hist_sorted = sorted(hist, key=lambda x: x.get("date", ""))
+    closes = [h["close"] for h in hist_sorted if "close" in h]
+    return closes
 
 def get_simple_changes(ids):
     url = f"{CG_API_BASE}/simple/price"
