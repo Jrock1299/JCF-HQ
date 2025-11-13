@@ -101,14 +101,27 @@ R = RISK_PRESETS.get(RISK_MODE, RISK_PRESETS["conservative"])
 
 # ───────── COINGECKO DATA FETCH ─────────
 def get_market_prices(coin_id, days="1", interval="minute"):
-    # returns list of floats [p1, p2, ..., pN]
+    """
+    returns list of floats [p1, p2, ..., pN]
+    handles CoinGecko 400 + 429 gracefully
+    """
     url = f"{API_BASE}/coins/{coin_id}/market_chart"
     params = {"vs_currency": "usd", "days": days, "interval": interval}
     r = requests.get(url, params=params, headers=HEADERS, timeout=20)
+
+    # Too many requests → skip this coin this scan
+    if r.status_code == 429:
+        log.warning(f"[scan] {coin_id}: 429 Too Many Requests - skipping this coin this scan")
+        return []
+
+    # demo plan sometimes doesn't like 'interval=minute' → fallback
     if r.status_code == 400:
-        # fallback if minute interval not allowed on demo; use default interval
         params = {"vs_currency": "usd", "days": days}
         r = requests.get(url, params=params, headers=HEADERS, timeout=20)
+        if r.status_code == 429:
+            log.warning(f"[scan] {coin_id}: 429 Too Many Requests (fallback) - skipping")
+            return []
+
     r.raise_for_status()
     data = r.json()
     prices = [p[1] for p in data.get("prices", [])]
