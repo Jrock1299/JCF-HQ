@@ -15,6 +15,11 @@ SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
 RISK_MODE = os.getenv("RISK_MODE", "conservative").lower()
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 CG_KEY = os.getenv("COINGECKO_API_KEY", "").strip()
+FMP_API_KEY = os.getenv("FMP_API_KEY", "").strip()
+
+FOREX_CHANNEL_ID = int(os.getenv("FOREX_CHANNEL_ID", "0"))
+FOREX_PAIRS = [p.strip().upper() for p in os.getenv("FOREX_PAIRS", "").split(",") if p.strip()]
+FOREX_SCAN_INTERVAL_SEC = int(os.getenv("FOREX_SCAN_INTERVAL_SEC", "900"))
 
 # Earnings / stocks
 FMP_API_KEY = os.getenv("FMP_API_KEY", "").strip()
