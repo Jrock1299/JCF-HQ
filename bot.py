@@ -763,7 +763,22 @@ async def testearnings(ctx):
     """Manual trigger for earnings scan (ignores once-per-day guard)."""
     await ctx.reply("Manual earnings scan triggered ✅")
     await run_earnings_scan(force=True)
-
+@bot.command()
+async def testforex(ctx):
+    """Send a dummy forex setup example"""
+    dummy = {
+        "direction": "bear",
+        "entry_low": 150.0000,
+        "entry_high": 150.3000,
+        "stop": 151.2000,
+        "targets": [149.5000, 149.0000, 148.2000],
+        "confidence": 84,
+        "tf": "1h",
+        "momentum": "Moderate",
+        "ref_price": 150.1500,
+    }
+    msg = fmt_setup_block("USDJPY", dummy, -0.4)
+    await ctx.reply(msg)
 # ───────── LIFECYCLE ─────────
 @bot.event
 async def on_ready():
@@ -782,7 +797,13 @@ async def on_ready():
 
     if not crypto_scan_loop.is_running():
         crypto_scan_loop.start()
-
+# Forex online (only if configured)
+    if FMP_API_KEY and FOREX_CHANNEL_ID and FOREX_PAIRS:
+        await post(FOREX_CHANNEL_ID, f"✅ **Forex scanner online** — Pairs: {', '.join(FOREX_PAIRS)} | Risk: **{RISK_MODE}**")
+        if not forex_scan_loop.is_running():
+            forex_scan_loop.start()
+    else:
+        log.warning("Forex scanner NOT started (missing FMP_API_KEY, FOREX_CHANNEL_ID, or FOREX_PAIRS)")
     if EARNINGS_CHANNEL_ID and FMP_API_KEY and not earnings_scheduler_loop.is_running():
         earnings_scheduler_loop.start()
 
