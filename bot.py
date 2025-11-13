@@ -1,5 +1,5 @@
-import os, json, asyncio, logging, math, statistics as stats
-from datetime import datetime, timezone, timedelta
+import os, json, asyncio, logging, math
+from datetime import datetime, timezone
 import requests
 import discord
 from discord.ext import commands, tasks
@@ -7,30 +7,28 @@ from discord.ext import commands, tasks
 # ───────── CONFIG FROM ENV ─────────
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Crypto scanner
 CRYPTO_SETUP_CHANNEL_ID = int(os.getenv("CRYPTO_SETUP_CHANNEL_ID", "0"))
 TRADE_HISTORY_CHANNEL_ID = int(os.getenv("TRADE_HISTORY_CHANNEL_ID", "0"))
+
+# Earnings channel + config
+EARNINGS_CHANNEL_ID = int(os.getenv("EARNINGS_CHANNEL_ID", "0"))
+FMP_API_KEY = os.getenv("FMP_API_KEY", "").strip()
+EARNINGS_MAX_TICKERS = int(os.getenv("EARNINGS_MAX_TICKERS", "5"))
+
 COIN_IDS = [c.strip().lower() for c in os.getenv("COIN_IDS", "").split(",") if c.strip()]
 SCAN_INTERVAL_SEC = int(os.getenv("SCAN_INTERVAL_SEC", "300"))
 RISK_MODE = os.getenv("RISK_MODE", "conservative").lower()
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 CG_KEY = os.getenv("COINGECKO_API_KEY", "").strip()
 
-# Earnings module
-EARNINGS_CHANNEL_ID = int(os.getenv("EARNINGS_CHANNEL_ID", "0"))
-EARNINGS_POST_TIME_UTC = os.getenv("EARNINGS_POST_TIME_UTC", "13:00")  # HH:MM in UTC
-EARNINGS_MIN_SCORE = int(os.getenv("EARNINGS_MIN_SCORE", "70"))
-FMP_API_KEY = os.getenv("FMP_API_KEY", "").strip()
-
-API_BASE = "https://api.coingecko.com/api/v3"
+CG_API_BASE = "https://api.coingecko.com/api/v3"
 HEADERS = {"accept": "application/json"}
 if CG_KEY:
-    # CoinGecko demo key header
     HEADERS["x-cg-demo-api-key"] = CG_KEY
 
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL, logging.INFO),
-    format="%(levelname)s:%(name)s:%(message)s"
+    format="%(levelname)s:%(name)s:%(message)s",
 )
 log = logging.getLogger("jcf-hq")
 
@@ -39,8 +37,9 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ───────── STATE (persisted open crypto trades) ─────────
+# ───────── STATE (persisted open trades) ─────────
 STATE_PATH = "/tmp/jcf_open_trades.json"
+
 
 def load_state():
     try:
@@ -51,6 +50,7 @@ def load_state():
     except Exception:
         return {}
 
+
 def save_state(state):
     try:
         with open(STATE_PATH, "w") as f:
@@ -58,8 +58,8 @@ def save_state(state):
     except Exception as e:
         log.warning(f"could not save state: {e}")
 
-open_trades = load_state()   # { key: { … } }
-next_scan_eta = "n/a"
+
+open_trades = load_state()  # { key: { … } }
 
 # ───────── TECH UTILS ─────────
 def ema(series, period):
@@ -71,6 +71,7 @@ def ema(series, period):
         e = v * k + e * (1 - k)
     return e
 
+
 def bollinger(series, period=20, mult=2.0):
     if len(series) < period:
         return None, None, None
@@ -81,65 +82,58 @@ def bollinger(series, period=20, mult=2.0):
     lower = mean - mult * std
     return lower, mean, upper
 
+
 def recent_pivot(series, lookback=5, mode="high"):
     if len(series) < lookback * 2 + 1:
         return None
-    window = series[-(lookback*2+1):]
+    window = series[-(lookback * 2 + 1) :]
     mid = window[lookback]
     if mode == "high":
         return mid if mid == max(window) else None
     else:
         return mid if mid == min(window) else None
 
+
 # Risk presets (in % of price)
 RISK_PRESETS = {
     "conservative": {"stop": 1.8, "tp1": 0.7, "tp2": 1.2, "tp3": 1.8},
-    "balanced":     {"stop": 2.2, "tp1": 1.0, "tp2": 1.6, "tp3": 2.4},
-    "aggressive":   {"stop": 3.0, "tp1": 1.4, "tp2": 2.2, "tp3": 3.0},
+    "balanced": {"stop": 2.2, "tp1": 1.0, "tp2": 1.6, "tp3": 2.4},
+    "aggressive": {"stop": 3.0, "tp1": 1.4, "tp2": 2.2, "tp3": 3.0},
 }
 R = RISK_PRESETS.get(RISK_MODE, RISK_PRESETS["conservative"])
 
 # ───────── COINGECKO DATA FETCH ─────────
 def get_market_prices(coin_id, days="1", interval="minute"):
-    """
-    returns list of floats [p1, p2, ..., pN]
-    handles CoinGecko 400 + 429 gracefully
-    """
-    url = f"{API_BASE}/coins/{coin_id}/market_chart"
+    """Return list of floats [p1, p2, ..., pN] for a coin."""
+    url = f"{CG_API_BASE}/coins/{coin_id}/market_chart"
     params = {"vs_currency": "usd", "days": days, "interval": interval}
     r = requests.get(url, params=params, headers=HEADERS, timeout=20)
 
-    # Too many requests → skip this coin this scan
-    if r.status_code == 429:
-        log.warning(f"[scan] {coin_id}: 429 Too Many Requests - skipping this coin this scan")
-        return []
-
-    # demo plan sometimes doesn't like 'interval=minute' → fallback
+    # Demo key sometimes rejects minute interval – fall back to default interval
     if r.status_code == 400:
         params = {"vs_currency": "usd", "days": days}
         r = requests.get(url, params=params, headers=HEADERS, timeout=20)
-        if r.status_code == 429:
-            log.warning(f"[scan] {coin_id}: 429 Too Many Requests (fallback) - skipping")
-            return []
 
     r.raise_for_status()
     data = r.json()
     prices = [p[1] for p in data.get("prices", [])]
     return prices
 
+
 def get_simple_changes(ids):
-    # 24h change using simple/price for the header block
+    """24h % change for header block."""
     if not ids:
         return {}
-    url = f"{API_BASE}/simple/price"
+    url = f"{CG_API_BASE}/simple/price"
     params = {
         "ids": ",".join(ids),
         "vs_currencies": "usd",
-        "include_24hr_change": "true"
+        "include_24hr_change": "true",
     }
     r = requests.get(url, params=params, headers=HEADERS, timeout=20)
     r.raise_for_status()
     return r.json()  # {id: {"usd": x, "usd_24h_change": y}}
+
 
 # ───────── CRYPTO SIGNAL LOGIC ─────────
 def build_setup(coin, prices):
@@ -155,11 +149,10 @@ def build_setup(coin, prices):
     if len(prices) < 120:
         return None
 
-    # use last ~600 points → downsample to smooth noise
-    tail = prices[-600:]
-    ds = tail[::5]
+    tail = prices[-600:]  # keep load modest
+    ds = tail[::5]  # downsample
 
-    ema50  = ema(ds, 50)  if len(ds) >= 50  else None
+    ema50 = ema(ds, 50) if len(ds) >= 50 else None
     ema200 = ema(ds, 200) if len(ds) >= 200 else None
     lb, mid, ub = bollinger(ds, 20, 2.0)
     price = ds[-1]
@@ -167,40 +160,40 @@ def build_setup(coin, prices):
     if not all([ema50, ema200, lb, ub]):
         return None
 
-    # pivot proxy for order block direction bias
     piv_hi = recent_pivot(ds, lookback=5, mode="high")
     piv_lo = recent_pivot(ds, lookback=5, mode="low")
 
-    # confluence rules
-    bull_bias = price > ema50 and price > ema200 and price <= lb * 1.01 and piv_lo is not None
-    bear_bias = price < ema50 and price < ema200 and price >= ub * 0.99 and piv_hi is not None
+    bull_bias = (
+        price > ema50 and price > ema200 and price <= lb * 1.01 and piv_lo is not None
+    )
+    bear_bias = (
+        price < ema50 and price < ema200 and price >= ub * 0.99 and piv_hi is not None
+    )
 
     if not (bull_bias or bear_bias):
         return None
 
     direction = "bull" if bull_bias else "bear"
 
-    # entries/targets/stop as % bands around current price
     if direction == "bull":
-        entry_low  = price * (1 - 0.003)   # -0.3%
-        entry_high = price * (1 + 0.003)   # +0.3%
-        stop       = price * (1 - R["stop"]/100.0)
-        t1         = price * (1 + R["tp1"]/100.0)
-        t2         = price * (1 + R["tp2"]/100.0)
-        t3         = price * (1 + R["tp3"]/100.0)
-    else:
-        entry_low  = price * (1 - 0.003)
+        entry_low = price * (1 - 0.003)
         entry_high = price * (1 + 0.003)
-        stop       = price * (1 + R["stop"]/100.0)
-        t1         = price * (1 - R["tp1"]/100.0)
-        t2         = price * (1 - R["tp2"]/100.0)
-        t3         = price * (1 - R["tp3"]/100.0)
+        stop = price * (1 - R["stop"] / 100.0)
+        t1 = price * (1 + R["tp1"] / 100.0)
+        t2 = price * (1 + R["tp2"] / 100.0)
+        t3 = price * (1 + R["tp3"] / 100.0)
+    else:
+        entry_low = price * (1 - 0.003)
+        entry_high = price * (1 + 0.003)
+        stop = price * (1 + R["stop"] / 100.0)
+        t1 = price * (1 - R["tp1"] / 100.0)
+        t2 = price * (1 - R["tp2"] / 100.0)
+        t3 = price * (1 - R["tp3"] / 100.0)
 
-    # simple confidence score (0–100)
     dist_bb = abs(price - (lb if direction == "bull" else ub)) / price
     ema_sep = abs(ema50 - ema200) / price
     conf = 60 + int(min(30, ema_sep * 1000)) - int(min(10, dist_bb * 1000))
-    conf = max(60, min(95, conf))  # clamp; we only post high-confluence
+    conf = max(60, min(95, conf))
 
     return {
         "direction": direction,
@@ -214,6 +207,7 @@ def build_setup(coin, prices):
         "ref_price": round(price, 6),
     }
 
+
 def rr_to_tp2(setup):
     if setup["direction"] == "bull":
         risk = setup["entry_high"] - setup["stop"]
@@ -223,14 +217,11 @@ def rr_to_tp2(setup):
         reward = setup["entry_high"] - setup["targets"][1]
     return round(reward / risk, 2) if risk > 0 else 0.0
 
+
 # ───────── MESSAGE BUILDERS ─────────
 def fmt_setup_block(name, setup, change_24h):
     arrow = "🚀" if setup["direction"] == "bull" else "🔻"
-    title = (
-        f"{arrow} {name.upper()} — "
-        f"{'Bullish' if setup['direction']=='bull' else 'Bearish'} "
-        f"Move Setup Detected ({RISK_MODE})"
-    )
+    title = f"{arrow} {name.upper()} — {'Bullish' if setup['direction']=='bull' else 'Bearish'} Move Setup Detected ({RISK_MODE})"
     rr = rr_to_tp2(setup)
     lines = [
         f"Timeframe: {setup['tf']} | Momentum: {setup['momentum']}",
@@ -244,17 +235,17 @@ def fmt_setup_block(name, setup, change_24h):
     ]
     return f"**{title}**\n```• " + "\n• ".join(lines) + "```"
 
+
 def fmt_trade_open(name, setup):
     icon = "📈" if setup["direction"] == "bull" else "📉"
     return (
-        f"{icon} **TRADE OPENED — {name.upper()} "
-        f"({'Bullish' if setup['direction']=='bull' else 'Bearish'})**\n"
+        f"{icon} **TRADE OPENED — {name.upper()} ({'Bullish' if setup['direction']=='bull' else 'Bearish'})**\n"
         f"Entry: {setup['entry_low']:.4f} – {setup['entry_high']:.4f}\n"
         f"Stop Loss: {setup['stop']:.4f}\n"
-        f"Targets: {setup['targets'][0]:.4f} / "
-        f"{setup['targets'][1]:.4f} / {setup['targets'][2]:.4f}\n"
+        f"Targets: {setup['targets'][0]:.4f} / {setup['targets'][1]:.4f} / {setup['targets'][2]:.4f}\n"
         f"Confidence: {setup['confidence']}%"
     )
+
 
 def fmt_trade_close(name, direction, reason, pnl_pct):
     badge = "✅" if "TP" in reason else "❌"
@@ -264,48 +255,19 @@ def fmt_trade_close(name, direction, reason, pnl_pct):
         f"PnL: {pnl_pct:+.2f}% ({arrow})"
     )
 
-# Earnings formatting
-def fmt_earnings_summary(date_str, ranked):
-    if not ranked:
-        return (
-            f"📊 **Earnings Radar — {date_str}**\n"
-            f"> No high-probability setups today (score < {EARNINGS_MIN_SCORE})."
-        )
 
-    lines = [f"📊 **Earnings Radar — {date_str}**", ""]
-    for idx, item in enumerate(ranked, start=1):
-        sym = item["symbol"]
-        score = item["score"]
-        name = item.get("name") or "Unknown"
-        time_sess = item.get("time") or "N/A"
-        eps_est = item.get("epsEstimated")
-        rev_est = item.get("revenueEstimated")
-        mktcap = item.get("marketCap")
-        volavg = item.get("volAvg")
-        sentiment = "Bullish Bias" if score >= 85 else "Watchable"
-
-        lines.append(
-            f"{idx}️⃣ **{sym}** — {name}\n"
-            f"   Score: **{score}/100** | Time: `{time_sess}` | View: **{sentiment}**\n"
-            f"   EPS est: {eps_est if eps_est is not None else 'N/A'} | "
-            f"Rev est: {rev_est if rev_est is not None else 'N/A'}\n"
-            f"   MktCap: {mktcap if mktcap is not None else 'N/A'} | "
-            f"VolAvg: {volavg if volavg is not None else 'N/A'}"
-        )
-    return "\n".join(lines)
-
-# ───────── POST HELPERS ─────────
+# ───────── POST HELPER ─────────
 async def post(channel_id: int, content: str):
     ch = bot.get_channel(channel_id)
     if ch:
         await ch.send(content)
 
-# ───────── CORE CRYPTO SCAN LOOP ─────────
+
+# ───────── CRYPTO SCAN LOOP ─────────
 @tasks.loop(seconds=SCAN_INTERVAL_SEC)
 async def crypto_scan_loop():
-    global next_scan_eta, open_trades
+    global open_trades
     try:
-        next_scan_eta = f"{SCAN_INTERVAL_SEC}s"
         # Pre-fetch simple 24h change for all coins
         change_map = {}
         try:
@@ -329,42 +291,56 @@ async def crypto_scan_loop():
             if isinstance(change_map.get(coin), dict):
                 change_24h = float(change_map[coin].get("usd_24h_change", 0.0))
 
-            # First, manage any existing open trade
+            # manage existing open trades for this coin
             to_delete = []
             for key, trade in list(open_trades.items()):
                 if trade["coin"] != coin:
                     continue
                 dirn = trade["direction"]
                 if dirn == "bull":
-                    # TP hit?
                     if last_price >= trade["targets"][1]:
-                        pnl = (trade["targets"][1] / trade["entry_mid"] - 1) * 100
                         await post(
                             TRADE_HISTORY_CHANNEL_ID,
-                            fmt_trade_close(coin, dirn, "TP2 HIT", pnl)
+                            fmt_trade_close(
+                                coin,
+                                dirn,
+                                "TP2 HIT",
+                                (trade["targets"][1] / trade["entry_mid"] - 1) * 100,
+                            ),
                         )
                         to_delete.append(key)
-                    # SL?
                     elif last_price <= trade["stop"]:
-                        pnl = (trade["stop"] / trade["entry_mid"] - 1) * 100
                         await post(
                             TRADE_HISTORY_CHANNEL_ID,
-                            fmt_trade_close(coin, dirn, "STOP LOSS HIT", pnl)
+                            fmt_trade_close(
+                                coin,
+                                dirn,
+                                "STOP LOSS HIT",
+                                (trade["stop"] / trade["entry_mid"] - 1) * 100,
+                            ),
                         )
                         to_delete.append(key)
                 else:
                     if last_price <= trade["targets"][1]:
-                        pnl = (1 - trade["targets"][1] / trade["entry_mid"]) * 100
                         await post(
                             TRADE_HISTORY_CHANNEL_ID,
-                            fmt_trade_close(coin, dirn, "TP2 HIT", pnl)
+                            fmt_trade_close(
+                                coin,
+                                dirn,
+                                "TP2 HIT",
+                                (1 - trade["targets"][1] / trade["entry_mid"]) * 100,
+                            ),
                         )
                         to_delete.append(key)
                     elif last_price >= trade["stop"]:
-                        pnl = (1 - trade["stop"] / trade["entry_mid"]) * 100
                         await post(
                             TRADE_HISTORY_CHANNEL_ID,
-                            fmt_trade_close(coin, dirn, "STOP LOSS HIT", pnl)
+                            fmt_trade_close(
+                                coin,
+                                dirn,
+                                "STOP LOSS HIT",
+                                (1 - trade["stop"] / trade["entry_mid"]) * 100,
+                            ),
                         )
                         to_delete.append(key)
 
@@ -373,21 +349,17 @@ async def crypto_scan_loop():
             if to_delete:
                 save_state(open_trades)
 
-            # Then, maybe open a new setup (dedupe key check)
+            # maybe open a new setup
             if setup:
                 key = f"{coin}|{setup['direction']}"
                 if key not in open_trades:
-                    # Post to setups channel
                     await post(
                         CRYPTO_SETUP_CHANNEL_ID,
-                        fmt_setup_block(coin, setup, change_24h)
+                        fmt_setup_block(coin, setup, change_24h),
                     )
-                    # Log open in history channel
                     await post(
-                        TRADE_HISTORY_CHANNEL_ID,
-                        fmt_trade_open(coin, setup)
+                        TRADE_HISTORY_CHANNEL_ID, fmt_trade_open(coin, setup)
                     )
-                    # Save state
                     entry_mid = (setup["entry_low"] + setup["entry_high"]) / 2
                     open_trades[key] = {
                         "coin": coin,
@@ -401,183 +373,162 @@ async def crypto_scan_loop():
                     }
                     save_state(open_trades)
 
-        next_scan_eta = f"{SCAN_INTERVAL_SEC}s"
     except Exception as e:
         log.exception(f"[scan] unhandled: {e}")
+
 
 @crypto_scan_loop.before_loop
 async def before_crypto_loop():
     await bot.wait_until_ready()
     log.info("crypto_scan_loop starting…")
 
-# ───────── EARNINGS LOGIC (FMP) ─────────
-def fmp_get_earnings_for_today():
-    if not FMP_API_KEY:
-        raise RuntimeError("FMP_API_KEY missing; earnings disabled")
 
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    url = (
-        f"https://financialmodelingprep.com/api/v3/earning_calendar"
-        f"?from={today}&to={today}&apikey={FMP_API_KEY}"
-    )
-    r = requests.get(url, timeout=20)
+# ───────── EARNINGS ENGINE (FMP) ─────────
+FMP_BASE = "https://financialmodelingprep.com/api/v3"
+
+
+def fmp_get(path, params=None):
+    if params is None:
+        params = {}
+    if not FMP_API_KEY:
+        raise RuntimeError("FMP_API_KEY is missing")
+    params = {**params, "apikey": FMP_API_KEY}
+    url = f"{FMP_BASE}/{path}"
+    r = requests.get(url, params=params, timeout=20)
     r.raise_for_status()
-    data = r.json()
-    if not isinstance(data, list):
-        return []
-    return data
+    return r.json()
 
-def fmp_get_profile(symbol):
-    if not FMP_API_KEY:
-        return None
-    url = f"https://financialmodelingprep.com/api/v3/profile/{symbol}?apikey={FMP_API_KEY}"
-    r = requests.get(url, timeout=20)
-    if r.status_code != 200:
-        return None
-    js = r.json()
-    if not isinstance(js, list) or not js:
-        return None
-    return js[0]
 
-def score_earning_event(ev):
-    """
-    Build a 0–100 score based on:
-      - market cap (prefer mid/large cap)
-      - average volume
-      - earnings estimates present
-      - session (open/close)
-    """
-    base = 50
-
-    sym = ev.get("symbol")
-    time_sess = (ev.get("time") or "").lower()
-    eps_est = ev.get("epsEstimated")
-    rev_est = ev.get("revenueEstimated")
-
-    # estimates present = more interest
-    if eps_est is not None:
-        base += 8
-    if rev_est is not None:
-        base += 4
-
-    # time of session
-    if "bmo" in time_sess:  # before market open
-        base += 5
-    elif "amc" in time_sess:  # after market close
-        base += 3
-
-    prof = fmp_get_profile(sym) if sym else None
-    if prof:
-        mktcap = prof.get("mktCap")
-        volavg = prof.get("volAvg")
-        beta = prof.get("beta")
-
-        # market cap
-        if isinstance(mktcap, (int, float)):
-            if mktcap >= 50_000_000_000:
-                base += 12
-            elif mktcap >= 10_000_000_000:
-                base += 9
-            elif mktcap >= 2_000_000_000:
-                base += 6
-            elif mktcap >= 500_000_000:
-                base += 3
-            else:
-                base -= 3
-
-        # average volume
-        if isinstance(volavg, (int, float)):
-            if volavg >= 5_000_000:
-                base += 10
-            elif volavg >= 1_000_000:
-                base += 7
-            elif volavg >= 300_000:
-                base += 4
-            else:
-                base -= 2
-
-        # beta = how much it moves
-        if isinstance(beta, (int, float)):
-            if 1.0 <= beta <= 2.0:
-                base += 5
-            elif beta > 2.0:
-                base += 3
-            elif beta < 0.8:
-                base -= 3
-
-        ev["marketCap"] = mktcap if isinstance(mktcap, (int, float)) else None
-        ev["volAvg"] = volavg if isinstance(volavg, (int, float)) else None
-        ev["name"] = prof.get("companyName")
-
-    # clamp
-    base = max(0, min(100, base))
-    ev["score"] = base
-    return base
-
-async def post_daily_earnings():
+def fetch_today_earnings(max_raw=40):
+    """Get today's earnings calendar (raw list from FMP)."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    data = fmp_get("earning_calendar", {"from": today, "to": today})
+    # Keep only first batch to avoid going crazy
+    return data[:max_raw]
+
+
+def enrich_stock(symbol):
+    """Add profile + 20D performance for a symbol."""
     try:
-        if not EARNINGS_CHANNEL_ID:
-            log.warning("[earnings] EARNINGS_CHANNEL_ID not set; skipping")
-            return
-        if not FMP_API_KEY:
-            log.warning("[earnings] FMP_API_KEY not set; skipping")
-            return
+        prof = fmp_get(f"profile/{symbol}")
+        if not prof:
+            return None
+        prof = prof[0]
+    except Exception:
+        return None
 
-        events = fmp_get_earnings_for_today()
-        if not events:
-            msg = fmt_earnings_summary(today, [])
-            await post(EARNINGS_CHANNEL_ID, msg)
-            return
+    name = prof.get("companyName") or symbol
+    mcap = float(prof.get("mktCap") or 0.0)
 
-        # score all events
-        scored = []
-        for ev in events:
-            try:
-                s = score_earning_event(ev)
-                scored.append(ev)
-            except Exception as e:
-                log.warning(f"[earnings] scoring failed for {ev.get('symbol')}: {e}")
+    # Filter out micro caps
+    if mcap < 5e9:
+        return None
 
-        # filter by threshold
-        filtered = [ev for ev in scored if ev.get("score", 0) >= EARNINGS_MIN_SCORE]
-        filtered.sort(key=lambda x: x.get("score", 0), reverse=True)
+    try:
+        hist = fmp_get(
+            f"historical-price-full/{symbol}", {"timeseries": 20}
+        )
+        hist_list = hist.get("historical") or []
+        if len(hist_list) < 2:
+            return None
+        closes = [h["close"] for h in reversed(hist_list)]
+        first = closes[0]
+        last = closes[-1]
+        ret20 = (last / first - 1) * 100
+    except Exception:
+        ret20 = 0.0
 
-        # keep top 5
-        top_n = filtered[:5]
-        msg = fmt_earnings_summary(today, top_n)
-        await post(EARNINGS_CHANNEL_ID, msg)
+    if ret20 > 8:
+        bias = "bullish"
+    elif ret20 < -8:
+        bias = "bearish"
+    else:
+        bias = "neutral"
 
-    except Exception as e:
-        log.exception(f"[earnings] daily run failed: {e}")
+    # Score: trend + size
+    size_score = math.log10(mcap + 1)  # bigger cap -> higher
+    score = abs(ret20) * 0.7 + size_score * 2.0
 
-async def earnings_scheduler():
-    await bot.wait_until_ready()
-    if not EARNINGS_CHANNEL_ID or not FMP_API_KEY:
-        log.warning("[earnings] disabled (missing channel or FMP key)")
+    return {
+        "symbol": symbol,
+        "name": name,
+        "mcap": mcap,
+        "ret20": ret20,
+        "bias": bias,
+        "score": score,
+    }
+
+
+def build_earnings_picks():
+    raw = fetch_today_earnings()
+    picks = []
+    for row in raw:
+        symbol = row.get("symbol")
+        if not symbol:
+            continue
+        enriched = enrich_stock(symbol)
+        if not enriched:
+            continue
+        enriched["when"] = row.get("time") or "n/a"
+        enriched["eps_est"] = row.get("epsEstimated")
+        enriched["eps_prev"] = row.get("eps")
+        picks.append(enriched)
+
+    picks.sort(key=lambda x: x["score"], reverse=True)
+    return picks[: max(1, EARNINGS_MAX_TICKERS)]
+
+
+def fmt_earnings_block(picks, date_str):
+    if not picks:
+        return f"📅 **Today's Earnings Radar ({date_str})**\nNo high-quality setups found."
+
+    lines = [f"📅 **Today's Earnings Radar ({date_str}) — Top {len(picks)} Setups**", ""]
+
+    emoji_map = {"bullish": "🟢", "bearish": "🔴", "neutral": "🟡"}
+
+    for p in picks:
+        e = emoji_map.get(p["bias"], "🟡")
+        mcap_b = p["mcap"] / 1e9
+        when = p.get("when") or "n/a"
+        lines.append(
+            f"**{p['symbol']}** — {p['name']}\n"
+            f"{e} *{p['bias'].upper()}* | 20D: {p['ret20']:+.2f}% | "
+            f"MktCap: ${mcap_b:.1f}B | When: {when}"
+        )
+        lines.append("")  # blank line between names
+
+    return "\n".join(lines).strip()
+
+
+async def run_earnings_scan():
+    if not EARNINGS_CHANNEL_ID:
+        log.warning("earnings: EARNINGS_CHANNEL_ID not set; skipping")
         return
 
-    log.info(f"[earnings] scheduler started; posting daily at {EARNINGS_POST_TIME_UTC} UTC")
-    while not bot.is_closed():
-        try:
-            now = datetime.now(timezone.utc)
-            try:
-                hour, minute = map(int, EARNINGS_POST_TIME_UTC.split(":"))
-            except Exception:
-                hour, minute = 13, 0  # fallback
-            run_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-            if run_time <= now:
-                run_time += timedelta(days=1)
-            wait = (run_time - now).total_seconds()
-            await asyncio.sleep(wait)
-            await post_daily_earnings()
-            # small buffer to avoid multiple same-day runs if time parsing is weird
-            await asyncio.sleep(5)
-        except asyncio.CancelledError:
-            break
-        except Exception as e:
-            log.exception(f"[earnings] scheduler loop error: {e}")
-            await asyncio.sleep(60)
+    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    try:
+        picks = build_earnings_picks()
+    except Exception as e:
+        log.exception("earnings scan failed")
+        await post(
+            EARNINGS_CHANNEL_ID, f"⚠️ Earnings scan failed: `{type(e).__name__}: {e}`"
+        )
+        return
+
+    msg = fmt_earnings_block(picks, date_str)
+    await post(EARNINGS_CHANNEL_ID, msg)
+
+
+@tasks.loop(hours=24)
+async def earnings_scheduler_loop():
+    await run_earnings_scan()
+
+
+@earnings_scheduler_loop.before_loop
+async def before_earnings_loop():
+    await bot.wait_until_ready()
+    log.info("earnings_scheduler_loop starting…")
+
 
 # ───────── COMMANDS ─────────
 @bot.command()
@@ -590,6 +541,7 @@ async def status(ctx):
         f"Open trades: {len(open_trades)}",
     ]
     await ctx.reply("\n".join(lines))
+
 
 @bot.command()
 async def testcrypto(ctx):
@@ -608,6 +560,7 @@ async def testcrypto(ctx):
     msg = fmt_setup_block("ethereum", dummy, 6.2)
     await ctx.reply(msg)
 
+
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def resetstate(ctx):
@@ -617,15 +570,13 @@ async def resetstate(ctx):
     save_state(open_trades)
     await ctx.reply("State cleared ✅")
 
+
 @bot.command()
 async def testearnings(ctx):
-    """Run today's earnings scan immediately (for debugging)"""
-    try:
-        await post_daily_earnings()
-        await ctx.reply("Manual earnings scan triggered ✅")
-    except Exception as e:
-        # surface any config issues directly in Discord so you see them
-        await ctx.reply(f"Test earnings failed: `{e}`")
+    """Run earnings scan immediately."""
+    await ctx.reply("Manual earnings scan triggered ✅")
+    await run_earnings_scan()
+
 
 # ───────── LIFECYCLE ─────────
 @bot.event
@@ -633,33 +584,32 @@ async def on_ready():
     log.info(f"✅ Logged in as {bot.user} ({bot.user.id})")
     await bot.change_presence(activity=discord.Game(name="JCF HQ online"))
 
-    # Announce mode & settings once (crypto)
+    # Crypto scanner announcements
     await post(
         CRYPTO_SETUP_CHANNEL_ID,
-        "✅ **Crypto scanner online** — EMA+BB+OB mode activated."
+        "✅ **Crypto scanner online** — EMA+BB+OB mode activated.",
     )
     await post(
         CRYPTO_SETUP_CHANNEL_ID,
-        f"✅ **Crypto scanner online** — Risk: **{RISK_MODE}**. "
-        f"Coins: {', '.join(COIN_IDS)}"
+        f"✅ **Crypto scanner online** — Risk: **{RISK_MODE}**. Coins: {', '.join(COIN_IDS)}",
     )
 
-    # Start crypto loop
     if not crypto_scan_loop.is_running():
         crypto_scan_loop.start()
 
-    # Start earnings scheduler (if configured)
-    if EARNINGS_CHANNEL_ID and FMP_API_KEY:
-        asyncio.create_task(earnings_scheduler())
-    else:
-        log.warning("[earnings] not started (missing EARNINGS_CHANNEL_ID or FMP_API_KEY)")
+    # Earnings loop (only if we have a key + channel)
+    if FMP_API_KEY and EARNINGS_CHANNEL_ID and not earnings_scheduler_loop.is_running():
+        earnings_scheduler_loop.start()
+
 
 # ───────── BOOT ─────────
 if __name__ == "__main__":
     if not DISCORD_TOKEN:
         raise SystemExit("DISCORD_TOKEN is missing")
     if not CRYPTO_SETUP_CHANNEL_ID or not TRADE_HISTORY_CHANNEL_ID:
-        raise SystemExit("Channel IDs missing (CRYPTO_SETUP_CHANNEL_ID / TRADE_HISTORY_CHANNEL_ID)")
+        raise SystemExit(
+            "Channel IDs missing (CRYPTO_SETUP_CHANNEL_ID / TRADE_HISTORY_CHANNEL_ID)"
+        )
     if not COIN_IDS:
         raise SystemExit("COIN_IDS is empty")
 
