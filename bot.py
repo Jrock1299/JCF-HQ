@@ -618,11 +618,14 @@ async def resetstate(ctx):
     await ctx.reply("State cleared ✅")
 
 @bot.command()
-@commands.has_permissions(administrator=True)
 async def testearnings(ctx):
-    """Admin: run today's earnings scan immediately"""
-    await post_daily_earnings()
-    await ctx.reply("Manual earnings scan triggered ✅")
+    """Run today's earnings scan immediately (for debugging)"""
+    try:
+        await post_daily_earnings()
+        await ctx.reply("Manual earnings scan triggered ✅")
+    except Exception as e:
+        # surface any config issues directly in Discord so you see them
+        await ctx.reply(f"Test earnings failed: `{e}`")
 
 # ───────── LIFECYCLE ─────────
 @bot.event
