@@ -190,80 +190,111 @@ def get_simple_changes(ids):
 # ───────── CRYPTO SIGNAL LOGIC ─────────
 def build_setup(coin, prices):
     """
-    Returns dict or None:
-      {
-        'direction': 'bull'|'bear',
-        'entry_low': float, 'entry_high': float,
-        'stop': float, 'targets':[t1,t2,t3],
-        'confidence': int, 'tf': '30m', 'momentum':'Moderate'
-      }
+    Multi-TF setup builder.
+    - Looks at ~30m view AND ~1h view
+    - Returns the higher-confidence setup (or None if nothing clean)
     """
-    if len(prices) < 120:
+    if len(prices) < 240:  # need enough data for EMAs + BB
         return None
 
-    tail = prices[-600:]  # keep load modest
-    ds = tail[::5]        # simple downsample
+    # use last chunk of data to keep load modest
+    tail = prices[-1000:]
 
-    ema50 = ema(ds, 50) if len(ds) >= 50 else None
-    ema200 = ema(ds, 200) if len(ds) >= 200 else None
-    lb, mid, ub = bollinger(ds, 20, 2.0)
-    price = ds[-1]
+    def compute_for_series(ds, tf_label: str):
+        # need enough candles for EMA 200 + BB 20
+        if len(ds) < 220:
+            return None
 
-    if not all([ema50, ema200, lb, ub]):
-        return None
+        ema50  = ema(ds, 50)
+        ema200 = ema(ds, 200)
+        lb, mid, ub = bollinger(ds, 20, 2.0)
+        price = ds[-1]
 
-    piv_hi = recent_pivot(ds, lookback=5, mode="high")
-    piv_lo = recent_pivot(ds, lookback=5, mode="low")
+        if not all([ema50, ema200, lb, ub]):
+            return None
 
-    bull_bias = price > ema50 and price > ema200 and price <= lb * 1.01 and piv_lo is not None
-    bear_bias = price < ema50 and price < ema200 and price >= ub * 0.99 and piv_hi is not None
+        # looser, crypto-friendly pivots (lookback 3 instead of 5)
+        piv_hi = recent_pivot(ds, lookback=3, mode="high")
+        piv_lo = recent_pivot(ds, lookback=3, mode="low")
 
-    if not (bull_bias or bear_bias):
-        return None
+        # ── Trend & location rules (LOOSER, but still structured) ──
+        # Bullish:
+        #   • price above EMA50
+        #   • EMA50 > EMA200 (uptrend)
+        #   • price near lower BB (not only at the exact band)
+        #   • recent bullish pivot low
+        bull_bias = (
+            price > ema50
+            and ema50 > ema200
+            and price <= lb * 1.03   # was 1.01 → allow "near" band
+            and piv_lo is not None
+        )
 
-    direction = "bull" if bull_bias else "bear"
+        # Bearish:
+        #   • price below EMA50
+        #   • EMA50 < EMA200 (downtrend)
+        #   • price near upper BB
+        #   • recent bearish pivot high
+        bear_bias = (
+            price < ema50
+            and ema50 < ema200
+            and price >= ub * 0.97   # was 0.99 → allow "near" band
+            and piv_hi is not None
+        )
 
-    if direction == "bull":
-        entry_low = price * (1 - 0.003)
-        entry_high = price * (1 + 0.003)
-        stop = price * (1 - R["stop"] / 100.0)
-        t1 = price * (1 + R["tp1"] / 100.0)
-        t2 = price * (1 + R["tp2"] / 100.0)
-        t3 = price * (1 + R["tp3"] / 100.0)
-    else:
-        entry_low = price * (1 - 0.003)
-        entry_high = price * (1 + 0.003)
-        stop = price * (1 + R["stop"] / 100.0)
-        t1 = price * (1 - R["tp1"] / 100.0)
-        t2 = price * (1 - R["tp2"] / 100.0)
-        t3 = price * (1 - R["tp3"] / 100.0)
+        if not (bull_bias or bear_bias):
+            return None
 
-    dist_bb = abs(price - (lb if direction == "bull" else ub)) / price
-    ema_sep = abs(ema50 - ema200) / price
-    conf = 60 + int(min(30, ema_sep * 1000)) - int(min(10, dist_bb * 1000))
-    conf = max(60, min(95, conf))
+        direction = "bull" if bull_bias else "bear"
 
-    return {
-        "direction": direction,
-        "entry_low": round(entry_low, 6),
-        "entry_high": round(entry_high, 6),
-        "stop": round(stop, 6),
-        "targets": [round(t1, 6), round(t2, 6), round(t3, 6)],
-        "confidence": conf,
-        "tf": "30m",
-        "momentum": "Moderate",
-        "ref_price": round(price, 6),
-    }
+        # ── Entries / stop / targets ──
+        if direction == "bull":
+            entry_low  = price * (1 - 0.003)                # -0.3%
+            entry_high = price * (1 + 0.003)                # +0.3%
+            stop       = price * (1 - R["stop"] / 100.0)
+            t1         = price * (1 + R["tp1"] / 100.0)
+            t2         = price * (1 + R["tp2"] / 100.0)
+            t3         = price * (1 + R["tp3"] / 100.0)
+        else:
+            entry_low  = price * (1 - 0.003)
+            entry_high = price * (1 + 0.003)
+            stop       = price * (1 + R["stop"] / 100.0)
+            t1         = price * (1 - R["tp1"] / 100.0)
+            t2         = price * (1 - R["tp2"] / 100.0)
+            t3         = price * (1 - R["tp3"] / 100.0)
 
+        # ── Confidence score (slightly looser floor) ──
+        dist_bb = abs(price - (lb if direction == "bull" else ub)) / price
+        ema_sep = abs(ema50 - ema200) / price
 
-def rr_to_tp2(setup):
-    if setup["direction"] == "bull":
-        risk = setup["entry_high"] - setup["stop"]
-        reward = setup["targets"][1] - setup["entry_low"]
-    else:
-        risk = setup["stop"] - setup["entry_low"]
-        reward = setup["entry_high"] - setup["targets"][1]
-    return round(reward / risk, 2) if risk > 0 else 0.0
+        # base 55 instead of 60
+        conf = 55 + int(min(30, ema_sep * 1000)) - int(min(10, dist_bb * 1000))
+        conf = max(55, min(95, conf))
+
+        return {
+            "direction": direction,
+            "entry_low": round(entry_low, 6),
+            "entry_high": round(entry_high, 6),
+            "stop": round(stop, 6),
+            "targets": [round(t1, 6), round(t2, 6), round(t3, 6)],
+            "confidence": conf,
+            "tf": tf_label,           # "30m" or "1h"
+            "momentum": "Moderate",
+            "ref_price": round(price, 6),
+        }
+
+    # ───────── Multi-timeframe view: 30m + 1h ─────────
+    # Approx 30m by taking every 5th point, 1h by every 10th.
+    ds_30 = tail[::5]
+    ds_60 = tail[::10]
+
+    setup_30 = compute_for_series(ds_30, "30m") if len(ds_30) >= 220 else None
+    setup_60 = compute_for_series(ds_60, "1h")  if len(ds_60) >= 220 else None
+
+    # Prefer the higher-confidence one if both exist
+    if setup_30 and setup_60:
+        return setup_60 if setup_60["confidence"] >= setup_30["confidence"] else setup_30
+    return setup_30 or setup_60
 
 # ───────── MESSAGE BUILDERS ─────────
 def fmt_setup_block(name, setup, change_24h):
