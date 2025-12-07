@@ -27,11 +27,20 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # --- FORMATTING ALERT ---
 def create_alert_embed(data):
     color = 0x00ff00 if "BUY" in data['signal'] else 0xff0000
+    
     embed = discord.Embed(title=f"{data['signal']} SIGNAL: {data['symbol']}", color=color)
-    embed.add_field(name="Price", value=f"${data['price']:.4f}", inline=True)
+    
+    # Row 1: The Basics
+    embed.add_field(name="Entry Price", value=f"**${data['price']:.4f}**", inline=True)
     embed.add_field(name="Confidence", value=data['confidence'], inline=True)
     embed.add_field(name="RSI", value=f"{data['rsi']:.1f}", inline=True)
-    embed.set_footer(text="JCF AI Engine • 1H Timeframe")
+    
+    # Row 2: The Targets (Risk Management)
+    embed.add_field(name="🛑 Stop Loss", value=f"${data['stop_loss']:.4f}", inline=True)
+    embed.add_field(name="🎯 Take Profit", value=f"${data['take_profit']:.4f}", inline=True)
+    embed.add_field(name="Risk:Reward", value="1:1.3", inline=True) # Approx based on ATR multipliers
+    
+    embed.set_footer(text="JCF AI Engine • 1H Timeframe • Dynamic ATR Risk")
     return embed
 
 # --- TASKS (LOOPS) ---
