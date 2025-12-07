@@ -54,6 +54,16 @@ async def signal_scan_loop():
             except Exception as e:
                 print(f"Portfolio Record Error: {e}")
 
+@tasks.loop(minutes=5)
+async def meme_scan_loop():
+    # We don't send alerts yet, we just collect data silently
+    try:
+        count = await meme_engine.log_meme_data()
+        if count and count > 0:
+            print(f"🐶 Collected data on {count} new Solana coins.")
+    except Exception as e:
+        print(f"Meme Loop Error: {e}")
+    
     # 1. Crypto
     if CHANNELS["crypto"]:
         signals = await signal_engine.scan_crypto()
@@ -94,11 +104,15 @@ async def on_ready():
     if not signal_scan_loop.is_running(): signal_scan_loop.start()
     if not macro_news_loop.is_running(): macro_news_loop.start()
     if not whale_alert_loop.is_running(): whale_alert_loop.start()
-        
+
+    # --- NEW MEME SNIPER START ---
+    if not meme_scan_loop.is_running(): meme_scan_loop.start()
+
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
         if channel:
-            await channel.send("🟢 **SYSTEM REBOOT:** Paper Trader & Portfolio Tracker Active.")
+            # Update the message so you know it's working
+            await channel.send("🟢 **SYSTEM REBOOT:** Signal, Data, & Meme Engines Active.")
 
 # --- COMMANDS ---
 @bot.command(name="portfolio")
