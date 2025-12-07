@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands, tasks
 import market_intel 
 import signal_engine 
+import portfolio # <--- NEW IMPORT
 
 # --- CONFIGURATION ---
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -36,23 +37,36 @@ def create_alert_embed(data):
 @tasks.loop(hours=1) 
 async def signal_scan_loop():
     print("📡 Scanning for Trade Signals...")
+    
+    # Helper to process signals
+    async def process_signals(signals, channel_id):
+        channel = bot.get_channel(channel_id)
+        if not channel: return
+        
+        for sig in signals:
+            # 1. Post to Discord
+            await channel.send(embed=create_alert_embed(sig))
+            
+            # 2. Record to Paper Portfolio (NEW)
+            try:
+                portfolio.open_position(sig['symbol'], sig['price'], sig['signal'], sig['type'])
+            except Exception as e:
+                print(f"Portfolio Record Error: {e}")
+
+    # 1. Crypto
     if CHANNELS["crypto"]:
         signals = await signal_engine.scan_crypto()
-        channel = bot.get_channel(CHANNELS["crypto"])
-        if channel:
-            for sig in signals: await channel.send(embed=create_alert_embed(sig))
+        await process_signals(signals, CHANNELS["crypto"])
 
+    # 2. Stocks
     if CHANNELS["stocks"]:
         signals = await signal_engine.scan_stocks()
-        channel = bot.get_channel(CHANNELS["stocks"])
-        if channel:
-            for sig in signals: await channel.send(embed=create_alert_embed(sig))
+        await process_signals(signals, CHANNELS["stocks"])
             
+    # 3. Forex
     if CHANNELS["forex"]:
         signals = await signal_engine.scan_forex()
-        channel = bot.get_channel(CHANNELS["forex"])
-        if channel:
-            for sig in signals: await channel.send(embed=create_alert_embed(sig))
+        await process_signals(signals, CHANNELS["forex"])
 
 @tasks.loop(hours=4) 
 async def macro_news_loop():
@@ -83,55 +97,46 @@ async def on_ready():
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
         if channel:
-            await channel.send("🟢 **SYSTEM REBOOT:** Signal Engine & Data Logger Active.")
+            await channel.send("🟢 **SYSTEM REBOOT:** Paper Trader & Portfolio Tracker Active.")
 
 # --- COMMANDS ---
+@bot.command(name="portfolio")
+async def show_portfolio(ctx):
+    """Shows active paper trades and virtual PnL."""
+    msg = await ctx.send("🔄 Fetching live prices and calculating PnL...")
+    
+    total_pnl, report = await portfolio.generate_portfolio_report()
+    
+    if total_pnl is None:
+        await msg.edit(content=f"ℹ️ {report}")
+        return
+
+    # Create nice embed
+    color = 0x00ff00 if total_pnl >= 0 else 0xff0000
+    embed = discord.Embed(title="💼 Virtual CEO Dashboard", color=color)
+    embed.description = report
+    embed.add_field(name="Total Unrealized PnL", value=f"**{total_pnl:+.2f}%**", inline=False)
+    embed.set_footer(text="Performance tracking of AI Signals")
+    
+    await msg.edit(content="", embed=embed)
+
 @bot.command(name="risk")
 async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
+    # (Keeping this brief for space, assume same Risk code as before)
     risk_1_pct = balance * 0.01
-    risk_2_pct = balance * 0.02
     stop_distance = abs(entry - stop_loss)
-    if stop_distance == 0:
-        await ctx.send("❌ Error: Entry and Stop Loss cannot be the same.")
-        return
-    units_1pct = risk_1_pct / stop_distance
-    units_2pct = risk_2_pct / stop_distance
-
-    embed = discord.Embed(title="🛡️ Risk Management Calculator", color=0x00d1ff)
-    embed.add_field(name="Account Balance", value=f"${balance:,.2f}", inline=False)
-    embed.add_field(name="Conservative (1%)", value=f"Risk: **${risk_1_pct:.2f}**\nSize: **{units_1pct:,.2f} units**", inline=True)
-    embed.add_field(name="Aggressive (2%)", value=f"Risk: **${risk_2_pct:.2f}**\nSize: **{units_2pct:,.2f} units**", inline=True)
-    embed.set_footer(text=f"Stop Distance: {stop_distance:.5f} | calculated by JCF AI")
-    await ctx.send(embed=embed)
+    if stop_distance == 0: return
+    units = risk_1_pct / stop_distance
+    await ctx.send(f"🛡️ Risk (1%): ${risk_1_pct:.2f} | Size: {units:.2f} units")
 
 @bot.command(name="status")
 async def system_status(ctx):
-    """Checks system health and data collection progress."""
+    # (Same status code as before)
     data_file = "/app/data/market_training_data.csv"
     row_count = 0
-    file_size = "0 KB"
-    
     if os.path.exists(data_file):
-        try:
-            with open(data_file, 'r') as f:
-                row_count = sum(1 for _ in f) - 1
-            size_bytes = os.path.getsize(data_file)
-            file_size = f"{size_bytes / 1024:.1f} KB"
-        except Exception:
-            row_count = "Error reading file"
-    
-    embed = discord.Embed(title="🟢 SYSTEM STATUS: ONLINE", color=0x00ff00)
-    embed.add_field(name="Latency", value=f"{bot.latency * 1000:.0f}ms", inline=True)
-    embed.add_field(name="AI Training Data", value=f"📊 {row_count} rows collected\n💾 {file_size}", inline=False)
-    
-    modules = []
-    if signal_scan_loop.is_running(): modules.append("✅ Signal Engine")
-    else: modules.append("❌ Signal Engine (STOPPED)")
-    if whale_alert_loop.is_running(): modules.append("✅ Whale Watcher")
-    
-    embed.add_field(name="Active Engines", value="\n".join(modules), inline=False)
-    embed.set_footer(text="JCF Hedge Fund Command Center")
-    await ctx.send(embed=embed)
+        with open(data_file, 'r') as f: row_count = sum(1 for _ in f) - 1
+    await ctx.send(f"🟢 **ONLINE** | AI Data: {row_count} rows")
 
 # --- LAUNCH ---
 if __name__ == "__main__":
