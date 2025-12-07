@@ -24,9 +24,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # --- FORMATTING ALERT ---
 def create_alert_embed(data):
-    # Determine Color (Green for Buy, Red for Sell)
     color = 0x00ff00 if "BUY" in data['signal'] else 0xff0000
-    
     embed = discord.Embed(title=f"{data['signal']} SIGNAL: {data['symbol']}", color=color)
     embed.add_field(name="Price", value=f"${data['price']:.4f}", inline=True)
     embed.add_field(name="Confidence", value=data['confidence'], inline=True)
@@ -38,30 +36,23 @@ def create_alert_embed(data):
 @tasks.loop(hours=1) 
 async def signal_scan_loop():
     print("📡 Scanning for Trade Signals...")
-    
-    # 1. Crypto
     if CHANNELS["crypto"]:
         signals = await signal_engine.scan_crypto()
         channel = bot.get_channel(CHANNELS["crypto"])
         if channel:
-            for sig in signals:
-                await channel.send(embed=create_alert_embed(sig))
+            for sig in signals: await channel.send(embed=create_alert_embed(sig))
 
-    # 2. Stocks
     if CHANNELS["stocks"]:
         signals = await signal_engine.scan_stocks()
         channel = bot.get_channel(CHANNELS["stocks"])
         if channel:
-            for sig in signals:
-                await channel.send(embed=create_alert_embed(sig))
+            for sig in signals: await channel.send(embed=create_alert_embed(sig))
             
-    # 3. Forex
     if CHANNELS["forex"]:
         signals = await signal_engine.scan_forex()
         channel = bot.get_channel(CHANNELS["forex"])
         if channel:
-            for sig in signals:
-                await channel.send(embed=create_alert_embed(sig))
+            for sig in signals: await channel.send(embed=create_alert_embed(sig))
 
 @tasks.loop(hours=4) 
 async def macro_news_loop():
@@ -70,8 +61,7 @@ async def macro_news_loop():
     if news_list:
         channel = bot.get_channel(CHANNELS["news"])
         if channel:
-            for news_item in news_list:
-                await channel.send(news_item)
+            for news_item in news_list: await channel.send(news_item)
 
 @tasks.loop(minutes=60) 
 async def whale_alert_loop():
@@ -80,26 +70,20 @@ async def whale_alert_loop():
     if alerts:
         channel = bot.get_channel(CHANNELS["whale"])
         if channel:
-            for alert in alerts:
-                await channel.send(alert)
+            for alert in alerts: await channel.send(alert)
 
 # --- EVENTS ---
 @bot.event
 async def on_ready():
     print(f"✅ JCF HQ SYSTEM ONLINE: {bot.user.name}")
-    
-    # Start all loops
-    if not signal_scan_loop.is_running():
-        signal_scan_loop.start()
-    if not macro_news_loop.is_running():
-        macro_news_loop.start()
-    if not whale_alert_loop.is_running():
-        whale_alert_loop.start()
+    if not signal_scan_loop.is_running(): signal_scan_loop.start()
+    if not macro_news_loop.is_running(): macro_news_loop.start()
+    if not whale_alert_loop.is_running(): whale_alert_loop.start()
         
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
         if channel:
-            await channel.send("🟢 **SYSTEM REBOOT:** Signal Engine is now Active.")
+            await channel.send("🟢 **SYSTEM REBOOT:** Signal Engine & Data Logger Active.")
 
 # --- COMMANDS ---
 @bot.command(name="risk")
@@ -107,11 +91,9 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
     risk_1_pct = balance * 0.01
     risk_2_pct = balance * 0.02
     stop_distance = abs(entry - stop_loss)
-    
     if stop_distance == 0:
         await ctx.send("❌ Error: Entry and Stop Loss cannot be the same.")
         return
-
     units_1pct = risk_1_pct / stop_distance
     units_2pct = risk_2_pct / stop_distance
 
@@ -120,51 +102,40 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
     embed.add_field(name="Conservative (1%)", value=f"Risk: **${risk_1_pct:.2f}**\nSize: **{units_1pct:,.2f} units**", inline=True)
     embed.add_field(name="Aggressive (2%)", value=f"Risk: **${risk_2_pct:.2f}**\nSize: **{units_2pct:,.2f} units**", inline=True)
     embed.set_footer(text=f"Stop Distance: {stop_distance:.5f} | calculated by JCF AI")
-    
     await ctx.send(embed=embed)
-    
-# --- LAUNCH ---
-if __name__ == "__main__":
-    if not TOKEN:
-        print("❌ ERROR: DISCORD_TOKEN is missing!")
-    else:
-# --- ADMIN COMMAND: STATUS CHECK ---
+
 @bot.command(name="status")
 async def system_status(ctx):
     """Checks system health and data collection progress."""
-    
-    # 1. Check Data Log File
     data_file = "/app/data/market_training_data.csv"
     row_count = 0
     file_size = "0 KB"
     
     if os.path.exists(data_file):
         try:
-            # Quick line count (minus header)
             with open(data_file, 'r') as f:
                 row_count = sum(1 for _ in f) - 1
-            
-            # File size in KB
             size_bytes = os.path.getsize(data_file)
             file_size = f"{size_bytes / 1024:.1f} KB"
-        except Exception as e:
+        except Exception:
             row_count = "Error reading file"
     
-    # 2. Create Status Embed
     embed = discord.Embed(title="🟢 SYSTEM STATUS: ONLINE", color=0x00ff00)
     embed.add_field(name="Latency", value=f"{bot.latency * 1000:.0f}ms", inline=True)
     embed.add_field(name="AI Training Data", value=f"📊 {row_count} rows collected\n💾 {file_size}", inline=False)
     
-    # 3. List Active Modules
     modules = []
     if signal_scan_loop.is_running(): modules.append("✅ Signal Engine")
     else: modules.append("❌ Signal Engine (STOPPED)")
-    
     if whale_alert_loop.is_running(): modules.append("✅ Whale Watcher")
     
     embed.add_field(name="Active Engines", value="\n".join(modules), inline=False)
     embed.set_footer(text="JCF Hedge Fund Command Center")
-    
     await ctx.send(embed=embed)
-        
+
+# --- LAUNCH ---
+if __name__ == "__main__":
+    if not TOKEN:
+        print("❌ ERROR: DISCORD_TOKEN is missing!")
+    else:
         bot.run(TOKEN)
