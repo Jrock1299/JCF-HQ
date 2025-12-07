@@ -20,7 +20,7 @@ FMP_KEY = os.getenv("FMP_KEY")
 def analyze_market(df, symbol, asset_type):
     """
     Applies Technical Logic to find setups.
-    Returns: (Signal_Type, Confidence, Price) or None
+    Returns: (Signal_Type, Confidence, Price, SL, TP) or None
     """
     if df is None or df.empty: return None
 
@@ -28,43 +28,57 @@ def analyze_market(df, symbol, asset_type):
     df.ta.rsi(length=14, append=True)
     df.ta.ema(length=50, append=True)
     df.ta.ema(length=200, append=True)
+    df.ta.atr(length=14, append=True) # <--- NEW: Volatility Indicator
     
-    # --- NEW: LOG DATA FOR AI TRAINING ---
-    # We save the data BEFORE filtering for signals, so the AI learns 
-    # from both "boring" markets and "exciting" markets.
-    try:
-        data_logger.log_market_snapshot(symbol, df, asset_type)
-    except Exception as e:
-        print(f"Logging failed: {e}")
-    # -------------------------------------
-
-    # Get the latest candle
+    # Get latest data
     current = df.iloc[-1]
     
-    # 2. THE LOGIC (Trend + Momentum)
+    # 2. LOGIC (Trend + Momentum)
     signal = None
     confidence = "Low"
     
     rsi_val = current.get('RSI_14')
     ema_50 = current.get('EMA_50')
     ema_200 = current.get('EMA_200')
+    atr = current.get('ATRr_14') # Average True Range
     price = current['close']
     
-    if rsi_val is None or ema_200 is None: return None
+    if rsi_val is None or ema_200 is None or atr is None: return None
 
+    # Define Risk Multiplier (1.5x ATR for Stop, 2.0x ATR for Profit)
+    sl_dist = atr * 1.5
+    tp_dist = atr * 2.0
+
+    stop_loss = 0.0
+    take_profit = 0.0
+
+    # BUY SIGNAL
     if price > ema_200 and rsi_val < 35:
         signal = "🟢 BUY"
         confidence = "High" if price > ema_50 else "Medium"
+        stop_loss = price - sl_dist
+        take_profit = price + tp_dist
     
+    # SELL SIGNAL
     elif price < ema_200 and rsi_val > 65:
         signal = "🔴 SELL"
         confidence = "High" if price < ema_50 else "Medium"
+        stop_loss = price + sl_dist
+        take_profit = price - tp_dist
 
     if signal:
+        # Save to CSV (Data Logger) - Update logic to include SL/TP later if needed
+        try:
+            data_logger.log_market_snapshot(symbol, df, asset_type)
+        except:
+            pass
+            
         return {
             "symbol": symbol,
             "signal": signal,
             "price": price,
+            "stop_loss": stop_loss,   # <--- SENDING TO BOT
+            "take_profit": take_profit, # <--- SENDING TO BOT
             "confidence": confidence,
             "rsi": rsi_val,
             "type": asset_type
