@@ -4,3 +4,5 @@ numpy
 pandas
 requests
 aiohttp
+ccxt
+pandas_ta
