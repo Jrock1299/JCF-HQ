@@ -2,11 +2,11 @@ import os
 import discord
 from discord.ext import commands, tasks
 import market_intel 
+import signal_engine # <--- NEW IMPORT
 
 # --- CONFIGURATION ---
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Channel IDs 
 CHANNELS = {
     "risk_calc": int(os.getenv("CH_RISK", 0)),
     "crypto": int(os.getenv("CH_CRYPTO", 0)),
@@ -15,15 +15,51 @@ CHANNELS = {
     "whale": int(os.getenv("CH_WHALE", 0)),
     "news": int(os.getenv("CH_NEWS", 0)),
     "logs": int(os.getenv("CH_LOGS", 0)),
-    "status": int(os.getenv("CH_STATUS", 0)) # <--- NEW CONNECTION ADDED
+    "status": int(os.getenv("CH_STATUS", 0))
 }
 
-# --- BOT SETUP ---
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# --- TASKS (LOOPS) ---
+# --- FORMATTING ALERT ---
+def create_alert_embed(data):
+    color = 0x00ff00 if "BUY" in data['signal'] else 0xff0000
+    embed = discord.Embed(title=f"{data['signal']} SIGNAL: {data['symbol']}", color=color)
+    embed.add_field(name="Price", value=f"${data['price']:.4f}", inline=True)
+    embed.add_field(name="Confidence", value=data['confidence'], inline=True)
+    embed.add_field(name="RSI", value=f"{data['rsi']:.1f}", inline=True)
+    embed.set_footer(text="JCF AI Engine • 1H Timeframe")
+    return embed
+
+# --- TASKS ---
+@tasks.loop(hours=1) 
+async def signal_scan_loop():
+    print("📡 Scanning for Trade Signals...")
+    
+    # 1. Crypto
+    if CHANNELS["crypto"]:
+        signals = await signal_engine.scan_crypto()
+        channel = bot.get_channel(CHANNELS["crypto"])
+        for sig in signals:
+            await channel.send(embed=create_alert_embed(sig))
+
+    # 2. Stocks (Only scan during US Market hours to save API calls)
+    if CHANNELS["stocks"]:
+        # Logic: We can add a time check here later
+        signals = await signal_engine.scan_stocks()
+        channel = bot.get_channel(CHANNELS["stocks"])
+        for sig in signals:
+            await channel.send(embed=create_alert_embed(sig))
+            
+    # 3. Forex
+    if CHANNELS["forex"]:
+        signals = await signal_engine.scan_forex()
+        channel = bot.get_channel(CHANNELS["forex"])
+        for sig in signals:
+            await channel.send(embed=create_alert_embed(sig))
+
+# (Keep your existing Macro/Whale loops here from previous step)
 @tasks.loop(hours=4) 
 async def macro_news_loop():
     if not CHANNELS["news"]: return
@@ -35,6 +71,37 @@ async def macro_news_loop():
 
 @tasks.loop(minutes=60) 
 async def whale_alert_loop():
+    if not CHANNELS["whale"]: return
+    alerts = await market_intel.check_crypto_whales()
+    if alerts:
+        channel = bot.get_channel(CHANNELS["whale"])
+        for alert in alerts:
+            await channel.send(alert)
+
+# --- EVENTS ---
+@bot.event
+async def on_ready():
+    print(f"✅ JCF HQ SYSTEM ONLINE: {bot.user.name}")
+    
+    # Start all loops
+    signal_scan_loop.start() # <--- NEW LOOP STARTED
+    macro_news_loop.start()
+    whale_alert_loop.start()
+        
+    if CHANNELS["status"]:
+        channel = bot.get_channel(CHANNELS["status"])
+        if channel:
+            await channel.send("🟢 **SYSTEM REBOOT:** Signal Engine is now Active.")
+
+# --- COMMANDS ---
+@bot.command(name="risk")
+async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
+    # (Paste your existing Risk Calculator code here)
+    pass
+    
+# --- LAUNCH ---
+if __name__ == "__main__":
+    bot.run(TOKEN)async def whale_alert_loop():
     if not CHANNELS["whale"]: return
     alerts = await market_intel.check_crypto_whales()
     if alerts:
