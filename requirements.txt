@@ -1,4 +1,6 @@
-discord.py==2.4.0
-requests>=2.32.0
-pandas>=2.2.2
-aiohttp==3.9.5
+discord.py
+python-dotenv
+numpy
+pandas
+requests
+aiohttp
