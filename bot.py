@@ -1,4 +1,4 @@
-   import os
+import os
 import discord
 from discord.ext import commands, tasks
 import market_intel 
