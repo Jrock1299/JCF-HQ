@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 import market_intel 
 import signal_engine 
 import portfolio # <--- NEW IMPORT
+import meme_engine # <--- NEW IMPORT
 
 # --- CONFIGURATION ---
 TOKEN = os.getenv("DISCORD_TOKEN")
