@@ -85,7 +85,7 @@ async def scan_forex():
     
     async with aiohttp.ClientSession() as session:
         for pair in FOREX_PAIRS:
-            url = f"https://api-fxpractice.oanda.com/v3/instruments/{pair}/candles?count=250&granularity=H1"
+            url = f"https://api-fxtrade.oanda.com/v3/instruments/{pair}/candles?count=250&granularity=H1"
             async with session.get(url, headers=headers) as resp:
                 if resp.status == 200:
                     data = await resp.json()
