@@ -5,6 +5,7 @@ import pandas as pd
 import pandas_ta_classic as ta # <--- FIXED IMPORT NAME
 import aiohttp
 import json
+import data_logger # <--- NEW IMPORT
 
 # --- CONFIG ---
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
@@ -24,20 +25,26 @@ def analyze_market(df, symbol, asset_type):
     if df is None or df.empty: return None
 
     # 1. Calculate Indicators
-    # pandas-ta-classic registers the 'ta' accessor automatically
     df.ta.rsi(length=14, append=True)
     df.ta.ema(length=50, append=True)
     df.ta.ema(length=200, append=True)
     
+    # --- NEW: LOG DATA FOR AI TRAINING ---
+    # We save the data BEFORE filtering for signals, so the AI learns 
+    # from both "boring" markets and "exciting" markets.
+    try:
+        data_logger.log_market_snapshot(symbol, df, asset_type)
+    except Exception as e:
+        print(f"Logging failed: {e}")
+    # -------------------------------------
+
     # Get the latest candle
     current = df.iloc[-1]
     
     # 2. THE LOGIC (Trend + Momentum)
     signal = None
     confidence = "Low"
-
-    # BUY LOGIC: Price > EMA 200 (Uptrend) AND RSI < 35 (Oversold)
-    # Note: Column names are generated automatically (e.g. RSI_14, EMA_50)
+    
     rsi_val = current.get('RSI_14')
     ema_50 = current.get('EMA_50')
     ema_200 = current.get('EMA_200')
@@ -49,7 +56,6 @@ def analyze_market(df, symbol, asset_type):
         signal = "🟢 BUY"
         confidence = "High" if price > ema_50 else "Medium"
     
-    # SELL LOGIC: Price < EMA 200 (Downtrend) AND RSI > 65 (Overbought)
     elif price < ema_200 and rsi_val > 65:
         signal = "🔴 SELL"
         confidence = "High" if price < ema_50 else "Medium"
@@ -64,7 +70,6 @@ def analyze_market(df, symbol, asset_type):
             "type": asset_type
         }
     return None
-
 # --- 1. CRYPTO ENGINE ---
 async def scan_crypto():
     exchange = ccxt.binanceus({'enableRateLimit': True})
