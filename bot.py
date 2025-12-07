@@ -128,4 +128,43 @@ if __name__ == "__main__":
     if not TOKEN:
         print("❌ ERROR: DISCORD_TOKEN is missing!")
     else:
+# --- ADMIN COMMAND: STATUS CHECK ---
+@bot.command(name="status")
+async def system_status(ctx):
+    """Checks system health and data collection progress."""
+    
+    # 1. Check Data Log File
+    data_file = "/app/data/market_training_data.csv"
+    row_count = 0
+    file_size = "0 KB"
+    
+    if os.path.exists(data_file):
+        try:
+            # Quick line count (minus header)
+            with open(data_file, 'r') as f:
+                row_count = sum(1 for _ in f) - 1
+            
+            # File size in KB
+            size_bytes = os.path.getsize(data_file)
+            file_size = f"{size_bytes / 1024:.1f} KB"
+        except Exception as e:
+            row_count = "Error reading file"
+    
+    # 2. Create Status Embed
+    embed = discord.Embed(title="🟢 SYSTEM STATUS: ONLINE", color=0x00ff00)
+    embed.add_field(name="Latency", value=f"{bot.latency * 1000:.0f}ms", inline=True)
+    embed.add_field(name="AI Training Data", value=f"📊 {row_count} rows collected\n💾 {file_size}", inline=False)
+    
+    # 3. List Active Modules
+    modules = []
+    if signal_scan_loop.is_running(): modules.append("✅ Signal Engine")
+    else: modules.append("❌ Signal Engine (STOPPED)")
+    
+    if whale_alert_loop.is_running(): modules.append("✅ Whale Watcher")
+    
+    embed.add_field(name="Active Engines", value="\n".join(modules), inline=False)
+    embed.set_footer(text="JCF Hedge Fund Command Center")
+    
+    await ctx.send(embed=embed)
+        
         bot.run(TOKEN)
