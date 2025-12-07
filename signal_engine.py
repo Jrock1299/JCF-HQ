@@ -2,12 +2,12 @@ import os
 import asyncio
 import ccxt.async_support as ccxt
 import pandas as pd
-import pandas_ta as ta
+import pandas_ta_classic as ta # <--- FIXED IMPORT NAME
 import aiohttp
 import json
 
 # --- CONFIG ---
-CRYPTO_PAIRS = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "XRP/USDT"]
+CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
 STOCK_TICKERS = os.getenv("STOCK_TICKERS", "NVDA,TSLA").split(",")
 FOREX_PAIRS = os.getenv("FOREX_PAIRS", "EUR_USD").split(",")
 
@@ -24,35 +24,43 @@ def analyze_market(df, symbol, asset_type):
     if df is None or df.empty: return None
 
     # 1. Calculate Indicators
-    df['RSI'] = df.ta.rsi(length=14)
-    df['EMA_50'] = df.ta.ema(length=50)
-    df['EMA_200'] = df.ta.ema(length=200)
+    # pandas-ta-classic registers the 'ta' accessor automatically
+    df.ta.rsi(length=14, append=True)
+    df.ta.ema(length=50, append=True)
+    df.ta.ema(length=200, append=True)
     
     # Get the latest candle
     current = df.iloc[-1]
-    prev = df.iloc[-2]
-
+    
     # 2. THE LOGIC (Trend + Momentum)
     signal = None
     confidence = "Low"
 
-    # BUY LOGIC: Price > EMA 200 (Uptrend) AND RSI < 30 (Oversold)
-    if current['close'] > current['EMA_200'] and current['RSI'] < 35:
-        signal = "🟢 BUY"
-        confidence = "High" if current['close'] > current['EMA_50'] else "Medium"
+    # BUY LOGIC: Price > EMA 200 (Uptrend) AND RSI < 35 (Oversold)
+    # Note: Column names are generated automatically (e.g. RSI_14, EMA_50)
+    rsi_val = current.get('RSI_14')
+    ema_50 = current.get('EMA_50')
+    ema_200 = current.get('EMA_200')
+    price = current['close']
     
-    # SELL LOGIC: Price < EMA 200 (Downtrend) AND RSI > 70 (Overbought)
-    elif current['close'] < current['EMA_200'] and current['RSI'] > 65:
+    if rsi_val is None or ema_200 is None: return None
+
+    if price > ema_200 and rsi_val < 35:
+        signal = "🟢 BUY"
+        confidence = "High" if price > ema_50 else "Medium"
+    
+    # SELL LOGIC: Price < EMA 200 (Downtrend) AND RSI > 65 (Overbought)
+    elif price < ema_200 and rsi_val > 65:
         signal = "🔴 SELL"
-        confidence = "High" if current['close'] < current['EMA_50'] else "Medium"
+        confidence = "High" if price < ema_50 else "Medium"
 
     if signal:
         return {
             "symbol": symbol,
             "signal": signal,
-            "price": current['close'],
+            "price": price,
             "confidence": confidence,
-            "rsi": current['RSI'],
+            "rsi": rsi_val,
             "type": asset_type
         }
     return None
@@ -64,11 +72,18 @@ async def scan_crypto():
     
     try:
         for symbol in CRYPTO_PAIRS:
-            ohlcv = await exchange.fetch_ohlcv(symbol, timeframe='1h', limit=250)
-            df = pd.DataFrame(ohlcv, columns=['time', 'open', 'high', 'low', 'close', 'vol'])
-            result = analyze_market(df, symbol, "CRYPTO")
-            if result:
-                signals.append(result)
+            if not symbol: continue
+            try:
+                ohlcv = await exchange.fetch_ohlcv(symbol, timeframe='1h', limit=250)
+                if not ohlcv: continue
+                
+                df = pd.DataFrame(ohlcv, columns=['time', 'open', 'high', 'low', 'close', 'vol'])
+                result = analyze_market(df, symbol, "CRYPTO")
+                if result:
+                    signals.append(result)
+            except Exception as e:
+                print(f"Skipping {symbol}: {e}")
+                continue
     except Exception as e:
         print(f"Crypto Scan Error: {e}")
     finally:
@@ -85,20 +100,24 @@ async def scan_forex():
     
     async with aiohttp.ClientSession() as session:
         for pair in FOREX_PAIRS:
+            if not pair: continue
+            # LIVE SERVER URL
             url = f"https://api-fxtrade.oanda.com/v3/instruments/{pair}/candles?count=250&granularity=H1"
             async with session.get(url, headers=headers) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     candles = data.get('candles', [])
                     
-                    # Parse OANDA data to DataFrame
                     parsed = []
                     for c in candles:
-                        parsed.append({
-                            "close": float(c['mid']['c']),
-                            "high": float(c['mid']['h']),
-                            "low": float(c['mid']['l'])
-                        })
+                        if c['complete']:
+                            parsed.append({
+                                "close": float(c['mid']['c']),
+                                "high": float(c['mid']['h']),
+                                "low": float(c['mid']['l']),
+                                "open": float(c['mid']['o'])
+                            })
+                    if not parsed: continue
                     df = pd.DataFrame(parsed)
                     
                     result = analyze_market(df, pair.replace("_", "/"), "FOREX")
@@ -113,6 +132,7 @@ async def scan_stocks():
     signals = []
     async with aiohttp.ClientSession() as session:
         for ticker in STOCK_TICKERS:
+            if not ticker: continue
             url = f"https://financialmodelingprep.com/api/v3/historical-chart/1hour/{ticker}?apikey={FMP_KEY}"
             async with session.get(url) as resp:
                 if resp.status == 200:
