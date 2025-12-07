@@ -1,8 +1,8 @@
 discord.py
 python-dotenv
-numpy
+numpy<2.0.0
 pandas
 requests
 aiohttp
 ccxt
-pandas_ta
+git+https://github.com/twopirllc/pandas-ta.git@development
