@@ -11,6 +11,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Mapping Railway Variables to Channel IDs
 CHANNELS = {
+    # Existing Channels
     "risk_calc": int(os.getenv("CH_RISK", 0)),
     "crypto": int(os.getenv("CH_CRYPTO", 0)),
     "forex": int(os.getenv("CH_FOREX", 0)),
@@ -19,8 +20,12 @@ CHANNELS = {
     "news": int(os.getenv("CH_NEWS", 0)),
     "logs": int(os.getenv("CH_LOGS", 0)),
     "status": int(os.getenv("CH_STATUS", 0)),
-    "insider": int(os.getenv("CH_INSIDER", 0)), # New
-    "smart": int(os.getenv("CH_SMART", 0))      # New
+    "insider": int(os.getenv("CH_INSIDER", 0)),
+    "smart": int(os.getenv("CH_SMART", 0)),
+    
+    # NEW SCALP CHANNELS
+    "crypto_scalp": int(os.getenv("CH_CRYPTO_SCALP", 0)),
+    "forex_scalp": int(os.getenv("CH_FOREX_SCALP", 0))
 }
 
 intents = discord.Intents.default()
@@ -32,7 +37,10 @@ def create_alert_embed(data):
     # Color: Green for Buy, Red for Sell
     color = 0x00ff00 if "BUY" in data['signal'] else 0xff0000
     
-    embed = discord.Embed(title=f"{data['signal']} SIGNAL: {data['symbol']}", color=color)
+    # Add Style Tag to Title (e.g., "⚡ SCALP BUY" or "🟢 SWING BUY")
+    title_text = f"{data['signal']} SIGNAL: {data['symbol']}"
+    
+    embed = discord.Embed(title=title_text, color=color)
     
     # Row 1: The Basics
     embed.add_field(name="Entry Price", value=f"**${data['price']:.4f}**", inline=True)
@@ -42,43 +50,65 @@ def create_alert_embed(data):
     # Row 2: Risk Management (Stops & Targets)
     embed.add_field(name="🛑 Stop Loss", value=f"${data['stop_loss']:.4f}", inline=True)
     embed.add_field(name="🎯 Take Profit", value=f"${data['take_profit']:.4f}", inline=True)
-    embed.add_field(name="Risk:Reward", value="1:1.3", inline=True)
     
-    embed.set_footer(text="JCF AI Engine • 1H Timeframe • Dynamic ATR Risk")
+    # Custom Footer based on Style
+    footer_text = "JCF AI Engine • "
+    if data.get('style') == "SCALP":
+        footer_text += "M15 Scalp Mode ⚡"
+    else:
+        footer_text += "H1/H4 Trend Mode 🌊"
+        
+    embed.set_footer(text=footer_text)
     return embed
 
 # --- TASKS (THE AUTOMATION LOOPS) ---
 
 @tasks.loop(hours=1) 
 async def signal_scan_loop():
-    print("📡 Scanning for Trade Signals...")
+    print("📡 Scanning for Swing & Scalp Signals...")
     
-    # Helper to process signals (Alert + Paper Trade)
-    async def process_signals(signals, channel_id):
-        channel = bot.get_channel(channel_id)
-        if not channel: return
+    # Helper to route signals to the correct channel
+    async def route_signal(sig):
+        target_channel = None
         
-        for sig in signals:
-            # 1. Post to Discord
-            await channel.send(embed=create_alert_embed(sig))
-            # 2. Record to Paper Portfolio
+        # 1. Determine Target Channel based on Asset & Style
+        if sig['type'] == "CRYPTO":
+            if sig.get('style') == "SCALP":
+                target_channel = bot.get_channel(CHANNELS["crypto_scalp"])
+            else: # Default to Swing
+                target_channel = bot.get_channel(CHANNELS["crypto"])
+        
+        elif sig['type'] == "FOREX":
+            if sig.get('style') == "SCALP":
+                target_channel = bot.get_channel(CHANNELS["forex_scalp"])
+            else:
+                target_channel = bot.get_channel(CHANNELS["forex"])
+                
+        elif sig['type'] == "STOCK":
+            target_channel = bot.get_channel(CHANNELS["stocks"])
+
+        # 2. Post & Record
+        if target_channel:
+            await target_channel.send(embed=create_alert_embed(sig))
+            
+            # Record to Paper Portfolio (Both Swings and Scalps)
             try:
                 portfolio.open_position(sig['symbol'], sig['price'], sig['signal'], sig['type'])
             except Exception as e:
                 print(f"Portfolio Record Error: {e}")
 
-    # Scan All Markets
-    if CHANNELS["crypto"]:
+    # --- EXECUTE SCANS ---
+    if CHANNELS["crypto"] or CHANNELS["crypto_scalp"]:
         signals = await signal_engine.scan_crypto()
-        await process_signals(signals, CHANNELS["crypto"])
+        for sig in signals: await route_signal(sig)
 
     if CHANNELS["stocks"]:
         signals = await signal_engine.scan_stocks()
-        await process_signals(signals, CHANNELS["stocks"])
+        for sig in signals: await route_signal(sig)
             
-    if CHANNELS["forex"]:
+    if CHANNELS["forex"] or CHANNELS["forex_scalp"]:
         signals = await signal_engine.scan_forex()
-        await process_signals(signals, CHANNELS["forex"])
+        for sig in signals: await route_signal(sig)
 
 @tasks.loop(hours=4) 
 async def macro_news_loop():
@@ -111,28 +141,24 @@ async def meme_scan_loop():
 @tasks.loop(hours=12) 
 async def insider_scan_loop():
     if not CHANNELS["insider"]: return
-    # Requires market_intel.py to have check_insider_trading()
     try:
         alerts = await market_intel.check_insider_trading()
         channel = bot.get_channel(CHANNELS["insider"])
         if channel and alerts:
             for alert in alerts[:5]: 
                 await channel.send(alert)
-    except AttributeError:
-        print("⚠️ Market Intel module missing Insider function.")
+    except AttributeError: pass
 
 @tasks.loop(hours=24) 
 async def smart_money_loop():
     if not CHANNELS["smart"]: return
-    # Requires market_intel.py to have check_smart_money()
     try:
         alerts = await market_intel.check_smart_money()
         channel = bot.get_channel(CHANNELS["smart"])
         if channel and alerts:
             for alert in alerts[:5]:
                 await channel.send(alert)
-    except AttributeError:
-        print("⚠️ Market Intel module missing Smart Money function.")
+    except AttributeError: pass
 
 # --- EVENTS ---
 @bot.event
@@ -150,7 +176,7 @@ async def on_ready():
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
         if channel:
-            await channel.send("🟢 **SYSTEM REBOOT:** All Engines (Signals, Intel, Memes) are Active.")
+            await channel.send("🟢 **SYSTEM UPDATE:** Split-Brain Engine (Scalp + Swing) is Active.")
 
 # --- COMMANDS ---
 
@@ -209,7 +235,7 @@ async def system_status(ctx):
     embed.add_field(name="AI Data Collected", value=f"📊 {row_count} rows", inline=False)
     
     modules = []
-    modules.append("✅ Signal Engine" if signal_scan_loop.is_running() else "❌ Signal Engine")
+    modules.append("✅ Signal Engine (Swing + Scalp)" if signal_scan_loop.is_running() else "❌ Signal Engine")
     modules.append("✅ Insider/Smart Money" if insider_scan_loop.is_running() else "❌ Intel Engine")
     modules.append("✅ Meme Sniper (Data Only)" if meme_scan_loop.is_running() else "❌ Meme Sniper")
     
