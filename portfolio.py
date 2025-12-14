@@ -26,18 +26,17 @@ def save_portfolio(data):
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
 
-# --- TRADE LOGIC ---
-def open_position(symbol, entry_price, direction, asset_type):
+# --- TRADE ENTRY ---
+def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
     """
-    Records a new virtual trade.
+    Records a new virtual trade with Targets.
     """
     trades = load_portfolio()
     
-    # Optional: Check if we already have an open trade for this symbol
-    # to prevent spamming multiple buys on the same asset.
+    # Prevent duplicate opens for the same symbol/style
     for t in trades:
-        if t['symbol'] == symbol and t['status'] == 'OPEN':
-            return False # Trade already exists
+        if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
+            return False 
 
     new_trade = {
         "id": len(trades) + 1,
@@ -45,30 +44,30 @@ def open_position(symbol, entry_price, direction, asset_type):
         "entry_price": float(entry_price),
         "direction": direction, # "BUY" or "SELL"
         "asset_type": asset_type,
+        "stop_loss": float(sl),
+        "take_profit": float(tp),
+        "style": style,         # "SWING" or "SCALP"
         "status": "OPEN",
         "timestamp": datetime.now().isoformat(),
-        "size": 1000 # Virtual $1000 position
+        "close_price": 0.0,
+        "pnl_pct": 0.0,
+        "outcome": None         # "WIN" or "LOSS"
     }
     
     trades.append(new_trade)
     save_portfolio(trades)
     return True
 
-# --- PNL CALCULATION ---
+# --- PRICE FETCHING ---
 async def get_current_price(symbol, asset_type):
-    """
-    Fetches live price to calculate PnL.
-    """
     price = 0.0
     try:
-        # 1. CRYPTO
         if asset_type == "CRYPTO":
             exchange = ccxt.binanceus()
             ticker = await exchange.fetch_ticker(symbol)
             price = ticker['last']
             await exchange.close()
 
-        # 2. STOCKS
         elif asset_type == "STOCK":
             url = f"https://financialmodelingprep.com/api/v3/quote-short/{symbol}?apikey={FMP_KEY}"
             async with aiohttp.ClientSession() as session:
@@ -77,9 +76,7 @@ async def get_current_price(symbol, asset_type):
                         data = await resp.json()
                         if data: price = float(data[0]['price'])
 
-        # 3. FOREX
         elif asset_type == "FOREX":
-            # Using OANDA Live
             clean_pair = symbol.replace("/", "_")
             url = f"https://api-fxtrade.oanda.com/v3/instruments/{clean_pair}/candles?count=1&granularity=M1"
             headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
@@ -88,40 +85,101 @@ async def get_current_price(symbol, asset_type):
                     if resp.status == 200:
                         data = await resp.json()
                         price = float(data['candles'][0]['mid']['c'])
-    except Exception as e:
-        print(f"Price fetch error for {symbol}: {e}")
-        
+    except: pass
     return price
 
-async def generate_portfolio_report():
+# --- EXIT MANAGER (THE NEW LOGIC) ---
+async def update_positions():
     """
-    Generates a performance report for Discord.
+    Checks all OPEN trades to see if they hit SL or TP.
+    Returns a list of 'closed_trades' to notify the user.
     """
     trades = load_portfolio()
     active_trades = [t for t in trades if t['status'] == 'OPEN']
+    closed_notifications = []
     
     if not active_trades:
-        return None, "No active paper trades."
+        return []
 
+    for t in active_trades:
+        current_price = await get_current_price(t['symbol'], t['asset_type'])
+        if current_price == 0: continue
+        
+        outcome = None
+        close_reason = None
+        
+        # BUY LOGIC
+        if "BUY" in t['direction']:
+            if current_price >= t['take_profit']:
+                outcome = "WIN"
+                close_reason = "Hit Take Profit 🎯"
+            elif current_price <= t['stop_loss']:
+                outcome = "LOSS"
+                close_reason = "Hit Stop Loss 🛑"
+        
+        # SELL LOGIC
+        elif "SELL" in t['direction']:
+            if current_price <= t['take_profit']:
+                outcome = "WIN"
+                close_reason = "Hit Take Profit 🎯"
+            elif current_price >= t['stop_loss']:
+                outcome = "LOSS"
+                close_reason = "Hit Stop Loss 🛑"
+        
+        # CLOSE THE TRADE
+        if outcome:
+            # Calculate final PnL
+            if "BUY" in t['direction']:
+                pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
+            else:
+                pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
+                
+            t['status'] = "CLOSED"
+            t['close_price'] = current_price
+            t['pnl_pct'] = pnl
+            t['outcome'] = outcome
+            
+            closed_notifications.append(f"{close_reason}: **{t['symbol']}** ({t['style']})\nProfit: **{pnl:+.2f}%**")
+
+    if closed_notifications:
+        save_portfolio(trades)
+        
+    return closed_notifications
+
+# --- REPORTING ---
+async def generate_portfolio_report():
+    trades = load_portfolio()
+    active_trades = [t for t in trades if t['status'] == 'OPEN']
+    closed_trades = [t for t in trades if t['status'] == 'CLOSED']
+    
+    # Calculate Stats
+    wins = len([t for t in closed_trades if t['outcome'] == "WIN"])
+    losses = len([t for t in closed_trades if t['outcome'] == "LOSS"])
+    total_closed = wins + losses
+    win_rate = (wins / total_closed * 100) if total_closed > 0 else 0.0
+    
     report_lines = []
-    total_pnl = 0.0
+    report_lines.append(f"📊 **Performance:** {wins} Wins / {losses} Losses (**{win_rate:.0f}% Win Rate**)")
+    report_lines.append("---")
+    
+    if not active_trades:
+        return 0.0, "\n".join(report_lines) + "\n\n(No active positions)"
+
+    total_unrealized_pnl = 0.0
     
     for t in active_trades:
         current_price = await get_current_price(t['symbol'], t['asset_type'])
-        
-        if current_price == 0:
-            pnl_pct = 0.0
+        if current_price == 0: continue
+            
+        if "BUY" in t['direction']:
+            pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
         else:
-            # Logic: (Current - Entry) / Entry * 100
-            if "BUY" in t['direction']:
-                pnl_pct = ((current_price - t['entry_price']) / t['entry_price']) * 100
-            else: # Short/Sell
-                pnl_pct = ((t['entry_price'] - current_price) / t['entry_price']) * 100
+            pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
         
-        # Add Emoji
-        icon = "🟢" if pnl_pct >= 0 else "🔴"
-        line = f"{icon} **{t['symbol']}**: {t['direction']} @ {t['entry_price']:.4f} ➜ Now {current_price:.4f} (**{pnl_pct:+.2f}%**)"
+        icon = "🟢" if pnl >= 0 else "🔴"
+        # Format: SYMBOL (Scalp) +1.2%
+        line = f"{icon} **{t['symbol']}** ({t['style']}): {pnl:+.2f}%"
         report_lines.append(line)
-        total_pnl += pnl_pct
+        total_unrealized_pnl += pnl
 
-    return total_pnl, "\n".join(report_lines)
+    return total_unrealized_pnl, "\n".join(report_lines)
