@@ -15,7 +15,11 @@ def load_portfolio():
         return []
     try:
         with open(DATA_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            # Ensure it's a list, not a dict or None
+            if isinstance(data, list):
+                return data
+            return []
     except:
         return []
 
@@ -28,12 +32,9 @@ def save_portfolio(data):
 
 # --- TRADE ENTRY ---
 def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
-    """
-    Records a new virtual trade with Targets.
-    """
     trades = load_portfolio()
     
-    # Prevent duplicate opens for the same symbol/style
+    # Prevent duplicate opens
     for t in trades:
         if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
             return False 
@@ -42,16 +43,16 @@ def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
         "id": len(trades) + 1,
         "symbol": symbol,
         "entry_price": float(entry_price),
-        "direction": direction, # "BUY" or "SELL"
+        "direction": direction,
         "asset_type": asset_type,
         "stop_loss": float(sl),
         "take_profit": float(tp),
-        "style": style,         # "SWING" or "SCALP"
+        "style": style, 
         "status": "OPEN",
         "timestamp": datetime.now().isoformat(),
         "close_price": 0.0,
         "pnl_pct": 0.0,
-        "outcome": None         # "WIN" or "LOSS"
+        "outcome": None
     }
     
     trades.append(new_trade)
@@ -63,10 +64,13 @@ async def get_current_price(symbol, asset_type):
     price = 0.0
     try:
         if asset_type == "CRYPTO":
-            exchange = ccxt.binanceus()
-            ticker = await exchange.fetch_ticker(symbol)
-            price = ticker['last']
-            await exchange.close()
+            # Instantiate properly to avoid unclosed connector errors
+            exchange = ccxt.binanceus({'enableRateLimit': True})
+            try:
+                ticker = await exchange.fetch_ticker(symbol)
+                price = ticker['last']
+            finally:
+                await exchange.close()
 
         elif asset_type == "STOCK":
             url = f"https://financialmodelingprep.com/api/v3/quote-short/{symbol}?apikey={FMP_KEY}"
@@ -85,15 +89,14 @@ async def get_current_price(symbol, asset_type):
                     if resp.status == 200:
                         data = await resp.json()
                         price = float(data['candles'][0]['mid']['c'])
-    except: pass
+    except Exception as e:
+        print(f"Price Fetch Error for {symbol}: {e}")
+        return 0.0
+        
     return price
 
-# --- EXIT MANAGER (THE NEW LOGIC) ---
+# --- EXIT MANAGER ---
 async def update_positions():
-    """
-    Checks all OPEN trades to see if they hit SL or TP.
-    Returns a list of 'closed_trades' to notify the user.
-    """
     trades = load_portfolio()
     active_trades = [t for t in trades if t['status'] == 'OPEN']
     closed_notifications = []
@@ -101,7 +104,14 @@ async def update_positions():
     if not active_trades:
         return []
 
+    data_changed = False
+    
     for t in active_trades:
+        # 1. Backwards Compatibility: Handle missing keys from old trades
+        if 'stop_loss' not in t: t['stop_loss'] = 0.0
+        if 'take_profit' not in t: t['take_profit'] = 0.0
+        if 'style' not in t: t['style'] = "SWING" # Default old trades to SWING
+
         current_price = await get_current_price(t['symbol'], t['asset_type'])
         if current_price == 0: continue
         
@@ -110,25 +120,23 @@ async def update_positions():
         
         # BUY LOGIC
         if "BUY" in t['direction']:
-            if current_price >= t['take_profit']:
+            if t['take_profit'] > 0 and current_price >= t['take_profit']:
                 outcome = "WIN"
                 close_reason = "Hit Take Profit 🎯"
-            elif current_price <= t['stop_loss']:
+            elif t['stop_loss'] > 0 and current_price <= t['stop_loss']:
                 outcome = "LOSS"
                 close_reason = "Hit Stop Loss 🛑"
         
         # SELL LOGIC
         elif "SELL" in t['direction']:
-            if current_price <= t['take_profit']:
+            if t['take_profit'] > 0 and current_price <= t['take_profit']:
                 outcome = "WIN"
                 close_reason = "Hit Take Profit 🎯"
-            elif current_price >= t['stop_loss']:
+            elif t['stop_loss'] > 0 and current_price >= t['stop_loss']:
                 outcome = "LOSS"
                 close_reason = "Hit Stop Loss 🛑"
         
-        # CLOSE THE TRADE
         if outcome:
-            # Calculate final PnL
             if "BUY" in t['direction']:
                 pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
             else:
@@ -140,46 +148,54 @@ async def update_positions():
             t['outcome'] = outcome
             
             closed_notifications.append(f"{close_reason}: **{t['symbol']}** ({t['style']})\nProfit: **{pnl:+.2f}%**")
+            data_changed = True
 
-    if closed_notifications:
+    if data_changed:
         save_portfolio(trades)
         
     return closed_notifications
 
 # --- REPORTING ---
 async def generate_portfolio_report():
-    trades = load_portfolio()
-    active_trades = [t for t in trades if t['status'] == 'OPEN']
-    closed_trades = [t for t in trades if t['status'] == 'CLOSED']
-    
-    # Calculate Stats
-    wins = len([t for t in closed_trades if t['outcome'] == "WIN"])
-    losses = len([t for t in closed_trades if t['outcome'] == "LOSS"])
-    total_closed = wins + losses
-    win_rate = (wins / total_closed * 100) if total_closed > 0 else 0.0
-    
-    report_lines = []
-    report_lines.append(f"📊 **Performance:** {wins} Wins / {losses} Losses (**{win_rate:.0f}% Win Rate**)")
-    report_lines.append("---")
-    
-    if not active_trades:
-        return 0.0, "\n".join(report_lines) + "\n\n(No active positions)"
-
-    total_unrealized_pnl = 0.0
-    
-    for t in active_trades:
-        current_price = await get_current_price(t['symbol'], t['asset_type'])
-        if current_price == 0: continue
-            
-        if "BUY" in t['direction']:
-            pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
-        else:
-            pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
+    try:
+        trades = load_portfolio()
+        active_trades = [t for t in trades if t['status'] == 'OPEN']
+        closed_trades = [t for t in trades if t['status'] == 'CLOSED']
         
-        icon = "🟢" if pnl >= 0 else "🔴"
-        # Format: SYMBOL (Scalp) +1.2%
-        line = f"{icon} **{t['symbol']}** ({t['style']}): {pnl:+.2f}%"
-        report_lines.append(line)
-        total_unrealized_pnl += pnl
+        # Calculate Stats
+        wins = len([t for t in closed_trades if t.get('outcome') == "WIN"])
+        losses = len([t for t in closed_trades if t.get('outcome') == "LOSS"])
+        total_closed = wins + losses
+        win_rate = (wins / total_closed * 100) if total_closed > 0 else 0.0
+        
+        report_lines = []
+        report_lines.append(f"📊 **Performance:** {wins} Wins / {losses} Losses (**{win_rate:.0f}% Win Rate**)")
+        report_lines.append("---")
+        
+        if not active_trades:
+            return 0.0, "\n".join(report_lines) + "\n\n(No active positions)"
 
-    return total_unrealized_pnl, "\n".join(report_lines)
+        total_unrealized_pnl = 0.0
+        
+        for t in active_trades:
+            # Safe Get for Style
+            style = t.get('style', 'SWING')
+            
+            current_price = await get_current_price(t['symbol'], t['asset_type'])
+            
+            pnl = 0.0
+            if current_price > 0:
+                if "BUY" in t['direction']:
+                    pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
+                else:
+                    pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
+            
+            icon = "🟢" if pnl >= 0 else "🔴"
+            line = f"{icon} **{t['symbol']}** ({style}): {pnl:+.2f}%"
+            report_lines.append(line)
+            total_unrealized_pnl += pnl
+
+        return total_unrealized_pnl, "\n".join(report_lines)
+        
+    except Exception as e:
+        return 0.0, f"⚠️ Error generating report: {str(e)}"
