@@ -6,7 +6,7 @@ import pandas_ta_classic as ta
 import aiohttp
 from datetime import datetime
 import data_logger 
-import market_intel # Import the new intel module
+import market_intel 
 
 # --- CONFIG ---
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
@@ -18,38 +18,67 @@ FMP_KEY = os.getenv("FMP_KEY")
 
 # --- HELPER: TIME & SESSIONS ---
 def is_forex_session_active():
+    """
+    Returns True if we are in London or NY Session (07:00 - 21:00 UTC).
+    """
     current_hour = datetime.utcnow().hour
     if 7 <= current_hour <= 21:
         return True
     return False
 
-# --- BRAIN 1: MARKET STRUCTURE & TREND ---
-def get_structure_and_trend(df_1h, df_4h):
-    # 1. Big Brother Check (4H Trend)
-    df_4h.ta.ema(length=50, append=True)
-    current_4h = df_4h.iloc[-1]
+# --- BRAIN 1: DIVERGENCE DETECTOR (THE ALPHA) ---
+def check_divergence(df):
+    """
+    Detects Regular Bullish/Bearish Divergence.
+    Returns: "BULLISH_DIV", "BEARISH_DIV", or None
+    """
+    # We use a rolling window to find local extremas
+    lows = df['low']
+    highs = df['high']
     
-    # 2. 1H Structure Check
-    last_highs = df_1h['high'].rolling(5, center=True).max().dropna().tail(2).values
-    last_lows = df_1h['low'].rolling(5, center=True).min().dropna().tail(2).values
+    # Identify Low Pivots (Valleys)
+    is_low_pivot = (lows < lows.shift(1)) & (lows < lows.shift(-1))
     
-    structure = "NEUTRAL"
-    if len(last_highs) >= 2 and len(last_lows) >= 2:
-        if last_highs[1] > last_highs[0] and last_lows[1] > last_lows[0]:
-            structure = "BULLISH"
-        elif last_highs[1] < last_highs[0] and last_lows[1] < last_lows[0]:
-            structure = "BEARISH"
+    # Identify High Pivots (Peaks)
+    is_high_pivot = (highs > highs.shift(1)) & (highs > highs.shift(-1))
+    
+    # Get the last 2 pivots
+    low_pivots = df[is_low_pivot].tail(2)
+    high_pivots = df[is_high_pivot].tail(2)
+    
+    if len(low_pivots) < 2 or len(high_pivots) < 2:
+        return None
 
-    big_trend = "BULLISH" if current_4h['close'] > current_4h.get('EMA_50', 0) else "BEARISH"
-    return structure, big_trend
+    # --- BULLISH DIVERGENCE LOGIC ---
+    # Price Lower Low + RSI Higher Low
+    p_low_1 = low_pivots['low'].iloc[0]
+    p_low_2 = low_pivots['low'].iloc[1]
+    r_low_1 = low_pivots['RSI_14'].iloc[0]
+    r_low_2 = low_pivots['RSI_14'].iloc[1]
 
-# --- BRAIN 2: SWING ANALYZER (VWAP ADDED) ---
+    if p_low_2 < p_low_1 and r_low_2 > r_low_1:
+        # Filter: Divergence must be recent (within last 5 candles approx)
+        if (df.index[-1] - low_pivots.index[-1]).total_seconds() / 60 < 300: 
+             return "BULLISH_DIV"
+
+    # --- BEARISH DIVERGENCE LOGIC ---
+    # Price Higher High + RSI Lower High
+    p_high_1 = high_pivots['high'].iloc[0]
+    p_high_2 = high_pivots['high'].iloc[1]
+    r_high_1 = high_pivots['RSI_14'].iloc[0]
+    r_high_2 = high_pivots['RSI_14'].iloc[1]
+
+    if p_high_2 > p_high_1 and r_high_2 < r_high_1:
+         return "BEARISH_DIV"
+         
+    return None
+
+# --- BRAIN 2: SWING ANALYZER (PRO VERSION) ---
 def analyze_swing(df_1h, df_4h, symbol, asset_type):
     if df_1h is None or df_4h is None: return None
 
-    # VWAP requires a datetime index
+    # Time Index Fix for VWAP/Divergence
     if 'time' in df_1h.columns:
-        # Convert timestamp to datetime if not already
         if not pd.api.types.is_datetime64_any_dtype(df_1h['time']):
              df_1h['time'] = pd.to_datetime(df_1h['time'], unit='ms')
         df_1h.set_index('time', inplace=True)
@@ -58,59 +87,54 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     df_1h.ta.rsi(length=14, append=True)
     df_1h.ta.ema(length=200, append=True)
     df_1h.ta.atr(length=14, append=True)
+    try: df_1h.ta.vwap(append=True)
+    except: pass
     
-    # --- NEW: VWAP ---
-    # Calculates Volume Weighted Average Price
-    try:
-        df_1h.ta.vwap(append=True)
-    except: 
-        # Fallback if VWAP fails (e.g. not enough data)
-        pass
-
-    # Log Data for AI (Fix included)
-    try:
-        data_logger.log_market_snapshot(symbol, df_1h, asset_type)
+    # Log Data for AI
+    try: data_logger.log_market_snapshot(symbol, df_1h, asset_type)
     except: pass
 
-    # Get "Big Brother" confirmation
-    structure_1h, trend_4h = get_structure_and_trend(df_1h, df_4h)
+    # Get "Big Brother" Trend (4H)
+    df_4h.ta.ema(length=50, append=True)
+    curr_4h = df_4h.iloc[-1]
+    big_trend = "BULLISH" if curr_4h['close'] > curr_4h.get('EMA_50', 0) else "BEARISH"
     
+    # Check Divergence (The Alpha)
+    divergence = check_divergence(df_1h) # Returns "BULLISH_DIV" or "BEARISH_DIV"
+
     current = df_1h.iloc[-1]
     rsi = current.get('RSI_14')
     ema200 = current.get('EMA_200')
-    vwap = current.get('VWAP_D') # Pandas TA usually names it VWAP_D
+    vwap = current.get('VWAP_D')
     price = current['close']
     atr = current.get('ATRr_14')
     
     if not all([rsi, ema200, atr]): return None
-    
-    # If VWAP failed to calculate, assume neutral (don't crash)
     if vwap is None: vwap = price 
 
     signal = None
     confidence = "Medium"
     
-    # SWING BUY LOGIC:
-    # 1. Price > EMA200 (Uptrend)
-    # 2. RSI < 40 (Dip)
-    # 3. Structure = BULLISH
-    # 4. NEW: Price > VWAP (Volume supports the move)
-    if price > ema200 and rsi < 40 and structure_1h == "BULLISH":
-        if trend_4h == "BULLISH" and price > vwap:
+    # --- SWING BUY LOGIC ---
+    # 1. Trend: Price > EMA200 (Uptrend)
+    # 2. Safety: Price > VWAP
+    # 3. TRIGGER: Bullish Divergence OR (RSI Oversold + 4H Trend)
+    if price > ema200 and price > vwap:
+        if divergence == "BULLISH_DIV":
             signal = "🟢 SWING BUY"
-            confidence = "High (VWAP Confirmed)"
-        elif trend_4h == "BULLISH":
-            # If below VWAP, it's risky. Maybe skip or take with lower confidence?
-            # For now, let's SKIP to fix your -31% drawdown.
-            return None 
-    
-    # SWING SELL LOGIC
-    elif price < ema200 and rsi > 60 and structure_1h == "BEARISH":
-        if trend_4h == "BEARISH" and price < vwap:
+            confidence = "💎 DIAMOND (Divergence)"
+        elif rsi < 35 and big_trend == "BULLISH": # Standard Setup
+            signal = "🟢 SWING BUY"
+            confidence = "Standard"
+
+    # --- SWING SELL LOGIC ---
+    elif price < ema200 and price < vwap:
+        if divergence == "BEARISH_DIV":
             signal = "🔴 SWING SELL"
-            confidence = "High (VWAP Confirmed)"
-        elif trend_4h == "BEARISH":
-            return None
+            confidence = "💎 DIAMOND (Divergence)"
+        elif rsi > 65 and big_trend == "BEARISH":
+            signal = "🔴 SWING SELL"
+            confidence = "Standard"
 
     if signal:
         sl_dist = atr * 2.0
@@ -124,7 +148,7 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
         }
     return None
 
-# --- BRAIN 3: SCALP ANALYZER (VWAP ADDED) ---
+# --- BRAIN 3: SCALP ANALYZER ---
 def analyze_scalp(df_15m, symbol, asset_type):
     if df_15m is None: return None
     
@@ -133,16 +157,13 @@ def analyze_scalp(df_15m, symbol, asset_type):
              df_15m['time'] = pd.to_datetime(df_15m['time'], unit='ms')
         df_15m.set_index('time', inplace=True)
     
-    # Indicators
     df_15m.ta.rsi(length=14, append=True)
     df_15m.ta.bbands(length=20, std=2, append=True)
-    try:
-        df_15m.ta.vwap(append=True)
+    try: df_15m.ta.vwap(append=True)
     except: pass
     
-    # Log 15m data
-    try:
-        data_logger.log_market_snapshot(f"{symbol}_SCALP", df_15m, asset_type)
+    # Log 15m Data
+    try: data_logger.log_market_snapshot(f"{symbol}_SCALP", df_15m, asset_type)
     except: pass
     
     current = df_15m.iloc[-1]
@@ -157,25 +178,17 @@ def analyze_scalp(df_15m, symbol, asset_type):
     
     signal = None
     
-    # SCALP BUY: RSI Oversold + Touched Lower Band + Price ABOVE VWAP (Trend Scalp)
-    # We add VWAP check here to avoid catching falling knives even on scalps
-    if rsi < 30 and price <= lower_band:
-        # Only take long scalps if we are continuously above VWAP (Strong Intraday Trend)
-        if price > vwap: 
-            signal = "⚡ SCALP BUY"
-        
-    # SCALP SELL
-    elif rsi > 70 and price >= upper_band:
-        if price < vwap:
-            signal = "⚡ SCALP SELL"
+    # SCALPS (Momentum Snapshots with VWAP Trend)
+    if rsi < 30 and price <= lower_band and price > vwap:
+        signal = "⚡ SCALP BUY"
+    elif rsi > 70 and price >= upper_band and price < vwap:
+        signal = "⚡ SCALP SELL"
         
     if signal:
-        target_pct = 0.005 # 0.5%
-        stop_pct = 0.003   # 0.3%
-        
+        target_pct = 0.005 
+        stop_pct = 0.003  
         sl = price * (1 - stop_pct) if "BUY" in signal else price * (1 + stop_pct)
         tp = price * (1 + target_pct) if "BUY" in signal else price * (1 - target_pct)
-        
         return {
             "symbol": symbol, "signal": signal, "price": price,
             "stop_loss": sl, "take_profit": tp,
@@ -183,12 +196,14 @@ def analyze_scalp(df_15m, symbol, asset_type):
         }
     return None
 
-# --- SCANNER: CRYPTO ---
-async def scan_crypto(): # Check for Red Folder News Events
-is_safe = await market_intel.is_market_safe_from_news()
-if not is_safe:
-    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-    return []
+# --- SCANNER: CRYPTO (WITH NEWS SHIELD) ---
+async def scan_crypto():
+    # 1. NEWS SHIELD
+    is_safe = await market_intel.is_market_safe_from_news()
+    if not is_safe:
+        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+        return [] 
+        
     exchange = ccxt.binanceus({'enableRateLimit': True})
     signals = []
     try:
@@ -210,18 +225,19 @@ if not is_safe:
                 
                 scalp_sig = analyze_scalp(df_15m, symbol, "CRYPTO")
                 if scalp_sig: signals.append(scalp_sig)
-                
             except: continue
     except: pass
     finally: await exchange.close()
     return signals
 
-# --- SCANNER: FOREX ---
-async def scan_forex(): # Check for Red Folder News Events
-is_safe = await market_intel.is_market_safe_from_news()
-if not is_safe:
-    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-    return []
+# --- SCANNER: FOREX (WITH NEWS SHIELD) ---
+async def scan_forex():
+    # 1. NEWS SHIELD
+    is_safe = await market_intel.is_market_safe_from_news()
+    if not is_safe:
+        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+        return []
+
     if not OANDA_TOKEN: return []
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
@@ -234,7 +250,6 @@ if not is_safe:
         url_1h = f"https://api-fxtrade.oanda.com/v3/instruments/{clean_pair}/candles?count=100&granularity=H1"
         url_4h = f"https://api-fxtrade.oanda.com/v3/instruments/{clean_pair}/candles?count=50&granularity=H4"
         url_15m = f"https://api-fxtrade.oanda.com/v3/instruments/{clean_pair}/candles?count=50&granularity=M15"
-        
         try:
             async def get_oanda_df(url):
                 async with session.get(url, headers=headers) as r:
@@ -243,7 +258,6 @@ if not is_safe:
                         p = [{"close": float(c['mid']['c']), "high": float(c['mid']['h']), "low": float(c['mid']['l']), "open": float(c['mid']['o']), "vol": float(c['volume']), "time": c['time']} for c in d.get('candles', []) if c['complete']]
                         if not p: return None
                         df = pd.DataFrame(p)
-                        # OANDA Time string fix
                         df['time'] = pd.to_datetime(df['time'])
                         return df
                     return None
@@ -255,20 +269,20 @@ if not is_safe:
             if active_session or "JPY" in pair: 
                 swing_sig = analyze_swing(df_1h, df_4h, pair.replace("_", "/"), "FOREX")
                 if swing_sig: signals.append(swing_sig)
-            
             scalp_sig = analyze_scalp(df_15m, pair.replace("_", "/"), "FOREX")
             if scalp_sig: signals.append(scalp_sig)
-
         except: continue
     await session.close()
     return signals
 
-# --- SCANNER: STOCKS ---
-async def scan_stocks(): # Check for Red Folder News Events
-is_safe = await market_intel.is_market_safe_from_news()
-if not is_safe:
-    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-    return []
+# --- SCANNER: STOCKS (WITH NEWS SHIELD) ---
+async def scan_stocks():
+    # 1. NEWS SHIELD
+    is_safe = await market_intel.is_market_safe_from_news()
+    if not is_safe:
+        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+        return []
+
     if not FMP_KEY: return []
     signals = []
     async with aiohttp.ClientSession() as session:
@@ -281,10 +295,8 @@ if not is_safe:
                         data = await resp.json()
                         if data:
                             df = pd.DataFrame(data).iloc[::-1]
-                            # FMP uses 'date' usually, map to 'time' for consistency
                             df.rename(columns={'date': 'time'}, inplace=True)
                             
-                            # Log Data
                             try: data_logger.log_market_snapshot(ticker, df, "STOCK")
                             except: pass
                             
