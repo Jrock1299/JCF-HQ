@@ -184,7 +184,11 @@ def analyze_scalp(df_15m, symbol, asset_type):
     return None
 
 # --- SCANNER: CRYPTO ---
-async def scan_crypto():
+async def scan_crypto(): # Check for Red Folder News Events
+is_safe = await market_intel.is_market_safe_from_news()
+if not is_safe:
+    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+    return []
     exchange = ccxt.binanceus({'enableRateLimit': True})
     signals = []
     try:
@@ -213,7 +217,11 @@ async def scan_crypto():
     return signals
 
 # --- SCANNER: FOREX ---
-async def scan_forex():
+async def scan_forex(): # Check for Red Folder News Events
+is_safe = await market_intel.is_market_safe_from_news()
+if not is_safe:
+    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+    return []
     if not OANDA_TOKEN: return []
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
@@ -256,7 +264,11 @@ async def scan_forex():
     return signals
 
 # --- SCANNER: STOCKS ---
-async def scan_stocks():
+async def scan_stocks(): # Check for Red Folder News Events
+is_safe = await market_intel.is_market_safe_from_news()
+if not is_safe:
+    print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+    return []
     if not FMP_KEY: return []
     signals = []
     async with aiohttp.ClientSession() as session:
