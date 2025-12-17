@@ -6,6 +6,7 @@ import pandas_ta_classic as ta
 import aiohttp
 from datetime import datetime
 import data_logger 
+import market_intel # Import the new intel module
 
 # --- CONFIG ---
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
