@@ -18,66 +18,76 @@ FMP_KEY = os.getenv("FMP_KEY")
 
 # --- HELPER: TIME & SESSIONS ---
 def is_forex_session_active():
-    """
-    Returns True if we are in London or NY Session (07:00 - 21:00 UTC).
-    """
     current_hour = datetime.utcnow().hour
+    # Trade London (07-16) and NY (13-22). Avoid late Asian chop.
     if 7 <= current_hour <= 21:
         return True
     return False
 
-# --- BRAIN 1: DIVERGENCE DETECTOR (THE ALPHA) ---
+# --- BRAIN 1: THE SQUEEZE (NEW!) ---
+def check_squeeze(df):
+    """
+    Detects if the market is in a 'Squeeze' (Energy Building) or 'Fired' (Explosion).
+    Returns: "ON" (Don't Trade), "FIRED" (Trade!), or "OFF" (Normal).
+    """
+    # Calculate Bollinger Bands
+    df.ta.bbands(length=20, std=2, append=True)
+    # Calculate Keltner Channels
+    df.ta.kc(length=20, scalar=1.5, append=True)
+    
+    curr = df.iloc[-1]
+    
+    # Get BB and KC values (Pandas TA naming convention)
+    bb_upper = curr.get('BBU_20_2.0')
+    bb_lower = curr.get('BBL_20_2.0')
+    kc_upper = curr.get('KCUe_20_1.5')
+    kc_lower = curr.get('KCLe_20_1.5')
+    
+    if not all([bb_upper, bb_lower, kc_upper, kc_lower]): return "OFF"
+    
+    # SQUEEZE ON: BB are INSIDE KC (Low Volatility - Chop Zone)
+    if bb_upper < kc_upper and bb_lower > kc_lower:
+        return "ON" 
+        
+    # SQUEEZE FIRED: BB expanded OUTSIDE KC (Explosion)
+    # We check if the PREVIOUS candle was in a squeeze to confirm the breakout
+    prev = df.iloc[-2]
+    prev_bb_upper = prev.get('BBU_20_2.0')
+    prev_kc_upper = prev.get('KCUe_20_1.5')
+    
+    if prev_bb_upper and prev_kc_upper and prev_bb_upper < prev_kc_upper:
+        return "FIRED" # Just broke out!
+        
+    return "OFF"
+
+# --- BRAIN 2: DIVERGENCE DETECTOR ---
 def check_divergence(df):
-    """
-    Detects Regular Bullish/Bearish Divergence.
-    Returns: "BULLISH_DIV", "BEARISH_DIV", or None
-    """
-    # We use a rolling window to find local extremas
     lows = df['low']
     highs = df['high']
-    
-    # Identify Low Pivots (Valleys)
     is_low_pivot = (lows < lows.shift(1)) & (lows < lows.shift(-1))
-    
-    # Identify High Pivots (Peaks)
     is_high_pivot = (highs > highs.shift(1)) & (highs > highs.shift(-1))
     
-    # Get the last 2 pivots
     low_pivots = df[is_low_pivot].tail(2)
     high_pivots = df[is_high_pivot].tail(2)
     
-    if len(low_pivots) < 2 or len(high_pivots) < 2:
-        return None
+    if len(low_pivots) < 2 or len(high_pivots) < 2: return None
 
-    # --- BULLISH DIVERGENCE LOGIC ---
-    # Price Lower Low + RSI Higher Low
-    p_low_1 = low_pivots['low'].iloc[0]
-    p_low_2 = low_pivots['low'].iloc[1]
-    r_low_1 = low_pivots['RSI_14'].iloc[0]
-    r_low_2 = low_pivots['RSI_14'].iloc[1]
-
-    if p_low_2 < p_low_1 and r_low_2 > r_low_1:
-        # Filter: Divergence must be recent (within last 5 candles approx)
+    # Bullish Div
+    if low_pivots['low'].iloc[1] < low_pivots['low'].iloc[0] and \
+       low_pivots['RSI_14'].iloc[1] > low_pivots['RSI_14'].iloc[0]:
         if (df.index[-1] - low_pivots.index[-1]).total_seconds() / 60 < 300: 
              return "BULLISH_DIV"
 
-    # --- BEARISH DIVERGENCE LOGIC ---
-    # Price Higher High + RSI Lower High
-    p_high_1 = high_pivots['high'].iloc[0]
-    p_high_2 = high_pivots['high'].iloc[1]
-    r_high_1 = high_pivots['RSI_14'].iloc[0]
-    r_high_2 = high_pivots['RSI_14'].iloc[1]
-
-    if p_high_2 > p_high_1 and r_high_2 < r_high_1:
+    # Bearish Div
+    if high_pivots['high'].iloc[1] > high_pivots['high'].iloc[0] and \
+       high_pivots['RSI_14'].iloc[1] < high_pivots['RSI_14'].iloc[0]:
          return "BEARISH_DIV"
-         
     return None
 
-# --- BRAIN 2: SWING ANALYZER (PRO VERSION) ---
+# --- BRAIN 3: SWING ANALYZER (PRO + SQUEEZE) ---
 def analyze_swing(df_1h, df_4h, symbol, asset_type):
     if df_1h is None or df_4h is None: return None
 
-    # Time Index Fix for VWAP/Divergence
     if 'time' in df_1h.columns:
         if not pd.api.types.is_datetime64_any_dtype(df_1h['time']):
              df_1h['time'] = pd.to_datetime(df_1h['time'], unit='ms')
@@ -90,17 +100,21 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     try: df_1h.ta.vwap(append=True)
     except: pass
     
-    # Log Data for AI
+    # Log Data
     try: data_logger.log_market_snapshot(symbol, df_1h, asset_type)
     except: pass
 
-    # Get "Big Brother" Trend (4H)
+    # 1. Check Squeeze (The Filter)
+    squeeze_status = check_squeeze(df_1h)
+    if squeeze_status == "ON":
+        # MARKET IS ASLEEP -> DO NOT TRADE
+        return None
+
+    # 2. Get Trend & Divergence
     df_4h.ta.ema(length=50, append=True)
     curr_4h = df_4h.iloc[-1]
     big_trend = "BULLISH" if curr_4h['close'] > curr_4h.get('EMA_50', 0) else "BEARISH"
-    
-    # Check Divergence (The Alpha)
-    divergence = check_divergence(df_1h) # Returns "BULLISH_DIV" or "BEARISH_DIV"
+    divergence = check_divergence(df_1h)
 
     current = df_1h.iloc[-1]
     rsi = current.get('RSI_14')
@@ -115,23 +129,27 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     signal = None
     confidence = "Medium"
     
-    # --- SWING BUY LOGIC ---
-    # 1. Trend: Price > EMA200 (Uptrend)
-    # 2. Safety: Price > VWAP
-    # 3. TRIGGER: Bullish Divergence OR (RSI Oversold + 4H Trend)
+    # --- BUY LOGIC ---
     if price > ema200 and price > vwap:
-        if divergence == "BULLISH_DIV":
+        # Squeeze Fired is a HUGE signal
+        if squeeze_status == "FIRED":
             signal = "🟢 SWING BUY"
-            confidence = "💎 DIAMOND (Divergence)"
-        elif rsi < 35 and big_trend == "BULLISH": # Standard Setup
+            confidence = "🚀 SQUEEZE FIRE"
+        elif divergence == "BULLISH_DIV":
+            signal = "🟢 SWING BUY"
+            confidence = "💎 DIAMOND (Div)"
+        elif rsi < 35 and big_trend == "BULLISH":
             signal = "🟢 SWING BUY"
             confidence = "Standard"
 
-    # --- SWING SELL LOGIC ---
+    # --- SELL LOGIC ---
     elif price < ema200 and price < vwap:
-        if divergence == "BEARISH_DIV":
+        if squeeze_status == "FIRED":
             signal = "🔴 SWING SELL"
-            confidence = "💎 DIAMOND (Divergence)"
+            confidence = "🚀 SQUEEZE FIRE"
+        elif divergence == "BEARISH_DIV":
+            signal = "🔴 SWING SELL"
+            confidence = "💎 DIAMOND (Div)"
         elif rsi > 65 and big_trend == "BEARISH":
             signal = "🔴 SWING SELL"
             confidence = "Standard"
@@ -139,7 +157,6 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     if signal:
         sl_dist = atr * 2.0
         tp_dist = atr * 3.0
-        
         return {
             "symbol": symbol, "signal": signal, "price": price,
             "stop_loss": price - sl_dist if "BUY" in signal else price + sl_dist,
@@ -148,7 +165,7 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
         }
     return None
 
-# --- BRAIN 3: SCALP ANALYZER ---
+# --- BRAIN 4: SCALP ANALYZER ---
 def analyze_scalp(df_15m, symbol, asset_type):
     if df_15m is None: return None
     
@@ -162,7 +179,6 @@ def analyze_scalp(df_15m, symbol, asset_type):
     try: df_15m.ta.vwap(append=True)
     except: pass
     
-    # Log 15m Data
     try: data_logger.log_market_snapshot(f"{symbol}_SCALP", df_15m, asset_type)
     except: pass
     
@@ -178,7 +194,7 @@ def analyze_scalp(df_15m, symbol, asset_type):
     
     signal = None
     
-    # SCALPS (Momentum Snapshots with VWAP Trend)
+    # Scalps
     if rsi < 30 and price <= lower_band and price > vwap:
         signal = "⚡ SCALP BUY"
     elif rsi > 70 and price >= upper_band and price < vwap:
@@ -196,14 +212,12 @@ def analyze_scalp(df_15m, symbol, asset_type):
         }
     return None
 
-# --- SCANNER: CRYPTO (WITH NEWS SHIELD) ---
+# --- SCANNERS (WITH NEWS SHIELD) ---
 async def scan_crypto():
-    # 1. NEWS SHIELD
     is_safe = await market_intel.is_market_safe_from_news()
     if not is_safe:
         print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
         return [] 
-        
     exchange = ccxt.binanceus({'enableRateLimit': True})
     signals = []
     try:
@@ -213,7 +227,6 @@ async def scan_crypto():
                 ohlcv_1h = await exchange.fetch_ohlcv(symbol, timeframe='1h', limit=100)
                 ohlcv_4h = await exchange.fetch_ohlcv(symbol, timeframe='4h', limit=50)
                 ohlcv_15m = await exchange.fetch_ohlcv(symbol, timeframe='15m', limit=50)
-                
                 if not ohlcv_1h or not ohlcv_4h: continue
                 
                 df_1h = pd.DataFrame(ohlcv_1h, columns=['time','open','high','low','close','vol'])
@@ -222,7 +235,6 @@ async def scan_crypto():
                 
                 swing_sig = analyze_swing(df_1h, df_4h, symbol, "CRYPTO")
                 if swing_sig: signals.append(swing_sig)
-                
                 scalp_sig = analyze_scalp(df_15m, symbol, "CRYPTO")
                 if scalp_sig: signals.append(scalp_sig)
             except: continue
@@ -230,20 +242,14 @@ async def scan_crypto():
     finally: await exchange.close()
     return signals
 
-# --- SCANNER: FOREX (WITH NEWS SHIELD) ---
 async def scan_forex():
-    # 1. NEWS SHIELD
     is_safe = await market_intel.is_market_safe_from_news()
-    if not is_safe:
-        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-        return []
-
+    if not is_safe: return []
     if not OANDA_TOKEN: return []
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
     session = aiohttp.ClientSession()
     active_session = is_forex_session_active() 
-    
     for pair in FOREX_PAIRS:
         if not pair: continue
         clean_pair = pair.replace("/", "_")
@@ -261,11 +267,9 @@ async def scan_forex():
                         df['time'] = pd.to_datetime(df['time'])
                         return df
                     return None
-
             df_1h = await get_oanda_df(url_1h)
             df_4h = await get_oanda_df(url_4h)
             df_15m = await get_oanda_df(url_15m)
-
             if active_session or "JPY" in pair: 
                 swing_sig = analyze_swing(df_1h, df_4h, pair.replace("_", "/"), "FOREX")
                 if swing_sig: signals.append(swing_sig)
@@ -275,14 +279,9 @@ async def scan_forex():
     await session.close()
     return signals
 
-# --- SCANNER: STOCKS (WITH NEWS SHIELD) ---
 async def scan_stocks():
-    # 1. NEWS SHIELD
     is_safe = await market_intel.is_market_safe_from_news()
-    if not is_safe:
-        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-        return []
-
+    if not is_safe: return []
     if not FMP_KEY: return []
     signals = []
     async with aiohttp.ClientSession() as session:
@@ -296,10 +295,8 @@ async def scan_stocks():
                         if data:
                             df = pd.DataFrame(data).iloc[::-1]
                             df.rename(columns={'date': 'time'}, inplace=True)
-                            
                             try: data_logger.log_market_snapshot(ticker, df, "STOCK")
                             except: pass
-                            
                             swing_sig = analyze_swing(df, df, ticker, "STOCK")
                             if swing_sig: signals.append(swing_sig)
             except: continue
