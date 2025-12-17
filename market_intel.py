@@ -2,18 +2,57 @@ import os
 import aiohttp
 import ccxt.async_support as ccxt
 import pandas as pd
-import datetime
+from datetime import datetime, timedelta
 
 # --- CONFIG ---
 FMP_KEY = os.getenv("FMP_KEY")
-# We scan these specific tickers for Insider/Smart Money activity
 WATCHLIST_STOCKS = os.getenv("STOCK_TICKERS", "NVDA,TSLA,AAPL,SOFI,BULL").split(",")
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
 
-# --- 1. MACRO NEWS ENGINE (Existing) ---
+# --- 1. SAFETY CHECK (THE NEW SHIELD) ---
+async def is_market_safe_from_news():
+    """
+    Returns False if High Impact News is within 60 mins.
+    Returns True if safe to trade.
+    """
+    if not FMP_KEY: return True # Default to safe if no key (risky but necessary fallback)
+    
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    url = f"https://financialmodelingprep.com/api/v3/economic_calendar?from={today}&to={today}&apikey={FMP_KEY}"
+    
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    current_time = datetime.utcnow()
+                    
+                    for event in data:
+                        # Filter for HIGH IMPACT events only
+                        # FMP doesn't always tag 'impact', so we filter by keywords
+                        event_name = event.get('event', '').lower()
+                        high_impact_keywords = ["fed", "cpi", "gdp", "unemployment", "interest rate", "non-farm", "fomc"]
+                        
+                        if any(x in event_name for x in high_impact_keywords):
+                            event_date_str = event.get('date', '') # Format: 2023-10-27 12:30:00
+                            if not event_date_str: continue
+                            
+                            event_dt = datetime.strptime(event_date_str, "%Y-%m-%d %H:%M:%S")
+                            
+                            # Check time difference
+                            diff_minutes = (event_dt - current_time).total_seconds() / 60
+                            
+                            # DANGER ZONE: 60 mins before to 30 mins after
+                            if -30 < diff_minutes < 60:
+                                return False # MARKET IS DANGEROUS
+        except:
+            return True # Fallback
+    return True
+
+# --- 2. MACRO NEWS (Display) ---
 async def fetch_major_news():
     if not FMP_KEY: return None
-    today = datetime.date.today().strftime("%Y-%m-%d")
+    today = datetime.utcnow().strftime("%Y-%m-%d")
     url = f"https://financialmodelingprep.com/api/v3/economic_calendar?from={today}&to={today}&apikey={FMP_KEY}"
     
     async with aiohttp.ClientSession() as session:
@@ -29,11 +68,10 @@ async def fetch_major_news():
                             fmt = f"**🔥 MACRO ALERT: {event.get('event')}**\n🕒 {time} UTC | Actual: {event.get('actual','-')} vs Est: {event.get('estimate','-')}"
                             important_news.append(fmt)
                     return important_news
-        except:
-            return None
+        except: return None
     return None
 
-# --- 2. WHALE WATCHER (Existing) ---
+# --- 3. WHALE WATCHER ---
 async def check_crypto_whales():
     exchange = ccxt.binanceus({'enableRateLimit': True}) 
     alerts = []
@@ -47,7 +85,6 @@ async def check_crypto_whales():
                 avg_vol = df['volume'].rolling(window=20).mean().iloc[-1]
                 current_vol = df['volume'].iloc[-1]
                 
-                # If Volume is 3x Average
                 if current_vol > (avg_vol * 3):
                     direction = "🟢 BUY/ACCUMULATION" if df['close'].iloc[-1] > df['open'].iloc[-1] else "🔴 SELL/DUMP"
                     pct = (current_vol / avg_vol) * 100
@@ -57,54 +94,33 @@ async def check_crypto_whales():
     finally: await exchange.close()
     return alerts
 
-# --- 3. INSIDER TRADING SCANNER (New!) ---
+# --- 4. INSIDER TRADING ---
 async def check_insider_trading():
-    """
-    Checks for recent Insider Buys (Form 4) for our watchlist stocks.
-    """
     if not FMP_KEY: return []
     alerts = []
-    
     async with aiohttp.ClientSession() as session:
         for symbol in WATCHLIST_STOCKS:
-            # We look for 'Purchase' transactions specifically
             url = f"https://financialmodelingprep.com/api/v4/insider-trading?symbol={symbol}&page=0&apikey={FMP_KEY}"
             try:
                 async with session.get(url) as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        # Check the last 3 transactions
                         for trade in data[:3]:
-                            # Filter for 'Purchase' only (Bullish) and recent dates
                             if 'Purchase' in trade.get('transactionType', '') and trade.get('securitiesTransacted', 0) > 1000:
-                                # Simple check to avoid spamming old news (checking transactionDate vs Today is complex with timezones, 
-                                # so we'll just return the raw latest alerts and rely on the bot loop frequency to catch new ones mostly)
                                 person = trade.get('reportingName', 'Unknown')
                                 amount = float(trade.get('securitiesTransacted', 0)) * float(trade.get('price', 0))
-                                
-                                if amount > 50000: # Only report buys > $50k
-                                    alert = (
-                                        f"🚨 **INSIDER BUY: {symbol}**\n"
-                                        f"👤 Who: {person} ({trade.get('typeOfOwner')})\n"
-                                        f"💰 Amount: ${amount:,.0f}\n"
-                                        f"📅 Date: {trade.get('transactionDate')}"
-                                    )
+                                if amount > 50000:
+                                    alert = (f"🚨 **INSIDER BUY: {symbol}**\n👤 {person}\n💰 ${amount:,.0f}")
                                     alerts.append(alert)
             except: continue
-    # Deduplicate alerts
     return list(set(alerts))
 
-# --- 4. SMART MONEY / INSTITUTIONAL (New!) ---
+# --- 5. SMART MONEY ---
 async def check_smart_money():
-    """
-    Checks for Institutional Accumulation (Hedge Funds buying).
-    """
     if not FMP_KEY: return []
     alerts = []
-    
     async with aiohttp.ClientSession() as session:
         for symbol in WATCHLIST_STOCKS:
-            # Check Institutional Ownership changes
             url = f"https://financialmodelingprep.com/api/v4/institutional-ownership/symbol-positions-summary?symbol={symbol}&apikey={FMP_KEY}"
             try:
                 async with session.get(url) as resp:
@@ -113,16 +129,7 @@ async def check_smart_money():
                         if data:
                             latest = data[0]
                             change = latest.get('investorsHoldingChange', 0)
-                            
-                            # If multiple funds entered this quarter
                             if change > 5: 
-                                alert = (
-                                    f"🏦 **SMART MONEY FLOW: {symbol}**\n"
-                                    f"📈 Hedge Funds Added: +{change}\n"
-                                    f"Total Institutions: {latest.get('investorsHolding')}\n"
-                                    f"Sentiment: ACCUMULATION"
-                                )
-                                alerts.append(alert)
+                                alerts.append(f"🏦 **SMART MONEY: {symbol}**\n📈 Hedge Funds Added: +{change}")
             except: continue
-            
     return alerts
