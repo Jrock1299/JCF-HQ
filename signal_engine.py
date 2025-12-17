@@ -17,9 +17,6 @@ FMP_KEY = os.getenv("FMP_KEY")
 
 # --- HELPER: TIME & SESSIONS ---
 def is_forex_session_active():
-    """
-    Returns True if we are in London or NY Session (07:00 - 21:00 UTC).
-    """
     current_hour = datetime.utcnow().hour
     if 7 <= current_hour <= 21:
         return True
@@ -31,7 +28,7 @@ def get_structure_and_trend(df_1h, df_4h):
     df_4h.ta.ema(length=50, append=True)
     current_4h = df_4h.iloc[-1]
     
-    # 2. 1H Structure Check (Pivots)
+    # 2. 1H Structure Check
     last_highs = df_1h['high'].rolling(5, center=True).max().dropna().tail(2).values
     last_lows = df_1h['low'].rolling(5, center=True).min().dropna().tail(2).values
     
@@ -45,21 +42,34 @@ def get_structure_and_trend(df_1h, df_4h):
     big_trend = "BULLISH" if current_4h['close'] > current_4h.get('EMA_50', 0) else "BEARISH"
     return structure, big_trend
 
-# --- BRAIN 2: SWING ANALYZER ---
+# --- BRAIN 2: SWING ANALYZER (VWAP ADDED) ---
 def analyze_swing(df_1h, df_4h, symbol, asset_type):
     if df_1h is None or df_4h is None: return None
+
+    # VWAP requires a datetime index
+    if 'time' in df_1h.columns:
+        # Convert timestamp to datetime if not already
+        if not pd.api.types.is_datetime64_any_dtype(df_1h['time']):
+             df_1h['time'] = pd.to_datetime(df_1h['time'], unit='ms')
+        df_1h.set_index('time', inplace=True)
 
     # Indicators
     df_1h.ta.rsi(length=14, append=True)
     df_1h.ta.ema(length=200, append=True)
     df_1h.ta.atr(length=14, append=True)
-
-    # --- FIX: LOG DATA HERE ---
+    
+    # --- NEW: VWAP ---
+    # Calculates Volume Weighted Average Price
     try:
-        # We log the 1H data because that's our primary entry timeframe
+        df_1h.ta.vwap(append=True)
+    except: 
+        # Fallback if VWAP fails (e.g. not enough data)
+        pass
+
+    # Log Data for AI (Fix included)
+    try:
         data_logger.log_market_snapshot(symbol, df_1h, asset_type)
     except: pass
-    # --------------------------
 
     # Get "Big Brother" confirmation
     structure_1h, trend_4h = get_structure_and_trend(df_1h, df_4h)
@@ -67,22 +77,39 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     current = df_1h.iloc[-1]
     rsi = current.get('RSI_14')
     ema200 = current.get('EMA_200')
+    vwap = current.get('VWAP_D') # Pandas TA usually names it VWAP_D
     price = current['close']
     atr = current.get('ATRr_14')
     
     if not all([rsi, ema200, atr]): return None
+    
+    # If VWAP failed to calculate, assume neutral (don't crash)
+    if vwap is None: vwap = price 
 
     signal = None
+    confidence = "Medium"
     
-    # BUY LOGIC
+    # SWING BUY LOGIC:
+    # 1. Price > EMA200 (Uptrend)
+    # 2. RSI < 40 (Dip)
+    # 3. Structure = BULLISH
+    # 4. NEW: Price > VWAP (Volume supports the move)
     if price > ema200 and rsi < 40 and structure_1h == "BULLISH":
-        if trend_4h == "BULLISH":
+        if trend_4h == "BULLISH" and price > vwap:
             signal = "🟢 SWING BUY"
+            confidence = "High (VWAP Confirmed)"
+        elif trend_4h == "BULLISH":
+            # If below VWAP, it's risky. Maybe skip or take with lower confidence?
+            # For now, let's SKIP to fix your -31% drawdown.
+            return None 
     
-    # SELL LOGIC
+    # SWING SELL LOGIC
     elif price < ema200 and rsi > 60 and structure_1h == "BEARISH":
-        if trend_4h == "BEARISH":
+        if trend_4h == "BEARISH" and price < vwap:
             signal = "🔴 SWING SELL"
+            confidence = "High (VWAP Confirmed)"
+        elif trend_4h == "BEARISH":
+            return None
 
     if signal:
         sl_dist = atr * 2.0
@@ -92,46 +119,58 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
             "symbol": symbol, "signal": signal, "price": price,
             "stop_loss": price - sl_dist if "BUY" in signal else price + sl_dist,
             "take_profit": price + tp_dist if "BUY" in signal else price - tp_dist,
-            "confidence": "High (Trend Aligned)", "rsi": rsi, "type": asset_type, "style": "SWING"
+            "confidence": confidence, "rsi": rsi, "type": asset_type, "style": "SWING"
         }
     return None
 
-# --- BRAIN 3: SCALP ANALYZER (5m/15m) ---
+# --- BRAIN 3: SCALP ANALYZER (VWAP ADDED) ---
 def analyze_scalp(df_15m, symbol, asset_type):
     if df_15m is None: return None
+    
+    if 'time' in df_15m.columns:
+        if not pd.api.types.is_datetime64_any_dtype(df_15m['time']):
+             df_15m['time'] = pd.to_datetime(df_15m['time'], unit='ms')
+        df_15m.set_index('time', inplace=True)
     
     # Indicators
     df_15m.ta.rsi(length=14, append=True)
     df_15m.ta.bbands(length=20, std=2, append=True)
-    
-    # --- FIX: LOG DATA HERE ---
     try:
-        # Log 15m data for the Scalp AI training
+        df_15m.ta.vwap(append=True)
+    except: pass
+    
+    # Log 15m data
+    try:
         data_logger.log_market_snapshot(f"{symbol}_SCALP", df_15m, asset_type)
     except: pass
-    # --------------------------
     
     current = df_15m.iloc[-1]
     rsi = current.get('RSI_14')
     price = current['close']
     upper_band = current.get('BBU_20_2.0')
     lower_band = current.get('BBL_20_2.0')
+    vwap = current.get('VWAP_D')
     
     if not all([rsi, upper_band, lower_band]): return None
+    if vwap is None: vwap = price
     
     signal = None
     
-    # SCALP BUY
+    # SCALP BUY: RSI Oversold + Touched Lower Band + Price ABOVE VWAP (Trend Scalp)
+    # We add VWAP check here to avoid catching falling knives even on scalps
     if rsi < 30 and price <= lower_band:
-        signal = "⚡ SCALP BUY"
+        # Only take long scalps if we are continuously above VWAP (Strong Intraday Trend)
+        if price > vwap: 
+            signal = "⚡ SCALP BUY"
         
     # SCALP SELL
     elif rsi > 70 and price >= upper_band:
-        signal = "⚡ SCALP SELL"
+        if price < vwap:
+            signal = "⚡ SCALP SELL"
         
     if signal:
-        target_pct = 0.005 # 0.5% move
-        stop_pct = 0.003   # 0.3% stop
+        target_pct = 0.005 # 0.5%
+        stop_pct = 0.003   # 0.3%
         
         sl = price * (1 - stop_pct) if "BUY" in signal else price * (1 + stop_pct)
         tp = price * (1 + target_pct) if "BUY" in signal else price * (1 - target_pct)
@@ -178,7 +217,6 @@ async def scan_forex():
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
     session = aiohttp.ClientSession()
-    
     active_session = is_forex_session_active() 
     
     for pair in FOREX_PAIRS:
@@ -193,8 +231,12 @@ async def scan_forex():
                 async with session.get(url, headers=headers) as r:
                     if r.status == 200:
                         d = await r.json()
-                        p = [{"close": float(c['mid']['c']), "high": float(c['mid']['h']), "low": float(c['mid']['l']), "open": float(c['mid']['o'])} for c in d.get('candles', []) if c['complete']]
-                        return pd.DataFrame(p) if p else None
+                        p = [{"close": float(c['mid']['c']), "high": float(c['mid']['h']), "low": float(c['mid']['l']), "open": float(c['mid']['o']), "vol": float(c['volume']), "time": c['time']} for c in d.get('candles', []) if c['complete']]
+                        if not p: return None
+                        df = pd.DataFrame(p)
+                        # OANDA Time string fix
+                        df['time'] = pd.to_datetime(df['time'])
+                        return df
                     return None
 
             df_1h = await get_oanda_df(url_1h)
@@ -209,7 +251,6 @@ async def scan_forex():
             if scalp_sig: signals.append(scalp_sig)
 
         except: continue
-        
     await session.close()
     return signals
 
@@ -227,9 +268,11 @@ async def scan_stocks():
                         data = await resp.json()
                         if data:
                             df = pd.DataFrame(data).iloc[::-1]
-                            # Log Data for Stocks
-                            try:
-                                data_logger.log_market_snapshot(ticker, df, "STOCK")
+                            # FMP uses 'date' usually, map to 'time' for consistency
+                            df.rename(columns={'date': 'time'}, inplace=True)
+                            
+                            # Log Data
+                            try: data_logger.log_market_snapshot(ticker, df, "STOCK")
                             except: pass
                             
                             swing_sig = analyze_swing(df, df, ticker, "STOCK")
