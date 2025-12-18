@@ -9,22 +9,31 @@ import data_logger
 import market_intel 
 
 # --- CONFIG ---
+# 1. CRYPTO
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
+
+# 2. STOCKS
 STOCK_TICKERS = os.getenv("STOCK_TICKERS", "NVDA,TSLA").split(",")
-FOREX_PAIRS = os.getenv("FOREX_PAIRS", "EUR_USD").split(",")
+
+# 3. FOREX (UPDATED WITH YOUR NEW PAIRS)
+# Format for OANDA is usually BASE_QUOTE (e.g. AUD_CAD)
+FOREX_PAIRS = os.getenv("FOREX_PAIRS", "EUR_USD,AUD_CAD,GBP_JPY,CHF_JPY").split(",")
 
 OANDA_TOKEN = os.getenv("OANDA_TOKEN")
 FMP_KEY = os.getenv("FMP_KEY")
 
 # --- HELPER: TIME & SESSIONS ---
 def is_forex_session_active():
+    """
+    Returns True if we are in London or NY Session (07:00 - 21:00 UTC).
+    """
     current_hour = datetime.utcnow().hour
     # Trade London (07-16) and NY (13-22). Avoid late Asian chop.
     if 7 <= current_hour <= 21:
         return True
     return False
 
-# --- BRAIN 1: THE SQUEEZE (NEW!) ---
+# --- BRAIN 1: THE SQUEEZE (VOLATILITY FILTER) ---
 def check_squeeze(df):
     """
     Detects if the market is in a 'Squeeze' (Energy Building) or 'Fired' (Explosion).
@@ -62,6 +71,9 @@ def check_squeeze(df):
 
 # --- BRAIN 2: DIVERGENCE DETECTOR ---
 def check_divergence(df):
+    """
+    Detects Regular Bullish/Bearish Divergence.
+    """
     lows = df['low']
     highs = df['high']
     is_low_pivot = (lows < lows.shift(1)) & (lows < lows.shift(-1))
@@ -243,13 +255,19 @@ async def scan_crypto():
     return signals
 
 async def scan_forex():
+    # 1. NEWS SHIELD
     is_safe = await market_intel.is_market_safe_from_news()
-    if not is_safe: return []
+    if not is_safe:
+        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
+        return []
+
     if not OANDA_TOKEN: return []
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
     session = aiohttp.ClientSession()
     active_session = is_forex_session_active() 
+    
+    # Uses the updated FOREX_PAIRS list
     for pair in FOREX_PAIRS:
         if not pair: continue
         clean_pair = pair.replace("/", "_")
@@ -270,9 +288,12 @@ async def scan_forex():
             df_1h = await get_oanda_df(url_1h)
             df_4h = await get_oanda_df(url_4h)
             df_15m = await get_oanda_df(url_15m)
+            
+            # Check for JPY pairs specifically if you want them active in Asian session
             if active_session or "JPY" in pair: 
                 swing_sig = analyze_swing(df_1h, df_4h, pair.replace("_", "/"), "FOREX")
                 if swing_sig: signals.append(swing_sig)
+            
             scalp_sig = analyze_scalp(df_15m, pair.replace("_", "/"), "FOREX")
             if scalp_sig: signals.append(scalp_sig)
         except: continue
