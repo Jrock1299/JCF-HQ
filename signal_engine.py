@@ -4,49 +4,82 @@ import ccxt.async_support as ccxt
 import pandas as pd
 import pandas_ta_classic as ta 
 import aiohttp
+import joblib
+import numpy as np
 from datetime import datetime
 import data_logger 
 import market_intel 
 
 # --- CONFIG ---
-# 1. CRYPTO
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
-
-# 2. STOCKS
 STOCK_TICKERS = os.getenv("STOCK_TICKERS", "NVDA,TSLA").split(",")
-
-# 3. FOREX (UPDATED WITH YOUR NEW PAIRS)
-# Format for OANDA is usually BASE_QUOTE (e.g. AUD_CAD)
+# FOREX (Updated list)
 FOREX_PAIRS = os.getenv("FOREX_PAIRS", "EUR_USD,AUD_CAD,GBP_JPY,CHF_JPY").split(",")
 
 OANDA_TOKEN = os.getenv("OANDA_TOKEN")
 FMP_KEY = os.getenv("FMP_KEY")
+BRAIN_FILE = "/app/data/jcf_brain.joblib"
 
 # --- HELPER: TIME & SESSIONS ---
 def is_forex_session_active():
-    """
-    Returns True if we are in London or NY Session (07:00 - 21:00 UTC).
-    """
     current_hour = datetime.utcnow().hour
-    # Trade London (07-16) and NY (13-22). Avoid late Asian chop.
-    if 7 <= current_hour <= 21:
-        return True
+    if 7 <= current_hour <= 21: return True
     return False
 
-# --- BRAIN 1: THE SQUEEZE (VOLATILITY FILTER) ---
+# --- BRAIN 0: THE AI JUDGE (NEW) ---
+def ask_ai_judge(df):
+    """
+    Feeds the current market data into the trained Random Forest.
+    Returns: True (APPROVED) or False (DENIED).
+    """
+    try:
+        # 1. Load Brain
+        if not os.path.exists(BRAIN_FILE): return True # No brain yet? Allow trade.
+        model = joblib.load(BRAIN_FILE)
+        
+        # 2. Re-create the EXACT features from training
+        # (Must match ai_brain.py logic perfectly)
+        calc_df = df.copy()
+        
+        # RSI Trend
+        calc_df['rsi'] = ta.rsi(calc_df['close'], length=14)
+        calc_df['rsi_trend'] = calc_df['rsi'] - calc_df['rsi'].shift(1)
+        
+        # Dist EMA
+        calc_df['ema_50'] = ta.ema(calc_df['close'], length=50)
+        calc_df['ema_200'] = ta.ema(calc_df['close'], length=200)
+        
+        calc_df['dist_ema200'] = (calc_df['close'] - calc_df['ema_200']) / calc_df['ema_200'].replace(0, np.nan)
+        calc_df['dist_ema50'] = (calc_df['close'] - calc_df['ema_50']) / calc_df['ema_50'].replace(0, np.nan)
+        
+        # Prepare Input Row (Last closed candle)
+        curr = calc_df.iloc[-1]
+        
+        # Feature Array: ['rsi', 'rsi_trend', 'dist_ema200', 'dist_ema50', 'close']
+        features = np.array([[
+            curr['rsi'], 
+            curr['rsi_trend'], 
+            curr['dist_ema200'], 
+            curr['dist_ema50'], 
+            curr['close']
+        ]])
+        
+        # Clean Infinite values just in case
+        features = np.nan_to_num(features)
+        
+        # 3. GET VERDICT
+        prediction = model.predict(features)
+        return prediction[0] == 1 # Returns True if AI says "Win"
+        
+    except Exception as e:
+        print(f"🧠 AI Glitch: {e}")
+        return True # Fail open (allow trade if AI breaks)
+
+# --- BRAIN 1: THE SQUEEZE ---
 def check_squeeze(df):
-    """
-    Detects if the market is in a 'Squeeze' (Energy Building) or 'Fired' (Explosion).
-    Returns: "ON" (Don't Trade), "FIRED" (Trade!), or "OFF" (Normal).
-    """
-    # Calculate Bollinger Bands
     df.ta.bbands(length=20, std=2, append=True)
-    # Calculate Keltner Channels
     df.ta.kc(length=20, scalar=1.5, append=True)
-    
     curr = df.iloc[-1]
-    
-    # Get BB and KC values (Pandas TA naming convention)
     bb_upper = curr.get('BBU_20_2.0')
     bb_lower = curr.get('BBL_20_2.0')
     kc_upper = curr.get('KCUe_20_1.5')
@@ -54,26 +87,14 @@ def check_squeeze(df):
     
     if not all([bb_upper, bb_lower, kc_upper, kc_lower]): return "OFF"
     
-    # SQUEEZE ON: BB are INSIDE KC (Low Volatility - Chop Zone)
-    if bb_upper < kc_upper and bb_lower > kc_lower:
-        return "ON" 
-        
-    # SQUEEZE FIRED: BB expanded OUTSIDE KC (Explosion)
-    # We check if the PREVIOUS candle was in a squeeze to confirm the breakout
-    prev = df.iloc[-2]
-    prev_bb_upper = prev.get('BBU_20_2.0')
-    prev_kc_upper = prev.get('KCUe_20_1.5')
+    if bb_upper < kc_upper and bb_lower > kc_lower: return "ON" 
     
-    if prev_bb_upper and prev_kc_upper and prev_bb_upper < prev_kc_upper:
-        return "FIRED" # Just broke out!
-        
+    prev = df.iloc[-2]
+    if prev.get('BBU_20_2.0') < prev.get('KCUe_20_1.5'): return "FIRED"
     return "OFF"
 
-# --- BRAIN 2: DIVERGENCE DETECTOR ---
+# --- BRAIN 2: DIVERGENCE ---
 def check_divergence(df):
-    """
-    Detects Regular Bullish/Bearish Divergence.
-    """
     lows = df['low']
     highs = df['high']
     is_low_pivot = (lows < lows.shift(1)) & (lows < lows.shift(-1))
@@ -84,19 +105,17 @@ def check_divergence(df):
     
     if len(low_pivots) < 2 or len(high_pivots) < 2: return None
 
-    # Bullish Div
     if low_pivots['low'].iloc[1] < low_pivots['low'].iloc[0] and \
        low_pivots['RSI_14'].iloc[1] > low_pivots['RSI_14'].iloc[0]:
         if (df.index[-1] - low_pivots.index[-1]).total_seconds() / 60 < 300: 
              return "BULLISH_DIV"
 
-    # Bearish Div
     if high_pivots['high'].iloc[1] > high_pivots['high'].iloc[0] and \
        high_pivots['RSI_14'].iloc[1] < high_pivots['RSI_14'].iloc[0]:
          return "BEARISH_DIV"
     return None
 
-# --- BRAIN 3: SWING ANALYZER (PRO + SQUEEZE) ---
+# --- BRAIN 3: SWING ANALYZER (AI CONNECTED) ---
 def analyze_swing(df_1h, df_4h, symbol, asset_type):
     if df_1h is None or df_4h is None: return None
 
@@ -105,24 +124,18 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
              df_1h['time'] = pd.to_datetime(df_1h['time'], unit='ms')
         df_1h.set_index('time', inplace=True)
 
-    # Indicators
     df_1h.ta.rsi(length=14, append=True)
     df_1h.ta.ema(length=200, append=True)
     df_1h.ta.atr(length=14, append=True)
     try: df_1h.ta.vwap(append=True)
     except: pass
     
-    # Log Data
     try: data_logger.log_market_snapshot(symbol, df_1h, asset_type)
     except: pass
 
-    # 1. Check Squeeze (The Filter)
     squeeze_status = check_squeeze(df_1h)
-    if squeeze_status == "ON":
-        # MARKET IS ASLEEP -> DO NOT TRADE
-        return None
+    if squeeze_status == "ON": return None
 
-    # 2. Get Trend & Divergence
     df_4h.ta.ema(length=50, append=True)
     curr_4h = df_4h.iloc[-1]
     big_trend = "BULLISH" if curr_4h['close'] > curr_4h.get('EMA_50', 0) else "BEARISH"
@@ -141,9 +154,8 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
     signal = None
     confidence = "Medium"
     
-    # --- BUY LOGIC ---
+    # --- SIGNAL GENERATION ---
     if price > ema200 and price > vwap:
-        # Squeeze Fired is a HUGE signal
         if squeeze_status == "FIRED":
             signal = "🟢 SWING BUY"
             confidence = "🚀 SQUEEZE FIRE"
@@ -154,7 +166,6 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
             signal = "🟢 SWING BUY"
             confidence = "Standard"
 
-    # --- SELL LOGIC ---
     elif price < ema200 and price < vwap:
         if squeeze_status == "FIRED":
             signal = "🔴 SWING SELL"
@@ -166,18 +177,30 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
             signal = "🔴 SWING SELL"
             confidence = "Standard"
 
+    # --- BRAIN 4: THE AI GATEKEEPER ---
     if signal:
-        sl_dist = atr * 2.0
-        tp_dist = atr * 3.0
-        return {
-            "symbol": symbol, "signal": signal, "price": price,
-            "stop_loss": price - sl_dist if "BUY" in signal else price + sl_dist,
-            "take_profit": price + tp_dist if "BUY" in signal else price - tp_dist,
-            "confidence": confidence, "rsi": rsi, "type": asset_type, "style": "SWING"
-        }
+        # ASK THE AI: "Is this a trap?"
+        ai_approval = ask_ai_judge(df_1h)
+        
+        if ai_approval:
+            # AI Says YES -> Pass the signal
+            sl_dist = atr * 2.0
+            tp_dist = atr * 3.0
+            return {
+                "symbol": symbol, "signal": signal, "price": price,
+                "stop_loss": price - sl_dist if "BUY" in signal else price + sl_dist,
+                "take_profit": price + tp_dist if "BUY" in signal else price - tp_dist,
+                "confidence": f"{confidence} + 🧠 AI Confirmed", 
+                "rsi": rsi, "type": asset_type, "style": "SWING"
+            }
+        else:
+            # AI Says NO -> Kill the signal (Silent Filter)
+            print(f"🤖 AI VETOED signal for {symbol}. Setup looks good, but AI predicts choppy/loss.")
+            return None
+
     return None
 
-# --- BRAIN 4: SCALP ANALYZER ---
+# --- BRAIN 5: SCALP ANALYZER (AI CONNECTED) ---
 def analyze_scalp(df_15m, symbol, asset_type):
     if df_15m is None: return None
     
@@ -206,25 +229,32 @@ def analyze_scalp(df_15m, symbol, asset_type):
     
     signal = None
     
-    # Scalps
     if rsi < 30 and price <= lower_band and price > vwap:
         signal = "⚡ SCALP BUY"
     elif rsi > 70 and price >= upper_band and price < vwap:
         signal = "⚡ SCALP SELL"
         
     if signal:
-        target_pct = 0.005 
-        stop_pct = 0.003  
-        sl = price * (1 - stop_pct) if "BUY" in signal else price * (1 + stop_pct)
-        tp = price * (1 + target_pct) if "BUY" in signal else price * (1 - target_pct)
-        return {
-            "symbol": symbol, "signal": signal, "price": price,
-            "stop_loss": sl, "take_profit": tp,
-            "confidence": "Scalp", "rsi": rsi, "type": asset_type, "style": "SCALP"
-        }
+        # ASK THE AI
+        ai_approval = ask_ai_judge(df_15m)
+        
+        if ai_approval:
+            target_pct = 0.005 
+            stop_pct = 0.003  
+            sl = price * (1 - stop_pct) if "BUY" in signal else price * (1 + stop_pct)
+            tp = price * (1 + target_pct) if "BUY" in signal else price * (1 - target_pct)
+            return {
+                "symbol": symbol, "signal": signal, "price": price,
+                "stop_loss": sl, "take_profit": tp,
+                "confidence": "Scalp + 🧠 AI", "rsi": rsi, "type": asset_type, "style": "SCALP"
+            }
+        else:
+            print(f"🤖 AI VETOED Scalp for {symbol}.")
+            return None
+            
     return None
 
-# --- SCANNERS (WITH NEWS SHIELD) ---
+# --- SCANNERS ---
 async def scan_crypto():
     is_safe = await market_intel.is_market_safe_from_news()
     if not is_safe:
@@ -255,19 +285,13 @@ async def scan_crypto():
     return signals
 
 async def scan_forex():
-    # 1. NEWS SHIELD
     is_safe = await market_intel.is_market_safe_from_news()
-    if not is_safe:
-        print("⚠️ SKIPPING SCAN: High Impact News Event Detected.")
-        return []
-
+    if not is_safe: return []
     if not OANDA_TOKEN: return []
     signals = []
     headers = {"Authorization": f"Bearer {OANDA_TOKEN}"}
     session = aiohttp.ClientSession()
     active_session = is_forex_session_active() 
-    
-    # Uses the updated FOREX_PAIRS list
     for pair in FOREX_PAIRS:
         if not pair: continue
         clean_pair = pair.replace("/", "_")
@@ -288,12 +312,9 @@ async def scan_forex():
             df_1h = await get_oanda_df(url_1h)
             df_4h = await get_oanda_df(url_4h)
             df_15m = await get_oanda_df(url_15m)
-            
-            # Check for JPY pairs specifically if you want them active in Asian session
             if active_session or "JPY" in pair: 
                 swing_sig = analyze_swing(df_1h, df_4h, pair.replace("_", "/"), "FOREX")
                 if swing_sig: signals.append(swing_sig)
-            
             scalp_sig = analyze_scalp(df_15m, pair.replace("_", "/"), "FOREX")
             if scalp_sig: signals.append(scalp_sig)
         except: continue
