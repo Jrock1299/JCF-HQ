@@ -6,3 +6,4 @@ requests
 aiohttp
 ccxt
 pandas-ta-classic
+scikit-learn
