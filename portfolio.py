@@ -9,6 +9,10 @@ DATA_FILE = "/app/data/paper_portfolio.json"
 FMP_KEY = os.getenv("FMP_KEY")
 OANDA_TOKEN = os.getenv("OANDA_TOKEN")
 
+# --- VIRTUAL WALLET SETTINGS ---
+STARTING_BALANCE = 5000.0  # The Bankroll
+TRADE_SIZE = 1000.0        # How much we "invest" per trade (Paper money)
+
 # --- FILE MANAGEMENT ---
 def load_portfolio():
     if not os.path.exists(DATA_FILE):
@@ -28,12 +32,11 @@ def save_portfolio(data):
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
 
-# --- HELPER: CHECK ACTIVE (NEW) ---
+# --- HELPER: CHECK ACTIVE ---
 def is_trade_active(symbol, style):
     """Returns True if we already have an OPEN trade for this Symbol + Style."""
     trades = load_portfolio()
     for t in trades:
-        # Check matching symbol, status OPEN, and matching style (Swing vs Scalp)
         if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
             return True
     return False
@@ -42,7 +45,7 @@ def is_trade_active(symbol, style):
 def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
     trades = load_portfolio()
     
-    # Double check to prevent duplicates
+    # Prevent Duplicates
     for t in trades:
         if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
             return False 
@@ -60,6 +63,7 @@ def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
         "timestamp": datetime.now().isoformat(),
         "close_price": 0.0,
         "pnl_pct": 0.0,
+        "pnl_amount": 0.0, # New: Track Dollar Profit
         "outcome": None
     }
     
@@ -114,7 +118,7 @@ async def update_positions():
     data_changed = False
     
     for t in active_trades:
-        # Backwards Compatibility
+        # Defaults for compatibility
         if 'stop_loss' not in t: t['stop_loss'] = 0.0
         if 'take_profit' not in t: t['take_profit'] = 0.0
         if 'style' not in t: t['style'] = "SWING" 
@@ -144,17 +148,24 @@ async def update_positions():
                 close_reason = "Hit Stop Loss 🛑"
         
         if outcome:
+            # Calculate PnL %
             if "BUY" in t['direction']:
-                pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
+                pnl_pct = ((current_price - t['entry_price']) / t['entry_price'])
             else:
-                pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
-                
+                pnl_pct = ((t['entry_price'] - current_price) / t['entry_price'])
+            
+            # Calculate PnL $$$ (based on trade size)
+            pnl_amount = pnl_pct * TRADE_SIZE
+            pnl_percent_display = pnl_pct * 100
+
             t['status'] = "CLOSED"
             t['close_price'] = current_price
-            t['pnl_pct'] = pnl
+            t['pnl_pct'] = pnl_percent_display
+            t['pnl_amount'] = pnl_amount
             t['outcome'] = outcome
             
-            closed_notifications.append(f"{close_reason}: **{t['symbol']}** ({t['style']})\nProfit: **{pnl:+.2f}%**")
+            # Message Format: "Hit Take Profit: +$15.50 (+1.5%)"
+            closed_notifications.append(f"{close_reason}: **{t['symbol']}** ({t['style']})\nProfit: **${pnl_amount:+.2f}** ({pnl_percent_display:+.2f}%)")
             data_changed = True
 
     if data_changed:
@@ -162,42 +173,60 @@ async def update_positions():
         
     return closed_notifications
 
-# --- REPORTING ---
+# --- REPORTING (VIRTUAL WALLET MODE) ---
 async def generate_portfolio_report():
     try:
         trades = load_portfolio()
         active_trades = [t for t in trades if t['status'] == 'OPEN']
         closed_trades = [t for t in trades if t['status'] == 'CLOSED']
         
+        # 1. Calculate Wallet Stats
         wins = len([t for t in closed_trades if t.get('outcome') == "WIN"])
         losses = len([t for t in closed_trades if t.get('outcome') == "LOSS"])
+        
+        # Sum up all realized dollar profits/losses
+        realized_pnl_dollars = sum(t.get('pnl_amount', 0.0) for t in closed_trades)
+        
+        # Current Bankroll
+        current_balance = STARTING_BALANCE + realized_pnl_dollars
+        
+        # Win Rate
         total_closed = wins + losses
         win_rate = (wins / total_closed * 100) if total_closed > 0 else 0.0
         
+        # 2. Build Report
         report_lines = []
-        report_lines.append(f"📊 **Performance:** {wins} Wins / {losses} Losses (**{win_rate:.0f}% Win Rate**)")
+        report_lines.append(f"💰 **Balance:** ${current_balance:,.2f}")
+        report_lines.append(f"📈 **Total PnL:** ${realized_pnl_dollars:+,.2f}")
+        report_lines.append(f"📊 **Stats:** {wins}W - {losses}L (**{win_rate:.0f}% Win Rate**)")
         report_lines.append("---")
         
         if not active_trades:
             return 0.0, "\n".join(report_lines) + "\n\n(No active positions)"
 
+        # 3. Add Active Trades
         total_unrealized_pnl = 0.0
         
         for t in active_trades:
             style = t.get('style', 'SWING')
             current_price = await get_current_price(t['symbol'], t['asset_type'])
             
-            pnl = 0.0
+            pnl_dollars = 0.0
+            pnl_pct = 0.0
+            
             if current_price > 0:
                 if "BUY" in t['direction']:
-                    pnl = ((current_price - t['entry_price']) / t['entry_price']) * 100
+                    raw_pct = ((current_price - t['entry_price']) / t['entry_price'])
                 else:
-                    pnl = ((t['entry_price'] - current_price) / t['entry_price']) * 100
+                    raw_pct = ((t['entry_price'] - current_price) / t['entry_price'])
+                
+                pnl_pct = raw_pct * 100
+                pnl_dollars = raw_pct * TRADE_SIZE
             
-            icon = "🟢" if pnl >= 0 else "🔴"
-            line = f"{icon} **{t['symbol']}** ({style}): {pnl:+.2f}%"
+            icon = "🟢" if pnl_dollars >= 0 else "🔴"
+            line = f"{icon} **{t['symbol']}** ({style}): ${pnl_dollars:+.2f} ({pnl_pct:+.2f}%)"
             report_lines.append(line)
-            total_unrealized_pnl += pnl
+            total_unrealized_pnl += pnl_pct
 
         return total_unrealized_pnl, "\n".join(report_lines)
         
