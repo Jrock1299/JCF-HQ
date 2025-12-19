@@ -1,4 +1,5 @@
 import os
+import asyncio # <--- The missing piece!
 import discord
 from discord.ext import commands, tasks
 import market_intel 
@@ -62,7 +63,6 @@ async def signal_scan_loop():
 
         if target_channel:
             await target_channel.send(embed=create_alert_embed(sig))
-            # UPDATE: Pass SL/TP/Style to Portfolio
             try:
                 portfolio.open_position(
                     sig['symbol'], sig['price'], sig['signal'], sig['type'], 
@@ -82,14 +82,10 @@ async def signal_scan_loop():
         signals = await signal_engine.scan_forex()
         for sig in signals: await route_signal(sig)
 
-# --- NEW: TRADE MANAGER LOOP (Checks exits every 5 mins) ---
 @tasks.loop(minutes=5)
 async def portfolio_manager_loop():
-    # This checks if any active trades hit SL or TP
     try:
         closed_alerts = await portfolio.update_positions()
-        
-        # If trades closed, notify the LOGS channel (or Status)
         if closed_alerts and CHANNELS["logs"]:
             channel = bot.get_channel(CHANNELS["logs"])
             if channel:
@@ -153,14 +149,12 @@ async def on_ready():
     if not meme_scan_loop.is_running(): meme_scan_loop.start()
     if not insider_scan_loop.is_running(): insider_scan_loop.start()
     if not smart_money_loop.is_running(): smart_money_loop.start()
-    
-    # Start the new Manager
     if not portfolio_manager_loop.is_running(): portfolio_manager_loop.start()
         
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
         if channel:
-            await channel.send("🟢 **SYSTEM UPDATE:** Trade Manager (Auto-Exit) & Scalp Tracker Active.")
+            await channel.send("🟢 **SYSTEM ONLINE:** Neural Engine Ready.")
 
 # --- COMMANDS ---
 
@@ -173,10 +167,8 @@ async def show_portfolio(ctx):
     color = 0x00ff00 if total_pnl >= 0 else 0xff0000
     embed = discord.Embed(title="💼 CEO Dashboard & Performance", color=color)
     embed.description = report
-    
     if "No active positions" not in report:
         embed.add_field(name="Open PnL", value=f"**{total_pnl:+.2f}%**", inline=False)
-    
     await msg.edit(content="", embed=embed)
 
 @bot.command(name="status")
@@ -197,7 +189,6 @@ async def system_status(ctx):
 
 @bot.command(name="risk")
 async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
-    # Standard Risk Calc
     risk_1_pct = balance * 0.01
     risk_2_pct = balance * 0.02
     stop_distance = abs(entry - stop_loss)
@@ -210,18 +201,17 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
     embed.add_field(name="2% Risk", value=f"${risk_2_pct:.2f}\nUnits: {units_2pct:.2f}", inline=True)
     await ctx.send(embed=embed)
 
-# --- AI COMMANDS ---
+# --- AI TRAINING COMMAND ---
 @bot.command(name="train")
 async def train_ai(ctx):
     """Forces the AI to retrain on the latest data."""
     await ctx.send("🧠 **Initiating AI Training Sequence...**\nThis may take a moment.")
     
-    # Run the training script securely
     try:
         import ai_brain
         # We run this in a separate thread so it doesn't freeze the bot
         await asyncio.to_thread(ai_brain.train_brain)
-        await ctx.send("✅ **Training Complete!** check your logs for the Exam Results.")
+        await ctx.send("✅ **Training Complete!** Check your logs (console) for the Exam Results.")
     except Exception as e:
         await ctx.send(f"❌ **Training Failed:** {str(e)}")
 
