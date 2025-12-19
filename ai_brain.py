@@ -36,45 +36,50 @@ def load_and_prep_data():
         print(f"⚠️ Not enough clean data (Only {len(df)} rows).")
         return None, None
 
-    # 3. Feature Engineering (Using ONLY what we have)
-    # Since we lack High/Low, we focus on Trend and Momentum
+    # 3. Feature Engineering (The Math)
     
-    # Feature A: RSI Trend (Is momentum rising?)
+    # Feature A: RSI Trend
     if 'rsi' in df.columns:
         df['rsi_trend'] = df['rsi'] - df['rsi'].shift(1)
     else:
-        df['rsi'] = 50 # Default neutral
+        df['rsi'] = 50 
         df['rsi_trend'] = 0
 
-    # Feature B: Distance from EMA (Trend Strength)
+    # Feature B: Distance from EMA 
+    # (Safety: Avoid division by zero)
     if 'ema_200' in df.columns:
-        df['dist_ema200'] = (df['close'] - df['ema_200']) / df['ema_200']
+        df['dist_ema200'] = (df['close'] - df['ema_200']) / df['ema_200'].replace(0, np.nan)
     else:
         df['dist_ema200'] = 0
 
     if 'ema_50' in df.columns:
-        df['dist_ema50'] = (df['close'] - df['ema_50']) / df['ema_50']
+        df['dist_ema50'] = (df['close'] - df['ema_50']) / df['ema_50'].replace(0, np.nan)
     else:
         df['dist_ema50'] = 0
         
-    # 4. Create Target (The Goal)
-    # Goal: Did price increase by 0.3% in the next 4 candles?
+    # 4. Create Target
     df['future_close'] = df['close'].shift(-4)
-    
-    # We use 0.003 (0.3%) as a universal target for Scalp/Swing mix
     df['target'] = (df['future_close'] > df['close'] * 1.003).astype(int)
 
-    # Drop NaNs from shifting
+    # --- THE FIX: SANITIZE DATA ---
+    # Replace Infinity with NaN
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # Drop any rows that still have NaNs
     df = df.dropna()
+    # ------------------------------
 
     # Define Inputs (X)
     feature_cols = ['rsi', 'rsi_trend', 'dist_ema200', 'dist_ema50', 'close']
-    # Only use columns that actually exist
     final_features = [c for c in feature_cols if c in df.columns]
     
     X = df[final_features]
     y = df['target']
     
+    # Final Safety Check
+    if len(X) == 0:
+        print("❌ Error: All data removed during cleaning.")
+        return None, None
+        
     return X, y
 
 def train_brain():
@@ -92,7 +97,11 @@ def train_brain():
     model = RandomForestClassifier(n_estimators=100, min_samples_split=10, random_state=42)
     
     print(f"🏋️ Training on {len(X_train)} scenarios...")
-    model.fit(X_train, y_train)
+    try:
+        model.fit(X_train, y_train)
+    except ValueError as e:
+        print(f"❌ Math Error during fit: {e}")
+        return
     
     # Evaluate
     predictions = model.predict(X_test)
