@@ -210,6 +210,21 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
     embed.add_field(name="2% Risk", value=f"${risk_2_pct:.2f}\nUnits: {units_2pct:.2f}", inline=True)
     await ctx.send(embed=embed)
 
+# --- AI COMMANDS ---
+@bot.command(name="train")
+async def train_ai(ctx):
+    """Forces the AI to retrain on the latest data."""
+    await ctx.send("🧠 **Initiating AI Training Sequence...**\nThis may take a moment.")
+    
+    # Run the training script securely
+    try:
+        import ai_brain
+        # We run this in a separate thread so it doesn't freeze the bot
+        await asyncio.to_thread(ai_brain.train_brain)
+        await ctx.send("✅ **Training Complete!** check your logs for the Exam Results.")
+    except Exception as e:
+        await ctx.send(f"❌ **Training Failed:** {str(e)}")
+
 # --- LAUNCH ---
 if __name__ == "__main__":
     if not TOKEN:
