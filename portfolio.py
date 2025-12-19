@@ -16,7 +16,6 @@ def load_portfolio():
     try:
         with open(DATA_FILE, 'r') as f:
             data = json.load(f)
-            # Ensure it's a list, not a dict or None
             if isinstance(data, list):
                 return data
             return []
@@ -24,17 +23,26 @@ def load_portfolio():
         return []
 
 def save_portfolio(data):
-    # Ensure directory exists
     if not os.path.exists("/app/data"):
         os.makedirs("/app/data")
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f)
 
+# --- HELPER: CHECK ACTIVE (NEW) ---
+def is_trade_active(symbol, style):
+    """Returns True if we already have an OPEN trade for this Symbol + Style."""
+    trades = load_portfolio()
+    for t in trades:
+        # Check matching symbol, status OPEN, and matching style (Swing vs Scalp)
+        if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
+            return True
+    return False
+
 # --- TRADE ENTRY ---
 def open_position(symbol, entry_price, direction, asset_type, sl, tp, style):
     trades = load_portfolio()
     
-    # Prevent duplicate opens
+    # Double check to prevent duplicates
     for t in trades:
         if t['symbol'] == symbol and t['status'] == 'OPEN' and t.get('style') == style:
             return False 
@@ -64,7 +72,6 @@ async def get_current_price(symbol, asset_type):
     price = 0.0
     try:
         if asset_type == "CRYPTO":
-            # Instantiate properly to avoid unclosed connector errors
             exchange = ccxt.binanceus({'enableRateLimit': True})
             try:
                 ticker = await exchange.fetch_ticker(symbol)
@@ -107,10 +114,10 @@ async def update_positions():
     data_changed = False
     
     for t in active_trades:
-        # 1. Backwards Compatibility: Handle missing keys from old trades
+        # Backwards Compatibility
         if 'stop_loss' not in t: t['stop_loss'] = 0.0
         if 'take_profit' not in t: t['take_profit'] = 0.0
-        if 'style' not in t: t['style'] = "SWING" # Default old trades to SWING
+        if 'style' not in t: t['style'] = "SWING" 
 
         current_price = await get_current_price(t['symbol'], t['asset_type'])
         if current_price == 0: continue
@@ -162,7 +169,6 @@ async def generate_portfolio_report():
         active_trades = [t for t in trades if t['status'] == 'OPEN']
         closed_trades = [t for t in trades if t['status'] == 'CLOSED']
         
-        # Calculate Stats
         wins = len([t for t in closed_trades if t.get('outcome') == "WIN"])
         losses = len([t for t in closed_trades if t.get('outcome') == "LOSS"])
         total_closed = wins + losses
@@ -178,9 +184,7 @@ async def generate_portfolio_report():
         total_unrealized_pnl = 0.0
         
         for t in active_trades:
-            # Safe Get for Style
             style = t.get('style', 'SWING')
-            
             current_price = await get_current_price(t['symbol'], t['asset_type'])
             
             pnl = 0.0
