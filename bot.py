@@ -1,11 +1,13 @@
 import os
-import asyncio # <--- The missing piece!
+import asyncio
 import discord
 from discord.ext import commands, tasks
 import market_intel 
 import signal_engine 
 import portfolio 
 import meme_engine
+import io
+import sys
 
 # --- CONFIGURATION ---
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -53,6 +55,11 @@ async def signal_scan_loop():
     print("📡 Scanning for Swing & Scalp Signals...")
     
     async def route_signal(sig):
+        # 1. CHECK: Is this trade already open?
+        # If it is, we return early and do NOT send an alert.
+        if portfolio.is_trade_active(sig['symbol'], sig.get('style', 'SWING')):
+            return 
+
         target_channel = None
         if sig['type'] == "CRYPTO":
             target_channel = bot.get_channel(CHANNELS["crypto_scalp"] if sig.get('style') == "SCALP" else CHANNELS["crypto"])
@@ -62,6 +69,7 @@ async def signal_scan_loop():
             target_channel = bot.get_channel(CHANNELS["stocks"])
 
         if target_channel:
+            # 2. Send Alert ONLY if we are actually taking the trade
             await target_channel.send(embed=create_alert_embed(sig))
             try:
                 portfolio.open_position(
@@ -209,9 +217,7 @@ async def train_ai(ctx):
     
     try:
         import ai_brain
-        import io
-        import sys
-
+        
         # Create a trap to catch the print() output
         capture_output = io.StringIO()
         sys.stdout = capture_output
