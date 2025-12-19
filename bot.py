@@ -204,15 +204,39 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
 # --- AI TRAINING COMMAND ---
 @bot.command(name="train")
 async def train_ai(ctx):
-    """Forces the AI to retrain on the latest data."""
+    """Forces the AI to retrain and reports the score."""
     await ctx.send("🧠 **Initiating AI Training Sequence...**\nThis may take a moment.")
     
     try:
         import ai_brain
-        # We run this in a separate thread so it doesn't freeze the bot
+        import io
+        import sys
+
+        # Create a trap to catch the print() output
+        capture_output = io.StringIO()
+        sys.stdout = capture_output
+        
+        # Run the training
         await asyncio.to_thread(ai_brain.train_brain)
-        await ctx.send("✅ **Training Complete!** Check your logs (console) for the Exam Results.")
+        
+        # Reset stdout so logs go back to normal
+        sys.stdout = sys.__stdout__
+        
+        # Get the text that was printed
+        result_log = capture_output.getvalue()
+        
+        # Filter for the "Report Card" part
+        if "EXAM RESULTS" in result_log:
+            # Extract just the score part
+            report_card = result_log.split("--- 🎓 EXAM RESULTS ---")[1]
+            await ctx.send(f"✅ **Training Complete!**\n\n**🎓 REPORT CARD:**{report_card}")
+        else:
+            # Fallback if it can't find the score
+            await ctx.send(f"✅ **Training Complete!** (Check logs for details)\n\nRaw Output:\n{result_log[-500:]}")
+
     except Exception as e:
+        # Reset stdout just in case it crashed
+        sys.stdout = sys.__stdout__
         await ctx.send(f"❌ **Training Failed:** {str(e)}")
 
 # --- LAUNCH ---
