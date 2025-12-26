@@ -9,7 +9,6 @@ import numpy as np
 from datetime import datetime
 import data_logger 
 import market_intel 
-import meme_engine  # Added for meme scan
 
 # --- CONFIG ---
 CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
@@ -344,8 +343,3 @@ async def scan_stocks():
                             if swing_sig: signals.append(swing_sig)
             except: continue
     return signals
-
-async def scan_memes():
-    # Placeholder for meme signals; integrate with meme_engine snipes
-    # For now, return empty or simulate; actual sniping happens in meme_engine loop
-    return []  # Signals generated in real-time via RPC, routed through portfolio
