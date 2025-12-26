@@ -24,7 +24,8 @@ CHANNELS = {
     "insider": int(os.getenv("CH_INSIDER", 0)),
     "smart": int(os.getenv("CH_SMART", 0)),
     "crypto_scalp": int(os.getenv("CH_CRYPTO_SCALP", 0)),
-    "forex_scalp": int(os.getenv("CH_FOREX_SCALP", 0))
+    "forex_scalp": int(os.getenv("CH_FOREX_SCALP", 0)),
+    "meme": int(os.getenv("CH_MEME", 0))  # New channel for meme alerts
 }
 
 intents = discord.Intents.default()
@@ -67,6 +68,8 @@ async def signal_scan_loop():
             target_channel = bot.get_channel(CHANNELS["forex_scalp"] if sig.get('style') == "SCALP" else CHANNELS["forex"])
         elif sig['type'] == "STOCK":
             target_channel = bot.get_channel(CHANNELS["stocks"])
+        elif sig['type'] == "MEME":
+            target_channel = bot.get_channel(CHANNELS["meme"])
 
         if target_channel:
             # 2. Send Alert ONLY if we are actually taking the trade
@@ -88,6 +91,9 @@ async def signal_scan_loop():
         for sig in signals: await route_signal(sig) 
     if CHANNELS["forex"]:
         signals = await signal_engine.scan_forex()
+        for sig in signals: await route_signal(sig)
+    if CHANNELS["meme"]:
+        signals = await signal_engine.scan_memes()
         for sig in signals: await route_signal(sig)
 
 @tasks.loop(minutes=5)
@@ -127,6 +133,12 @@ async def meme_scan_loop():
         if count and count > 0: print(f"🐶 Collected data on {count} new Solana coins.")
     except: pass
 
+@tasks.loop(minutes=1)
+async def meme_snipe_loop():
+    try:
+        await meme_engine.meme_snipe_loop()
+    except: pass
+
 @tasks.loop(hours=12) 
 async def insider_scan_loop():
     if not CHANNELS["insider"]: return
@@ -158,6 +170,7 @@ async def on_ready():
     if not insider_scan_loop.is_running(): insider_scan_loop.start()
     if not smart_money_loop.is_running(): smart_money_loop.start()
     if not portfolio_manager_loop.is_running(): portfolio_manager_loop.start()
+    if not meme_snipe_loop.is_running(): meme_snipe_loop.start()
         
     if CHANNELS["status"]:
         channel = bot.get_channel(CHANNELS["status"])
