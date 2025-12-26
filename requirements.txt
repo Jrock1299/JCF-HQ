@@ -7,3 +7,6 @@ aiohttp
 ccxt
 pandas-ta-classic
 scikit-learn
+solana
+solders
+uvloop
