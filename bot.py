@@ -5,6 +5,7 @@ from discord.ext import commands, tasks
 import market_intel 
 import signal_engine 
 import portfolio 
+import meme_engine
 import io
 import sys
 
@@ -42,7 +43,7 @@ def create_alert_embed(data):
     embed.add_field(name="🛑 Stop Loss", value=f"${data['stop_loss']:.4f}", inline=True)
     embed.add_field(name="🎯 Take Profit", value=f"${data['take_profit']:.4f}", inline=True)
     
-    footer_text = "JCF AI Engine • "
+    footer_text = "JCF HQ • "
     footer_text += "M15 Scalp Mode ⚡" if data.get('style') == "SCALP" else "H1/H4 Trend Mode 🌊"
     embed.set_footer(text=footer_text)
     return embed
@@ -55,7 +56,6 @@ async def signal_scan_loop():
     
     async def route_signal(sig):
         # 1. CHECK: Is this trade already open?
-        # If it is, we return early and do NOT send an alert.
         if portfolio.is_trade_active(sig['symbol'], sig.get('style', 'SWING')):
             return 
 
@@ -119,6 +119,13 @@ async def whale_alert_loop():
         if channel:
             for alert in alerts: await channel.send(alert)
 
+@tasks.loop(minutes=5)
+async def meme_scan_loop():
+    try:
+        count = await meme_engine.log_meme_data()
+        if count and count > 0: print(f"🐶 Collected data on {count} new Solana coins.")
+    except: pass
+
 @tasks.loop(hours=12) 
 async def insider_scan_loop():
     if not CHANNELS["insider"]: return
@@ -146,6 +153,7 @@ async def on_ready():
     if not signal_scan_loop.is_running(): signal_scan_loop.start()
     if not macro_news_loop.is_running(): macro_news_loop.start()
     if not whale_alert_loop.is_running(): whale_alert_loop.start()
+    if not meme_scan_loop.is_running(): meme_scan_loop.start()
     if not insider_scan_loop.is_running(): insider_scan_loop.start()
     if not smart_money_loop.is_running(): smart_money_loop.start()
     if not portfolio_manager_loop.is_running(): portfolio_manager_loop.start()
@@ -156,6 +164,41 @@ async def on_ready():
             await channel.send("🟢 **SYSTEM ONLINE:** Neural Engine Ready.")
 
 # --- COMMANDS ---
+
+@bot.command(name="force_trade")
+async def force_trade_test(ctx):
+    """Generates a FAKE trade to test alerts and portfolio."""
+    await ctx.send("🧪 **Injecting FAKE Test Signal...**")
+    
+    # Create a dummy signal
+    fake_signal = {
+        "symbol": "BTC/TEST",
+        "signal": "🟢 SWING BUY",
+        "price": 99500.0,
+        "stop_loss": 98000.0,
+        "take_profit": 105000.0,
+        "confidence": "🧪 TEST MODE",
+        "rsi": 45.0,
+        "type": "CRYPTO",
+        "style": "SWING"
+    }
+    
+    # Route it manually to test the pipeline
+    target_channel = bot.get_channel(CHANNELS["crypto"])
+    if target_channel:
+        await target_channel.send(embed=create_alert_embed(fake_signal))
+        await ctx.send(f"✅ **Alert Sent!** Check <#{CHANNELS['crypto']}>.")
+        
+        # Log to portfolio
+        import portfolio
+        portfolio.open_position(
+            fake_signal['symbol'], fake_signal['price'], fake_signal['signal'], 
+            fake_signal['type'], fake_signal['stop_loss'], fake_signal['take_profit'], 
+            fake_signal['style']
+        )
+        await ctx.send("✅ **Portfolio Updated!** Type `!portfolio` to verify.")
+    else:
+        await ctx.send("❌ Error: Could not find #crypto-signals channel.")
 
 @bot.command(name="portfolio")
 async def show_portfolio(ctx):
@@ -200,7 +243,6 @@ async def calculate_risk(ctx, balance: float, entry: float, stop_loss: float):
     embed.add_field(name="2% Risk", value=f"${risk_2_pct:.2f}\nUnits: {units_2pct:.2f}", inline=True)
     await ctx.send(embed=embed)
 
-# --- AI TRAINING COMMAND ---
 @bot.command(name="train")
 async def train_ai(ctx):
     """Forces the AI to retrain and reports the score."""
