@@ -1,4 +1,4 @@
-import os
+   import os
 import asyncio
 import ccxt.async_support as ccxt
 import pandas as pd
@@ -11,9 +11,8 @@ import data_logger
 import market_intel 
 
 # --- CONFIG ---
-CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT").split(",")
+CRYPTO_PAIRS = os.getenv("CRYPTO_PAIRS", "BTC/USDT,ETH/USDT,SOL/USDT").split(",")
 STOCK_TICKERS = os.getenv("STOCK_TICKERS", "NVDA,TSLA").split(",")
-# FOREX (Updated list)
 FOREX_PAIRS = os.getenv("FOREX_PAIRS", "EUR_USD,AUD_CAD,GBP_JPY,CHF_JPY").split(",")
 
 OANDA_TOKEN = os.getenv("OANDA_TOKEN")
@@ -26,7 +25,7 @@ def is_forex_session_active():
     if 7 <= current_hour <= 21: return True
     return False
 
-# --- BRAIN 0: THE AI JUDGE (NEW) ---
+# --- BRAIN 0: THE AI JUDGE (UPDATED: MORE PERMISSIVE) ---
 def ask_ai_judge(df):
     """
     Feeds the current market data into the trained Random Forest.
@@ -38,7 +37,6 @@ def ask_ai_judge(df):
         model = joblib.load(BRAIN_FILE)
         
         # 2. Re-create the EXACT features from training
-        # (Must match ai_brain.py logic perfectly)
         calc_df = df.copy()
         
         # RSI Trend
@@ -55,7 +53,7 @@ def ask_ai_judge(df):
         # Prepare Input Row (Last closed candle)
         curr = calc_df.iloc[-1]
         
-        # Feature Array: ['rsi', 'rsi_trend', 'dist_ema200', 'dist_ema50', 'close']
+        # Feature Array
         features = np.array([[
             curr['rsi'], 
             curr['rsi_trend'], 
@@ -64,12 +62,27 @@ def ask_ai_judge(df):
             curr['close']
         ]])
         
-        # Clean Infinite values just in case
+        # Clean Infinite values
         features = np.nan_to_num(features)
         
-        # 3. GET VERDICT
-        prediction = model.predict(features)
-        return prediction[0] == 1 # Returns True if AI says "Win"
+        # 3. GET VERDICT (Using Probability to loosen standards)
+        try:
+            # Ask for probability (0.0 to 1.0)
+            probs = model.predict_proba(features)
+            win_prob = probs[0][1] # Probability of "Win" class
+            
+            # Print for debugging
+            print(f"🧠 AI Analysis for last candle: Confidence {win_prob:.2f}")
+
+            # THRESHOLD: If > 45% confident, take it.
+            if win_prob > 0.45:
+                return True
+            else:
+                return False
+        except:
+            # Fallback if model doesn't support probability
+            prediction = model.predict(features)
+            return prediction[0] == 1 
         
     except Exception as e:
         print(f"🧠 AI Glitch: {e}")
@@ -179,11 +192,11 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
 
     # --- BRAIN 4: THE AI GATEKEEPER ---
     if signal:
-        # ASK THE AI: "Is this a trap?"
+        # ASK THE AI
         ai_approval = ask_ai_judge(df_1h)
         
         if ai_approval:
-            # AI Says YES -> Pass the signal
+            # AI Says YES
             sl_dist = atr * 2.0
             tp_dist = atr * 3.0
             return {
@@ -194,8 +207,7 @@ def analyze_swing(df_1h, df_4h, symbol, asset_type):
                 "rsi": rsi, "type": asset_type, "style": "SWING"
             }
         else:
-            # AI Says NO -> Kill the signal (Silent Filter)
-            print(f"🤖 AI VETOED signal for {symbol}. Setup looks good, but AI predicts choppy/loss.")
+            print(f"🤖 AI VETOED signal for {symbol}.")
             return None
 
     return None
