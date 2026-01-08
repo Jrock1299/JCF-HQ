@@ -1,4 +1,4 @@
-   import os
+import os
 import asyncio
 import ccxt.async_support as ccxt
 import pandas as pd
