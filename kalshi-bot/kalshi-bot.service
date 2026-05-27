@@ -1,0 +1,26 @@
+[Unit]
+Description=Kalshi 15M Crypto Trading Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/kalshi-bot
+ExecStart=/usr/bin/python3 -u /root/kalshi-bot/main.py
+Restart=always
+RestartSec=15
+
+# Stdout + stderr both go to bot.log
+StandardOutput=append:/root/kalshi-bot/bot.log
+StandardError=append:/root/kalshi-bot/bot.log
+
+# Give the process time to finish its current loop on SIGTERM
+TimeoutStopSec=90
+KillSignal=SIGTERM
+
+# Load .env so the API keys are available
+EnvironmentFile=/root/kalshi-bot/.env
+
+[Install]
+WantedBy=multi-user.target
