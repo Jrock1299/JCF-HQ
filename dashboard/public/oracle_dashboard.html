@@ -1,0 +1,49 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080c10;--surface:#0e1420;--border:#1e2d40;--text:#cdd9e5;--muted:#5a7a9a;--blue:#4fb3ff;--green:#3ddc84;--red:#ff5b5b;--gold:#ffd166;--purple:#c084fc}
+body{background:var(--bg);color:var(--text);font-family:'Arial Black',Arial,sans-serif;padding:24px;width:1100px}
+.mono{font-family:'Courier New',monospace}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px}
+.title{font-size:15px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;color:var(--blue)}
+.title span{color:var(--gold)}
+.time{font-family:'Courier New',monospace;font-size:11px;color:var(--muted)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--surface)}
+.stat-box{padding:20px 24px;border-right:1px solid var(--border);position:relative}
+.stat-box:last-child{border-right:none}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-box.green::before{background:var(--green)}.stat-box.blue::before{background:var(--blue)}.stat-box.gold::before{background:var(--gold)}
+.stat-label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.stat-value{font-family:'Courier New',monospace;font-size:28px;font-weight:700;line-height:1}
+.stat-value.green{color:var(--green)}.stat-value.red{color:var(--red)}.stat-value.blue{color:var(--blue)}.stat-value.gold{color:var(--gold)}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:8px;font-family:'Courier New',monospace}
+.body-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.section-label{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.trade-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;border:1px solid var(--border)}
+.trade-agent{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;min-width:48px;text-align:center}
+.trade-agent.crisp{background:rgba(79,179,255,.15);color:var(--blue)}.trade-agent.blade{background:rgba(255,209,102,.15);color:var(--gold)}
+.trade-symbol{font-family:'Courier New',monospace;font-size:12px;font-weight:700;flex:1}
+.trade-dir{font-size:10px;font-weight:900;min-width:44px}.trade-dir.long{color:var(--green)}.trade-dir.short{color:var(--red)}
+.trade-pnl{font-family:'Courier New',monospace;font-size:12px;font-weight:700;min-width:75px;text-align:right}
+.trade-pnl.pos{color:var(--green)}.trade-pnl.neg{color:var(--red)}
+.trade-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase}
+.badge-win{background:rgba(61,220,132,.15);color:var(--green)}.badge-loss{background:rgba(255,91,91,.15);color:var(--red)}.badge-open{background:rgba(90,122,154,.15);color:var(--muted)}
+.pnl-bars{display:flex;align-items:flex-end;gap:8px;height:90px;padding:4px}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar{width:100%;border-radius:3px 3px 0 0;min-height:3px}
+.bar-label{font-size:8px;color:var(--muted);font-family:'Courier New',monospace;white-space:nowrap}
+.oracle-card{display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+.oracle-rank{font-family:'Courier New',monospace;font-size:22px;font-weight:700;color:var(--gold)}
+.oracle-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px}
+.oracle-note{font-size:11px;color:var(--muted)}
+.oracle-bet{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:140px}
+.bet-tag{font-family:'Courier New',monospace;font-size:13px;font-weight:700;padding:6px 18px;border-radius:20px;text-align:center}
+.bet-yes{background:rgba(61,220,132,.15);color:var(--green);border:1px solid rgba(61,220,132,.3)}
+.bet-no{background:rgba(255,91,91,.15);color:var(--red);border:1px solid rgba(255,91,91,.3)}
+.odds-bar{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.odds-fill{height:100%;border-radius:3px}
+.odds-text{font-family:'Courier New',monospace;font-size:10px;color:var(--muted)}
+.purple{color:var(--purple)}
+</style></head><body>
+<div class="header"><span class="title purple">&#128302; Oracle Intelligence &mdash; Top 5 Kalshi Picks</span><span class="time mono">2026-03-01 21:32 UTC</span></div>
+<div class="oracle-card" style="border-left:3px solid #3ddc84"><div class="oracle-rank mono">01</div><div class="oracle-info"><div class="oracle-title">How high will unemployment get before 2027?</div><div class="oracle-note">&#9889; Underdog territory (35%) — worth watching &middot; Vol: 155,019</div></div><div class="oracle-bet"><span class="bet-tag bet-yes">BET YES</span><div class="odds-bar"><div class="odds-fill" style="width:35%;background:#3ddc84"></div></div><div class="odds-text mono">Yes: 35% &middot; No: 66%</div></div></div><div class="oracle-card" style="border-left:3px solid #3ddc84"><div class="oracle-rank mono">02</div><div class="oracle-info"><div class="oracle-title">DOJ wins their anti-trust case against Apple?</div><div class="oracle-note">&#9889; Underdog territory (35%) — worth watching &middot; Vol: 46,045</div></div><div class="oracle-bet"><span class="bet-tag bet-yes">BET YES</span><div class="odds-bar"><div class="odds-fill" style="width:35%;background:#3ddc84"></div></div><div class="odds-text mono">Yes: 35% &middot; No: 67%</div></div></div><div class="oracle-card" style="border-left:3px solid #3ddc84"><div class="oracle-rank mono">03</div><div class="oracle-info"><div class="oracle-title">Will Trump end the Federal Reserve before Jan 20, 2029?</div><div class="oracle-note">&#9889; Very low odds (9%) — contrarian long? &middot; Vol: 103,904</div></div><div class="oracle-bet"><span class="bet-tag bet-yes">BET YES</span><div class="odds-bar"><div class="odds-fill" style="width:9%;background:#3ddc84"></div></div><div class="odds-text mono">Yes: 9% &middot; No: 93%</div></div></div><div class="oracle-card" style="border-left:3px solid #3ddc84"><div class="oracle-rank mono">04</div><div class="oracle-info"><div class="oracle-title">Will Trump end the Federal Reserve before Jan 1, 2027?</div><div class="oracle-note">&#9889; Very low odds (4%) — contrarian long? &middot; Vol: 8,420</div></div><div class="oracle-bet"><span class="bet-tag bet-yes">BET YES</span><div class="odds-bar"><div class="odds-fill" style="width:4%;background:#3ddc84"></div></div><div class="odds-text mono">Yes: 4% &middot; No: 99%</div></div></div><div class="oracle-card" style="border-left:3px solid #3ddc84"><div class="oracle-rank mono">05</div><div class="oracle-info"><div class="oracle-title">Will Trump next nominate Janet Yellen as Fed Chair?</div><div class="oracle-note">&#9889; Very low odds (1%) — contrarian long? &middot; Vol: 34,118</div></div><div class="oracle-bet"><span class="bet-tag bet-yes">BET YES</span><div class="odds-bar"><div class="odds-fill" style="width:1%;background:#3ddc84"></div></div><div class="odds-text mono">Yes: 1% &middot; No: 100%</div></div></div>
+</body></html>

@@ -1,0 +1,500 @@
+{
+  "total_entries_planned": 5,
+  "entries_executed": 5,
+  "entry_history": [
+    {
+      "entry_number": 1,
+      "executed_at": "2026-04-03T16:30:52.067202+00:00",
+      "tao_amount": 0.668994,
+      "usd_value": 209.72,
+      "tao_price": 313.48,
+      "root_staked": 0.334497,
+      "subnet_stakes": [
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.077603
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.055527
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.053185
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.050844
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.04984
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.047499
+        }
+      ],
+      "results": [
+        {
+          "netuid": 0,
+          "name": "Root",
+          "amount": 0.334497,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.077603,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.055527,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.053185,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.050844,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.04984,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.047499,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction may be subject to slippage.\n\n                              "
+        }
+      ]
+    },
+    {
+      "entry_number": 2,
+      "executed_at": "2026-04-05T21:03:03.005345+00:00",
+      "tao_amount": 0.668994,
+      "usd_value": 199.49,
+      "tao_price": 298.19,
+      "root_staked": 0.334497,
+      "subnet_stakes": [
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.077603
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.056195
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.053185
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.04984
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.049171
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.048502
+        }
+      ],
+      "results": [
+        {
+          "netuid": 0,
+          "name": "Root",
+          "amount": 0.334497,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.077603,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.056195,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.053185,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.04984,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.049171,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.048502,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        }
+      ]
+    },
+    {
+      "entry_number": 3,
+      "executed_at": "2026-04-10T09:03:15.269502+00:00",
+      "tao_amount": 0.668994,
+      "usd_value": 195.43,
+      "tao_price": 292.13,
+      "root_staked": 0.334497,
+      "subnet_stakes": [
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.063554
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.047499
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.045157
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044488
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.044154
+        },
+        {
+          "netuid": 3,
+          "name": "deprecated",
+          "amount": 0.04315
+        }
+      ],
+      "results": [
+        {
+          "netuid": 0,
+          "name": "Root",
+          "amount": 0.334497,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.063554,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.047499,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.045157,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044488,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.044154,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 3,
+          "name": "deprecated",
+          "amount": 0.04315,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        }
+      ]
+    },
+    {
+      "entry_number": 4,
+      "executed_at": "2026-04-12T21:03:28.439118+00:00",
+      "tao_amount": 0.668994,
+      "usd_value": 174.55,
+      "tao_price": 260.91,
+      "root_staked": 0.334497,
+      "subnet_stakes": [
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.064223
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.047164
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.044823
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044154
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.044154
+        },
+        {
+          "netuid": 3,
+          "name": "deprecated",
+          "amount": 0.043485
+        }
+      ],
+      "results": [
+        {
+          "netuid": 0,
+          "name": "Root",
+          "amount": 0.334497,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.064223,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.047164,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.044823,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044154,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.044154,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 3,
+          "name": "deprecated",
+          "amount": 0.043485,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        }
+      ]
+    },
+    {
+      "entry_number": 5,
+      "executed_at": "2026-04-15T09:03:17.181313+00:00",
+      "tao_amount": 0.668994,
+      "usd_value": 165.25,
+      "tao_price": 247.02,
+      "root_staked": 0.334497,
+      "subnet_stakes": [
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.065561
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.046495
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.045492
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044154
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.043819
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.042481
+        }
+      ],
+      "results": [
+        {
+          "netuid": 0,
+          "name": "Root",
+          "amount": 0.334497,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 64,
+          "name": "Chutes",
+          "amount": 0.065561,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 62,
+          "name": "Ridges",
+          "amount": 0.046495,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 28,
+          "name": "oracle",
+          "amount": 0.046495,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 120,
+          "name": "Affine",
+          "amount": 0.045492,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 51,
+          "name": "lium.io",
+          "amount": 0.044154,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 56,
+          "name": "Gradients",
+          "amount": 0.043819,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        },
+        {
+          "netuid": 4,
+          "name": "Targon",
+          "amount": 0.042481,
+          "success": true,
+          "output": "Safe staking: disabled.\n\nProtection status for 'stake add':\n\u26a0\ufe0f  Warning: Limit price protection (safe staking) is disabled. This transaction\nmay be subject to slippage.\n\n                              "
+        }
+      ]
+    }
+  ],
+  "last_entry_time": "2026-04-15T09:03:17.181313+00:00",
+  "initial_tao_balance": 3.344969,
+  "tao_per_entry": 0.668994
+}

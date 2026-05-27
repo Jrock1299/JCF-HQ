@@ -1,0 +1,985 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-02-27 09:00:25 UTC
+============================================================
+
+🎯 HIGH VALUE OPPORTUNITIES (132 found)
+----------------------------------------
+
+📌 KXAPPLEUS
+   Market: Before 2030
+   Yes: 35% | No: 69%
+   Volume: 45,984
+   ⚡ High volume: 45,984
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXTAIWANLVL4
+   Market: KXTAIWANLVL4-28JAN01
+   Yes: 35% | No: 67%
+   Volume: 5,585
+   ⚡ High volume: 5,585
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXFEDEND
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 92%
+   Volume: 99,744
+   ⚡ High volume: 99,744
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Volume: 32,714
+   ⚡ High volume: 32,714
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-RREI
+   Yes: 1% | No: 100%
+   Volume: 14,376,457
+   ⚡ High volume: 14,376,457
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-LLIN
+   Yes: 1% | No: 100%
+   Volume: 46,506
+   ⚡ High volume: 46,506
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-LLOG
+   Yes: 1% | No: 100%
+   Volume: 184,350
+   ⚡ High volume: 184,350
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-PJEF
+   Yes: 1% | No: 100%
+   Volume: 61,655
+   ⚡ High volume: 61,655
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-MBOW
+   Yes: 1% | No: 100%
+   Volume: 9,695,407
+   ⚡ High volume: 9,695,407
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-SMIR
+   Yes: 1% | No: 100%
+   Volume: 5,153,535
+   ⚡ High volume: 5,153,535
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-MSUM
+   Yes: 1% | No: 100%
+   Volume: 103,207
+   ⚡ High volume: 103,207
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-JBUL
+   Yes: 1% | No: 100%
+   Volume: 112,906
+   ⚡ High volume: 112,906
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Market: KXFEDCHAIRNOM-29-DZER
+   Yes: 1% | No: 100%
+   Volume: 506,753
+   ⚡ High volume: 506,753
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXDEBTGROWTH
+   Market: KXDEBTGROWTH-28DEC31-50
+   Yes: 56% | No: 49%
+   Volume: 11,390
+   ⚡ High volume: 11,390
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXDEBTGROWTH
+   Market: KXDEBTGROWTH-28DEC31-40
+   Yes: 99% | No: 4%
+   Volume: 42,904
+   ⚡ High volume: 42,904
+   ⚡ Near certainty (99%) — low risk yes?
+
+📌 KXGDPUSMAX
+   Market: KXGDPUSMAX-28-5
+   Yes: 58% | No: 43%
+   Volume: 139,820
+   ⚡ High volume: 139,820
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXGDPSHAREMANU
+   Market: KXGDPSHAREMANU-29
+   Yes: 15% | No: 89%
+   Volume: 16,217
+   ⚡ High volume: 16,217
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-28-500
+   Yes: 25% | No: 78%
+   Volume: 6,816
+   ⚡ High volume: 6,816
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-28-250
+   Yes: 32% | No: 72%
+   Volume: 28,106
+   ⚡ High volume: 28,106
+   ⚡ Underdog territory (32%) — worth watching
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-26-750
+   Yes: 5% | No: 97%
+   Volume: 16,381
+   ⚡ High volume: 16,381
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-26-500
+   Yes: 8% | No: 95%
+   Volume: 30,733
+   ⚡ High volume: 30,733
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-26-2000
+   Yes: 3% | No: 99%
+   Volume: 12,905
+   ⚡ High volume: 12,905
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-26-1000
+   Yes: 4% | No: 98%
+   Volume: 12,828
+   ⚡ High volume: 12,828
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Market: KXGOVTCUTS-26-250
+   Yes: 9% | No: 93%
+   Volume: 72,035
+   ⚡ High volume: 72,035
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXU3MAX
+   Market: KXU3MAX-27-9
+   Yes: 7% | No: 97%
+   Volume: 6,969
+   ⚡ High volume: 6,969
+   ⚡ Very low odds (7%) — contrarian long?
+
+📌 KXU3MAX
+   Market: KXU3MAX-27-8
+   Yes: 8% | No: 96%
+   Volume: 6,776
+   ⚡ High volume: 6,776
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXU3MAX
+   Market: KXU3MAX-27-6
+   Yes: 19% | No: 82%
+   Volume: 95,401
+   ⚡ High volume: 95,401
+   ⚡ Underdog territory (19%) — worth watching
+
+📌 KXU3MAX
+   Market: KXU3MAX-27-5
+   Yes: 37% | No: 64%
+   Volume: 152,586
+   ⚡ High volume: 152,586
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXDOED
+   Market: KXDOED-29-JAN20
+   Yes: 24% | No: 78%
+   Volume: 140,999
+   ⚡ High volume: 140,999
+   ⚡ Underdog territory (24%) — worth watching
+
+📌 KXACAREPEAL
+   Market: KXACAREPEAL-29-29JAN20
+   Yes: 23% | No: 79%
+   Volume: 7,973
+   ⚡ High volume: 7,973
+   ⚡ Underdog territory (23%) — worth watching
+
+📌 KXFTA
+   Market: KXFTA-29
+   Yes: 60% | No: 45%
+   Volume: 21,528
+   ⚡ High volume: 21,528
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXFTAPRC
+   Market: KXFTAPRC-29
+   Yes: 27% | No: 74%
+   Volume: 42,557
+   ⚡ High volume: 42,557
+   ⚡ Underdog territory (27%) — worth watching
+
+📌 KXWITHDRAW
+   Market: KXWITHDRAW-29-WTO
+   Yes: 35% | No: 67%
+   Volume: 2,864
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXTERMLIMITS
+   Market: KXTERMLIMITS-29
+   Yes: 8% | No: 94%
+   Volume: 6,821
+   ⚡ High volume: 6,821
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXSTATE
+   Market: KXSTATE-29
+   Yes: 15% | No: 88%
+   Volume: 48,871
+   ⚡ High volume: 48,871
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGREENTERRITORY
+   Market: KXGREENTERRITORY-29-27
+   Yes: 15% | No: 86%
+   Volume: 234,057
+   ⚡ High volume: 234,057
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGREENTERRITORY
+   Market: KXGREENTERRITORY-29-26APR
+   Yes: 2% | No: 99%
+   Volume: 539,905
+   ⚡ High volume: 539,905
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXGREENTERRITORY
+   Market: KXGREENTERRITORY-29
+   Yes: 41% | No: 60%
+   Volume: 2,362,092
+   ⚡ High volume: 2,362,092
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXCANTERRITORY
+   Market: KXCANTERRITORY-29
+   Yes: 17% | No: 85%
+   Volume: 99,710
+   ⚡ High volume: 99,710
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXCANAL
+   Market: KXCANAL-29
+   Yes: 30% | No: 71%
+   Volume: 482,678
+   ⚡ High volume: 482,678
+   ⚡ Underdog territory (30%) — worth watching
+
+📌 KXGREENLAND
+   Market: KXGREENLAND-29-26MAY
+   Yes: 3% | No: 98%
+   Volume: 1,836,649
+   ⚡ High volume: 1,836,649
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXGREENLAND
+   Market: :: During Trump's term
+   Yes: 28% | No: 72%
+   Volume: 3,184,545
+   ⚡ High volume: 3,184,545
+   ⚡ Underdog territory (28%) — worth watching
+
+📌 KXTRUMPRESIGN
+   Market: KXTRUMPRESIGN
+   Yes: 18% | No: 83%
+   Volume: 151,354
+   ⚡ High volume: 151,354
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXIMPEACH
+   Market: KXIMPEACH-26-JUN01
+   Yes: 4% | No: 97%
+   Volume: 734,199
+   ⚡ High volume: 734,199
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXTRUMPREMOVE
+   Market: KXTRUMPREMOVE
+   Yes: 23% | No: 80%
+   Volume: 265,187
+   ⚡ High volume: 265,187
+   ⚡ Underdog territory (23%) — worth watching
+
+📌 KXAMEND25
+   Market: KXAMEND25-29
+   Yes: 33% | No: 71%
+   Volume: 30,050
+   ⚡ High volume: 30,050
+   ⚡ Underdog territory (33%) — worth watching
+
+📌 KXSCOURT
+   Market: KXSCOURT-29-TED
+   Yes: 5% | No: 96%
+   Volume: 6,480
+   ⚡ High volume: 6,480
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 KXSCOURT
+   Market: KXSCOURT-29-ML
+   Yes: 1% | No: 100%
+   Volume: 5,530
+   ⚡ High volume: 5,530
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXSCOTUSRESIGN
+   Market: KXSCOTUSRESIGN-29-CT
+   Yes: 53% | No: 52%
+   Volume: 23,174
+   ⚡ High volume: 23,174
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXSCOTUSRESIGN
+   Market: KXSCOTUSRESIGN-29-SS
+   Yes: 8% | No: 95%
+   Volume: 6,840
+   ⚡ High volume: 6,840
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXSCOTUSPOWER
+   Market: KXSCOTUSPOWER-29-29JAN20-R0-0
+   Yes: 8% | No: 93%
+   Volume: 5,026
+   ⚡ High volume: 5,026
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXVETOOVERRIDE
+   Market: KXVETOOVERRIDE-29JAN20-27
+   Yes: 17% | No: 88%
+   Volume: 8,651
+   ⚡ High volume: 8,651
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXVETOOVERRIDE
+   Market: KXVETOOVERRIDE-29JAN20-26MAR
+   Yes: 3% | No: 100%
+   Volume: 57,853
+   ⚡ High volume: 57,853
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXVETOOVERRIDE
+   Market: KXVETOOVERRIDE-29JAN20
+   Yes: 43% | No: 62%
+   Volume: 13,195
+   ⚡ High volume: 13,195
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXPRESPERSON
+   Market: :: Democratic
+   Yes: 2% | No: 99%
+   Volume: 198,484
+   ⚡ High volume: 198,484
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Democratic
+   Yes: 3% | No: 98%
+   Volume: 674,004
+   ⚡ High volume: 674,004
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: KXPRESPERSON-28-JDIM
+   Yes: 1% | No: 100%
+   Volume: 289,740
+   ⚡ High volume: 289,740
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Democratic
+   Yes: 1% | No: 100%
+   Volume: 57,520
+   ⚡ High volume: 57,520
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Democratic
+   Yes: 2% | No: 99%
+   Volume: 334,607
+   ⚡ High volume: 334,607
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Republican
+   Yes: 1% | No: 100%
+   Volume: 173,858
+   ⚡ High volume: 173,858
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Republican
+   Yes: 1% | No: 100%
+   Volume: 314,613
+   ⚡ High volume: 314,613
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Unknown
+   Yes: 2% | No: 99%
+   Volume: 848,637
+   ⚡ High volume: 848,637
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Republican
+   Yes: 3% | No: 98%
+   Volume: 690,646
+   ⚡ High volume: 690,646
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXPRESPERSON
+   Market: :: Republican
+   Yes: 1% | No: 100%
+   Volume: 86,591
+   ⚡ High volume: 86,591
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPARTY
+   Market: KXPRESPARTY-2028-R
+   Yes: 46% | No: 56%
+   Volume: 141,445
+   ⚡ High volume: 141,445
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXPRESPARTY
+   Market: KXPRESPARTY-2028-D
+   Yes: 55% | No: 46%
+   Volume: 102,366
+   ⚡ High volume: 102,366
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 POWER
+   Market: :: R-House, R-Senate, R-President
+   Yes: 19% | No: 82%
+   Volume: 30,138
+   ⚡ High volume: 30,138
+   ⚡ Underdog territory (19%) — worth watching
+
+📌 POWER
+   Market: POWER-28-RH-RS-DP
+   Yes: 5% | No: 96%
+   Volume: 11,174
+   ⚡ High volume: 11,174
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 POWER
+   Market: POWER-28-RH-DS-RP
+   Yes: 4% | No: 98%
+   Volume: 6,565
+   ⚡ High volume: 6,565
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 POWER
+   Market: POWER-28-RH-DS-DP
+   Yes: 3% | No: 98%
+   Volume: 8,091
+   ⚡ High volume: 8,091
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 POWER
+   Market: POWER-28-DH-RS-DP
+   Yes: 21% | No: 84%
+   Volume: 15,505
+   ⚡ High volume: 15,505
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 POWER
+   Market: POWER-28-DH-DS-RP
+   Yes: 5% | No: 97%
+   Volume: 5,935
+   ⚡ High volume: 5,935
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 POWER
+   Market: :: D-House, D-Senate, D-President
+   Yes: 38% | No: 66%
+   Volume: 43,071
+   ⚡ High volume: 43,071
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 SENATEOH
+   Market: ::
+   Yes: 36% | No: 68%
+   Volume: 5,465
+   ⚡ High volume: 5,465
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 SENATENC
+   Market: :: Retiring incumbent: Thom Tillis
+   Yes: 21% | No: 80%
+   Volume: 61,605
+   ⚡ High volume: 61,605
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 SENATEGA
+   Market: ::
+   Yes: 20% | No: 81%
+   Volume: 63,358
+   ⚡ High volume: 63,358
+   ⚡ Underdog territory (20%) — worth watching
+
+📌 KXOAIANTH
+   Market: KXOAIANTH-40-ANTH
+   Yes: 60% | No: 41%
+   Volume: 31,894
+   ⚡ High volume: 31,894
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXOAIANTH
+   Market: KXOAIANTH-40-OAI
+   Yes: 52% | No: 51%
+   Volume: 29,132
+   ⚡ High volume: 29,132
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXLIVENATIONUS
+   Market: KXLIVENATIONUS-30-JAN01
+   Yes: 53% | No: 51%
+   Volume: 11,650
+   ⚡ High volume: 11,650
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXAMAZONFTC
+   Market: AMAZONFTC-29DEC31
+   Yes: 65% | No: 40%
+   Volume: 18,492
+   ⚡ High volume: 18,492
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXJPMCEONEW
+   Market: KXJPMCEONEW-30-ML
+   Yes: 49% | No: 55%
+   Volume: 5,951
+   ⚡ High volume: 5,951
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXZELENSKYPUTIN
+   Market: KXZELENSKYPUTIN-29-27
+   Yes: 30% | No: 72%
+   Volume: 22,970
+   ⚡ High volume: 22,970
+   ⚡ Underdog territory (30%) — worth watching
+
+📌 KXZELENSKYPUTIN
+   Market: KXZELENSKYPUTIN-29-VPUT
+   Yes: 61% | No: 41%
+   Volume: 47,113
+   ⚡ High volume: 47,113
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Market: KXTAIWANLVL4-30JAN01
+   Yes: 45% | No: 58%
+   Volume: 6,299
+   ⚡ High volume: 6,299
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Market: KXTAIWANLVL4-29JAN01
+   Yes: 39% | No: 62%
+   Volume: 7,820
+   ⚡ High volume: 7,820
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Market: KXTAIWANLVL4-27JAN01
+   Yes: 25% | No: 76%
+   Volume: 76,077
+   ⚡ High volume: 76,077
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXTAIWANLVL4
+   Market: KXTAIWANLVL4-26JUL01
+   Yes: 6% | No: 95%
+   Volume: 20,126
+   ⚡ High volume: 20,126
+   ⚡ Very low odds (6%) — contrarian long?
+
+📌 KXRECOGROC
+   Market: KXRECOGROC-29
+   Yes: 16% | No: 87%
+   Volume: 12,157
+   ⚡ High volume: 12,157
+   ⚡ Underdog territory (16%) — worth watching
+
+📌 KXUSAKIM
+   Market: KXUSAKIM-29
+   Yes: 21% | No: 82%
+   Volume: 5,336
+   ⚡ High volume: 5,336
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 KXABRAHAMSA
+   Market: KXABRAHAMSA-27-JAN01-SYR
+   Yes: 17% | No: 88%
+   Volume: 17,802
+   ⚡ High volume: 17,802
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXABRAHAMSA
+   Market: KXABRAHAMSA-27-JAN01-INDO
+   Yes: 25% | No: 80%
+   Volume: 11,639
+   ⚡ High volume: 11,639
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXABRAHAMSA
+   Market: KXABRAHAMSA-27-JAN01-OMAN
+   Yes: 18% | No: 83%
+   Volume: 9,466
+   ⚡ High volume: 9,466
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXABRAHAMSY
+   Market: KXABRAHAMSY-29-JAN20
+   Yes: 34% | No: 70%
+   Volume: 29,318
+   ⚡ High volume: 29,318
+   ⚡ Underdog territory (34%) — worth watching
+
+📌 KXNBA
+   Market: KXNBA-26-WAS
+   Yes: 1% | No: 100%
+   Volume: 5,598
+   ⚡ High volume: 5,598
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-UTA
+   Yes: 1% | No: 100%
+   Volume: 22,188
+   ⚡ High volume: 22,188
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-TOR
+   Yes: 1% | No: 100%
+   Volume: 586,123
+   ⚡ High volume: 586,123
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-SAS
+   Yes: 16% | No: 85%
+   Volume: 4,720,736
+   ⚡ High volume: 4,720,736
+   ⚡ Underdog territory (16%) — worth watching
+
+📌 KXNBA
+   Market: KXNBA-26-SAC
+   Yes: 1% | No: 100%
+   Volume: 35,717
+   ⚡ High volume: 35,717
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-POR
+   Yes: 1% | No: 100%
+   Volume: 71,422
+   ⚡ High volume: 71,422
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-PHX
+   Yes: 1% | No: 100%
+   Volume: 468,317
+   ⚡ High volume: 468,317
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-PHI
+   Yes: 2% | No: 99%
+   Volume: 1,326,111
+   ⚡ High volume: 1,326,111
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-ORL
+   Yes: 1% | No: 100%
+   Volume: 409,637
+   ⚡ High volume: 409,637
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Market: KXNBA-26-OKC
+   Yes: 40% | No: 61%
+   Volume: 2,454,120
+   ⚡ High volume: 2,454,120
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXNFLMVP
+   Market: KXNFLMVP-27-TSHO
+   Yes: 2% | No: 100%
+   Volume: 27,740
+   ⚡ High volume: 27,740
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNFLMVP
+   Market: KXNFLMVP-27-TLAR
+   Yes: 4% | No: 97%
+   Volume: 6,615
+   ⚡ High volume: 6,615
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXNFLMVP
+   Market: KXNFLMVP-27-SDAR
+   Yes: 4% | No: 97%
+   Volume: 35,466
+   ⚡ High volume: 35,466
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXNFLMVP
+   Market: KXNFLMVP-27-PMAH
+   Yes: 7% | No: 94%
+   Volume: 7,881
+   ⚡ High volume: 7,881
+   ⚡ Very low odds (7%) — contrarian long?
+
+📌 KXNFLMVP
+   Market: KXNFLMVP-27-MSTA
+   Yes: 5% | No: 96%
+   Volume: 27,313
+   ⚡ High volume: 27,313
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-WSH
+   Yes: 2% | No: 99%
+   Volume: 229,121
+   ⚡ High volume: 229,121
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-WPG
+   Yes: 1% | No: 100%
+   Volume: 55,145
+   ⚡ High volume: 55,145
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-VGK
+   Yes: 9% | No: 92%
+   Volume: 276,748
+   ⚡ High volume: 276,748
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-VAN
+   Yes: 1% | No: 100%
+   Volume: 38,246
+   ⚡ High volume: 38,246
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-UTA
+   Yes: 2% | No: 99%
+   Volume: 560,726
+   ⚡ High volume: 560,726
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-TOR
+   Yes: 1% | No: 100%
+   Volume: 182,696
+   ⚡ High volume: 182,696
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-TB
+   Yes: 17% | No: 84%
+   Volume: 504,627
+   ⚡ High volume: 504,627
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXNHL
+   Market: KXNHL-26-STL
+   Yes: 1% | No: 100%
+   Volume: 72,935
+   ⚡ High volume: 72,935
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-SJ
+   Yes: 1% | No: 100%
+   Volume: 476,773
+   ⚡ High volume: 476,773
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Market: KXNHL-26-SEA
+   Yes: 2% | No: 99%
+   Volume: 399,438
+   ⚡ High volume: 399,438
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-WSH
+   Yes: 1% | No: 100%
+   Volume: 7,156
+   ⚡ High volume: 7,156
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-TOR
+   Yes: 6% | No: 95%
+   Volume: 69,995
+   ⚡ High volume: 69,995
+   ⚡ Very low odds (6%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-TEX
+   Yes: 3% | No: 98%
+   Volume: 65,748
+   ⚡ High volume: 65,748
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-TB
+   Yes: 1% | No: 100%
+   Volume: 18,095
+   ⚡ High volume: 18,095
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-STL
+   Yes: 1% | No: 100%
+   Volume: 36,485
+   ⚡ High volume: 36,485
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-SF
+   Yes: 2% | No: 99%
+   Volume: 140,714
+   ⚡ High volume: 140,714
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-SD
+   Yes: 4% | No: 98%
+   Volume: 193,472
+   ⚡ High volume: 193,472
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-PIT
+   Yes: 2% | No: 99%
+   Volume: 175,502
+   ⚡ High volume: 175,502
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Market: KXMLB-26-PHI
+   Yes: 6% | No: 95%
+   Volume: 45,813
+   ⚡ High volume: 45,813
+   ⚡ Very low odds (6%) — contrarian long?
+
+📌 KXBOXING
+   Market: KXBOXING-26FEB28PARRAPIERCE-PARRA
+   Yes: 35% | No: 66%
+   Volume: 542
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXBOXING
+   Market: KXBOXING-26FEB28NAVARRNUNEZ-NUNEZ
+   Yes: 61% | No: 40%
+   Volume: 12,654
+   ⚡ High volume: 12,654
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXBOXING
+   Market: KXBOXING-26FEB28NAVARRNUNEZ-NAVARR
+   Yes: 39% | No: 63%
+   Volume: 12,080
+   ⚡ High volume: 12,080
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXBOXING
+   Market: KXBOXING-26APR11TFURAMAK-AMAK
+   Yes: 22% | No: 82%
+   Volume: 5,494
+   ⚡ High volume: 5,494
+   ⚡ Underdog territory (22%) — worth watching
+
+👁 WATCH LIST (81 markets)
+----------------------------------------
+  • KXBALANCE — KXBALANCE-29
+    Yes: 11% | Vol: 38,571
+  • KXDEBTGROWTH — KXDEBTGROWTH-28DEC31-45
+    Yes: 87% | Vol: 6,940
+  • KXGOVTCUTS — KXGOVTCUTS-28-750
+    Yes: 20% | Vol: 4,888
+  • KXGOVTCUTS — KXGOVTCUTS-28-2000
+    Yes: 10% | Vol: 8,314
+  • KXGOVTCUTS — KXGOVTCUTS-28-1000
+    Yes: 13% | Vol: 13,145
+  • KXU3MAX — KXU3MAX-27-7
+    Yes: 11% | Vol: 33,097
+  • KXU3MAX — KXU3MAX-27-20
+    Yes: 3% | Vol: 1,503
+  • KXU3MAX — KXU3MAX-27-17
+    Yes: 4% | Vol: 3,024
+  • KXU3MAX — KXU3MAX-27-15
+    Yes: 4% | Vol: 965
+  • KXU3MAX — KXU3MAX-27-12
+    Yes: 5% | Vol: 561
+  • KXU3MAX — KXU3MAX-27-10
+    Yes: 6% | Vol: 3,005
+  • KXCAPCONTROL — KXCAPCONTROL-29
+    Yes: 22% | Vol: 4,653
+  • KXWITHDRAW — KXWITHDRAW-29-UN
+    Yes: 18% | Vol: 4,462
+  • KXWITHDRAW — KXWITHDRAW-29-OECD
+    Yes: 24% | Vol: 978
+  • KXWITHDRAW — KXWITHDRAW-29-IDB
+    Yes: 19% | Vol: 132
+
+📋 MONITORING (15 markets — no clear edge)
+----------------------------------------
+  • KXWITHDRAW | Yes: 12%
+  • KXWITHDRAW | Yes: 14%
+  • KXSCOURT | Yes: 11%
+  • KXSCOTUSPOWER | Yes: 74%
+  • SENATEPA | Yes: 72%
+  • SENATEOH | Yes: 66%
+  • SENATEGA | Yes: 70%
+  • SENATEFL | Yes: 85%
+  • SENATEFL | Yes: 14%
+  • KXABRAHAMSA | Yes: 13%
+
+============================================================
+Total markets analyzed: 228
+High value: 132 | Watch list: 81
+============================================================

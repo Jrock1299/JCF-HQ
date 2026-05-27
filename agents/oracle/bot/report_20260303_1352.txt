@@ -1,0 +1,178 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-03-03 13:52:52 UTC
+============================================================
+
+🏆 SPORTS PICKS (7 found)
+----------------------------------------
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Michael Porter Jr.: 25+,yes Kon Knueppel: 20+,yes James Harden: 20+,yes Cade Cunningham: 25+,yes Julius Randle: 20+,yes Jalen Brunson: 25+,yes Matas Buzelis: 15+,yes Russell Westbrook: 15+,yes Tyrese Maxey: 25+,yes Paolo Banchero: 25+
+   Market: KXMVECROSSCATEGORY-S20268172B980C1A-4FA95443349
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:49 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 11,983
+   ⚡ High volume: 11,983
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVESPORTSMULTIGAMEEXTENDED
+   Title: yes Anthony Edwards: 5+,yes Minnesota,yes Jaylen Wells: 15+,yes Anthony Edwards: 30+,yes Over 229.5 points scored
+   Market: KXMVESPORTSMULTIGAMEEXTENDED-S2026ED5C29869EC-09F1D29B313
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:48 UTC
+   Close: 2026-03-18 01:00 UTC
+   Volume: 2,931
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Alabama wins by over 2.5 Points,yes Cincinnati wins by over 1.5 Points,yes Utah wins by over 1.5 Points,no Seton Hall wins by over 1.5 Points,yes Kansas wins by over 5.5 Points,yes Nebraska wins by over 1.5 Points,yes Tennessee wins by over 5.5 Points,no Texas A&M wins by over 1.5 Points,yes West Virginia wins by over 1.5 Points
+   Market: KXMVECROSSCATEGORY-S2026E5C0A84B81D-DD0D058130C
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:49 UTC
+   Close: 2026-03-17 23:30 UTC
+   Volume: 1,538
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Akron,yes North Carolina,yes Kansas,yes Nebraska,yes UCF,yes Louisville,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Texas A&M,yes UMBC,yes Virginia
+   Market: KXMVECROSSCATEGORY-S2026882D3500FB0-1F629D77EF1
+   Yes: 4% | No: 100%
+   Open: 2026-03-03 13:50 UTC
+   Close: 2026-03-18 00:00 UTC
+   Volume: 1,439
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Michael Porter Jr.: 25+,yes James Harden: 20+,yes Cade Cunningham: 25+,yes Julius Randle: 20+,yes Austin Reaves: 15+,yes Luka Dončić: 25+,yes LeBron James: 15+,yes Chet Holmgren: 20+,yes Tyrese Maxey: 30+,yes Victor Wembanyama: 20+
+   Market: KXMVECROSSCATEGORY-S2026646D7330433-18DE5C7ADAC
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:51 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 1,162
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Miami,yes Charlotte,yes Minnesota,yes Los Angeles L,yes San Antonio,yes Orlando,yes Alabama,yes BYU,yes Kansas,yes Tennessee,yes Miami (OH)
+   Market: KXMVECROSSCATEGORY-S2026C750F643E70-2AEF74D44A7
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:49 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 980
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Tennessee,yes Miami (OH),yes UNC Wilmington,yes Over 178.5 points scored,yes Over 135.5 points scored,yes Over 142.5 points scored,yes Over 144.5 points scored,yes Over 141.5 points scored,no Over 135.5 points scored,yes Over 140.5 points scored,yes Over 146.5 points scored
+   Market: KXMVECROSSCATEGORY-S20261600758C8C0-4CBFABACD3E
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:49 UTC
+   Close: 2026-03-17 23:00 UTC
+   Volume: 847
+   ⚡ Near certainty (100%) — low risk yes?
+
+🎯 HIGH VALUE OPPORTUNITIES (167 found)
+----------------------------------------
+
+📌 KXFTAPRC
+   Title: Will Trump make a new free trade agreement with China before Jan 20, 2029?
+   Market: KXFTAPRC-29
+   Yes: 35% | No: 66%
+   Open: 2025-01-10 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 47,480
+   ⚡ High volume: 47,480
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXAPPLEUS
+   Title: DOJ wins their anti-trust case against Apple?
+   Market: APPLEUS-29DEC31
+   Yes: 35% | No: 68%
+   Open: 2024-03-26 12:00 UTC
+   Close: 2030-01-01 15:00 UTC
+   Volume: 46,096
+   ⚡ High volume: 46,096
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 20, 2029?
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 93%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 103,971
+   ⚡ High volume: 103,971
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 1, 2027?
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2027-01-01 15:00 UTC
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Janet Yellen as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Open: 2025-08-13 20:06 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 34,118
+   ⚡ High volume: 34,118
+   ⚡ Very low odds (1%) — contrarian long?
+
+👁 WATCH LIST (280 markets)
+----------------------------------------
+  • KXMVECROSSCATEGORY — yes North Carolina,yes Xavier,yes UCF,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Kentucky
+    Yes: 7% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVESPORTSMULTIGAMEEXTENDED — no Detroit wins by over 5.5 Points,yes Over 221.5 points scored
+    Yes: 43% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes North Carolina,yes Xavier,yes UCF,yes Texas Tech,yes Tennessee,yes Miami (OH)
+    Yes: 15% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVESPORTSMULTIGAMEEXTENDED — no Detroit wins by over 5.5 Points,yes Over 224.5 points scored
+    Yes: 41% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Miami,yes Charlotte,yes Minnesota,yes Orlando,no Over 241.5 points scored,no Over 244.5 points scored,no Over 242.5 points scored,yes Virginia Tech,yes Grand Canyon,yes VCU,yes St. John's,yes William & Mary,yes Illinois,yes Virginia
+    Yes: 18% | Vol: 0 | Close: 2026-03-18 00:30 UTC
+  • KXMVECROSSCATEGORY — yes Dayton,yes Kansas,yes Tennessee
+    Yes: 42% | Vol: 51 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Akron,yes Grand Canyon,yes St. John's,yes Kent St.,yes Florida,yes Illinois,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Virginia
+    Yes: 33% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Miami,yes Charlotte,yes Minnesota,yes Orlando,no Over 241.5 points scored,no Over 244.5 points scored,no Over 242.5 points scored,yes Grand Canyon,yes VCU,yes St. John's,yes William & Mary,yes Illinois,yes Virginia
+    Yes: 21% | Vol: 0 | Close: 2026-03-18 00:30 UTC
+  • KXMVECROSSCATEGORY — yes George Mason,yes Nebraska
+    Yes: 100% | Vol: 25 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Alabama,yes North Carolina,yes St. John's,yes Florida,yes Tennessee,yes Miami (OH),yes Virginia
+    Yes: 21% | Vol: 80 | Close: 2026-03-17 23:30 UTC
+  • KXMVECROSSCATEGORY — yes Charlotte,no Over 235.5 points scored,no Over 233.5 points scored
+    Yes: 40% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Vermont,yes Western Michigan,yes North Carolina,yes Dayton,yes VCU,yes UCF,yes Louisville,yes Texas Tech
+    Yes: 100% | Vol: 53 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes North Carolina,yes Xavier,yes UCF,yes Tennessee,yes Miami (OH)
+    Yes: 18% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Alabama,yes North Carolina,yes St. John's,yes Tennessee,yes Miami (OH),yes Virginia
+    Yes: 21% | Vol: 0 | Close: 2026-03-17 23:30 UTC
+  • KXMVESPORTSMULTIGAMEEXTENDED — no Detroit wins by over 4.5 Points,yes Over 224.5 points scored
+    Yes: 40% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+
+📋 MONITORING (35 markets — no clear edge)
+----------------------------------------
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-17 23:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-17 23:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-17 19:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-17 23:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-18 04:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:00 UTC
+  • KXMVESPORTSMULTIGAMEEXTENDED | Yes: 14% | Close: 2026-03-18 00:30 UTC
+
+============================================================
+Total markets analyzed: 440
+High value: 125 | Watch list: 280
+============================================================

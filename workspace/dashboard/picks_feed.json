@@ -1,0 +1,58 @@
+[
+  {
+    "timestamp": "2026-03-03T18:56:00Z",
+    "capper": "Pardon My Pick",
+    "pick": "Pistons ML",
+    "sport": "NBA",
+    "date": "2026-03-03",
+    "result": "L"
+  },
+  {
+    "timestamp": "2026-03-03T19:19:00Z",
+    "capper": "Bet Labs",
+    "pick": "Texas A&M -1.5",
+    "sport": "College Basketball",
+    "date": "2026-03-04",
+    "result": "W"
+  },
+  {
+    "timestamp": "2026-03-03T20:03:00Z",
+    "capper": "Bet Labs",
+    "pick": "TCU +8.5",
+    "sport": "College Basketball",
+    "date": "2026-03-03",
+    "result": "W"
+  },
+  {
+    "timestamp": "2026-03-03T23:45:00Z",
+    "capper": "Duck Investments",
+    "pick": "NY Knicks ML",
+    "sport": "NBA",
+    "date": "2026-03-03",
+    "result": "W"
+  },
+  {
+    "timestamp": "2026-03-03T23:52:00Z",
+    "capper": "Five",
+    "pick": "Georgia Bulldogs ML",
+    "sport": "College Basketball",
+    "date": "2026-03-03",
+    "result": "W"
+  },
+  {
+    "timestamp": "2026-03-03T23:52:00Z",
+    "capper": "Travy",
+    "pick": "Parlay: San Antonio Spurs ML (NBA) + Miami OH ML (CBB)",
+    "sport": "Parlay",
+    "date": "2026-03-03",
+    "result": "W"
+  },
+  {
+    "timestamp": "2026-03-03T23:52:00Z",
+    "capper": "YDC",
+    "pick": "Oklahoma ML",
+    "sport": "College Basketball",
+    "date": "2026-03-04",
+    "result": "W"
+  }
+]

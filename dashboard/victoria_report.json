@@ -1,0 +1,147 @@
+{
+  "date": "2026-05-27",
+  "financial_summary": {
+    "total_pnl_today": -120.5,
+    "breakdown": {
+      "manual_trading": 0.0,
+      "blade": 0.0,
+      "crisp": 0.0,
+      "edge": -120.5,
+      "oracle": 0.0,
+      "kalshi": 0.0,
+      "tao": 0.0
+    },
+    "mtd_pnl": 0.0,
+    "net_worth": 47144.24,
+    "api_costs_today": 0.732093,
+    "api_costs_mtd": 8.731638,
+    "roi_assessment": "API costs are $0.73 today and $8.73 MTD, driven entirely by jerry. Against a daily P&L of -$120.50 and an MTD net worth delta of $0.00 (not tracked granularly), the API spend is not currently justified by measurable returns. Edge is the only active loss-generator today at -$120.50 on a 30.6% win rate across 2,474 trades with a cumulative P&L of -$1,226.00. Blade has a real statistical edge but catastrophic position sizing eroding all gains. Kalshi has 24,598 log rows and zero settlement data \u2014 API cost for that agent is wasted until the data pipeline is fixed. Overall, the operation is net-negative on trading P&L with no active agent currently in a profitable state as of this snapshot."
+  },
+  "operations_briefing": "Wednesday May 27: The operation ran with Edge as the only actively losing agent today, posting -$120.50 on 2 trades. Edge has now accumulated -$1,226.00 in total P&L across 2,474 trades at a 30.6% win rate \u2014 this is a structural underperformance, not a bad day. Blade is not showing any activity today; its last Norman review (April 15) flagged a FAIL verdict due to a catastrophic max drawdown of 288.5% despite a statistically real edge (56.8% WR, PF 1.862). The position sizing on Blade is the core problem \u2014 the edge exists but is being destroyed by oversizing. Crisp-v5 is intentionally stopped and being repurposed \u2014 not a concern. Oracle has a fresh $500 bankroll, zero picks logged today, and cannot be evaluated until 20+ resolved picks are on record. Kalshi last had activity on April 23 \u2014 it has been silent for over a month, and critically, it has never recorded a single settlement outcome despite 24,598 log rows and 408 logged trades; the P&L for this agent is completely unknown. Lens macro bias is dated April 17 \u2014 over 5 weeks old \u2014 and should be considered stale. Sentinel is showing STRONG_BUY signals on VST and TEM (5 buys each), BUY on MSTR, and notable insider/multi-buy discoveries on HIMS (score 85) and ENPH (score 60), but no action has been taken on these signals today. Manual trading posted $0 today. Jerry (AI agent) is the only API cost driver at $0.73 today / $8.73 MTD. Net worth snapshot: Robinhood $16,725, Truist MMA $14,850, Kraken crypto $8,772 (XRP $3,712 + ETH $3,061 + LINK $988 + ADA $651), TradeLocker $1,030, Edge $5,000 account, checking $66, TrustWallet $1. TAO staking: 0.669 TAO at $276.50 = ~$185 market value against $944.44 invested \u2014 significant unrealized loss on that position.",
+  "agent_status": {
+    "oracle": "Zero picks today. Bankroll reset to $500 on 2026-04-15. No resolved picks on record \u2014 0/20 minimum evaluation threshold. Cannot assess performance.",
+    "lens": "Last ran 2026-04-17 \u2014 data is 40 days stale. Macro bias signals (BTC BULLISH 66%, US100 BULLISH 68%) should not be trusted for current positioning.",
+    "blade": "No trades today. FAIL verdict from Norman (2026-04-15). 226 trades, 48.2% WR, -$88.68 total P&L, MaxDD 288.5%. Position sizing redesign required before next session.",
+    "crisp": "Intentionally stopped. Being repurposed. 0 trades, $0.00 P&L. Not flagged as error.",
+    "edge": "Active. -$120.50 today. 2,474 total trades, 30.6% WR, -$1,226.00 cumulative P&L. Running on $5,000 account. 2 trades today.",
+    "kalshi": "Active service but dormant since 2026-04-23. Zero settlement outcome tracking across all 408 logged trades and 24,598 log rows. P&L completely unknown. Data pipeline broken.",
+    "tao": "Staking 0.6690 TAO. 5 DCA entries used, 0 remaining. Current value ~$185 vs $944.44 invested. No new entries possible."
+  },
+  "recommendations": [
+    "PAUSE Edge immediately or reduce position sizing drastically. -$1,226 cumulative on 2,474 trades at 30.6% WR is a structural failure. The account has $5,000 remaining \u2014 continued operation at current sizing risks further capital destruction. Do not resume at current parameters until the win rate discrepancy (aggregate 30.6% vs recent 5-trade window) is explained and resolved.",
+    "BLADE: Do not run another session until position sizing is redesigned. The edge is real (56.8% WR, PF 1.862) but a 288.5% max drawdown means the account has been blown past zero on a percentage basis at least twice. Implement a hard per-trade risk cap of 1-2% of session bankroll and a daily drawdown circuit breaker at 10%.",
+    "KALSHI: Engineering must fix settlement outcome tracking before any further Kalshi trading. 408 trades with zero P&L data is operationally blind. This is a blocking issue \u2014 treat it as a P0.",
+    "LENS: Force a Lens refresh. The macro bias data is 40 days old and reflects April 17 market conditions, not May 27. Any agent or manual trade using this data is operating on stale intelligence.",
+    "ORACLE: Establish a minimum data logging standard immediately. Every pick needs: timestamp, event, odds, stake size, and settlement outcome logged at resolution. Oracle has been running since April 15 with zero evaluable data \u2014 this is the same infrastructure failure as Kalshi.",
+    "TAO staking: All 5 DCA entries are used with 0 remaining. Current position is ~$185 market value vs $944.44 invested \u2014 approximately -$759 unrealized loss (80% drawdown). No further capital should be allocated to TAO without a defined exit strategy or thesis review.",
+    "Sentinel signals (VST STRONG_BUY x5, TEM STRONG_BUY x5, HIMS insider buy score 85) are going unacted upon. If Sentinel is running and generating signals, there should be a defined workflow for acting on them or a documented reason they are being ignored."
+  ],
+  "alerts": [
+    "CRITICAL: Edge bot has lost $1,226.00 cumulative (-$120.50 today) with a 30.6% win rate across 2,474 trades. Active drawdown on a $5,000 account. Immediate position sizing review or pause required.",
+    "CRITICAL: Kalshi has ZERO settlement outcome data for all 408 trades. P&L is completely unknown. 34+ days of silence since last activity (2026-04-23). Data pipeline is broken.",
+    "CRITICAL: Blade MaxDD of 288.5% per Norman FAIL verdict \u2014 position sizing is destroying a statistically valid edge. Do not run until redesigned.",
+    "WARNING: Lens macro bias data is 40 days stale (last updated 2026-04-17). All agents consuming Lens signals are operating on outdated market intelligence.",
+    "WARNING: TAO staking position is approximately -80% unrealized (-$759 on $944.44 invested) with 0 DCA entries remaining. Position is stranded with no recovery mechanism defined.",
+    "WARNING: Oracle has zero resolved picks 42 days after bankroll reset. Evaluation is impossible. If Oracle is running, pick logging infrastructure must be verified."
+  ],
+  "fix_prompts": [
+    {
+      "problem": "Blade position sizing producing 288.5% max drawdown despite real edge (56.8% WR, PF 1.862) \u2014 FAIL verdict from Norman",
+      "severity": "critical",
+      "root_cause": "Norman's analysis confirms the edge is statistically real but position sizing is catastrophically oversized relative to account equity. A 288.5% max drawdown means peak-to-trough losses have exceeded the starting account value nearly 3x. Sharpe of 0.057 confirms returns are not compensating for the volatility generated. There is no hard per-trade risk cap or daily circuit breaker in the current implementation.",
+      "fix_prompt": "Read the Blade trading bot source files \u2014 start with the main entry point and any config files (likely in ~/jcf/blade/ or similar). Locate the position sizing logic: find where lot size, stake amount, or contract size is calculated per trade. Do the following:\n\n1. AUDIT: Print the current position sizing formula. Calculate what percentage of the session bankroll each trade risks at the current settings. If per-trade risk exceeds 2% of account equity, that is the problem.\n\n2. IMPLEMENT fixed fractional position sizing:\n   - Set MAX_RISK_PER_TRADE = 0.01 (1% of account equity per trade, hard cap)\n   - Set MAX_DAILY_DRAWDOWN = 0.05 (5% of account equity \u2014 halt all trading for the session if hit)\n   - Set MAX_SESSION_DRAWDOWN = 0.10 (10% of account equity \u2014 halt and alert)\n\n3. ADD a daily circuit breaker function that:\n   - Tracks cumulative session P&L\n   - Compares against starting session balance\n   - Calls an emergency halt and sends an alert if MAX_DAILY_DRAWDOWN is breached\n   - Logs the halt event with timestamp to a dedicated risk_events.log file\n\n4. REMOVE or override any hardcoded lot sizes or fixed stake amounts that do not scale with account equity.\n\n5. VERIFY by running a backtest or paper simulation: confirm that with these parameters, the historical 226-trade dataset produces a max drawdown below 30%.\n\n6. Add a config variable BLADE_POSITION_SIZING_VERSION = '2.0' and log it on each session start so we can track when the fix was deployed.\n\nDo NOT re-enable live trading until step 5 is verified.",
+      "estimated_impact": "Reducing per-trade risk to 1% with a 5% daily circuit breaker should reduce max drawdown from 288.5% to under 30% while preserving the underlying edge (56.8% WR, PF 1.862). Expected outcome: Blade becomes a viable, sustainable strategy. Estimated monthly P&L improvement: converting current net-negative performance to positive extraction of the real edge."
+    },
+    {
+      "problem": "Kalshi bot has zero settlement outcome tracking across 408 logged trades and 24,598 log rows \u2014 P&L completely unknown, last activity 2026-04-23",
+      "severity": "critical",
+      "root_cause": "Norman identified this as a systemic infrastructure failure: order placement is being logged but settlement outcomes (win/loss/resolution) are never recorded. Without settlement data, P&L calculation is impossible. The bot has also been completely dormant for 34+ days (last activity April 23), suggesting either the settlement tracking failure caused the bot to halt or there is a separate operational issue.",
+      "fix_prompt": "Navigate to the Kalshi bot source directory (likely ~/jcf/kalshi/ or similar). Do the following:\n\n1. DIAGNOSE why the bot has had zero activity since 2026-04-23:\n   - Check kalshi-bot service logs: `journalctl -u kalshi-bot --since '2026-04-23' --no-pager | tail -200`\n   - Look for error messages, API auth failures, or silent exits\n   - Check if Kalshi API credentials are still valid\n\n2. AUDIT the existing data pipeline:\n   - Find the trade logging code \u2014 where are filled orders written?\n   - Search for any settlement/resolution handler: `grep -r 'settlement\\|resolution\\|resolved\\|outcome\\|result' ./ --include='*.py'`\n   - If no settlement handler exists, that is the root cause\n\n3. IMPLEMENT settlement tracking:\n   - Add a settlement poller that runs every 15 minutes\n   - For each open/filled order in the log, query the Kalshi API for market resolution status\n   - When a market resolves, record: trade_id, market_id, entry_timestamp, resolution_timestamp, yes_or_no_position, contracts, entry_price, settlement_price (1.00 if won, 0.00 if lost), gross_pnl, fees, net_pnl\n   - Write to a dedicated settlements.csv or settlements table in the existing database\n\n4. BACKFILL: For the 408 existing logged trades, attempt to query Kalshi API for historical resolution data and backfill the settlement table. Log any trades that cannot be resolved as 'unrecoverable'.\n\n5. ADD a health check: if no settlement data has been recorded in 48 hours but open positions exist, send a critical alert to the HQ dashboard and log to alerts.log.\n\n6. VERIFY: After implementation, run the bot for one full market cycle and confirm that at least one resolved market appears in the settlements log with correct P&L calculated.",
+      "estimated_impact": "Fixes the complete P&L blindspot for Kalshi. Enables Norman to evaluate 408+ trades for the first time. Restores ability to make informed decisions about whether Kalshi should continue operating or be shut down. Without this fix, capital may be actively being lost with no visibility."
+    },
+    {
+      "problem": "Edge bot cumulative P&L of -$1,226.00 across 2,474 trades at 30.6% win rate with -$120.50 loss today \u2014 structural underperformance with unexplained discrepancy between aggregate and recent metrics",
+      "severity": "critical",
+      "root_cause": "Norman flagged a critical discrepancy: aggregate data shows 30.6% WR and -$1,226 P&L, but the most recent 5-trade window shows PF 2.0, Sharpe 0.192, and positive $9 P&L. This gap is not explained by normal variance \u2014 it suggests either the strategy was changed at some point and old losing trades are dragging the aggregate, or there is a data logging error mixing trade types. Individual trade P&L logging is missing, making root cause analysis impossible.",
+      "fix_prompt": "Navigate to the Edge bot source directory (likely ~/jcf/edge/ or similar). Do the following:\n\n1. AUDIT the trade log: open the full trade history file (CSV, database, or log). Check:\n   - Are all 2,474 trades from the same strategy version?\n   - Is there a version or config column? If not, check git history for when major changes were made\n   - Run: `grep -c '' trades.log` to confirm row count matches 2,474\n   - Calculate win rate by time period: split trades into monthly buckets and calculate WR per month. If early months show <20% WR and recent months show >40%, the aggregate is mixing two different strategies\n\n2. IMPLEMENT mandatory individual trade P&L logging if not already present. Each trade record must include:\n   - trade_id, timestamp_open, timestamp_close, symbol, direction (long/short), entry_price, exit_price, size, gross_pnl, fees, net_pnl, strategy_version, win (boolean)\n\n3. ADD a strategy version tag: define EDGE_STRATEGY_VERSION in config. Log it with every trade. This enables Norman to evaluate only the current strategy going forward.\n\n4. IMPLEMENT position sizing controls identical to Blade fix:\n   - MAX_RISK_PER_TRADE = 0.01 (1% of $5,000 = $50 max loss per trade)\n   - MAX_DAILY_DRAWDOWN = 0.05 ($250 daily halt)\n   - If today's -$120.50 came from 2 trades, each trade risked ~$60 \u2014 already above 1% threshold\n\n5. GENERATE a performance split report: calculate P&L, WR, and PF for (a) all trades before the most recent strategy change and (b) all trades after. If recent performance is genuinely positive, consider archiving old trades as 'legacy' and resetting the evaluation window.\n\n6. DECISION GATE: If the audit shows the aggregate negative P&L is entirely from an old strategy version AND current version shows positive expectancy over 20+ trades, document that finding and resume with new position sizing. If the aggregate and recent data are from the same strategy version, PAUSE Edge and escalate for strategy review.",
+      "estimated_impact": "Either validates that Edge's current strategy has a real edge (justifying continued operation with better sizing) or confirms it is a losing strategy that should be shut down. Prevents further uncontrolled losses on the $5,000 account. Fixes the data gap that is blocking Norman from issuing a definitive verdict."
+    },
+    {
+      "problem": "Lens macro bias data is 40 days stale \u2014 last updated 2026-04-17, currently 2026-05-27",
+      "severity": "high",
+      "root_cause": "Lens has not run since April 17. Any agent or manual trade decision consuming Lens signals is operating on market context that is over 5 weeks old. Markets have moved significantly in 40 days \u2014 the April 17 signals (BTC BULLISH 66%, US100 BULLISH 68%) may be completely invalid for current conditions. This appears to be either a scheduling failure or Lens was manually stopped and not restarted.",
+      "fix_prompt": "Check the Lens service status and scheduling configuration. Do the following:\n\n1. CHECK service status: `systemctl status lens` or check if Lens runs as a cron job: `crontab -l | grep lens`\n\n2. CHECK last run logs: find the Lens log directory (likely ~/jcf/lens/logs/ or /var/log/jcf/lens.log) and review the last 50 lines to determine why it stopped running after April 17\n\n3. If Lens runs as a scheduled service:\n   - Check if the schedule is still active: `systemctl list-timers | grep lens`\n   - If the timer is inactive, re-enable it: `systemctl enable --now lens.timer`\n\n4. If Lens runs as a cron job or manual script:\n   - Run it manually now to get a current bias update: `cd ~/jcf/lens && python lens_main.py` (adjust path as needed)\n   - Verify the output updates the macro bias JSON/database with today's date\n\n5. ADD a staleness alert to the HQ dashboard: if Lens data is more than 48 hours old, display a STALE_INTELLIGENCE warning in the agent status panel. Add this check to the jcf-hq service startup.\n\n6. SCHEDULE Lens to run at minimum daily at 06:00 UTC. Add to crontab: `0 6 * * * cd ~/jcf/lens && python lens_main.py >> ~/jcf/lens/logs/lens_cron.log 2>&1`\n\n7. VERIFY: Confirm that after running, the macro bias timestamp updates to today's date and the downstream agents that consume Lens output are receiving fresh data.",
+      "estimated_impact": "Restores current market intelligence to all agents consuming Lens bias. Prevents trading decisions based on 40-day-old macro context. Eliminates the risk of directional trades being taken against current market conditions."
+    },
+    {
+      "problem": "Oracle has zero resolved picks and zero evaluable data 42 days after bankroll reset \u2014 pick logging infrastructure unverified",
+      "severity": "high",
+      "root_cause": "Oracle was reset on April 15 with a new Claude brain and $500 bankroll. As of May 27, zero resolved picks are on record. Either Oracle is not generating picks, picks are not being logged, or picks are being generated but settlement outcomes are not being recorded \u2014 the same infrastructure failure pattern as Kalshi. Norman requires a minimum of 20 resolved picks before evaluation, and the clock has been running for 42 days with nothing to show.",
+      "fix_prompt": "Navigate to the Oracle source directory (likely ~/jcf/oracle/ or similar). Do the following:\n\n1. CHECK if Oracle is actively generating picks:\n   - Review Oracle logs from the past 42 days: `journalctl -u oracle --since '2026-04-15' --no-pager | grep -i 'pick\\|bet\\|selection\\|error' | tail -100`\n   - If Oracle shows no activity, determine if it requires manual triggering or if its scheduler is broken\n\n2. AUDIT the pick logging schema. Every pick must be stored with:\n   - pick_id, created_at, sport, event, event_date, pick_description, bet_type, odds (American or decimal), stake_amount, confidence_score, model_rationale, resolved_at (null until settled), outcome ('WIN'/'LOSS'/'PUSH'/'VOID'), gross_pnl, net_pnl\n\n3. If picks are being generated but not logged, find where pick output is printed/returned and add a write_pick_to_db() or append_to_picks_csv() call immediately after generation.\n\n4. IMPLEMENT a settlement checker: Oracle should poll for event results daily. For each unresolved pick where event_date < today, attempt to resolve the outcome via sports data API or manual entry. Mark as resolved with outcome and P&L.\n\n5. ADD a daily report: Oracle should output a daily summary of (a) new picks generated, (b) picks resolved today with outcomes, (c) running bankroll, (d) record since reset. This summary should feed into the HQ data dump.\n\n6. VERIFY by placing a test pick manually (or triggering Oracle's pick generation for today's events) and confirming the pick appears in the database with all required fields populated. Confirm that when you manually mark it as resolved, the P&L calculates correctly and bankroll updates.\n\nIf Oracle is not generating any picks in 42 days, it may not be running at all \u2014 check `systemctl status oracle` and review its trigger mechanism.",
+      "estimated_impact": "Unblocks Oracle evaluation entirely. Enables Norman to begin assessing whether the new Claude brain has a positive expected value. Ensures the $500 bankroll is being actively managed rather than sitting idle. If Oracle has been generating picks that simply aren't logged, this fix recovers 42 days of performance data."
+    }
+  ],
+  "_meta": {
+    "input_tokens": 3333,
+    "output_tokens": 5676,
+    "cost_usd": 0.095139,
+    "model": "claude-sonnet-4-6",
+    "timestamp": "2026-05-27T16:35:14.638794+00:00",
+    "api_costs": {
+      "total_today": 0.732093,
+      "total_mtd": 8.731638,
+      "per_agent": {
+        "forge": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "jerry": {
+          "today": 0.732093,
+          "mtd": 8.731638
+        },
+        "kalshi": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "lens": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "lucy": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "naomi": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "norman": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "oracle": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "phantom": {
+          "today": 0.0,
+          "mtd": 0.0
+        },
+        "victoria": {
+          "today": 0.0,
+          "mtd": 0.0
+        }
+      }
+    },
+    "svc_statuses": {
+      "edge": "active",
+      "crisp-v5": "failed",
+      "kalshi-bot": "active",
+      "jcf-hq": "active",
+      "hq-storage": "active"
+    },
+    "norman_available": true,
+    "norman_date": "2026-04-15",
+    "fix_prompts_count": 5
+  }
+}

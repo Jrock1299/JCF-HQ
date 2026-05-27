@@ -1,0 +1,30 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v5 — EV + CONTEXT + CONFIDENCE
+Generated: 2026-04-07 09:00 UTC  |  Bankroll: $270.09
+============================================================
+
+📊 Record: 9W–17L (34.6% WR) | P&L: -82.62
+   NCAAB: 5W-6L (45.5% WR, -17.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   MLB: 2W-5L (28.6% WR, -10.10)
+
+⚠️  FADING (bad historical edge):
+   ⛔ NBA — filtered from today's picks
+   ⛔ MLB — filtered from today's picks
+
+❌ No positive-EV picks found today. No bets.
+   (Market is correctly priced — sit on your hands.)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: -170 | Combined prob: 57.1% | Stake: $5.00 → Win: $2.93
+  Leg 1: Minnesota Timberwolves (ML) (-720) [84.8%] — ML | NBA | Minnesota Timberwolves @ Indiana Pacers
+  Leg 2: New Orleans Pelicans (ML) (-560) [82.3%] — ML | NBA | Utah Jazz @ New Orleans Pelicans
+  Leg 3: Los Angeles Clippers (ML) (-550) [81.8%] — ML | NBA | Dallas Mavericks @ Los Angeles Clippers
+
+Parlay 2 — 3 legs | Odds: +185 | Combined prob: 32.1% | Stake: $5.00 → Win: $9.25
+  Leg 1: Minnesota Wild (ML) (-245) [68.8%] — ML | NHL | Seattle Kraken @ Minnesota Wild
+  Leg 2: Vegas Golden Knights (ML) (-238) [68.5%] — ML | NHL | Vegas Golden Knights @ Vancouver Canucks
+  Leg 3: Columbus Blue Jackets +1.5 (SPREAD) (-235) [68.2%] — SPREAD | NHL | Columbus Blue Jackets @ Detroit Red Wings
+
+============================================================

@@ -1,0 +1,36 @@
+{
+  "total_usd": 1.4,
+  "last_update": "2026-05-27T08:01:22+00:00",
+  "holdings": {
+    "ETH": {
+      "balance": 8.4e-08,
+      "usd_price": 2080.89,
+      "usd_value": 0.0
+    },
+    "XRP": {
+      "balance": 1.000001,
+      "usd_price": 1.33,
+      "usd_value": 1.33
+    },
+    "SOL": {
+      "balance": 0.0008909,
+      "usd_price": 84.07,
+      "usd_value": 0.07
+    },
+    "ADA": {
+      "balance": 0.0,
+      "usd_price": 0.23996,
+      "usd_value": 0.0
+    },
+    "SUI": {
+      "balance": 0.0,
+      "usd_price": 1.003,
+      "usd_value": 0.0
+    },
+    "LINK": {
+      "balance": 0.0,
+      "usd_price": 9.42,
+      "usd_value": 0.0
+    }
+  }
+}

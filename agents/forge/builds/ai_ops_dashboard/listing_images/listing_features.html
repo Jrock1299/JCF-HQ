@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;500;600;700;900&family=Handjet:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 2000px;
+  height: 2000px;
+  overflow: hidden;
+}
+
+body {
+  background: #08080f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 100px 120px;
+}
+
+/* Background glow effects */
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(0,212,255,0.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 85%, rgba(139,92,246,0.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% 15%, rgba(0,212,255,0.03) 0%, transparent 35%),
+    radial-gradient(ellipse at 15% 85%, rgba(139,92,246,0.03) 0%, transparent 35%);
+  pointer-events: none;
+}
+
+/* Corner decorations */
+.corner {
+  position: absolute;
+  width: 80px; height: 80px;
+  border-color: rgba(0,212,255,0.2);
+  border-style: solid;
+}
+.corner.tl { top: 60px; left: 60px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+.corner.tr { top: 60px; right: 60px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+.corner.bl { bottom: 60px; left: 60px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+.corner.br { bottom: 60px; right: 60px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+
+/* Top section */
+.top-section {
+  text-align: center;
+  margin-bottom: 72px;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #00d4ff;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 84px;
+  letter-spacing: 0.1em;
+  line-height: 1.0;
+  color: #fff;
+  text-shadow: 0 0 80px rgba(255,255,255,0.1);
+}
+
+.page-title span {
+  color: #8b5cf6;
+  text-shadow: 0 0 60px rgba(139,92,246,0.5);
+}
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: none;
+}
+
+/* Accent corner glow */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px; height: 120px;
+  border-radius: 20px 0 0 0;
+  opacity: 0.6;
+}
+
+.feature-card:nth-child(1)::before { background: radial-gradient(circle at 0 0, rgba(0,212,255,0.12), transparent 70%); }
+.feature-card:nth-child(2)::before { background: radial-gradient(circle at 0 0, rgba(139,92,246,0.12), transparent 70%); }
+.feature-card:nth-child(3)::before { background: radial-gradient(circle at 0 0, rgba(16,185,129,0.12), transparent 70%); }
+.feature-card:nth-child(4)::before { background: radial-gradient(circle at 0 0, rgba(245,158,11,0.12), transparent 70%); }
+.feature-card:nth-child(5)::before { background: radial-gradient(circle at 0 0, rgba(0,212,255,0.12), transparent 70%); }
+.feature-card:nth-child(6)::before { background: radial-gradient(circle at 0 0, rgba(239,68,68,0.12), transparent 70%); }
+
+/* Left border accent */
+.feature-card::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+}
+
+.feature-card:nth-child(1)::after { background: linear-gradient(to bottom, transparent, #00d4ff, transparent); }
+.feature-card:nth-child(2)::after { background: linear-gradient(to bottom, transparent, #8b5cf6, transparent); }
+.feature-card:nth-child(3)::after { background: linear-gradient(to bottom, transparent, #10b981, transparent); }
+.feature-card:nth-child(4)::after { background: linear-gradient(to bottom, transparent, #f59e0b, transparent); }
+.feature-card:nth-child(5)::after { background: linear-gradient(to bottom, transparent, #00d4ff, transparent); }
+.feature-card:nth-child(6)::after { background: linear-gradient(to bottom, transparent, #ef4444, transparent); }
+
+.feature-icon {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.feature-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+
+.feature-subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-top: -8px;
+}
+
+.fc1 .feature-subtitle { color: #00d4ff; }
+.fc2 .feature-subtitle { color: #a78bfa; }
+.fc3 .feature-subtitle { color: #34d399; }
+.fc4 .feature-subtitle { color: #fbbf24; }
+.fc5 .feature-subtitle { color: #00d4ff; }
+.fc6 .feature-subtitle { color: #f87171; }
+
+.feature-desc {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px;
+  color: #4a5580;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+}
+
+/* Platform tags */
+.platform-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ptag {
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 100px;
+  padding: 4px 14px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  color: #00d4ff;
+  letter-spacing: 0.06em;
+}
+
+/* Colorway dots */
+.color-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.cdot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+}
+
+/* Watermark */
+.wm {
+  position: absolute; bottom: 52px; right: 72px;
+  font-family: 'Syncopate', sans-serif; font-size: 16px;
+  letter-spacing: .12em; color: rgba(255,255,255,0.17);
+}
+</style>
+</head>
+<body>
+
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
+<div class="top-section">
+  <div class="eyebrow">AI Ops Dashboard · Feature Overview</div>
+  <div class="page-title">EVERYTHING<br>YOU <span>NEED</span></div>
+</div>
+
+<div class="feature-grid">
+
+  <div class="feature-card fc1">
+    <div class="feature-icon">📊</div>
+    <div>
+      <div class="feature-title">7 AI PLATFORMS</div>
+      <div class="feature-subtitle">Pre-loaded & ready to track</div>
+    </div>
+    <div class="platform-tags">
+      <span class="ptag">Claude</span>
+      <span class="ptag">ChatGPT</span>
+      <span class="ptag">Gemini</span>
+      <span class="ptag">Grok</span>
+      <span class="ptag">Perplexity</span>
+      <span class="ptag">Midjourney</span>
+      <span class="ptag">ElevenLabs</span>
+    </div>
+  </div>
+
+  <div class="feature-card fc2">
+    <div class="feature-icon">💰</div>
+    <div>
+      <div class="feature-title">BUDGET TRACKING</div>
+      <div class="feature-subtitle">Alerts at 80% · Real-time totals</div>
+    </div>
+    <div class="feature-desc">
+      Set monthly budgets per platform. Automatic alerts when you hit 80% threshold.
+      Projected month-end spend calculated daily.
+    </div>
+  </div>
+
+  <div class="feature-card fc3">
+    <div class="feature-icon">🎨</div>
+    <div>
+      <div class="feature-title">COLOR CUSTOMIZATION</div>
+      <div class="feature-subtitle">6+ colorways · Custom color picker</div>
+    </div>
+    <div class="color-dots">
+      <div class="cdot" style="background:#00d4ff"></div>
+      <div class="cdot" style="background:#8b5cf6"></div>
+      <div class="cdot" style="background:#10b981"></div>
+      <div class="cdot" style="background:#f59e0b"></div>
+      <div class="cdot" style="background:#ef4444"></div>
+      <div class="cdot" style="background:#06b6d4"></div>
+      <div class="cdot" style="background:linear-gradient(135deg,#00d4ff,#8b5cf6);border:none"></div>
+    </div>
+    <div class="feature-desc">Change the entire dashboard accent color in one click. Per-theme colorways or enter any hex value.</div>
+  </div>
+
+  <div class="feature-card fc4">
+    <div class="feature-icon">📈</div>
+    <div>
+      <div class="feature-title">SPEND HISTORY</div>
+      <div class="feature-subtitle">6-month bar chart · Monthly trends</div>
+    </div>
+    <div class="feature-desc">
+      Visual bar chart shows your AI spending over the last 6 months.
+      Spot trends, seasonal patterns, and runaway costs at a glance.
+    </div>
+  </div>
+
+  <div class="feature-card fc5">
+    <div class="feature-icon">⚡</div>
+    <div>
+      <div class="feature-title">INSTANT DOWNLOAD</div>
+      <div class="feature-subtitle">No install · No account · No server</div>
+    </div>
+    <div class="feature-desc">
+      Single HTML file per theme. Open in Chrome, Firefox, or Safari.
+      Data saves locally in your browser. Works completely offline.
+    </div>
+  </div>
+
+  <div class="feature-card fc6">
+    <div class="feature-icon">🔧</div>
+    <div>
+      <div class="feature-title">FULLY EDITABLE</div>
+      <div class="feature-subtitle">Open source HTML · Modify anything</div>
+    </div>
+    <div class="feature-desc">
+      Clean, commented HTML/CSS/JS. Add platforms, rename things,
+      change colors, adjust budgets — everything is yours to modify.
+    </div>
+  </div>
+
+</div>
+
+<div class="wm">JCF7Studio</div>
+
+</body>
+</html>

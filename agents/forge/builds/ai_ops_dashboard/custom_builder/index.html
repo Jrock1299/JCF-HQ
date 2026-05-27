@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ops Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ── CSS Custom Properties ── */
+:root {
+  --color-bg:           #0a0a0f;
+  --color-card-bg:      #12121a;
+  --color-accent:       #00d4ff;
+  --color-accent-alt:   #7c3aed;
+  --color-text:         #e2e8f0;
+  --color-text-muted:   #64748b;
+  --color-border:       #1e293b;
+  --color-danger:       #ef4444;
+  --color-warning:      #f97316;
+  --color-success:      #22c55e;
+  --font-heading:       'JetBrains Mono', monospace;
+  --font-body:          'Inter', sans-serif;
+  --radius-sm:          6px;
+  --radius-md:          12px;
+  --radius-lg:          16px;
+  --radius-xl:          24px;
+  --shadow-card:        0 4px 24px rgba(0,0,0,0.4);
+  --transition:         0.2s ease;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ── Loading Skeleton ── */
+.skeleton-overlay {
+  position: fixed; inset: 0;
+  background: var(--color-bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeOutOverlay 0.5s ease 0.8s forwards;
+}
+.skeleton-logo {
+  width: 64px; height: 64px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  animation: pulseSkeleton 1s ease-in-out infinite;
+}
+.skeleton-text {
+  width: 200px; height: 16px;
+  border-radius: 8px;
+  background: var(--color-border);
+  animation: pulseSkeleton 1s ease-in-out infinite 0.2s;
+}
+@keyframes pulseSkeleton {
+  0%,100% { opacity: 0.4; } 50% { opacity: 1; }
+}
+@keyframes fadeOutOverlay {
+  to { opacity: 0; pointer-events: none; }
+}
+
+/* ── Main Layout ── */
+.app-wrapper {
+  opacity: 0;
+  animation: fadeInApp 0.5s ease 0.9s forwards;
+}
+@keyframes fadeInApp { to { opacity: 1; } }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-card-bg);
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.brand-logo {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 14px;
+  color: #fff; cursor: pointer;
+  flex-shrink: 0;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.brand-logo:hover { transform: scale(1.05); box-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 40%, transparent); }
+
+.header-title-wrap { flex: 1; }
+.editable-title {
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 700;
+  color: var(--color-text);
+  background: transparent; border: none; outline: none;
+  cursor: text; width: 100%;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition);
+  padding: 2px 4px;
+}
+.editable-title:hover { border-bottom-color: var(--color-border); }
+.editable-title:focus { border-bottom-color: var(--color-accent); }
+.header-subtitle {
+  font-size: 12px; color: var(--color-text-muted);
+  font-family: var(--font-body);
+  margin-top: 2px; padding-left: 4px;
+}
+.header-actions { display: flex; gap: 12px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: transparent; color: var(--color-text);
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all var(--transition);
+}
+.btn:hover { border-color: var(--color-accent); color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: var(--color-accent); border-color: var(--color-accent);
+  color: #000; font-weight: 600;
+}
+.btn-primary:hover { opacity: 0.85; color: #000; background: var(--color-accent); }
+.btn-danger { border-color: var(--color-danger); color: var(--color-danger); }
+.btn-danger:hover { background: color-mix(in srgb, var(--color-danger) 12%, transparent); }
+
+/* ── Mode Toggle ── */
+.mode-toggle {
+  display: flex; align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 4px;
+  gap: 4px;
+}
+.mode-btn {
+  padding: 6px 12px; border-radius: 6px;
+  border: none; background: transparent;
+  color: var(--color-text-muted); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all var(--transition);
+  font-family: var(--font-heading);
+}
+.mode-btn.active {
+  background: var(--color-accent);
+  color: #000;
+}
+
+/* ── Main Content ── */
+.main-content { padding: 32px; max-width: 1440px; margin: 0 auto; }
+
+/* ── Summary Row ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin-bottom: 32px;
+}
+.summary-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  position: relative; overflow: hidden;
+}
+.summary-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-alt));
+  opacity: 0; transition: opacity var(--transition);
+}
+.summary-card:hover { border-color: var(--color-accent); box-shadow: 0 0 24px color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.summary-card:hover::before { opacity: 1; }
+.summary-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--color-text-muted);
+  font-family: var(--font-heading); margin-bottom: 12px;
+}
+.summary-value {
+  font-family: var(--font-heading); font-size: 36px; font-weight: 700;
+  color: var(--color-accent); line-height: 1;
+  transition: color 0.4s ease;
+}
+.summary-value.warn { color: var(--color-warning); }
+.summary-sub {
+  font-size: 12px; color: var(--color-text-muted); margin-top: 8px;
+}
+.summary-icon {
+  position: absolute; right: 20px; top: 20px;
+  font-size: 28px; opacity: 0.15;
+}
+
+/* ── Platform Section ── */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-heading); font-size: 14px; font-weight: 600;
+  color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* ── Platform Grid ── */
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; margin-bottom: 32px;
+}
+
+.platform-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative; overflow: hidden;
+  animation: cardSlideIn 0.3s ease;
+}
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.platform-card:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+.platform-card.danger {
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--color-danger) 20%, transparent);
+  animation: dangerPulse 2s ease-in-out infinite;
+}
+@keyframes dangerPulse {
+  0%,100% { box-shadow: 0 0 24px color-mix(in srgb, var(--color-danger) 20%, transparent); }
+  50% { box-shadow: 0 0 40px color-mix(in srgb, var(--color-danger) 40%, transparent); }
+}
+
+.platform-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.platform-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700;
+  font-family: var(--font-heading);
+  flex-shrink: 0;
+}
+.platform-info { flex: 1; }
+.platform-name {
+  font-family: var(--font-heading); font-size: 14px; font-weight: 600;
+  color: var(--color-text);
+}
+.platform-mode-badge {
+  font-size: 10px; color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px; padding: 2px 6px;
+  margin-top: 3px; display: inline-block;
+  font-family: var(--font-heading);
+}
+.platform-actions { display: flex; gap: 6px; }
+.icon-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px; border: 1px solid var(--color-border);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-text-muted); font-size: 14px;
+  transition: all var(--transition);
+}
+.icon-btn:hover { border-color: var(--color-accent); color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.icon-btn.delete:hover { border-color: var(--color-danger); color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 8%, transparent); }
+
+/* ── Usage Bar ── */
+.usage-section { margin-bottom: 12px; }
+.usage-labels {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.usage-pct {
+  font-family: var(--font-heading); font-size: 13px; font-weight: 600;
+}
+.usage-amounts { font-size: 11px; color: var(--color-text-muted); }
+.progress-track {
+  height: 8px; background: var(--color-bg);
+  border-radius: 4px; overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-alt));
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1), background 0.4s ease;
+  position: relative; overflow: hidden;
+}
+.progress-fill.danger {
+  background: linear-gradient(90deg, var(--color-warning), var(--color-danger));
+}
+.progress-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── Token Mode ── */
+.token-details {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 10px;
+}
+.token-stat {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 8px 10px;
+}
+.token-stat-label { font-size: 9px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.token-stat-value { font-family: var(--font-heading); font-size: 13px; font-weight: 600; color: var(--color-text); margin-top: 2px; }
+
+/* ── Inline Edit ── */
+.inline-edit-row {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
+.inline-input {
+  flex: 1; min-width: 80px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px; padding: 6px 10px;
+  color: var(--color-text); font-size: 12px;
+  font-family: var(--font-body);
+  outline: none; transition: border-color var(--transition);
+}
+.inline-input:focus { border-color: var(--color-accent); }
+.inline-input::placeholder { color: var(--color-text-muted); }
+
+/* ── Bottom Charts Row ── */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 32px;
+}
+@media (max-width: 900px) {
+  .charts-row { grid-template-columns: 1fr; }
+  .platforms-grid { grid-template-columns: 1fr; }
+  .summary-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .main-content { padding: 16px; }
+  .header { padding: 12px 16px; }
+  .summary-row { grid-template-columns: 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .summary-value { font-size: 28px; }
+  .header-actions { gap: 8px; }
+  .mode-toggle { display: none; }
+}
+
+.chart-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px; overflow: hidden;
+}
+.chart-title {
+  font-family: var(--font-heading); font-size: 13px; font-weight: 600;
+  color: var(--color-text-muted); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 20px;
+}
+canvas { display: block; width: 100% !important; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 32px; width: 480px; max-width: calc(100vw - 32px);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s ease;
+  max-height: 85vh; overflow-y: auto;
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+.modal-title {
+  font-family: var(--font-heading); font-size: 18px; font-weight: 700;
+  color: var(--color-text); margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-close {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--color-bg); border: 1px solid var(--color-border);
+  color: var(--color-text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all var(--transition);
+}
+.modal-close:hover { color: var(--color-text); border-color: var(--color-text); }
+
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--color-text-muted); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 6px;
+  font-family: var(--font-heading);
+}
+.form-input, .form-select {
+  width: 100%;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 10px 14px;
+  color: var(--color-text); font-size: 14px;
+  font-family: var(--font-body); outline: none;
+  transition: border-color var(--transition);
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--color-accent); }
+.form-input::placeholder { color: var(--color-text-muted); }
+.form-select option { background: var(--color-card-bg); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
+
+/* ── Theme Panel ── */
+.theme-btn-fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 400;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  border: none; border-radius: 14px;
+  padding: 12px 20px; cursor: pointer;
+  font-family: var(--font-heading); font-size: 13px; font-weight: 600;
+  color: #fff;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.theme-btn-fab:hover { transform: scale(1.05); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+.theme-btn-fab:active { transform: scale(0.97); }
+
+.theme-panel {
+  position: fixed; bottom: 80px; right: 24px; z-index: 399;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 24px; width: 340px;
+  max-height: 70vh; overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  transform: translateY(20px) scale(0.95);
+  opacity: 0; pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.theme-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+
+.theme-panel-title {
+  font-family: var(--font-heading); font-size: 14px; font-weight: 700;
+  color: var(--color-text); margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.theme-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.theme-swatch {
+  border: 2px solid transparent;
+  border-radius: 10px; padding: 10px 8px;
+  cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+  background: var(--color-bg);
+  transition: all var(--transition);
+}
+.theme-swatch:hover { border-color: var(--color-accent); transform: scale(1.03); }
+.theme-swatch.active { border-color: var(--color-accent); box-shadow: 0 0 12px color-mix(in srgb, var(--color-accent) 30%, transparent); }
+.swatch-circles { display: flex; gap: 4px; }
+.swatch-circle { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
+.swatch-name { font-size: 9px; color: var(--color-text-muted); text-align: center; text-transform: capitalize; font-family: var(--font-heading); }
+
+.custom-pickers {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px; background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px; margin-bottom: 16px;
+}
+.picker-wrap { display: flex; flex-direction: column; gap: 4px; align-items: center; flex: 1; }
+.picker-label { font-size: 10px; color: var(--color-text-muted); font-family: var(--font-heading); }
+input[type="color"] {
+  width: 44px; height: 44px; border-radius: 8px;
+  border: 1px solid var(--color-border); cursor: pointer;
+  background: none; padding: 2px;
+}
+.theme-actions { display: flex; gap: 8px; }
+
+/* ── Alerts Strip ── */
+.alerts-strip {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: 12px 16px; margin-bottom: 24px;
+  display: none; gap: 8px; flex-direction: column;
+}
+.alerts-strip.has-alerts { display: flex; }
+.alert-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--color-text);
+}
+.alert-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--color-danger); flex-shrink: 0;
+  animation: alertBlink 1s ease-in-out infinite;
+}
+@keyframes alertBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ── Tooltip ── */
+.tooltip {
+  position: absolute; background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px; padding: 6px 10px;
+  font-size: 12px; pointer-events: none;
+  opacity: 0; transition: opacity 0.2s;
+  z-index: 10; white-space: nowrap;
+  font-family: var(--font-body);
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center; padding: 48px;
+  color: var(--color-text-muted);
+  grid-column: 1 / -1;
+}
+.empty-state h3 { font-family: var(--font-heading); font-size: 18px; margin-bottom: 8px; color: var(--color-text); }
+.empty-state p { font-size: 14px; }
+
+/* ── Notification Toast ── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--color-card-bg); border: 1px solid var(--color-border);
+  border-radius: 10px; padding: 10px 20px;
+  font-size: 13px; color: var(--color-text);
+  z-index: 600; opacity: 0;
+  transition: all 0.3s ease; pointer-events: none;
+  box-shadow: var(--shadow-card);
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+</style>
+</head>
+<body>
+
+<!-- Skeleton Loader -->
+<div class="skeleton-overlay" id="skeletonOverlay">
+  <div class="skeleton-logo"></div>
+  <div class="skeleton-text"></div>
+</div>
+
+<!-- Main App -->
+<div class="app-wrapper" id="appWrapper">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand-logo" id="brandLogo" title="Click to change logo text">AI</div>
+    <div class="header-title-wrap">
+      <input class="editable-title" id="dashTitle" type="text" value="AI Ops Dashboard" maxlength="40">
+      <div class="header-subtitle" id="headerSubtitle">Loading...</div>
+    </div>
+    <div class="header-actions">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeSubBtn" onclick="setMode('subscription')">Subscription</button>
+        <button class="mode-btn" id="modeApiBtn" onclick="setMode('api')">API Token</button>
+      </div>
+      <button class="btn btn-primary" onclick="openAddModal()">+ Add Platform</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Alerts Strip -->
+    <div class="alerts-strip" id="alertsStrip"></div>
+
+    <!-- Summary Cards -->
+    <div class="summary-row" id="summaryRow">
+      <div class="summary-card">
+        <div class="summary-icon">💰</div>
+        <div class="summary-label">Total Monthly Spend</div>
+        <div class="summary-value" id="totalSpend">$0.00</div>
+        <div class="summary-sub" id="totalSub">Across 0 platforms</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">📅</div>
+        <div class="summary-label">Projected EOM Spend</div>
+        <div class="summary-value" id="projectedSpend">$0.00</div>
+        <div class="summary-sub" id="projectedSub">Based on current pace</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">🎯</div>
+        <div class="summary-label">Total Budget</div>
+        <div class="summary-value" id="totalBudget">$0.00</div>
+        <div class="summary-sub" id="budgetSub">0% utilized</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon">⚡</div>
+        <div class="summary-label">Days Remaining</div>
+        <div class="summary-value" id="daysRemaining">0</div>
+        <div class="summary-sub" id="daysSub">In current billing cycle</div>
+      </div>
+    </div>
+
+    <!-- Platforms Section -->
+    <div class="section-header">
+      <div class="section-title">Platforms</div>
+      <div class="section-title" id="platformCount" style="color:var(--color-accent)">0 active</div>
+    </div>
+
+    <div class="platforms-grid" id="platformsGrid"></div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Monthly Spend History (6 months)</div>
+        <canvas id="historyChart" height="180"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Platform Allocation</div>
+        <canvas id="allocationChart" height="180"></canvas>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="platformModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="modalTitle">Add Platform</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Platform Name</label>
+      <input class="form-input" id="fName" placeholder="e.g. Claude, GPT-4" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Icon Emoji</label>
+        <input class="form-input" id="fIcon" placeholder="🤖" maxlength="2" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon Color (bg)</label>
+        <input type="color" id="fColor" value="#7c3aed" style="width:100%;height:42px;border-radius:8px;" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mode</label>
+      <select class="form-select" id="fMode" onchange="toggleModalMode()">
+        <option value="subscription">Subscription</option>
+        <option value="api">API Token</option>
+      </select>
+    </div>
+    <div class="form-row" id="subFields">
+      <div class="form-group">
+        <label class="form-label">Monthly Budget ($)</label>
+        <input class="form-input" id="fBudget" type="number" placeholder="50" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current Spend ($)</label>
+        <input class="form-input" id="fSpend" type="number" placeholder="23.50" min="0" step="0.01" />
+      </div>
+    </div>
+    <div id="apiFields" style="display:none">
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Token Budget</label>
+          <input class="form-input" id="fTokenBudget" type="number" placeholder="1000000" min="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tokens Used</label>
+          <input class="form-input" id="fTokensUsed" type="number" placeholder="350000" min="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cost per 1K</label>
+          <input class="form-input" id="fCostPer1k" type="number" placeholder="0.015" min="0" step="0.0001" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePlatform()">Save Platform</button>
+    </div>
+  </div>
+</div>
+
+<!-- Theme Panel FAB -->
+<button class="theme-btn-fab" onclick="toggleThemePanel()">🎨 Themes</button>
+
+<!-- Theme Panel -->
+<div class="theme-panel" id="themePanel">
+  <div class="theme-panel-title">
+    <span>Theme Customizer</span>
+    <button class="modal-close" onclick="toggleThemePanel()">✕</button>
+  </div>
+
+  <div class="theme-grid" id="themeGrid"></div>
+
+  <div style="font-family:var(--font-heading);font-size:11px;color:var(--color-text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Custom Colors</div>
+  <div class="custom-pickers">
+    <div class="picker-wrap">
+      <label class="picker-label">Background</label>
+      <input type="color" id="customBg" value="#0a0a0f">
+    </div>
+    <div style="color:var(--color-text-muted);font-size:18px;">+</div>
+    <div class="picker-wrap">
+      <label class="picker-label">Accent</label>
+      <input type="color" id="customAccent" value="#00d4ff">
+    </div>
+    <button class="btn btn-primary" style="padding:8px 14px;font-size:12px;" onclick="applyCustomTheme()">Apply</button>
+  </div>
+
+  <div class="theme-actions">
+    <button class="btn" style="flex:1;justify-content:center;font-size:12px;" onclick="resetTheme()">Reset Default</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Constants & State ── */
+const LS = 'aiops_';
+const ALERT_THRESHOLD = 0.80;
+
+const PALETTES = {
+  midnight_purple: { bg:'#0f0a1a', accent:'#8b5cf6', card:'#16102a', border:'#2d1f4a', text:'#e2e8f0', muted:'#6b5b8b' },
+  ocean_blue:      { bg:'#0c1929', accent:'#0ea5e9', card:'#111f33', border:'#1e3a5f', text:'#e2e8f0', muted:'#4a7a9b' },
+  forest_green:    { bg:'#0a1a0f', accent:'#22c55e', card:'#0f2016', border:'#1a3d25', text:'#e2e8f0', muted:'#4a7a5a' },
+  rose_gold:       { bg:'#1a0f14', accent:'#f472b6', card:'#22131c', border:'#3d1f2d', text:'#e2e8f0', muted:'#8b4a6a' },
+  monochrome:      { bg:'#111111', accent:'#a0a0a0', card:'#1a1a1a', border:'#2a2a2a', text:'#e2e8f0', muted:'#606060' },
+  sunset_orange:   { bg:'#1a0f0a', accent:'#f97316', card:'#221610', border:'#3d2510', text:'#e2e8f0', muted:'#8b5a30' },
+  arctic_ice:      { bg:'#0a1419', accent:'#67e8f9', card:'#0f1d24', border:'#1a3040', text:'#e2e8f0', muted:'#3a7080' },
+  royal_gold:      { bg:'#14120a', accent:'#eab308', card:'#1c1a0f', border:'#3a3010', text:'#e2e8f0', muted:'#807040' },
+  neon_pink:       { bg:'#1a0a14', accent:'#ec4899', card:'#221020', border:'#3d1535', text:'#e2e8f0', muted:'#8b3060' },
+  sage:            { bg:'#f0fdf4', accent:'#86efac', card:'#ffffff', border:'#d1fae5', text:'#1a2e1f', muted:'#6b9a7a' },
+  lavender:        { bg:'#faf5ff', accent:'#a78bfa', card:'#ffffff', border:'#ede9fe', text:'#2d1f4a', muted:'#7c6a9a' },
+  coral:           { bg:'#fff1f2', accent:'#fb7185', card:'#ffffff', border:'#fecdd3', text:'#2d0f14', muted:'#9a5060' }
+};
+
+const DEFAULT_PALETTE = {
+  bg:'#0a0a0f', accent:'#00d4ff', card:'#12121a',
+  border:'#1e293b', text:'#e2e8f0', muted:'#64748b'
+};
+
+const DEFAULT_PLATFORMS = [
+  { id:'claude',      name:'Claude',      icon:'🧠', color:'#7c3aed', mode:'subscription', budget:100,  spend:72,   tokenBudget:2000000, tokensUsed:850000, costPer1k:0.015 },
+  { id:'chatgpt',     name:'ChatGPT',     icon:'💬', color:'#10a37f', mode:'subscription', budget:50,   spend:23.5, tokenBudget:1000000, tokensUsed:320000, costPer1k:0.02  },
+  { id:'gemini',      name:'Gemini',      icon:'✨', color:'#1a73e8', mode:'api',          budget:80,   spend:45,   tokenBudget:5000000, tokensUsed:2100000,costPer1k:0.001 },
+  { id:'grok',        name:'Grok',        icon:'🚀', color:'#000000', mode:'subscription', budget:30,   spend:30,   tokenBudget:500000,  tokensUsed:450000, costPer1k:0.03  },
+  { id:'perplexity',  name:'Perplexity',  icon:'🔍', color:'#20b2aa', mode:'subscription', budget:20,   spend:12,   tokenBudget:200000,  tokensUsed:80000,  costPer1k:0.01  },
+  { id:'midjourney',  name:'Midjourney',  icon:'🎨', color:'#e44d26', mode:'subscription', budget:60,   spend:60,   tokenBudget:0,       tokensUsed:0,      costPer1k:0     },
+  { id:'elevenlabs',  name:'ElevenLabs',  icon:'🔊', color:'#6366f1', mode:'api',          budget:40,   spend:8,    tokenBudget:100000,  tokensUsed:22000,  costPer1k:0.3   }
+];
+
+let state = {
+  platforms: [],
+  mode: 'subscription',
+  history: [],
+  title: 'AI Ops Dashboard',
+  logoText: 'AI',
+  currentPalette: null,
+  editingId: null
+};
+
+/* ── Init ── */
+function init() {
+  loadState();
+  renderAll();
+  updateSubtitle();
+  updateThemeSwatch();
+
+  document.getElementById('dashTitle').addEventListener('input', e => {
+    state.title = e.target.value;
+    saveState();
+  });
+  document.getElementById('brandLogo').addEventListener('click', () => {
+    const t = prompt('Enter logo text (max 3 chars):', state.logoText);
+    if (t !== null) { state.logoText = t.slice(0,3); document.getElementById('brandLogo').textContent = state.logoText; saveState(); }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('platformModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('platformModal')) closeModal();
+  });
+
+  // Close theme panel on outside click
+  document.addEventListener('click', e => {
+    const panel = document.getElementById('themePanel');
+    const fab = document.querySelector('.theme-btn-fab');
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
+      panel.classList.remove('open');
+    }
+  });
+
+  window.addEventListener('resize', () => { drawCharts(); });
+}
+
+/* ── State Persistence ── */
+function saveState() {
+  localStorage.setItem(LS+'state', JSON.stringify(state));
+}
+function loadState() {
+  const saved = localStorage.getItem(LS+'state');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    } catch(e) {}
+  } else {
+    state.platforms = JSON.parse(JSON.stringify(DEFAULT_PLATFORMS));
+    generateHistory();
+    saveState();
+  }
+  if (!state.platforms || state.platforms.length === 0) {
+    state.platforms = JSON.parse(JSON.stringify(DEFAULT_PLATFORMS));
+  }
+  if (!state.history || state.history.length === 0) generateHistory();
+
+  document.getElementById('dashTitle').value = state.title || 'AI Ops Dashboard';
+  document.getElementById('brandLogo').textContent = state.logoText || 'AI';
+
+  if (state.currentPalette) {
+    if (PALETTES[state.currentPalette]) {
+      applyPalette(PALETTES[state.currentPalette]);
+    } else if (state.customPalette) {
+      applyPalette(state.customPalette);
+    }
+  }
+}
+
+function generateHistory() {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  state.history = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    state.history.push({
+      month: months[d.getMonth()],
+      spend: Math.round(60 + Math.random() * 180)
+    });
+  }
+}
+
+/* ── Render All ── */
+function renderAll() {
+  renderPlatforms();
+  renderSummary();
+  drawCharts();
+  renderAlerts();
+}
+
+/* ── Platforms ── */
+function renderPlatforms() {
+  const grid = document.getElementById('platformsGrid');
+  grid.innerHTML = '';
+
+  if (!state.platforms.length) {
+    grid.innerHTML = '<div class="empty-state"><h3>No Platforms Yet</h3><p>Click "+ Add Platform" to get started</p></div>';
+    document.getElementById('platformCount').textContent = '0 active';
+    return;
+  }
+
+  document.getElementById('platformCount').textContent = `${state.platforms.length} active`;
+
+  state.platforms.forEach(p => {
+    const card = createPlatformCard(p);
+    grid.appendChild(card);
+    // Animate progress bar after DOM insert
+    setTimeout(() => {
+      const fill = card.querySelector('.progress-fill');
+      if (fill) {
+        const pct = getUsagePct(p);
+        fill.style.width = Math.min(pct * 100, 100) + '%';
+      }
+    }, 50);
+  });
+}
+
+function getUsagePct(p) {
+  if (p.mode === 'api') {
+    return p.tokenBudget > 0 ? p.tokensUsed / p.tokenBudget : 0;
+  }
+  return p.budget > 0 ? p.spend / p.budget : 0;
+}
+
+function getPlatformSpend(p) {
+  if (p.mode === 'api') {
+    return (p.tokensUsed / 1000) * p.costPer1k;
+  }
+  return p.spend || 0;
+}
+
+function getPlatformBudget(p) {
+  if (p.mode === 'api') {
+    return (p.tokenBudget / 1000) * p.costPer1k;
+  }
+  return p.budget || 0;
+}
+
+function createPlatformCard(p) {
+  const pct = getUsagePct(p);
+  const isDanger = pct >= ALERT_THRESHOLD;
+  const pctDisplay = Math.round(pct * 100);
+
+  const card = document.createElement('div');
+  card.className = 'platform-card' + (isDanger ? ' danger' : '');
+  card.dataset.id = p.id;
+
+  const spend = getPlatformSpend(p);
+  const budget = getPlatformBudget(p);
+
+  let tokenHtml = '';
+  if (p.mode === 'api') {
+    const costSpend = spend.toFixed(2);
+    const costBudget = budget.toFixed(2);
+    tokenHtml = `
+      <div class="token-details">
+        <div class="token-stat">
+          <div class="token-stat-label">Tokens Used</div>
+          <div class="token-stat-value">${fmtNum(p.tokensUsed)}</div>
+        </div>
+        <div class="token-stat">
+          <div class="token-stat-label">Token Budget</div>
+          <div class="token-stat-value">${fmtNum(p.tokenBudget)}</div>
+        </div>
+        <div class="token-stat">
+          <div class="token-stat-label">Cost/1K Tokens</div>
+          <div class="token-stat-value">$${p.costPer1k}</div>
+        </div>
+        <div class="token-stat">
+          <div class="token-stat-label">Est. Cost</div>
+          <div class="token-stat-value" style="color:var(--color-accent)">$${costSpend}</div>
+        </div>
+      </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="platform-header">
+      <div class="platform-icon" style="background:${p.color}20;color:${p.color}">${p.icon}</div>
+      <div class="platform-info">
+        <div class="platform-name">${escHtml(p.name)}</div>
+        <div class="platform-mode-badge">${p.mode === 'api' ? 'API Token' : 'Subscription'}</div>
+      </div>
+      <div class="platform-actions">
+        <button class="icon-btn" title="Edit" onclick="openEditModal('${p.id}')">✎</button>
+        <button class="icon-btn delete" title="Delete" onclick="deletePlatform('${p.id}')">🗑</button>
+      </div>
+    </div>
+    <div class="usage-section">
+      <div class="usage-labels">
+        <span class="usage-pct" style="color:${isDanger ? 'var(--color-danger)' : 'var(--color-accent)'}">${pctDisplay}%</span>
+        <span class="usage-amounts">${p.mode === 'api' ? fmtNum(p.tokensUsed)+' / '+fmtNum(p.tokenBudget)+' tokens' : '$'+spend.toFixed(2)+' / $'+budget.toFixed(2)}</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill${isDanger ? ' danger' : ''}" style="width:0%"></div>
+      </div>
+    </div>
+    ${tokenHtml}
+    <div class="inline-edit-row">
+      ${p.mode === 'api' ? `
+        <input class="inline-input" placeholder="Tokens used" type="number" value="${p.tokensUsed}" onchange="quickUpdateTokens('${p.id}','used',this.value)" />
+        <input class="inline-input" placeholder="Token budget" type="number" value="${p.tokenBudget}" onchange="quickUpdateTokens('${p.id}','budget',this.value)" />
+      ` : `
+        <input class="inline-input" placeholder="Current spend $" type="number" value="${p.spend}" step="0.01" onchange="quickUpdate('${p.id}','spend',this.value)" />
+        <input class="inline-input" placeholder="Budget $" type="number" value="${p.budget}" step="0.01" onchange="quickUpdate('${p.id}','budget',this.value)" />
+      `}
+    </div>`;
+
+  return card;
+}
+
+function quickUpdate(id, field, val) {
+  const p = state.platforms.find(x => x.id === id);
+  if (p) { p[field] = parseFloat(val) || 0; saveState(); renderAll(); }
+}
+function quickUpdateTokens(id, type, val) {
+  const p = state.platforms.find(x => x.id === id);
+  if (!p) return;
+  if (type === 'used') p.tokensUsed = parseInt(val) || 0;
+  if (type === 'budget') p.tokenBudget = parseInt(val) || 0;
+  saveState(); renderAll();
+}
+
+/* ── Summary Cards ── */
+function renderSummary() {
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const daysPassed = now.getDate();
+  const daysLeft = daysInMonth - daysPassed;
+
+  let totalSpend = 0, totalBudget = 0;
+  state.platforms.forEach(p => {
+    totalSpend += getPlatformSpend(p);
+    totalBudget += getPlatformBudget(p);
+  });
+
+  const dailyRate = daysPassed > 0 ? totalSpend / daysPassed : 0;
+  const projected = totalSpend + (dailyRate * daysLeft);
+  const utilized = totalBudget > 0 ? Math.round((totalSpend / totalBudget) * 100) : 0;
+
+  document.getElementById('totalSpend').textContent = '$' + totalSpend.toFixed(2);
+  document.getElementById('totalSub').textContent = `Across ${state.platforms.length} platform${state.platforms.length !== 1 ? 's' : ''}`;
+  document.getElementById('projectedSpend').textContent = '$' + projected.toFixed(2);
+  document.getElementById('projectedSub').textContent = `Based on $${dailyRate.toFixed(2)}/day avg`;
+  document.getElementById('totalBudget').textContent = '$' + totalBudget.toFixed(2);
+  document.getElementById('budgetSub').textContent = `${utilized}% utilized`;
+  document.getElementById('daysRemaining').textContent = daysLeft;
+  document.getElementById('daysSub').textContent = `Day ${daysPassed} of ${daysInMonth}`;
+
+  const projEl = document.getElementById('projectedSpend');
+  if (projected > totalBudget * 1.1) projEl.classList.add('warn');
+  else projEl.classList.remove('warn');
+
+  // Update last history entry
+  if (state.history.length > 0) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    state.history[state.history.length-1] = { month: months[now.getMonth()], spend: Math.round(totalSpend) };
+    saveState();
+  }
+}
+
+/* ── Alerts ── */
+function renderAlerts() {
+  const strip = document.getElementById('alertsStrip');
+  const alerts = state.platforms.filter(p => getUsagePct(p) >= ALERT_THRESHOLD);
+  strip.innerHTML = '';
+  if (alerts.length === 0) { strip.classList.remove('has-alerts'); return; }
+  strip.classList.add('has-alerts');
+  alerts.forEach(p => {
+    const pct = Math.round(getUsagePct(p) * 100);
+    strip.innerHTML += `<div class="alert-item"><div class="alert-dot"></div>${escHtml(p.name)} is at ${pct}% of budget — consider reviewing usage</div>`;
+  });
+}
+
+/* ── Subtitle ── */
+function updateSubtitle() {
+  const now = new Date();
+  document.getElementById('headerSubtitle').textContent =
+    `Last updated: ${now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} · ${state.platforms.length} platforms tracked`;
+}
+
+/* ── Mode Toggle ── */
+function setMode(m) {
+  state.mode = m;
+  document.getElementById('modeSubBtn').classList.toggle('active', m === 'subscription');
+  document.getElementById('modeApiBtn').classList.toggle('active', m === 'api');
+  saveState();
+  showToast(`Mode: ${m === 'api' ? 'API Token' : 'Subscription'}`);
+}
+
+/* ── Modal ── */
+let editingId = null;
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add Platform';
+  clearForm();
+  document.getElementById('platformModal').classList.add('open');
+}
+function openEditModal(id) {
+  editingId = id;
+  const p = state.platforms.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalTitle').textContent = 'Edit Platform';
+  document.getElementById('fName').value = p.name;
+  document.getElementById('fIcon').value = p.icon;
+  document.getElementById('fColor').value = p.color;
+  document.getElementById('fMode').value = p.mode;
+  document.getElementById('fBudget').value = p.budget;
+  document.getElementById('fSpend').value = p.spend;
+  document.getElementById('fTokenBudget').value = p.tokenBudget;
+  document.getElementById('fTokensUsed').value = p.tokensUsed;
+  document.getElementById('fCostPer1k').value = p.costPer1k;
+  toggleModalMode();
+  document.getElementById('platformModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('platformModal').classList.remove('open');
+  editingId = null;
+}
+function clearForm() {
+  ['fName','fIcon','fBudget','fSpend','fTokenBudget','fTokensUsed','fCostPer1k'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fMode').value = 'subscription';
+  document.getElementById('fColor').value = '#7c3aed';
+  toggleModalMode();
+}
+function toggleModalMode() {
+  const m = document.getElementById('fMode').value;
+  document.getElementById('subFields').style.display = m === 'subscription' ? 'grid' : 'none';
+  document.getElementById('apiFields').style.display = m === 'api' ? 'block' : 'none';
+}
+
+function savePlatform() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { showToast('Platform name is required'); return; }
+  const mode = document.getElementById('fMode').value;
+  const platform = {
+    id: editingId || 'p_' + Date.now(),
+    name,
+    icon: document.getElementById('fIcon').value || '🤖',
+    color: document.getElementById('fColor').value,
+    mode,
+    budget: parseFloat(document.getElementById('fBudget').value) || 0,
+    spend: parseFloat(document.getElementById('fSpend').value) || 0,
+    tokenBudget: parseInt(document.getElementById('fTokenBudget').value) || 0,
+    tokensUsed: parseInt(document.getElementById('fTokensUsed').value) || 0,
+    costPer1k: parseFloat(document.getElementById('fCostPer1k').value) || 0
+  };
+  if (editingId) {
+    const idx = state.platforms.findIndex(x => x.id === editingId);
+    if (idx !== -1) state.platforms[idx] = platform;
+  } else {
+    state.platforms.push(platform);
+  }
+  saveState();
+  renderAll();
+  closeModal();
+  showToast(editingId ? 'Platform updated!' : 'Platform added!');
+}
+
+function deletePlatform(id) {
+  const p = state.platforms.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`Delete "${p.name}"?`)) return;
+  state.platforms = state.platforms.filter(x => x.id !== id);
+  saveState(); renderAll();
+  showToast('Platform removed');
+}
+
+/* ── Charts ── */
+function drawCharts() {
+  drawHistoryChart();
+  drawAllocationChart();
+}
+
+function drawHistoryChart() {
+  const canvas = document.getElementById('historyChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width - 48;
+  const H = 180;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const data = state.history;
+  if (!data.length) return;
+
+  const padL = 40, padR = 20, padT = 20, padB = 30;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const max = Math.max(...data.map(d => d.spend), 1);
+  const barW = (chartW / data.length) * 0.5;
+  const gap = (chartW / data.length) * 0.5;
+
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#00d4ff';
+  const accentAlt = getComputedStyle(document.documentElement).getPropertyValue('--color-accent-alt').trim() || '#7c3aed';
+  const textMuted = getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim() || '#64748b';
+  const border = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#1e293b';
+
+  // Grid lines
+  ctx.strokeStyle = border;
+  ctx.lineWidth = 1;
+  [0, 0.25, 0.5, 0.75, 1].forEach(frac => {
+    const y = padT + chartH - frac * chartH;
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(padL, y);
+    ctx.lineTo(padL + chartW, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = textMuted;
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('$' + Math.round(frac * max), padL - 6, y + 4);
+  });
+
+  // Bars
+  data.forEach((d, i) => {
+    const x = padL + i * (chartW / data.length) + gap / 2;
+    const barH = (d.spend / max) * chartH;
+    const y = padT + chartH - barH;
+
+    const grad = ctx.createLinearGradient(x, y, x, padT + chartH);
+    grad.addColorStop(0, accent);
+    grad.addColorStop(1, accentAlt);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = textMuted;
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.month, x + barW / 2, H - 8);
+
+    // Value on top
+    ctx.fillStyle = accent;
+    ctx.font = '9px JetBrains Mono, monospace';
+    ctx.fillText('$' + d.spend, x + barW / 2, y - 4);
+  });
+}
+
+function drawAllocationChart() {
+  const canvas = document.getElementById('allocationChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = rect.width - 48;
+  const H = 180;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  if (!state.platforms.length) return;
+
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#00d4ff';
+  const textMuted = getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim() || '#64748b';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim() || '#e2e8f0';
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#1e293b';
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#0a0a0f';
+
+  const spends = state.platforms.map(p => getPlatformSpend(p));
+  const total = spends.reduce((a, b) => a + b, 0);
+
+  if (total === 0) {
+    ctx.fillStyle = textMuted;
+    ctx.font = '13px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No spend data', W / 2, H / 2);
+    return;
+  }
+
+  const cx = H / 2;
+  const cy = H / 2;
+  const radius = H / 2 - 16;
+  const innerRadius = radius * 0.58;
+
+  // Donut segments
+  let startAngle = -Math.PI / 2;
+  const colors = state.platforms.map(p => p.color);
+
+  state.platforms.forEach((p, i) => {
+    const slice = (spends[i] / total) * 2 * Math.PI;
+    const endAngle = startAngle + slice;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = colors[i] || accent;
+    ctx.fill();
+
+    startAngle = endAngle;
+  });
+
+  // Inner circle (donut hole)
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerRadius, 0, 2 * Math.PI);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+
+  // Center text
+  ctx.fillStyle = textColor;
+  ctx.font = 'bold 14px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('$' + total.toFixed(0), cx, cy + 2);
+  ctx.fillStyle = textMuted;
+  ctx.font = '9px Inter, sans-serif';
+  ctx.fillText('total', cx, cy + 14);
+
+  // Legend (right side)
+  const legendX = H + 8;
+  const legendStartY = 16;
+  const legendLineH = 22;
+  const maxLegend = Math.floor((H - legendStartY) / legendLineH);
+
+  state.platforms.slice(0, maxLegend).forEach((p, i) => {
+    const y = legendStartY + i * legendLineH;
+    const pct = total > 0 ? Math.round((spends[i] / total) * 100) : 0;
+
+    // Color dot
+    ctx.beginPath();
+    ctx.arc(legendX + 6, y + 5, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = p.color || accent;
+    ctx.fill();
+
+    // Name
+    ctx.fillStyle = textColor;
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    const maxNameW = W - legendX - 60;
+    let displayName = p.name;
+    while (ctx.measureText(displayName).width > maxNameW && displayName.length > 3) {
+      displayName = displayName.slice(0, -1);
+    }
+    ctx.fillText(displayName, legendX + 16, y + 8);
+
+    // Percentage
+    ctx.fillStyle = textMuted;
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(pct + '%', W - 4, y + 8);
+  });
+}
+
+/* ── Theme System ── */
+function buildThemeGrid() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  Object.entries(PALETTES).forEach(([key, pal]) => {
+    const swatch = document.createElement('div');
+    swatch.className = 'theme-swatch' + (state.currentPalette === key ? ' active' : '');
+    swatch.dataset.key = key;
+    swatch.innerHTML = `
+      <div class="swatch-circles">
+        <div class="swatch-circle" style="background:${pal.bg};border:1px solid #ffffff22"></div>
+        <div class="swatch-circle" style="background:${pal.accent}"></div>
+      </div>
+      <div class="swatch-name">${key.replace(/_/g,' ')}</div>`;
+    swatch.addEventListener('click', () => {
+      selectPalette(key);
+    });
+    grid.appendChild(swatch);
+  });
+}
+
+function selectPalette(key) {
+  state.currentPalette = key;
+  state.customPalette = null;
+  applyPalette(PALETTES[key]);
+  saveState();
+  updateThemeSwatch();
+  showToast('Theme applied: ' + key.replace(/_/g,' '));
+}
+
+function applyPalette(pal) {
+  const root = document.documentElement;
+  root.style.setProperty('--color-bg', pal.bg);
+  root.style.setProperty('--color-accent', pal.accent);
+  if (pal.card) root.style.setProperty('--color-card-bg', pal.card);
+  if (pal.border) root.style.setProperty('--color-border', pal.border);
+  if (pal.text) root.style.setProperty('--color-text', pal.text);
+  if (pal.muted) root.style.setProperty('--color-text-muted', pal.muted);
+
+  // Redraw charts after theme change
+  setTimeout(drawCharts, 100);
+}
+
+function applyCustomTheme() {
+  const bg = document.getElementById('customBg').value;
+  const accent = document.getElementById('customAccent').value;
+
+  // Derive card/border from bg
+  const card = lightenHex(bg, 0.04);
+  const border = lightenHex(bg, 0.12);
+  const muted = blendHex(bg, accent, 0.35);
+  const text = isLight(bg) ? '#1a1a2e' : '#e2e8f0';
+
+  const pal = { bg, accent, card, border, text, muted };
+  state.currentPalette = 'custom';
+  state.customPalette = pal;
+  applyPalette(pal);
+  saveState();
+  updateThemeSwatch();
+  showToast('Custom theme applied!');
+}
+
+function resetTheme() {
+  state.currentPalette = null;
+  state.customPalette = null;
+  applyPalette(DEFAULT_PALETTE);
+  saveState();
+  updateThemeSwatch();
+  showToast('Theme reset to default');
+}
+
+function updateThemeSwatch() {
+  document.querySelectorAll('.theme-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.key === state.currentPalette);
+  });
+}
+
+function toggleThemePanel() {
+  const panel = document.getElementById('themePanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) buildThemeGrid();
+}
+
+/* ── Color Utilities ── */
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return [r,g,b];
+}
+function rgbToHex(r,g,b) {
+  return '#' + [r,g,b].map(v => Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function lightenHex(hex, amount) {
+  const [r,g,b] = hexToRgb(hex);
+  return rgbToHex(r + (255-r)*amount, g + (255-g)*amount, b + (255-b)*amount);
+}
+function blendHex(hex1, hex2, t) {
+  const [r1,g1,b1] = hexToRgb(hex1);
+  const [r2,g2,b2] = hexToRgb(hex2);
+  return rgbToHex(r1+(r2-r1)*t, g1+(g2-g1)*t, b1+(b2-b1)*t);
+}
+function isLight(hex) {
+  const [r,g,b] = hexToRgb(hex);
+  return (0.299*r + 0.587*g + 0.114*b) > 128;
+}
+
+/* ── Helpers ── */
+function fmtNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return String(n);
+}
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+    document.getElementById('themePanel').classList.remove('open');
+  }
+});
+
+/* ── Canvas roundRect polyfill ── */
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+    const r = Array.isArray(radii) ? radii[0] : radii;
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    this.closePath();
+    return this;
+  };
+}
+
+/* ── Start ── */
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  // Rebuild theme grid on open
+  buildThemeGrid();
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;500;600;700;900&family=Handjet:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 2000px;
+  height: 2000px;
+  overflow: hidden;
+}
+
+body {
+  background: #0e0e12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Subtle noise texture using radial gradients */
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(139,92,246,0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Top section */
+.top-section {
+  text-align: center;
+  margin-bottom: 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 100px;
+  padding: 8px 24px;
+  margin-bottom: 36px;
+}
+
+.badge-dot {
+  width: 8px; height: 8px;
+  background: #00d4ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00d4ff;
+}
+
+.badge-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #00d4ff;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.main-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 88px;
+  letter-spacing: 0.12em;
+  color: #fff;
+  line-height: 1.0;
+  text-shadow: 0 0 80px rgba(255,255,255,0.1);
+}
+
+.main-title-accent {
+  color: #00d4ff;
+  text-shadow: 0 0 60px rgba(0,212,255,0.5);
+}
+
+/* ─── LAPTOP ROW ─── */
+.laptop-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 72px;
+  position: relative;
+  z-index: 1;
+}
+
+.laptop-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Shared laptop structure */
+.lbezel {
+  width: 536px;
+  height: 326px;
+  border-radius: 14px 14px 0 0;
+  border: 2px solid;
+  border-bottom: none;
+  padding: 12px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.lcam {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lscreen {
+  flex: 1;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid;
+}
+
+.lhinge {
+  height: 5px;
+  border-left: 2px solid;
+  border-right: 2px solid;
+}
+
+.lbase {
+  height: 72px;
+  border-radius: 0 0 18px 18px;
+  border: 2px solid;
+  border-top: none;
+  clip-path: polygon(2% 0, 98% 0, 94% 100%, 6% 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lkeys {
+  height: 34px;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.ltpad {
+  width: 120px; height: 14px;
+  border-radius: 3px;
+}
+
+.theme-label {
+  margin-top: 28px;
+  font-family: 'Syncopate', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.theme-sub {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-top: 6px;
+}
+
+/* ─── THEME 1: DARK TECHY ─── */
+.dt .lbezel {
+  background: linear-gradient(160deg, #1c1c3c, #0e0e22);
+  border-color: #262650;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6))
+          drop-shadow(0 0 30px rgba(0,212,255,0.08));
+}
+.dt .lcam { background: #1c1c3e; border: 1px solid #282850; }
+.dt .lscreen { background: #060612; border-color: #181830; }
+.dt .lhinge { background: #0e0e20; border-color: #1c1c38; width: 570px; }
+.dt .lbase { background: linear-gradient(160deg,#18183a,#111126); border-color:#262650; width:570px; }
+.dt .lkeys { background: repeating-linear-gradient(90deg,#1c1c3a 0,#1c1c3a 18px,#141430 18px,#141430 22px); width:320px; }
+.dt .ltpad { background: #1a1a36; border: 1px solid #242248; }
+.dt .theme-label { color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.dt .theme-sub { color: #3a4068; }
+
+/* Dark Techy mini-dashboard */
+.dt-dash {
+  width: 100%; height: 100%;
+  background: #060612;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.dt-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.dt-hdr-t {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 8px; font-weight: 700;
+  color: #dde4ff; letter-spacing: 0.1em;
+}
+
+.dt-hdr-v {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 8px; color: #00d4ff;
+}
+
+.dt-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.dt-card {
+  background: #0c0c22;
+  border: 1px solid #1c1c3a;
+  border-radius: 6px;
+  padding: 7px 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dt-card::before {
+  content: ''; position: absolute;
+  top:0;left:0;right:0;height:1.5px;
+  border-radius:6px 6px 0 0;
+}
+
+.dt-card.c1::before{background:linear-gradient(90deg,#00d4ff,transparent);}
+.dt-card.c2::before{background:linear-gradient(90deg,#8b5cf6,transparent);}
+.dt-card.c3::before{background:linear-gradient(90deg,#10b981,transparent);}
+
+.dt-card-l {font-family:'Orbitron',sans-serif;font-size:5px;color:#323868;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.dt-card-v {font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;}
+.v1{color:#00d4ff;} .v2{color:#a78bfa;} .v3{color:#34d399;}
+
+.dt-platforms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.dt-plat {
+  background: #0c0c22;
+  border: 1px solid rgba(0,212,255,0.12);
+  border-radius: 5px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dt-plat-n {font-family:'Syncopate',sans-serif;font-size:7px;font-weight:700;color:#bec8e8;letter-spacing:.04em;}
+.dt-plat-a {font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;color:#00d4ff;}
+.dt-pbar-bg {height:3px;background:#1a1a38;border-radius:2px;overflow:hidden;}
+.dt-pbar {height:100%;border-radius:2px;}
+
+/* ─── THEME 2: CLEAN MINIMAL ─── */
+.cm .lbezel {
+  background: linear-gradient(160deg, #e2e8f0, #cbd5e1);
+  border-color: #94a3b8;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+}
+.cm .lcam { background: #94a3b8; border: 1px solid #64748b; }
+.cm .lscreen { background: #f8fafc; border-color: #cbd5e1; }
+.cm .lhinge { background: #cbd5e1; border-color: #94a3b8; width: 570px; }
+.cm .lbase { background: linear-gradient(160deg,#e2e8f0,#cbd5e1); border-color:#94a3b8; width:570px; }
+.cm .lkeys { background: repeating-linear-gradient(90deg,#94a3b8 0,#94a3b8 18px,#cbd5e1 18px,#cbd5e1 22px); width:320px; }
+.cm .ltpad { background: #94a3b8; }
+.cm .theme-label { color: #3b82f6; }
+.cm .theme-sub { color: #64748b; }
+
+/* Clean Minimal mini-dashboard */
+.cm-dash {
+  width: 100%; height: 100%;
+  background: #f8fafc;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.cm-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cm-hdr-t {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px; font-weight: 700;
+  color: #1e293b; letter-spacing: 0.08em;
+}
+
+.cm-hdr-v { font-family: 'Orbitron', sans-serif; font-size: 8px; color: #3b82f6; }
+
+.cm-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.cm-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 9px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.cm-card-l {font-family:'Orbitron',sans-serif;font-size:5px;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.cm-card-v {font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;}
+.cmv1{color:#3b82f6;} .cmv2{color:#8b5cf6;} .cmv3{color:#10b981;}
+
+.cm-platforms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.cm-plat {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.cm-plat-n {font-family:'Orbitron',sans-serif;font-size:7px;font-weight:700;color:#1e293b;}
+.cm-plat-a {font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;color:#3b82f6;}
+.cm-pbar-bg {height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;}
+.cm-pbar {height:100%;border-radius:2px;background:linear-gradient(90deg,#3b82f6,#93c5fd);}
+
+/* ─── THEME 3: EARTHY PASTEL ─── */
+.ep .lbezel {
+  background: linear-gradient(160deg, #d4c4b0, #c4b09a);
+  border-color: #a89070;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+}
+.ep .lcam { background: #8b7d6b; border: 1px solid #6b5d4b; }
+.ep .lscreen { background: #faf6f0; border-color: #d4c4b0; }
+.ep .lhinge { background: #c4b09a; border-color: #a89070; width: 570px; }
+.ep .lbase { background: linear-gradient(160deg,#d4c4b0,#c4b09a); border-color:#a89070; width:570px; }
+.ep .lkeys { background: repeating-linear-gradient(90deg,#a89070 0,#a89070 18px,#c4b09a 18px,#c4b09a 22px); width:320px; }
+.ep .ltpad { background: #8b7d6b; }
+.ep .theme-label { color: #c2703e; }
+.ep .theme-sub { color: #8b7d6b; }
+
+/* Earthy Pastel mini-dashboard */
+.ep-dash {
+  width: 100%; height: 100%;
+  background: #faf6f0;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.ep-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e8ddd0;
+}
+
+.ep-hdr-t { font-family:'Orbitron',sans-serif; font-size:9px; font-weight:700; color:#3d3028; letter-spacing:.06em; }
+.ep-hdr-v { font-family:'Orbitron',sans-serif; font-size:8px; color:#c2703e; }
+
+.ep-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.ep-card {
+  background: #fff8f2;
+  border: 1px solid #e8ddd0;
+  border-radius: 8px;
+  padding: 8px 9px;
+}
+
+.ep-card-l {font-family:'Orbitron',sans-serif;font-size:5px;color:#8b7d6b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.ep-card-v {font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;}
+.epv1{color:#c2703e;} .epv2{color:#7c8c5e;} .epv3{color:#c2a03e;}
+
+.ep-platforms {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.ep-plat {
+  background: #fff8f2;
+  border: 1px solid #e8ddd0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ep-plat-n {font-family:'Orbitron',sans-serif;font-size:7px;font-weight:700;color:#3d3028;}
+.ep-plat-a {font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;color:#c2703e;}
+.ep-pbar-bg {height:3px;background:#e8ddd0;border-radius:2px;overflow:hidden;}
+.ep-pbar {height:100%;border-radius:2px;background:linear-gradient(90deg,#c2703e,#e8a070);}
+
+/* ─── BOTTOM COPY ─── */
+.bottom-copy {
+  margin-top: 90px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.bc1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  color: #3a4068;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.bc1 .hl { color: #00d4ff; }
+
+.wm {
+  position: absolute; bottom: 52px; right: 72px;
+  font-family: 'Syncopate', sans-serif; font-size: 16px;
+  letter-spacing: .12em; color: rgba(255,255,255,0.17);
+}
+</style>
+</head>
+<body>
+
+<div class="top-section">
+  <div class="badge">
+    <div class="badge-dot"></div>
+    <div class="badge-text">Choose Your Style</div>
+  </div>
+  <div class="main-title">3 PREMIUM<br><span class="main-title-accent">THEMES</span> INCLUDED</div>
+</div>
+
+<div class="laptop-row">
+
+  <!-- DARK TECHY -->
+  <div class="laptop-unit dt">
+    <div class="lbezel">
+      <div class="lcam"></div>
+      <div class="lscreen">
+        <div class="dt-dash">
+          <div class="dt-hdr">
+            <div class="dt-hdr-t">AI OPS DASHBOARD</div>
+            <div class="dt-hdr-v">$247 / $500</div>
+          </div>
+          <div class="dt-cards">
+            <div class="dt-card c1">
+              <div class="dt-card-l">Total Spend</div>
+              <div class="dt-card-v v1">$247.83</div>
+            </div>
+            <div class="dt-card c2">
+              <div class="dt-card-l">Projected</div>
+              <div class="dt-card-v v2">$312.40</div>
+            </div>
+            <div class="dt-card c3">
+              <div class="dt-card-l">Remaining</div>
+              <div class="dt-card-v v3">$252.17</div>
+            </div>
+          </div>
+          <div class="dt-platforms">
+            <div class="dt-plat">
+              <div class="dt-plat-n">CLAUDE</div>
+              <div class="dt-plat-a">$89.40</div>
+              <div class="dt-pbar-bg"><div class="dt-pbar" style="width:72%;background:linear-gradient(90deg,#00d4ff,#0080ff)"></div></div>
+            </div>
+            <div class="dt-plat">
+              <div class="dt-plat-n">CHATGPT</div>
+              <div class="dt-plat-a" style="color:#a78bfa">$78.20</div>
+              <div class="dt-pbar-bg"><div class="dt-pbar" style="width:65%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+            </div>
+            <div class="dt-plat">
+              <div class="dt-plat-n">GEMINI</div>
+              <div class="dt-plat-a" style="color:#34d399">$52.14</div>
+              <div class="dt-pbar-bg"><div class="dt-pbar" style="width:42%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+            </div>
+            <div class="dt-plat">
+              <div class="dt-plat-n">GROK</div>
+              <div class="dt-plat-a" style="color:#fbbf24">$28.09</div>
+              <div class="dt-pbar-bg"><div class="dt-pbar" style="width:28%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lhinge"></div>
+    <div class="lbase">
+      <div class="lkeys"></div>
+      <div class="ltpad"></div>
+    </div>
+    <div class="theme-label">DARK TECHY</div>
+    <div class="theme-sub" style="color:#3a4068">Neon · High Contrast · Glows</div>
+  </div>
+
+  <!-- CLEAN MINIMAL -->
+  <div class="laptop-unit cm">
+    <div class="lbezel">
+      <div class="lcam"></div>
+      <div class="lscreen">
+        <div class="cm-dash">
+          <div class="cm-hdr">
+            <div class="cm-hdr-t">AI OPS DASHBOARD</div>
+            <div class="cm-hdr-v">$247 / $500</div>
+          </div>
+          <div class="cm-cards">
+            <div class="cm-card">
+              <div class="cm-card-l">Total Spend</div>
+              <div class="cm-card-v cmv1">$247.83</div>
+            </div>
+            <div class="cm-card">
+              <div class="cm-card-l">Projected</div>
+              <div class="cm-card-v cmv2">$312.40</div>
+            </div>
+            <div class="cm-card">
+              <div class="cm-card-l">Remaining</div>
+              <div class="cm-card-v cmv3">$252.17</div>
+            </div>
+          </div>
+          <div class="cm-platforms">
+            <div class="cm-plat">
+              <div class="cm-plat-n">Claude</div>
+              <div class="cm-plat-a">$89.40</div>
+              <div class="cm-pbar-bg"><div class="cm-pbar" style="width:72%"></div></div>
+            </div>
+            <div class="cm-plat">
+              <div class="cm-plat-n">ChatGPT</div>
+              <div class="cm-plat-a" style="color:#8b5cf6">$78.20</div>
+              <div class="cm-pbar-bg"><div class="cm-pbar" style="width:65%;background:linear-gradient(90deg,#8b5cf6,#c4b5fd)"></div></div>
+            </div>
+            <div class="cm-plat">
+              <div class="cm-plat-n">Gemini</div>
+              <div class="cm-plat-a" style="color:#10b981">$52.14</div>
+              <div class="cm-pbar-bg"><div class="cm-pbar" style="width:42%;background:linear-gradient(90deg,#10b981,#6ee7b7)"></div></div>
+            </div>
+            <div class="cm-plat">
+              <div class="cm-plat-n">Grok</div>
+              <div class="cm-plat-a" style="color:#f59e0b">$28.09</div>
+              <div class="cm-pbar-bg"><div class="cm-pbar" style="width:28%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lhinge"></div>
+    <div class="lbase">
+      <div class="lkeys"></div>
+      <div class="ltpad"></div>
+    </div>
+    <div class="theme-label">CLEAN MINIMAL</div>
+    <div class="theme-sub" style="color:#64748b">Light · Clean · Professional</div>
+  </div>
+
+  <!-- EARTHY PASTEL -->
+  <div class="laptop-unit ep">
+    <div class="lbezel">
+      <div class="lcam"></div>
+      <div class="lscreen">
+        <div class="ep-dash">
+          <div class="ep-hdr">
+            <div class="ep-hdr-t">AI OPS DASHBOARD</div>
+            <div class="ep-hdr-v">$247 / $500</div>
+          </div>
+          <div class="ep-cards">
+            <div class="ep-card">
+              <div class="ep-card-l">Total Spend</div>
+              <div class="ep-card-v epv1">$247.83</div>
+            </div>
+            <div class="ep-card">
+              <div class="ep-card-l">Projected</div>
+              <div class="ep-card-v epv2">$312.40</div>
+            </div>
+            <div class="ep-card">
+              <div class="ep-card-l">Remaining</div>
+              <div class="ep-card-v epv3">$252.17</div>
+            </div>
+          </div>
+          <div class="ep-platforms">
+            <div class="ep-plat">
+              <div class="ep-plat-n">Claude</div>
+              <div class="ep-plat-a">$89.40</div>
+              <div class="ep-pbar-bg"><div class="ep-pbar" style="width:72%"></div></div>
+            </div>
+            <div class="ep-plat">
+              <div class="ep-plat-n">ChatGPT</div>
+              <div class="ep-plat-a" style="color:#7c8c5e">$78.20</div>
+              <div class="ep-pbar-bg"><div class="ep-pbar" style="width:65%;background:linear-gradient(90deg,#7c8c5e,#a0b07e)"></div></div>
+            </div>
+            <div class="ep-plat">
+              <div class="ep-plat-n">Gemini</div>
+              <div class="ep-plat-a" style="color:#c2a03e">$52.14</div>
+              <div class="ep-pbar-bg"><div class="ep-pbar" style="width:42%;background:linear-gradient(90deg,#c2a03e,#dcc06e)"></div></div>
+            </div>
+            <div class="ep-plat">
+              <div class="ep-plat-n">Grok</div>
+              <div class="ep-plat-a" style="color:#7c8c9e">$28.09</div>
+              <div class="ep-pbar-bg"><div class="ep-pbar" style="width:28%;background:linear-gradient(90deg,#7c8c9e,#a0b0be)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lhinge"></div>
+    <div class="lbase">
+      <div class="lkeys"></div>
+      <div class="ltpad"></div>
+    </div>
+    <div class="theme-label">EARTHY PASTEL</div>
+    <div class="theme-sub" style="color:#8b7d6b">Warm · Natural · Calm</div>
+  </div>
+
+</div>
+
+<div class="bottom-copy">
+  <div class="bc1">Choose Your Style &nbsp;·&nbsp; <span class="hl">$20</span> &nbsp;·&nbsp; Instant Download</div>
+</div>
+
+<div class="wm">JCF7Studio</div>
+
+</body>
+</html>

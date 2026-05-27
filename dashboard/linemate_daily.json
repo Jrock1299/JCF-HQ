@@ -1,0 +1,156 @@
+{
+  "scraped_at": "2026-04-13T14:30:00Z",
+  "source": "linemate.io",
+  "sports": {
+    "MLB": {
+      "date": "2026-04-13",
+      "games": ["HOU @ SEA", "ARI @ BAL", "WSH @ PIT", "CHC @ PHI", "LAA @ NYY", "MIA @ ATL", "BOS @ MIN", "CLE @ STL", "TEX @ ATH"],
+      "same_game_parlays": [
+        {
+          "game": "HOU @ SEA",
+          "legs": [
+            {"player": "J. Altuve", "prop": "Over 0.5 Hits", "odds": -209},
+            {"player": "C. Correa", "prop": "Over 0.5 Hits", "odds": -192},
+            {"player": "C. Smith", "prop": "Over 0.5 Hits", "odds": -150}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games",
+          "away_hit_rate": 75
+        },
+        {
+          "game": "HOU @ SEA",
+          "legs": [
+            {"player": "J. Altuve", "prop": "Over 0.5 Hits", "odds": -209},
+            {"player": "C. Correa", "prop": "Over 0.5 Total Bases", "odds": -190},
+            {"player": "C. Smith", "prop": "Over 0.5 Hits", "odds": -150}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games",
+          "away_hit_rate": 75
+        },
+        {
+          "game": "HOU @ SEA",
+          "legs": [
+            {"player": "J. Altuve", "prop": "Over 0.5 Singles", "odds": -110},
+            {"player": "C. Correa", "prop": "Over 0.5 Total Bases", "odds": -190},
+            {"player": "C. Smith", "prop": "Over 0.5 Hits", "odds": -150}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games",
+          "away_hit_rate": 75
+        }
+      ],
+      "hundred_percent_club": [
+        {"player": "J. Naylor", "opponent": "HOU", "prop": "Under 1.5 Total Bases", "odds": -184, "hit_rate": 100, "sample": "7 of last 7 games", "extra": "11 of last 11 home games"},
+        {"player": "J. Naylor", "opponent": "HOU", "prop": "Under 0.5 RBI", "odds": -192, "hit_rate": 100, "sample": "7 of last 7 games"},
+        {"player": "J. Rodriguez", "opponent": "HOU", "prop": "Over 0.5 Hits", "odds": -244, "hit_rate": 100, "sample": "8 of last 8 games vs HOU"},
+        {"player": "D. Canzone", "opponent": "HOU", "prop": "Under 0.5 Singles", "odds": -189, "hit_rate": 100, "sample": "7 of last 7 games", "extra": "4 of last 4 vs HOU"},
+        {"player": "C. Young", "opponent": "HOU", "prop": "Over 0.5 H+R+RBI", "odds": -150, "hit_rate": 100, "sample": "5 of last 5 games", "extra": "5 of 5 vs HOU, 9 of 9 home games"},
+        {"player": "C. Raleigh", "opponent": "HOU", "prop": "Under 0.5 Singles", "odds": -213, "hit_rate": 100, "sample": "4 of last 4 games", "extra": "6 of 6 vs HOU"},
+        {"player": "G. Kirby", "opponent": "HOU", "prop": "Under 1.5 Walks Allowed", "odds": -200, "hit_rate": 100, "sample": "6 of last 6 vs HOU"},
+        {"player": "J. Crawford", "opponent": "HOU", "prop": "Over 0.5 Runs", "odds": 179, "hit_rate": 100, "sample": "4 of last 4 vs HOU"},
+        {"player": "M. Burrows", "opponent": "SEA", "prop": "Under 16.5 Pitcher Outs", "odds": -111, "hit_rate": 100, "sample": "6 of last 6 away games"},
+        {"player": "M. Burrows", "opponent": "SEA", "prop": "Under 2.5 Walks Allowed", "odds": -175, "hit_rate": 100, "sample": "7 of last 7 away games"},
+        {"player": "I. Paredes", "opponent": "SEA", "prop": "Over 0.5 Hits", "odds": -150, "hit_rate": 100, "sample": "4 of last 4 vs SEA"},
+        {"player": "I. Paredes", "opponent": "SEA", "prop": "Over 0.5 Total Bases", "odds": -150, "hit_rate": 100, "sample": "4 of last 4 vs SEA"},
+        {"player": "C. Walker", "opponent": "SEA", "prop": "Under 1.5 H+R+RBI", "odds": -165, "hit_rate": 100, "sample": "6 of last 6 vs SEA"}
+      ],
+      "cross_game_parlays": [
+        {
+          "legs": [
+            {"player": "G. Henderson", "prop": "Over 0.5 Hits", "odds": -250},
+            {"player": "J. Wood", "prop": "Over 0.5 Hits", "odds": -133},
+            {"player": "D. Baldwin", "prop": "Over 0.5 Hits", "odds": -213}
+          ],
+          "hit_rate": 100,
+          "sample": "Each leg hit in 6 of last 6 games"
+        },
+        {
+          "legs": [
+            {"player": "G. Henderson", "prop": "Over 0.5 Hits", "odds": -250},
+            {"player": "J. Wood", "prop": "Over 0.5 Hits", "odds": -133},
+            {"player": "J. Walker", "prop": "Over 0.5 Hits", "odds": -150}
+          ],
+          "hit_rate": 100,
+          "sample": "Each leg hit in 6 of last 6 games"
+        },
+        {
+          "legs": [
+            {"player": "G. Henderson", "prop": "Over 0.5 Hits", "odds": -250},
+            {"player": "J. Wood", "prop": "Over 0.5 Hits", "odds": -133},
+            {"player": "B. Harper", "prop": "Over 0.5 Hits", "odds": -218}
+          ],
+          "hit_rate": 100,
+          "sample": "Each leg hit in 6 of last 6 games"
+        }
+      ]
+    },
+    "NHL": {
+      "date": "2026-04-13",
+      "games": ["DET @ TBL", "NYR @ FLO", "CAR @ PHI", "DAL @ TOR", "MIN @ STL", "SJS @ NSH", "BUF @ CHI", "COL @ EDM", "LAK @ SEA"],
+      "same_game_parlays": [
+        {
+          "game": "DET @ TBL",
+          "legs": [
+            {"player": "P. Kane", "prop": "Over 0.5 Assists", "odds": 110},
+            {"player": "A. DeBrincat", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "DET", "prop": "Over 2.5 Team Total", "odds": -110}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games"
+        },
+        {
+          "game": "DET @ TBL",
+          "legs": [
+            {"player": "P. Kane", "prop": "Over 0.5 Assists", "odds": 110},
+            {"player": "A. DeBrincat", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "D. Larkin", "prop": "Over 0.5 Points", "odds": -150}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games"
+        },
+        {
+          "game": "DET @ TBL",
+          "legs": [
+            {"player": "P. Kane", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "A. DeBrincat", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "DET", "prop": "Over 2.5 Team Total", "odds": -110}
+          ],
+          "hit_rate": 75,
+          "sample": "3 of last 4 games"
+        }
+      ],
+      "hundred_percent_club": [
+        {"player": "B. Point", "opponent": "DET", "prop": "Under 0.5 Assists", "odds": -154, "hit_rate": 100, "sample": "7 of last 7 home games"},
+        {"player": "B. Hagel", "opponent": "DET", "prop": "Over 2.5 Shots on Goal", "odds": -135, "hit_rate": 100, "sample": "5 of last 5 games", "extra": "4 of 4 home games"}
+      ],
+      "cross_game_parlays": [
+        {
+          "legs": [
+            {"player": "D. Larkin", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "A. Svechnikov", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "J. Norris", "prop": "Over 0.5 Points", "odds": -115}
+          ],
+          "hit_rate": 100,
+          "sample": "Each leg hit in 4 of last 4 games"
+        },
+        {
+          "legs": [
+            {"player": "D. Larkin", "prop": "Over 0.5 Points", "odds": -150},
+            {"player": "P. Martone", "prop": "Over 0.5 Points", "odds": 100},
+            {"player": "J. Norris", "prop": "Over 0.5 Points", "odds": -115}
+          ],
+          "hit_rate": 100,
+          "sample": "Each leg hit in 4 of last 4 games"
+        }
+      ]
+    },
+    "NBA": {
+      "date": "2026-04-13",
+      "note": "No trends available — needs 3 games minimum",
+      "same_game_parlays": [],
+      "hundred_percent_club": [],
+      "cross_game_parlays": []
+    }
+  }
+}

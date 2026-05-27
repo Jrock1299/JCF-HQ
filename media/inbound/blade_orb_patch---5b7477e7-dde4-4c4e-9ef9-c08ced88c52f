@@ -1,0 +1,290 @@
+#!/usr/bin/env python3
+"""
+BLADE ORB STRATEGY PATCH
+========================
+Run this once on the VPS to inject the missing ORB detection logic into blade_bot.py.
+
+Usage:
+    python3 blade_orb_patch.py
+
+What it does:
+1. Adds get_opening_candle() — fetches the 15m opening candle from OANDA, returns high/low
+2. Adds check_1m_breakout() — monitors 1m candles for breakout above ORB high or below ORB low
+3. Rebuilds run_orb_session() with full monitoring loop, wired into existing place_paper_order/manage_positions
+4. Backs up the original file first
+
+NOTE: This uses OANDA candle format (mid.o / mid.h / mid.l / mid.c), not Binance arrays.
+"""
+
+import shutil
+import os
+
+BLADE_PATH = "/root/.openclaw/agents/blade/bot/blade_bot.py"
+BACKUP_PATH = BLADE_PATH + ".bak.pre_orb_patch"
+
+# ── Read the file
+with open(BLADE_PATH, "r") as f:
+    content = f.read()
+    lines = content.split("\n")
+
+# ── Backup
+shutil.copy2(BLADE_PATH, BACKUP_PATH)
+print(f"[OK] Backup saved to {BACKUP_PATH}")
+
+# ── New functions to inject BEFORE run_orb_session (after existing functions, before line 241)
+NEW_FUNCTIONS = '''
+# ══════════════════════════════════════════════════════════
+# ORB DETECTION LOGIC (added by blade_orb_patch.py)
+# ══════════════════════════════════════════════════════════
+
+SESSION_TIMES = {
+    'LONDON': {'open_hour': 8, 'open_min': 0},
+    'NY':     {'open_hour': 14, 'open_min': 30},
+}
+
+def wait_for_session_open(session_name):
+    """Wait until the session open time (UTC)."""
+    from datetime import datetime, timezone
+    sess = SESSION_TIMES.get(session_name.upper(), SESSION_TIMES['NY'])
+    while True:
+        now = datetime.now(timezone.utc)
+        if now.hour > sess['open_hour'] or (now.hour == sess['open_hour'] and now.minute >= sess['open_min']):
+            print(f"\\n{'='*50}")
+            print(f"  {session_name} SESSION OPEN — {now.strftime('%H:%M:%S UTC')}")
+            print(f"{'='*50}")
+            return
+        wait_min = (sess['open_hour'] - now.hour) * 60 + (sess['open_min'] - now.minute)
+        print(f"\\u23f3 Waiting for {session_name} session open ({sess['open_hour']:02d}:{sess['open_min']:02d} UTC)... {wait_min}m remaining")
+        time.sleep(min(wait_min * 60, 60))
+
+
+def wait_for_candle_close():
+    """Wait for the current 15m candle to close so we get a complete opening range."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    minutes_into_candle = now.minute % 15
+    wait_seconds = (15 - minutes_into_candle) * 60 - now.second
+    if wait_seconds > 0 and wait_seconds < 900:
+        print(f"\\u23f3 Waiting {wait_seconds}s for 15m candle close...")
+        time.sleep(wait_seconds + 5)  # 5s buffer for candle to finalize
+
+
+def get_opening_candle(instrument):
+    """
+    Fetch the most recent closed 15m candle from OANDA and return its high/low.
+    This represents the Opening Range for the session.
+    
+    OANDA candle format:
+        candle['mid']['h'] = high
+        candle['mid']['l'] = low
+        candle['mid']['o'] = open
+        candle['mid']['c'] = close
+        candle['complete'] = True/False
+    """
+    try:
+        print(f"\\U0001f4ca Recording opening 15m candle for {instrument}...")
+        candles = get_candles(instrument, 'M15', 3)
+        if not candles:
+            print(f"\\u274c No candles returned for {instrument}")
+            return None, None
+        
+        # Find the last COMPLETE candle
+        complete_candles = [c for c in candles if c.get('complete', False)]
+        if not complete_candles:
+            print(f"\\u274c No complete 15m candles for {instrument}")
+            return None, None
+        
+        opening_candle = complete_candles[-1]
+        high = float(opening_candle['mid']['h'])
+        low = float(opening_candle['mid']['l'])
+        print(f"\\U0001f4ca {instrument} ORB marked — High: {high} Low: {low}")
+        return high, low
+    except Exception as e:
+        print(f"\\u274c Error getting opening candle for {instrument}: {e}")
+        logging.error(f"get_opening_candle error for {instrument}: {e}")
+        return None, None
+
+
+def check_1m_breakout(instrument, orb_high, orb_low):
+    """
+    Check the last closed 1m candle for a breakout above ORB high or below ORB low.
+    
+    Entry criteria (same as Crisp):
+    - LONG: candle close > ORB high AND candle open > ORB high (clean break, not a wick)
+    - SHORT: candle close < ORB low AND candle open < ORB low
+    
+    Returns: 'long', 'short', or None
+    """
+    try:
+        candles = get_candles(instrument, 'M1', 3)
+        if not candles:
+            return None
+        
+        # Get last complete candle
+        complete_candles = [c for c in candles if c.get('complete', False)]
+        if not complete_candles:
+            return None
+        
+        last_closed = complete_candles[-1]
+        close_price = float(last_closed['mid']['c'])
+        open_price = float(last_closed['mid']['o'])
+        
+        if close_price > orb_high and open_price > orb_high:
+            return 'long'
+        elif close_price < orb_low and open_price < orb_low:
+            return 'short'
+        return None
+    except Exception as e:
+        logging.error(f"check_1m_breakout error for {instrument}: {e}")
+        return None
+'''
+
+# ── New run_orb_session to replace the placeholder
+NEW_RUN_ORB = '''def run_orb_session(session_name):
+    """
+    Full ORB session runner:
+    1. Wait for session open
+    2. Wait for first 15m candle to close
+    3. Mark ORB high/low for each instrument
+    4. Monitor 1m candles for breakouts for up to 4 hours
+    5. Manage open positions (TP/SL)
+    6. Close remaining positions at session end
+    7. Report results
+    """
+    global paper_balance
+    
+    print(f"\\n{'='*50}")
+    print(f"  BLADE — {session_name} ORB Session")
+    print(f"  Instruments: {INSTRUMENTS}")
+    print(f"  Balance: ${paper_balance:.2f}")
+    print(f"{'='*50}\\n")
+
+    wait_for_session_open(session_name)
+    wait_for_candle_close()
+
+    # ── Mark ORB ranges
+    orb_ranges = {}
+    for instrument in INSTRUMENTS:
+        high, low = get_opening_candle(instrument)
+        if high and low:
+            orb_ranges[instrument] = {'high': high, 'low': low}
+
+    if not orb_ranges:
+        print("\\u274c No ORB ranges found for any instrument, aborting session")
+        # Log no_trade for each instrument
+        for instrument in INSTRUMENTS:
+            session_trades.append({
+                'agent': 'blade', 'date': datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+                'session': session_name, 'pair': instrument, 'setup': '15m ORB',
+                'entry': 0, 'stop': 0, 'tp1': 0, 'tp2': 0, 'tp3': 0,
+                'result': 'no_trade', 'pnl_usd': 0, 'r_multiple': 0,
+                'notes': f'No complete 15m opening range data for {session_name} session.',
+                'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+            })
+        write_session_trades_to_json()
+        send_telegram_report(session_name)
+        return
+
+    print(f"\\n\\U0001f50d Monitoring 1m chart for breakouts on {list(orb_ranges.keys())}...")
+
+    # ── Monitor for breakouts (4 hour window)
+    end_time = time.time() + (4 * 3600)
+    traded = set()
+
+    while time.time() < end_time:
+        for instrument in INSTRUMENTS:
+            if instrument in traded or instrument not in orb_ranges:
+                continue
+            direction = check_1m_breakout(instrument, orb_ranges[instrument]['high'], orb_ranges[instrument]['low'])
+            if direction:
+                print(f"\\U0001f6a8 BREAKOUT: {instrument} {direction.upper()}")
+                if place_paper_order(instrument, direction, orb_ranges[instrument]['high'], orb_ranges[instrument]['low'], session_name):
+                    traded.add(instrument)
+
+        if open_positions:
+            manage_positions()
+
+        print(f"\\U0001f4b0 Balance: ${paper_balance:.2f} | Open: {list(open_positions.keys())}")
+        time.sleep(30)
+
+    # ── End of session: close remaining positions
+    for instrument in list(open_positions.keys()):
+        pos = open_positions[instrument]
+        price = get_price(instrument)
+        if pos['direction'] == 'long':
+            pnl = (price - pos['entry']) * pos['units']
+        else:
+            pnl = (pos['entry'] - price) * pos['units']
+        paper_balance += pnl
+        result = f"TP{pos['highest_tp_hit']}" if pos.get('highest_tp_hit', 0) > 0 else "BE" if pos.get('breakeven_moved', False) else "Time Stop"
+        update_trade_log(pos['trade_id'], result, pnl, "Closed at end of session.")
+        msg = f"\\u23f0 TIME STOP: {instrument} | PnL: ${pnl:.2f}"
+        print(msg)
+        logging.info(msg)
+
+    open_positions.clear()
+    print(f"\\n{'='*50}")
+    print(f"{session_name} session complete")
+
+    # ── Final reporting
+    write_session_trades_to_json()
+    os.system("python3 /root/.openclaw/scripts/sync_agent_pnl.py")
+    send_telegram_report(session_name)
+
+    print(f"Final balance: ${paper_balance:.2f}")
+    print(f"{'='*50}")
+'''
+
+# ══════════════════════════════════════════════════════════
+# APPLY THE PATCH
+# ══════════════════════════════════════════════════════════
+
+# Find where run_orb_session starts (line 241 in original, 0-indexed = 240)
+run_orb_start = None
+run_orb_end = None
+for i, line in enumerate(lines):
+    if line.strip().startswith("def run_orb_session"):
+        run_orb_start = i
+    elif run_orb_start is not None and line.strip().startswith("if __name__"):
+        run_orb_end = i
+        break
+
+if run_orb_start is None:
+    print("[ERROR] Could not find run_orb_session in blade_bot.py!")
+    exit(1)
+
+if run_orb_end is None:
+    run_orb_end = len(lines)
+
+print(f"[OK] Found run_orb_session at line {run_orb_start + 1}")
+print(f"[OK] Found __main__ block at line {run_orb_end + 1}")
+
+# Build new file:
+# 1. Everything before run_orb_session
+# 2. New helper functions (ORB detection)
+# 3. New run_orb_session
+# 4. Everything from __main__ onwards
+new_content = "\n".join(lines[:run_orb_start]) + "\n"
+new_content += NEW_FUNCTIONS + "\n"
+new_content += NEW_RUN_ORB + "\n"
+new_content += "\n".join(lines[run_orb_end:])
+
+with open(BLADE_PATH, "w") as f:
+    f.write(new_content)
+
+print(f"[OK] Patched blade_bot.py ({len(new_content)} chars)")
+
+# Verify syntax
+import py_compile
+try:
+    py_compile.compile(BLADE_PATH, doraise=True)
+    print("[OK] Syntax check PASSED — blade_bot.py is clean")
+except py_compile.PyCompileError as e:
+    print(f"[ERROR] Syntax check FAILED: {e}")
+    print("[ROLLBACK] Restoring backup...")
+    shutil.copy2(BACKUP_PATH, BLADE_PATH)
+    print("[OK] Backup restored")
+
+print("\nDone. To test Blade manually:")
+print("  cd /root/.openclaw/agents/blade/bot")
+print("  python3 blade_bot.py NY")

@@ -1,0 +1,51 @@
+[
+  {
+    "build_id": "f03c75d2",
+    "timestamp": "2026-04-15T13:05:24.016888+00:00",
+    "product_name": "ai_ops_dashboard",
+    "theme": "dark_techy",
+    "file_path": "/root/.openclaw/agents/forge/builds/ai_ops_dashboard/dark_techy/index.html",
+    "size_kb": 44.0,
+    "build_cost": 0.248454,
+    "review_score": 8,
+    "review_status": "NEEDS_FIXES",
+    "iterations": 1,
+    "issues": [
+      "CRITICAL: escHtml() is called but never defined \u2014 entire render pipeline will throw ReferenceError on load",
+      "CRITICAL: openEditModal() function body is truncated \u2014 edit functionality is completely broken, modal footer and submit handler are missing",
+      "Brand logo click does nothing \u2014 tooltip says 'Click to edit brand name' but no onclick handler exists for brand-logo div",
+      "Touch device inaccessibility: platform edit/delete buttons hidden behind opacity:0 hover state with no touch fallback",
+      "generateDefaultHistory() may compute $0 current month total on very first load before platforms are set",
+      "chartPrevValues declared but unused \u2014 minor dead code",
+      "Canvas sizing subtracts 48px hardcoded but should use ResizeObserver or match actual computed padding to avoid overflow on edge cases",
+      "Usage bar double-RAF animation causes brief 0%-width flash on initial render",
+      "No ResizeObserver on chart canvas \u2014 chart does not redraw on window resize, leaving it stale/wrong size after viewport changes",
+      "confirm() dialog for delete will silently fail in sandboxed iframes"
+    ],
+    "total_cost": 0.3223
+  },
+  {
+    "build_id": "62c69362",
+    "timestamp": "2026-04-15T13:09:25.565474+00:00",
+    "product_name": "ai_ops_dashboard",
+    "theme": "dark_techy",
+    "file_path": "/root/.openclaw/agents/forge/builds/ai_ops_dashboard/dark_techy/index.html",
+    "size_kb": 47.1,
+    "build_cost": 0.322017,
+    "review_score": 7,
+    "review_status": "APPROVED",
+    "iterations": 1,
+    "issues": [
+      "Default platform icons are emoji blobs, not SVG initials \u2014 replace with per-platform SVG monogram initials (e.g. 'CL' for Claude, 'GP' for ChatGPT) to meet spec",
+      "Mode toggle hidden on mobile (display:none at \u2264768px) \u2014 convert to a compact icon-only toggle or move it to a collapsible menu instead of hiding entirely",
+      "No delete confirmation \u2014 add a window.confirm() or inline confirmation step before calling deletePlatform()",
+      "Alert count '0' displays in danger red \u2014 add conditional color: alert count === 0 should use var(--color-success) or var(--color-text-muted)",
+      "applyLogo() innerHTML replacement destroys tooltip child \u2014 rewrite to toggle visibility of logo-text span and insert/update an img element without clearing the entire innerHTML",
+      "Usage bar in API token mode should compute percentage from token cost vs budget, not manual spend \u2014 fix effectiveSpend usage in percentage calculation",
+      "Matrix rain resize does not reinitialize drops array \u2014 after resize recalculate cols and reset drops to match new column count",
+      "Stray 'btn' class on delete button class attribute \u2014 clean up to 'action-btn delete-btn'",
+      "drawChart canvas width reads clientWidth before fonts settle \u2014 add a requestAnimationFrame or FontFaceSet.ready().then() guard before first draw"
+    ],
+    "total_cost": 0.4052
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "team": "Aguada",
+  "games": 3,
+  "ppg": 1.7,
+  "rpg": 1.7,
+  "apg": 1.3,
+  "fg_pct": "2/5 (40.0%)",
+  "tp_pct": "0/3 (0.0%)",
+  "ft_pct": "1/2 (50.0%)",
+  "bpg": 0.7,
+  "spg": 0.3,
+  "min_pg": 13.3,
+  "source": "https://basketball.eurobasket.com/player/Jase-Febres/423908",
+  "scraped_at": "2026-05-27T08:00:05.787874+00:00",
+  "games_log": [
+    {
+      "date": "Ploiesti CSM",
+      "vs": "677",
+      "result": "261",
+      "min": "70-125",
+      "pts": "31-83",
+      "fg": "28-40",
+      "three": "40",
+      "ft": "88",
+      "reb": "28",
+      "ast": "9"
+    },
+    {
+      "date": "Team",
+      "vs": "MIN",
+      "result": "PTS",
+      "min": "2FGP",
+      "pts": "3FGP",
+      "fg": "FT",
+      "three": "RO",
+      "ft": "RD",
+      "reb": "PF",
+      "ast": "BS"
+    },
+    {
+      "date": "Ploiesti CSM",
+      "vs": "21.8",
+      "result": "8.4",
+      "min": "56.0%",
+      "pts": "37.3%",
+      "fg": "70.0%",
+      "three": "1.3",
+      "ft": "2.8",
+      "reb": "0.9",
+      "ast": "0.3"
+    }
+  ]
+}

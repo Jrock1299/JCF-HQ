@@ -1,0 +1,61 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v5 — EV + CONTEXT + CONFIDENCE
+Generated: 2026-04-14 09:00 UTC  |  Bankroll: $282.09
+============================================================
+
+📊 Record: 10W–17L (37.0% WR) | P&L: -70.62
+   NCAAB: 5W-6L (45.5% WR, -17.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   NHL: 1W-2L (33.3% WR, -8.00)
+   MLB: 2W-5L (28.6% WR, -10.10)
+
+⚠️  FADING (bad historical edge):
+   ⛔ MLB — filtered from today's picks
+   ⛔ NBA — filtered from today's picks
+
+🏆 TODAY'S PICKS (positive EV only)
+--------------------------------------------------
+1. Colorado Avalanche @ Calgary Flames
+   ✅ CGY ML +157  [MEDIUM 0.52] @ mybookieag
+   📊 EV: +5.6% | Consensus: 41.1% vs Line: 38.9% | Edge: +2.2% (6 books)
+   💰 Bet: $5.00 | NHL | ML
+   🕐 Apr 15 01:10AM ET
+   💡 EV +5.6%. rest advantage. Colorado Avalanche on B2B (rest: 1.0d).
+   😴 Colorado Avalanche on B2B (rest: 1.0d)
+
+2. Anaheim Ducks @ Minnesota Wild
+   ✅ ANA ML +110  [MEDIUM 0.45] @ mybookieag
+   📊 EV: +4.1% | Consensus: 49.6% vs Line: 47.6% | Edge: +2.0% (6 books)
+   💰 Bet: $5.00 | NHL | ML
+   🕐 Apr 15 12:10AM ET
+   💡 EV +4.1%. rest advantage. Minnesota Wild on B2B (rest: 1.0d).
+   😴 Minnesota Wild on B2B (rest: 1.0d)
+
+3. New Jersey Devils @ Boston Bruins
+   ✅ NJD ML +137  [MEDIUM 0.40] @ mybookieag
+   📊 EV: +5.5% | Consensus: 44.5% vs Line: 42.2% | Edge: +2.3% (6 books)
+   💰 Bet: $5.00 | NHL | ML
+   🕐 Apr 14 11:10PM ET
+   💡 EV +5.5%.
+
+🎯 LINEMATE — no qualifying straight picks today (-200 or better threshold)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: +175 | Combined prob: 34.1% | Stake: $5.00 → Win: $8.77
+  Leg 1: Cleveland Cavaliers (ML) (-298) [73.0%] — ML | NBA | Toronto Raptors @ Cleveland Cavaliers
+  Leg 2: Anaheim Ducks +1.5 (SPREAD) (-234) [68.6%] — SPREAD | NHL | Anaheim Ducks @ Minnesota Wild
+  Leg 3: Denver Nuggets (ML) (-225) [68.0%] — ML | NBA | Minnesota Timberwolves @ Denver Nuggets
+
+Parlay 2 — 3 legs | Odds: +208 | Combined prob: 30.0% | Stake: $5.00 → Win: $10.41
+  Leg 1: Washington Capitals +1.5 (SPREAD) (-224) [68.0%] — SPREAD | NHL | Washington Capitals @ Columbus Blue Jackets
+  Leg 2: Carolina Hurricanes +1.5 (SPREAD) (-220) [66.9%] — SPREAD | NHL | Carolina Hurricanes @ New York Islanders
+  Leg 3: Charlotte Hornets (ML) (-215) [66.0%] — ML | NBA | Miami Heat @ Charlotte Hornets
+
+🔒 LOCK PARLAY — no qualifying combination today (need 2+ EV+ legs combining to -180 or better)
+
+🔒 LINEMATE LOCK PARLAY — no cross-game 100% parlays today
+
+🎰 LINEMATE SGP — no qualifying same-game parlays today (need 75%+ hit rate)
+
+============================================================

@@ -1,0 +1,402 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "9bef7520-4d1a-49a9-a8e6-e5861f87fc86",
+      "name": "crisp-ny-session",
+      "description": "Auto-start Crisp for NY Morning session (Mon-Fri)",
+      "enabled": false,
+      "createdAtMs": 1772053480980,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 14 * * 1-5",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: python3 /root/.openclaw/agents/crisp/bot/crisp_bot.py NY",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    },
+    {
+      "id": "93af09ae-5834-4c3e-906f-c6216b800515",
+      "name": "crisp-asia-session",
+      "description": "Auto-start Crisp for Asia Open session (daily)",
+      "enabled": false,
+      "createdAtMs": 1772053489508,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: python3 /root/.openclaw/agents/crisp/bot/crisp_bot.py ASIA",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    },
+    {
+      "id": "7d10a576-b024-4e6a-9ced-6d97ce7d332c",
+      "agentId": "crisp",
+      "name": "crisp-asia",
+      "enabled": false,
+      "createdAtMs": 1772495702869,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 23,0-7 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Asia session paper trading (Binance testnet). Scan BTC/ETH/SOL/XRP for ICT/ICC setups. Max 3 concurrent, 3-5% risk, 5x leverage. Report setup: Asset | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "fc8567cd-cdaf-4eec-be2f-5e83d77d85c2",
+      "agentId": "crisp",
+      "name": "crisp-ny-1330",
+      "enabled": false,
+      "createdAtMs": 1772495704510,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30-59/10 13 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open paper trading (Binance testnet). Scan BTC/ETH/SOL/XRP for ICT/ICC setups. Max 3 concurrent, 3-5% risk, 5x leverage. Report setup: Asset | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "643cb79f-a20d-45f9-9494-378b0bba8c68",
+      "agentId": "crisp",
+      "name": "crisp-ny-1415",
+      "enabled": false,
+      "createdAtMs": 1772495706117,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 14-15 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open paper trading (Binance testnet). Scan BTC/ETH/SOL/XRP for ICT/ICC setups. Max 3 concurrent, 3-5% risk, 5x leverage. Report setup: Asset | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "d6843065-a896-4db7-bcbe-e00603046e38",
+      "agentId": "crisp",
+      "name": "crisp-ny-1600",
+      "enabled": false,
+      "createdAtMs": 1772495707718,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open final check (Binance testnet). Scan BTC/ETH/SOL/XRP for ICT/ICC setups. Max 3 concurrent, 3-5% risk, 5x leverage. Report setup: Asset | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "166430e9-16da-4a00-91ae-c4f1d3873e48",
+      "agentId": "blade",
+      "name": "blade-asia",
+      "enabled": false,
+      "createdAtMs": 1772495709251,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 0-3 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Asia session paper trading (OANDA). Pairs EUR/USD, GBP/USD, USD/JPY, AUD/USD. Max 2 concurrent, 1-2% risk, 10x leverage. Report setup: Pair | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "2b8c6d2a-2b2e-4c31-9b8c-1a5f48b9b111",
+      "agentId": "blade",
+      "name": "blade-london",
+      "enabled": false,
+      "createdAtMs": 1772617680000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 8-11 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "London session paper trading (OANDA). Pairs EUR/USD, GBP/USD, USD/JPY, AUD/USD. Max 2 concurrent, 1-2% risk, 10x leverage. Report setup: Pair | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "f17b59a7-e8eb-44d7-b275-995fe7fa5d69",
+      "agentId": "blade",
+      "name": "blade-ny-1330",
+      "enabled": false,
+      "createdAtMs": 1772495710900,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30-59/10 13 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open paper trading (OANDA). Pairs EUR/USD, GBP/USD, USD/JPY, AUD/USD. Max 2 concurrent, 1-2% risk, 10x leverage. Report setup: Pair | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "463fdabb-66de-42a6-aa56-fe2463aa4f43",
+      "agentId": "blade",
+      "name": "blade-ny-1415",
+      "enabled": false,
+      "createdAtMs": 1772495712547,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 14-15 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open paper trading (OANDA). Pairs EUR/USD, GBP/USD, USD/JPY, AUD/USD. Max 2 concurrent, 1-2% risk, 10x leverage. Report setup: Pair | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "9bbb2f62-749b-496d-99b0-18d3745ccb4c",
+      "agentId": "blade",
+      "name": "blade-ny-1600",
+      "enabled": false,
+      "createdAtMs": 1772495714167,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "NY open final check (OANDA). Pairs EUR/USD, GBP/USD, USD/JPY, AUD/USD. Max 2 concurrent, 1-2% risk, 10x leverage. Report setup: Pair | Direction | Entry | Stop | TP | R multiple. If no setup, report no-trade."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "state": {}
+    },
+    {
+      "id": "b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01",
+      "name": "robinhood-sync-8am",
+      "description": "Sync Robinhood balances + trades to HQ",
+      "enabled": true,
+      "createdAtMs": 1772646180000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/sync_robinhood.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    },
+    {
+      "id": "c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01",
+      "name": "trustwallet-sync-8am",
+      "description": "Sync Trust Wallet balances to HQ",
+      "enabled": true,
+      "createdAtMs": 1772646185000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/sync_trustwallet.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    },
+    {
+      "id": "a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11",
+      "name": "bball-stats-sync-8am",
+      "description": "Scrape EuroBasket stats for Jase",
+      "enabled": true,
+      "createdAtMs": 1772646240000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * 1",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/scrape_bball_stats.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    },
+    {
+      "id": "e0713bee-0b47-41f5-8844-e87975a75f18",
+      "agentId": "main",
+      "name": "weekly-9am-ro-innovation",
+      "enabled": true,
+      "createdAtMs": 1772496113546,
+      "schedule": {
+        "tz": "Europe/Bucharest",
+        "kind": "cron",
+        "expr": "0 9 * * 1"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "weekly 9AM Romania task: deliver one completed workflow improvement (or, if none, a new actionable idea). Use any available tools including web research (X/Reddit/web) when helpful. Keep it concise and high-signal."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420",
+        "bestEffort": false
+      },
+      "deleteAfterRun": false,
+      "state": {}
+    },
+    {
+      "id": "d1b8e5e2-3f5a-4b47-9c21-crypto15min",
+      "name": "oracle-crypto-scan-15m",
+      "description": "Oracle crypto 15m scanner",
+      "enabled": false,
+      "createdAtMs": 1772652022001,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/15 13-23,0-5 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/agents/oracle/bot/oracle_crypto.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {}
+    }
+  ]
+}

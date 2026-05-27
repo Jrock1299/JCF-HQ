@@ -1,0 +1,127 @@
+{
+  "positions": [
+    {
+      "symbol": "USAR",
+      "name": "USA Rare Earth",
+      "quantity": 158.007848,
+      "avg_buy_price": 26.9921,
+      "price": 26.66,
+      "equity": 4212.49,
+      "equity_change": -52.47,
+      "percent_change": -1.23,
+      "type": "stock",
+      "pe_ratio": -9.05
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "quantity": 17.610601,
+      "avg_buy_price": 179.4038,
+      "price": 213.82,
+      "equity": 3765.5,
+      "equity_change": 606.09,
+      "percent_change": 19.18,
+      "type": "stock",
+      "pe_ratio": 43.181772
+    },
+    {
+      "symbol": "OKLO",
+      "name": "Oklo",
+      "quantity": 30.525258,
+      "avg_buy_price": 110.1946,
+      "price": 73.85,
+      "equity": 2254.29,
+      "equity_change": -1109.43,
+      "percent_change": -32.98,
+      "type": "stock",
+      "pe_ratio": -100.11
+    },
+    {
+      "symbol": "VST",
+      "name": "Vistra",
+      "quantity": 9.462343,
+      "avg_buy_price": 201.6731,
+      "price": 157.48,
+      "equity": 1490.13,
+      "equity_change": -418.17,
+      "percent_change": -21.91,
+      "type": "stock",
+      "pe_ratio": 25.587116
+    },
+    {
+      "symbol": "MSTR",
+      "name": "Strategy Inc.",
+      "quantity": 7.437687,
+      "avg_buy_price": 236.5493,
+      "price": 180.9,
+      "equity": 1345.48,
+      "equity_change": -413.9,
+      "percent_change": -23.53,
+      "type": "stock",
+      "pe_ratio": -4.48
+    },
+    {
+      "symbol": "SOFI",
+      "name": "SoFi Technologies",
+      "quantity": 62.28243,
+      "avg_buy_price": 27.9926,
+      "price": 16.02,
+      "equity": 997.76,
+      "equity_change": -745.68,
+      "percent_change": -42.77,
+      "type": "stock",
+      "pe_ratio": 36.289408
+    },
+    {
+      "symbol": "UUUU",
+      "name": "Energy Fuels",
+      "quantity": 41.313322,
+      "avg_buy_price": 22.3896,
+      "price": 23.8,
+      "equity": 983.26,
+      "equity_change": 58.27,
+      "percent_change": 6.3,
+      "type": "stock",
+      "pe_ratio": -77.16
+    },
+    {
+      "symbol": "TEM",
+      "name": "Tempus AI",
+      "quantity": 14.762449,
+      "avg_buy_price": 83.1922,
+      "price": 50.19,
+      "equity": 740.93,
+      "equity_change": -487.19,
+      "percent_change": -39.67,
+      "type": "stock",
+      "pe_ratio": -28.79
+    },
+    {
+      "symbol": "IREN",
+      "name": "IREN Limited",
+      "quantity": 10.0,
+      "avg_buy_price": 49.685,
+      "price": 62.0,
+      "equity": 620.0,
+      "equity_change": 123.15,
+      "percent_change": 24.79,
+      "type": "stock",
+      "pe_ratio": 64.89726
+    },
+    {
+      "symbol": "IONQ",
+      "name": "IonQ",
+      "quantity": 12.171316,
+      "avg_buy_price": 47.4065,
+      "price": 48.25,
+      "equity": 587.27,
+      "equity_change": 10.27,
+      "percent_change": 1.78,
+      "type": "stock",
+      "pe_ratio": -274.02
+    }
+  ],
+  "total_equity": 16997.11,
+  "count": 10,
+  "last_updated": "2026-05-08T09:00:02+00:00"
+}

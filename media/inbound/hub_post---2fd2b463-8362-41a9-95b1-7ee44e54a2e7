@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""
+Agent Hub — Posting Utility
+============================
+Drop this file into any agent's bot folder or import it from a shared location.
+Every agent uses this to post messages to the Agent Hub.
+
+Usage:
+    from hub_post import hub_post
+
+    # Status update
+    hub_post("crisp", "status", "NY session started. 4 ORB ranges marked.")
+
+    # Error report
+    hub_post("blade", "error", "OANDA returned empty candles for NAS100_USD.", priority="high", tags=["trading", "oanda"])
+
+    # Idea / suggestion
+    hub_post("lens", "idea", "DXY bearish divergence on 4H. Suggest reducing long USD exposure.", tags=["macro", "forex"])
+
+    # Cross-agent communication
+    hub_post("huncho", "cross_agent", "Crisp win rate below 40%. Reviewing parameters.", priority="high", tags=["performance"])
+
+    # Diagnostic
+    hub_post("oracle", "diagnostic", "TheSportsDB API response time: 4.2s (normally <1s).", tags=["infrastructure"])
+"""
+
+import requests
+import json
+from datetime import datetime, timezone
+
+HUB_ENDPOINT = "http://localhost:8900/hq/hub"
+
+VALID_AGENTS = ["huncho", "crisp", "blade", "lens", "oracle", "advisor"]
+VALID_TYPES = ["status", "error", "idea", "diagnostic", "cross_agent"]
+VALID_PRIORITIES = ["low", "normal", "high", "critical"]
+
+
+def hub_post(agent, msg_type, message, priority="normal", session=None, tags=None):
+    """
+    Post a message to the Agent Hub.
+
+    Args:
+        agent:    Agent name (huncho, crisp, blade, lens, oracle, advisor)
+        msg_type: Message type (status, error, idea, diagnostic, cross_agent)
+        message:  The actual message content
+        priority: low, normal, high, critical (default: normal)
+        session:  Trading session context if relevant (NY, LONDON, etc.)
+        tags:     List of tags for filtering (e.g., ["trading", "performance"])
+    """
+    if agent not in VALID_AGENTS:
+        print(f"[HUB WARNING] Unknown agent '{agent}', posting anyway")
+    if msg_type not in VALID_TYPES:
+        print(f"[HUB WARNING] Unknown message type '{msg_type}', posting anyway")
+    if priority not in VALID_PRIORITIES:
+        priority = "normal"
+
+    payload = {
+        "agent": agent,
+        "type": msg_type,
+        "message": message,
+        "priority": priority,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "session": session,
+        "tags": tags or []
+    }
+
+    try:
+        r = requests.post(HUB_ENDPOINT, json=payload, timeout=5)
+        if r.status_code == 200:
+            return True
+        else:
+            print(f"[HUB ERROR] POST failed: {r.status_code} {r.text}")
+            return False
+    except Exception as e:
+        # If the hub is down, don't crash the agent — just log it
+        print(f"[HUB ERROR] Could not reach hub: {e}")
+        return False
+
+
+def hub_get(limit=50, agent=None, msg_type=None):
+    """
+    Retrieve recent hub messages (for dashboard or agent consumption).
+
+    Args:
+        limit:    Max messages to return (default 50)
+        agent:    Filter by agent name (optional)
+        msg_type: Filter by message type (optional)
+    """
+    params = {"limit": limit}
+    if agent:
+        params["agent"] = agent
+    if msg_type:
+        params["type"] = msg_type
+
+    try:
+        r = requests.get(HUB_ENDPOINT, params=params, timeout=5)
+        if r.status_code == 200:
+            return r.json().get("messages", [])
+        return []
+    except Exception:
+        return []
+
+
+if __name__ == "__main__":
+    # Quick test
+    print("Testing hub_post...")
+    result = hub_post("huncho", "status", "Agent Hub initialized. All systems reporting.", tags=["infrastructure"])
+    print(f"Post result: {result}")

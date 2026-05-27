@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(type\\(d\\).__name__\\); print\\(list\\(d.keys\\(\\)\\) if isinstance\\(d,dict\\) else f''''array of {len\\(d\\)}''''\\)\")",
+      "Bash(python3:*)",
+      "Bash(npm run:*)",
+      "Bash(npx vite:*)",
+      "Bash(node:*)",
+      "Bash(grep -E \"^/root/.openclaw/hq-app/[^/]+$\")",
+      "Bash(find /root/.openclaw/agents -name *.md -o -name *.txt -type f)",
+      "Bash(find /root/.openclaw -path */agent/* -name auth-profiles.json)"
+    ]
+  }
+}

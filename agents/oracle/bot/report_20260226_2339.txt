@@ -1,0 +1,20 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-02-26 23:39:55 UTC
+============================================================
+
+🎯 HIGH VALUE OPPORTUNITIES (0 found)
+----------------------------------------
+   No high value opportunities found
+
+👁 WATCH LIST (3 markets)
+----------------------------------------
+  • yes SJ Sharks,yes LA Kings,yes CAR Hurricanes,yes Over 4.5 goals scored,no Over 7.5 goals scored,no Over 7.5 goals scored,yes Over 3.5 goals scored,yes Over 4.5 goals scored,yes Over 5.5 goals scored,no Over 7.5 goals scored,no Over 7.5 goals scored,yes Over 6.5 goals scored,yes Over 5.5 goals scored | Yes: 1% | Vol: 0
+  • yes SJ Sharks,yes LA Kings,yes CAR Hurricanes,yes Over 4.5 goals scored,no Over 7.5 goals scored,yes Over 3.5 goals scored,yes Over 4.5 goals scored,yes Over 5.5 goals scored,no Over 7.5 goals scored,no Over 7.5 goals scored,yes Over 6.5 goals scored,yes Over 5.5 goals scored | Yes: 1% | Vol: 0
+  • yes Charlotte,yes Houston,yes Los Angeles L,yes Philadelphia,yes Minnesota,yes New Orleans,yes Portland,yes Dallas,yes San Antonio,yes Atlanta,yes Detroit,yes EDM Oilers | Yes: 2% | Vol: 0
+
+============================================================
+Total markets scanned: 3
+High value: 0 | Watch list: 3
+============================================================

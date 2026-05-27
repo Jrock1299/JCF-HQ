@@ -1,0 +1,105 @@
+{
+  "updated": "2026-05-27T12:00:03.283784+00:00",
+  "regime": "ranging",
+  "instruments": {
+    "SPX500_USD": {
+      "score": 69,
+      "strategy": "sweep_fade",
+      "bias": "bullish",
+      "regime": "ranging",
+      "best_window": "unknown",
+      "ema_alignment": "bullish",
+      "fvg_present": true,
+      "lens_bias": "neutral 50%",
+      "adr": 75.9,
+      "recommendation": "SKIP",
+      "notes": "RANGING + FVG \u2014 watch for liquidity sweep fade",
+      "score_breakdown": {
+        "ema_h4_daily": "+20 aligned bullish",
+        "ema_h1_m15": "+15 all aligned bullish",
+        "price_vs_50ema": "+10 above 50EMA (7465.7)",
+        "fvg": "+4 FVG present (counter-trend bearish)",
+        "liquidity": "+10 prior_day_high @ 7557.40",
+        "lens": "0 lens=neutral 50% (no alignment)",
+        "adr": "+10 normal ADR=75.9",
+        "time_window": "0 edge map not built"
+      },
+      "top_windows": []
+    },
+    "DE30_EUR": {
+      "score": 58,
+      "strategy": "sweep_fade",
+      "bias": "bullish",
+      "regime": "ranging",
+      "best_window": "unknown",
+      "ema_alignment": "bullish",
+      "fvg_present": true,
+      "lens_bias": "neutral 50%",
+      "adr": 439.3,
+      "recommendation": "SKIP",
+      "notes": "RANGING + FVG \u2014 watch for liquidity sweep fade",
+      "score_breakdown": {
+        "ema_h4_daily": "+20 aligned bullish",
+        "ema_h1_m15": "+8 H1 aligned",
+        "price_vs_50ema": "+10 above 50EMA (24845.8)",
+        "fvg": "+10 bullish FVG @ 25287.10",
+        "liquidity": "+10 h4_low @ 25174.20",
+        "lens": "0 lens=neutral 50% (no alignment)",
+        "adr": "0 abnormal ADR=439.3",
+        "time_window": "0 edge map not built"
+      },
+      "top_windows": []
+    },
+    "XAU_USD": {
+      "score": 55,
+      "strategy": "sweep_fade",
+      "bias": "bearish",
+      "regime": "ranging",
+      "best_window": "unknown",
+      "ema_alignment": "bearish",
+      "fvg_present": false,
+      "lens_bias": "neutral 50%",
+      "adr": 87.9,
+      "recommendation": "SKIP",
+      "notes": "RANGING \u2014 liquidity sweep reversal preferred",
+      "score_breakdown": {
+        "ema_h4_daily": "+20 aligned bearish",
+        "ema_h1_m15": "+15 all aligned bearish",
+        "price_vs_50ema": "+10 below 50EMA (4550.5)",
+        "fvg": "0 no FVG",
+        "liquidity": "+10 round_number @ 4425.00",
+        "lens": "0 lens=neutral 50% (no alignment)",
+        "adr": "0 abnormal ADR=87.9",
+        "time_window": "0 edge map not built"
+      },
+      "top_windows": []
+    },
+    "BTC_USD": {
+      "score": 50,
+      "strategy": "sweep_fade",
+      "bias": "bearish",
+      "regime": "ranging",
+      "best_window": "unknown",
+      "ema_alignment": "bearish",
+      "fvg_present": true,
+      "lens_bias": "neutral 50%",
+      "adr": 1711.3,
+      "recommendation": "SKIP",
+      "notes": "RANGING + FVG \u2014 watch for liquidity sweep fade",
+      "score_breakdown": {
+        "ema_h4_daily": "+8 partial (bearish/neutral)",
+        "ema_h1_m15": "+8 H1 aligned",
+        "price_vs_50ema": "+10 below 50EMA (76909.0)",
+        "fvg": "+4 FVG present (counter-trend bullish)",
+        "liquidity": "+10 prior_day_low @ 75677.97",
+        "lens": "0 lens=neutral 50% (no alignment)",
+        "adr": "+10 normal ADR=1711.3",
+        "time_window": "0 edge map not built"
+      },
+      "top_windows": []
+    }
+  },
+  "monte_carlo": {
+    "note": "No recent trades for Monte Carlo"
+  }
+}

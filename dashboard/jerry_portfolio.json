@@ -1,0 +1,113 @@
+{
+  "last_updated": "2026-05-27T16:55:27.345755+00:00",
+  "balance": 113493.97,
+  "cash": -54399.71,
+  "buying_power": 59094.26,
+  "total_pnl": 13493.97,
+  "total_pnl_pct": 13.49,
+  "open_positions": [
+    {
+      "symbol": "GEV",
+      "qty": 35.0,
+      "avg_entry_price": 1065.586286,
+      "current_price": 1050.245,
+      "market_value": 36758.575,
+      "unrealized_pl": -536.94501,
+      "unrealized_plpc": -0.0144,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "HLIT",
+      "qty": 260.0,
+      "avg_entry_price": 17.34,
+      "current_price": 17.01,
+      "market_value": 4422.6,
+      "unrealized_pl": -85.8,
+      "unrealized_plpc": -0.01903,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "LW",
+      "qty": 109.0,
+      "avg_entry_price": 41.296606,
+      "current_price": 43.02,
+      "market_value": 4689.18,
+      "unrealized_pl": 187.849946,
+      "unrealized_plpc": 0.04173,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "MU",
+      "qty": 7.0,
+      "avg_entry_price": 746.572857,
+      "current_price": 910.65,
+      "market_value": 6374.55,
+      "unrealized_pl": 1148.540001,
+      "unrealized_plpc": 0.21977,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "PAM",
+      "qty": 70.0,
+      "avg_entry_price": 80.424,
+      "current_price": 83.88,
+      "market_value": 5871.6,
+      "unrealized_pl": 241.92,
+      "unrealized_plpc": 0.04297,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "PLD",
+      "qty": 34.0,
+      "avg_entry_price": 143.64,
+      "current_price": 146.79,
+      "market_value": 4990.86,
+      "unrealized_pl": 107.1,
+      "unrealized_plpc": 0.02193,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "RGTI",
+      "qty": 1344.0,
+      "avg_entry_price": 25.113341,
+      "current_price": 25.345,
+      "market_value": 34063.68,
+      "unrealized_pl": 311.349696,
+      "unrealized_plpc": 0.00922,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "TKO",
+      "qty": 41.0,
+      "avg_entry_price": 189.02,
+      "current_price": 191.35,
+      "market_value": 7845.35,
+      "unrealized_pl": 95.53,
+      "unrealized_plpc": 0.01233,
+      "side": "long",
+      "asset_class": "us_equity"
+    },
+    {
+      "symbol": "VST",
+      "qty": 392.0,
+      "avg_entry_price": 162.89375,
+      "current_price": 160.4,
+      "market_value": 62876.8,
+      "unrealized_pl": -977.55,
+      "unrealized_plpc": -0.01531,
+      "side": "long",
+      "asset_class": "us_equity"
+    }
+  ],
+  "trades_today": 2,
+  "total_trades": 53,
+  "win_rate": 0.0,
+  "status": "trading"
+}

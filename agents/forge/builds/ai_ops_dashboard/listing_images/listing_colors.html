@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;500;600;700;900&family=Handjet:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 2000px;
+  height: 2000px;
+  overflow: hidden;
+}
+
+body {
+  background: #080810;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 80px 160px;
+}
+
+/* Multi-color glow background */
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 10% 25%, rgba(0,212,255,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 25%, rgba(139,92,246,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 30% 75%, rgba(16,185,129,0.04) 0%, transparent 35%),
+    radial-gradient(ellipse at 70% 75%, rgba(245,158,11,0.04) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 50%, rgba(239,68,68,0.02) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 80px;
+  position: relative; z-index: 1;
+}
+
+.eyebrow {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #8b5cf6;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 72px;
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  color: #fff;
+  text-shadow: 0 0 80px rgba(255,255,255,0.1);
+}
+
+.page-title .t1 { color: #00d4ff; text-shadow: 0 0 60px rgba(0,212,255,0.5); }
+.page-title .t2 { color: #8b5cf6; text-shadow: 0 0 60px rgba(139,92,246,0.5); }
+
+/* Main content layout */
+.content {
+  width: 100%;
+  display: flex;
+  gap: 80px;
+  position: relative; z-index: 1;
+  align-items: flex-start;
+}
+
+/* Left: Swatch section */
+.swatches-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* Swatch Row */
+.swatch-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.swatch-theme-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stl-text {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.stl-line {
+  flex: 1;
+  height: 1px;
+  opacity: 0.2;
+}
+
+.swatches {
+  display: flex;
+  gap: 20px;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.swatch-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.swatch-circle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+}
+
+.swatch-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Divider */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+
+/* Custom picker highlight */
+.custom-picker {
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 32px 36px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.picker-icon {
+  width: 64px; height: 64px;
+  border-radius: 12px;
+  background: conic-gradient(
+    #ff0000, #ff8000, #ffff00, #00ff00,
+    #00ffff, #0000ff, #ff00ff, #ff0000
+  );
+  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+
+.picker-text-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.picker-text-sub {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #4a5580;
+  letter-spacing: 0.06em;
+  margin-top: 8px;
+}
+
+/* Right: FAB Panel mockup */
+.panel-section {
+  width: 440px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.panel-label {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3a4068;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* The FAB panel mockup */
+.fab-panel-mockup {
+  background: #12121e;
+  border: 1px solid #252550;
+  border-radius: 20px;
+  padding: 24px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(139,92,246,0.08);
+}
+
+.fab-panel-title {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #3a4068;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.fab-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fab-swatch {
+  border-radius: 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+
+.fab-swatch.active {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+}
+
+.fab-swatch-circles {
+  display: flex;
+  gap: 4px;
+}
+
+.fab-sc {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.fab-swatch-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* Custom color section in panel */
+.fab-custom {
+  border-top: 1px solid #252550;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fab-custom-swatch {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: conic-gradient(#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(255,255,255,0.15);
+}
+
+.fab-custom-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  color: #4a5580;
+  letter-spacing: 0.06em;
+}
+
+/* FAB button */
+.fab-btn-mockup {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(139,92,246,0.4), 0 0 0 2px rgba(139,92,246,0.2);
+  font-size: 28px;
+  align-self: flex-end;
+}
+
+/* Watermark */
+.wm {
+  position: absolute; bottom: 52px; right: 72px;
+  font-family: 'Syncopate', sans-serif; font-size: 16px;
+  letter-spacing: .12em; color: rgba(255,255,255,0.17);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">Built Into Every Theme</div>
+  <div class="page-title">
+    BUILT-IN <span class="t1">COLOR</span><br><span class="t2">CUSTOMIZATION</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Left: Swatch rows -->
+  <div class="swatches-section">
+
+    <!-- Dark Techy Row -->
+    <div class="swatch-row">
+      <div class="swatch-theme-label">
+        <div class="stl-text" style="color:#00d4ff">Dark Techy</div>
+        <div class="stl-line" style="background:#00d4ff"></div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#00d4ff;box-shadow:0 4px 24px rgba(0,212,255,0.5)"></div>
+          <div class="swatch-name" style="color:#00d4ff">Neon<br>Cyan</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#8b5cf6;box-shadow:0 4px 24px rgba(139,92,246,0.5)"></div>
+          <div class="swatch-name" style="color:#a78bfa">Neon<br>Purple</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#10b981;box-shadow:0 4px 24px rgba(16,185,129,0.5)"></div>
+          <div class="swatch-name" style="color:#34d399">Neon<br>Green</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#f59e0b;box-shadow:0 4px 24px rgba(245,158,11,0.5)"></div>
+          <div class="swatch-name" style="color:#fbbf24">Amber<br>&nbsp;</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#ec4899;box-shadow:0 4px 24px rgba(236,72,153,0.5)"></div>
+          <div class="swatch-name" style="color:#f472b6">Neon<br>Pink</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#67e8f9;box-shadow:0 4px 24px rgba(103,232,249,0.4)"></div>
+          <div class="swatch-name" style="color:#67e8f9">Ice<br>Blue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Clean Minimal Row -->
+    <div class="swatch-row">
+      <div class="swatch-theme-label">
+        <div class="stl-text" style="color:#3b82f6">Clean Minimal</div>
+        <div class="stl-line" style="background:#3b82f6"></div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#3b82f6;box-shadow:0 4px 24px rgba(59,130,246,0.5)"></div>
+          <div class="swatch-name" style="color:#3b82f6">Ocean<br>Blue</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#10b981;box-shadow:0 4px 24px rgba(16,185,129,0.4)"></div>
+          <div class="swatch-name" style="color:#34d399">Sage<br>Green</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#ef4444;box-shadow:0 4px 24px rgba(239,68,68,0.4)"></div>
+          <div class="swatch-name" style="color:#f87171">Coral<br>Red</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#8b5cf6;box-shadow:0 4px 24px rgba(139,92,246,0.4)"></div>
+          <div class="swatch-name" style="color:#a78bfa">Lavender<br>&nbsp;</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#64748b;box-shadow:0 4px 20px rgba(100,116,139,0.4)"></div>
+          <div class="swatch-name" style="color:#94a3b8">Slate<br>Gray</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Earthy Pastel Row -->
+    <div class="swatch-row">
+      <div class="swatch-theme-label">
+        <div class="stl-text" style="color:#c2703e">Earthy Pastel</div>
+        <div class="stl-line" style="background:#c2703e"></div>
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#c2703e;box-shadow:0 4px 24px rgba(194,112,62,0.5)"></div>
+          <div class="swatch-name" style="color:#c2703e">Terra-<br>cotta</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#7c8c5e;box-shadow:0 4px 24px rgba(124,140,94,0.5)"></div>
+          <div class="swatch-name" style="color:#7c8c5e">Sage<br>Olive</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#c27080;box-shadow:0 4px 24px rgba(194,112,128,0.5)"></div>
+          <div class="swatch-name" style="color:#c27080">Dusty<br>Rose</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#c2a03e;box-shadow:0 4px 24px rgba(194,160,62,0.5)"></div>
+          <div class="swatch-name" style="color:#c2a03e">Warm<br>Gold</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#3e8c7c;box-shadow:0 4px 24px rgba(62,140,124,0.5)"></div>
+          <div class="swatch-name" style="color:#3e8c7c">Ocean<br>Teal</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-circle" style="background:#8c7eb4;box-shadow:0 4px 24px rgba(140,126,180,0.5)"></div>
+          <div class="swatch-name" style="color:#8c7eb4">Dusky<br>Lavender</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom picker bar -->
+    <div class="custom-picker">
+      <div class="picker-icon"></div>
+      <div>
+        <div class="picker-text-title">PLUS CUSTOM COLOR PICKER</div>
+        <div class="picker-text-sub">Enter any hex code · Choose any color · Changes instantly</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right: FAB Panel mockup -->
+  <div class="panel-section">
+    <div class="panel-label">Theme Switcher Panel</div>
+    <div class="fab-panel-mockup">
+      <div class="fab-panel-title">Color Themes</div>
+
+      <div class="fab-swatch-grid">
+        <div class="fab-swatch active" style="background:rgba(0,212,255,0.08)">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#00d4ff"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#00d4ff">Neon Cyan</div>
+        </div>
+        <div class="fab-swatch">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#8b5cf6"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#a78bfa">Neon Purple</div>
+        </div>
+        <div class="fab-swatch">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#10b981"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#34d399">Neon Green</div>
+        </div>
+        <div class="fab-swatch">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#f59e0b"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#fbbf24">Amber</div>
+        </div>
+        <div class="fab-swatch">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#ec4899"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#f472b6">Neon Pink</div>
+        </div>
+        <div class="fab-swatch">
+          <div class="fab-swatch-circles">
+            <div class="fab-sc" style="background:#67e8f9"></div>
+            <div class="fab-sc" style="background:#060612"></div>
+          </div>
+          <div class="fab-swatch-name" style="color:#67e8f9">Ice Blue</div>
+        </div>
+      </div>
+
+      <div class="fab-custom">
+        <div class="fab-custom-swatch"></div>
+        <div>
+          <div class="fab-swatch-name" style="color:#fff;font-size:11px">Custom Color</div>
+          <div class="fab-custom-text" style="margin-top:3px">#00d4ff · Click to change</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;margin-top:8px">
+      <div style="height:1px;flex:1;background:rgba(255,255,255,0.06)"></div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:#252b55;letter-spacing:.1em">FAB BUTTON</div>
+      <div style="height:1px;flex:1;background:rgba(255,255,255,0.06)"></div>
+    </div>
+
+    <div class="fab-btn-mockup">🎨</div>
+
+    <div style="font-family:'Orbitron',sans-serif;font-size:12px;color:#3a4068;letter-spacing:.1em;text-align:center;margin-top:4px">
+      Floating button<br>on every theme
+    </div>
+  </div>
+
+</div>
+
+<div class="wm">JCF7Studio</div>
+
+</body>
+</html>

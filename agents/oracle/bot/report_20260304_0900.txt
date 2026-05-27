@@ -1,0 +1,178 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-03-04 09:00:38 UTC
+============================================================
+
+🏆 SPORTS PICKS (7 found)
+----------------------------------------
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Derrick White: 2+,yes Payton Pritchard: 1+,yes Kon Knueppel: 2+,yes LaMelo Ball: 2+,yes Darius Garland: 1+,yes Kawhi Leonard: 1+,yes Tyrese Maxey: 2+,yes Jalen Brunson: 2+,yes Josh Hart: 2+,yes Tyrese Maxey: 4+,yes Jalen Johnson: 15+,yes Giannis Antetokounmpo: 20+,yes Derrick White: 10+,yes Jaylen Brown: 25+,yes Brandon Miller: 15+,yes Darius Garland: 10+,yes Jalen Brunson: 20+,yes OG Anunoby: 10+,yes Chet Holmgren: 10+,yes Jrue Holiday: 15+,yes Ace Bailey: 10+,yes Keyonte George: 20+,yes Jalen Johnson: 6+,yes Onyeka Okongwu: 4+,yes Giannis Antetokounmpo: 8+,yes Nikola Vučević: 6+,yes Karl-Anthony Towns: 10+,yes Chet Holmgren: 8+,yes Jrue Holiday: 2+,yes Ace Bailey: 2+
+   Market: KXMVECROSSCATEGORY-S202632BE0BA0FD4-3016B062502
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:56 UTC
+   Close: 2026-03-19 00:30 UTC
+   Volume: 11,627
+   ⚡ High volume: 11,627
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Leverkusen,yes Tie,yes Tie,yes Tie,yes Tie,yes Tie
+   Market: KXMVECROSSCATEGORY-S2026DE0B0BA244F-39B49D89F24
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:57 UTC
+   Close: 2026-03-18 19:30 UTC
+   Volume: 1,851
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Tie,yes Chelsea,yes Tie,yes Tie,yes Tie,yes Tie
+   Market: KXMVECROSSCATEGORY-S2026DE0B0BA244F-F60D31C663A
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:57 UTC
+   Close: 2026-03-18 19:30 UTC
+   Volume: 1,851
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Brandon Miller: 2+,yes Kon Knueppel: 2+,yes Jalen Brunson: 2+,yes Josh Hart: 2+,yes Nickeil Alexander-Walker: 15+,yes Onyeka Okongwu: 10+,yes Kevin Porter Jr.: 10+,yes Myles Turner: 10+,yes Derrick White: 10+,yes Nikola Vučević: 10+,yes Brandon Miller: 15+,yes Miles Bridges: 10+,yes Bennedict Mathurin: 10+,yes Darius Garland: 10+,yes Jalen Brunson: 15+,yes Chet Holmgren: 10+,yes Jaylen Wells: 10+,yes Ace Bailey: 10+,yes Keyonte George: 15+,yes Dyson Daniels: 2+,yes Jonathan Kuminga: 2+,yes Kevin Porter Jr.: 2+,yes Myles Turner: 2+,yes Kon Knueppel: 2+,yes Miles Bridges: 2+,yes Bennedict Mathurin: 2+,yes OG Anunoby: 2+,yes Jrue Holiday: 2+,yes Ace Bailey: 2+
+   Market: KXMVECROSSCATEGORY-S2026BE75A291232-CF4B06564C3
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:58 UTC
+   Close: 2026-03-19 00:30 UTC
+   Volume: 1,162
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Milwaukee,yes Boston,yes Los Angeles C,yes CJ McCollum: 15+,yes Myles Turner: 10+,yes Derrick White: 10+,yes Nikola Vučević: 10+,yes Brandon Miller: 10+,yes Bennedict Mathurin: 10+,yes Darius Garland: 10+,yes Mikal Bridges: 10+,yes OG Anunoby: 10+,yes Giannis Antetokounmpo: 6+,yes Myles Turner: 2+,yes Kon Knueppel: 2+,yes Luguentz Dort: 2+,yes Jrue Holiday: 2+,no Portland wins by over 7.5 Points
+   Market: KXMVECROSSCATEGORY-S20264D4DE5B04AC-80C24379BAB
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:58 UTC
+   Close: 2026-03-19 02:30 UTC
+   Volume: 1,030
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Bayern Munich,yes Stuttgart,yes Arsenal,yes Fulham,yes Manchester City,yes Manchester United,yes Barcelona,yes Villarreal,yes PSG,yes Oklahoma City,yes Napoli,yes Como,yes Juventus
+   Market: KXMVECROSSCATEGORY-S2026E33DFEAB935-E56D207ECB4
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:57 UTC
+   Close: 2026-03-20 19:30 UTC
+   Volume: 769
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Kon Knueppel: 4+,yes Tyrese Maxey: 4+,yes Jalen Johnson: 25+,yes Darius Garland: 15+,yes Jalen Brunson: 20+,yes Jalen Johnson: 8+,yes Giannis Antetokounmpo: 6+,yes Nikola Vučević: 6+
+   Market: KXMVECROSSCATEGORY-S20263075262704D-E5561C67E2B
+   Yes: 100% | No: 100%
+   Open: 2026-03-04 08:56 UTC
+   Close: 2026-03-19 00:30 UTC
+   Volume: 629
+   ⚡ Near certainty (100%) — low risk yes?
+
+🎯 HIGH VALUE OPPORTUNITIES (167 found)
+----------------------------------------
+
+📌 KXFTAPRC
+   Title: Will Trump make a new free trade agreement with China before Jan 20, 2029?
+   Market: KXFTAPRC-29
+   Yes: 35% | No: 69%
+   Open: 2025-01-10 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 47,496
+   ⚡ High volume: 47,496
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXAPPLEUS
+   Title: DOJ wins their anti-trust case against Apple?
+   Market: APPLEUS-29DEC31
+   Yes: 35% | No: 68%
+   Open: 2024-03-26 12:00 UTC
+   Close: 2030-01-01 15:00 UTC
+   Volume: 46,227
+   ⚡ High volume: 46,227
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 20, 2029?
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 93%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 103,991
+   ⚡ High volume: 103,991
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 1, 2027?
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2027-01-01 15:00 UTC
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Janet Yellen as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Open: 2025-08-13 20:06 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 34,118
+   ⚡ High volume: 34,118
+   ⚡ Very low odds (1%) — contrarian long?
+
+👁 WATCH LIST (219 markets)
+----------------------------------------
+  • KXMVECROSSCATEGORY — yes Miami (FL),yes Houston wins by over 15.5 Points
+    Yes: 27% | Vol: 0 | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Purdue,yes Houston wins by over 6.5 Points,yes California wins by over 1.5 Points,yes Wisconsin wins by over 5.5 Points,yes Ohio St. wins by over 1.5 Points
+    Yes: 27% | Vol: 0 | Close: 2026-03-19 01:30 UTC
+  • KXMVECROSSCATEGORY — yes Detroit Mercy,yes Indiana,yes Arkansas,yes Washington,yes Robert Morris,yes Houston wins by over 6.5 Points,yes Wright St. wins by over 5.5 Points,no Wisconsin wins by over 23.5 Points,no Ohio St. wins by over 13.5 Points,no Purdue wins by over 18.5 Points
+    Yes: 6% | Vol: 0 | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Fordham,yes Bellarmine,yes Detroit Mercy,yes Oakland,no Over 159.5 points scored
+    Yes: 7% | Vol: 0 | Close: 2026-03-18 23:30 UTC
+  • KXMVECROSSCATEGORY — yes Bellarmine wins by over 4.5 Points,no Over 154.5 points scored
+    Yes: 45% | Vol: 0 | Close: 2026-03-18 17:00 UTC
+  • KXMVECROSSCATEGORY — yes Houston,yes LIU,yes Wright St.,yes New Mexico,yes Saint Louis,yes Wisconsin,yes Purdue,yes George Washington,yes USC Upstate
+    Yes: 32% | Vol: 0 | Close: 2026-03-19 02:00 UTC
+  • KXMVECROSSCATEGORY — yes Both Teams To Score,yes Chelsea,yes Arsenal,yes Tie
+    Yes: 5% | Vol: 0 | Close: 2026-03-18 20:15 UTC
+  • KXMVECROSSCATEGORY — yes California,yes George Washington,yes Over 138.5 points scored
+    Yes: 43% | Vol: 0 | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY — yes New Mexico,yes Miami (FL),yes Ohio St.,yes Arkansas,yes Washington
+    Yes: 18% | Vol: 0 | Close: 2026-03-19 03:00 UTC
+  • KXMVECROSSCATEGORY — yes CAR Hurricanes,yes SEA Kraken,no Over 6.5 goals scored,no Over 5.5 goals scored
+    Yes: 100% | Vol: 75 | Close: 2026-03-19 03:00 UTC
+  • KXMVECROSSCATEGORY — yes Nickeil Alexander-Walker: 1+,yes Jaylen Brown: 2+,yes Jalen Brunson: 2+,yes Jrue Holiday: 2+,yes Keyonte George: 2+,yes Los Angeles C,yes Kon Knueppel: 2+,yes Brook Lopez: 2+,yes Jrue Holiday: 2+,yes Houston,yes LIU,yes Wright St.,yes Saint Louis,yes Wisconsin,yes Purdue,yes South Africa,yes India
+    Yes: 100% | Vol: 12 | Close: 2026-03-19 02:30 UTC
+  • KXMVECROSSCATEGORY — yes Detroit Mercy,yes Indiana,yes Arkansas,yes Robert Morris,yes Houston wins by over 6.5 Points,yes Wright St. wins by over 5.5 Points,no Wisconsin wins by over 23.5 Points,no Ohio St. wins by over 13.5 Points,no Purdue wins by over 18.5 Points
+    Yes: 8% | Vol: 0 | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY — yes LaMelo Ball: 6+,yes Josh Hart: 2+,yes Derrick White: 10+,yes Brandon Miller: 10+,yes Jalen Brunson: 15+,yes Chet Holmgren: 6+
+    Yes: 100% | Vol: 167 | Close: 2026-03-19 00:30 UTC
+  • KXMVECROSSCATEGORY — yes New Mexico,yes Miami (FL),yes Ohio St.,yes Arkansas
+    Yes: 24% | Vol: 0 | Close: 2026-03-19 03:00 UTC
+  • KXMVECROSSCATEGORY — yes Jung-Young Lee,yes Caio Borralho,yes Drew Dober,yes Raul Rosas Jr,yes Xiao Long,yes Charles Oliveira,yes Donte Johnson,yes Brunno Ferreira,yes Alberto Montes
+    Yes: 100% | Vol: 38 | Close: 2026-03-21 22:40 UTC
+
+📋 MONITORING (27 markets — no clear edge)
+----------------------------------------
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-18 17:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 23:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 23:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-18 23:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-19 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-19 00:00 UTC
+
+============================================================
+Total markets analyzed: 369
+High value: 123 | Watch list: 219
+============================================================

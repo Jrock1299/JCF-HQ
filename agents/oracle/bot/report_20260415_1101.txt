@@ -1,0 +1,40 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v6 — Claude AI + Web Search
+Generated: 2026-04-15 11:01 UTC  |  Bankroll: $246.07
+============================================================
+
+📊 Record: 10W–20L (33.3% WR) | P&L: -100.62
+   NCAAB: 5W-6L (45.5% WR, -17.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   NHL: 1W-5L (16.7% WR, -38.00)
+   MLB: 2W-5L (28.6% WR, -10.10)
+
+⚠️  FADING (bad historical edge):
+   ⛔ MLB — filtered from today's picks
+   ⛔ NBA — filtered from today's picks
+   ⛔ NHL — filtered from today's picks
+
+❌ No positive-EV picks found today. No bets.
+   (Market is correctly priced — sit on your hands.)
+
+🎯 LINEMATE — no qualifying straight picks today (-200 or better threshold)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: +116 | Combined prob: 42.5% | Stake: $5.00 → Win: $5.85
+  Leg 1: San Antonio Spurs (ML) (-450) [79.8%] — ML | NBA | Portland Trail Blazers @ San Antonio Spurs
+  Leg 2: Cleveland Cavaliers (ML) (-325) [74.4%] — ML | NBA | Toronto Raptors @ Cleveland Cavaliers
+  Leg 3: Vegas Golden Knights (ML) (-280) [71.5%] — ML | NHL | Seattle Kraken @ Vegas Golden Knights
+
+Parlay 2 — 3 legs | Odds: +182 | Combined prob: 31.9% | Stake: $5.00 → Win: $9.14
+  Leg 1: Dallas Stars +1.5 (SPREAD) (-250) [69.3%] — SPREAD | NHL | Dallas Stars @ Buffalo Sabres
+  Leg 2: Denver Nuggets (ML) (-240) [68.1%] — ML | NBA | Minnesota Timberwolves @ Denver Nuggets
+  Leg 3: Chicago Blackhawks +1.5 (SPREAD) (-235) [67.7%] — SPREAD | NHL | San Jose Sharks @ Chicago Blackhawks
+
+🔒 LOCK PARLAY — no qualifying combination today (need 2+ EV+ legs combining to -180 or better)
+
+🔒 LINEMATE LOCK PARLAY — no cross-game 100% parlays today
+
+🎰 LINEMATE SGP — no qualifying same-game parlays today (need 75%+ hit rate)
+
+============================================================

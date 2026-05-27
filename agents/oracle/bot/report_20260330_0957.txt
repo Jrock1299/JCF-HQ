@@ -1,0 +1,29 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v5 — EV + CONTEXT + CONFIDENCE
+Generated: 2026-03-30 09:57 UTC  |  Bankroll: $308.32
+============================================================
+
+📊 Record: 8W–14L (36.4% WR) | P&L: -70.62
+   NCAAB: 5W-6L (45.5% WR, -17.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   MLB: 1W-3L (25.0% WR, -8.10)
+
+⚠️  FADING (bad historical edge):
+   ⛔ NBA — filtered from today's picks
+
+❌ No positive-EV picks found today. No bets.
+   (Market is correctly priced — sit on your hands.)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: -152 | Combined prob: 54.4% | Stake: $5.00 → Win: $3.27
+  Leg 1: Phoenix Suns (ML) (-770) [85.2%] — ML | NBA | Phoenix Suns @ Memphis Grizzlies
+  Leg 2: Oklahoma City Thunder (ML) (-720) [85.0%] — ML | NBA | Detroit Pistons @ Oklahoma City Thunder
+  Leg 3: Colorado Avalanche (ML) (-350) [75.1%] — ML | NHL | Calgary Flames @ Colorado Avalanche
+
+Parlay 2 — 3 legs | Odds: +143 | Combined prob: 37.1% | Stake: $5.00 → Win: $7.17
+  Leg 1: Vegas Golden Knights (ML) (-330) [74.3%] — ML | NHL | Vancouver Canucks @ Vegas Golden Knights
+  Leg 2: Auburn Tigers (ML) (-275) [71.2%] — ML | NCAAB | Illinois St Redbirds @ Auburn Tigers
+  Leg 3: St Louis Blues +1.5 (SPREAD) (-270) [70.2%] — SPREAD | NHL | St Louis Blues @ San Jose Sharks
+
+============================================================

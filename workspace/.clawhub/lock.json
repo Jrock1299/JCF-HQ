@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "skills": {
+    "last30days": {
+      "version": "1.0.0",
+      "installedAt": 1772491991160
+    },
+    "self-improving-agent": {
+      "version": "1.0.11",
+      "installedAt": 1772496275917
+    },
+    "ui-ux-design": {
+      "version": "1.0.0",
+      "installedAt": 1772548633392
+    },
+    "typescript-pro": {
+      "version": "0.1.0",
+      "installedAt": 1772548642435
+    },
+    "frontend-design-ultimate": {
+      "version": "1.0.0",
+      "installedAt": 1772548577596
+    },
+    "kalshi-trading": {
+      "version": "1.0.0",
+      "installedAt": 1772565747646
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1772574603825
+    },
+    "investing-analyst": {
+      "version": "1.0.1",
+      "installedAt": 1772566460348
+    },
+    "trading": {
+      "version": "1.0.1",
+      "installedAt": 1772566462771
+    },
+    "day-trading-skill": {
+      "version": "1.2.2",
+      "installedAt": 1772566478472
+    },
+    "crypto-self-learning": {
+      "version": "1.0.0",
+      "installedAt": 1772567357284
+    }
+  }
+}

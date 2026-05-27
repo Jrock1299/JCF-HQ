@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "lastGood": {
+    "openrouter": "openrouter:default",
+    "google": "google:default",
+    "openai-codex": "openai-codex:default"
+  },
+  "usageStats": {
+    "google:default": {
+      "errorCount": 0,
+      "lastFailureAt": 1773414196302,
+      "lastUsed": 1779367463320
+    },
+    "openrouter:default": {
+      "lastUsed": 1773748149661,
+      "errorCount": 0
+    },
+    "openai-codex:default": {
+      "lastUsed": 1779897886715,
+      "errorCount": 0
+    },
+    "anthropic:default": {
+      "errorCount": 1,
+      "failureCounts": {
+        "billing": 1
+      },
+      "lastFailureAt": 1773413431022,
+      "disabledUntil": 1773431431022,
+      "disabledReason": "billing"
+    },
+    "openai-codex:8jfrg55bnx@privaterelay.appleid.com": {
+      "errorCount": 0,
+      "lastUsed": 1779896085209,
+      "lastFailureAt": 1779350677905
+    },
+    "moonshot:default": {
+      "errorCount": 1,
+      "failureCounts": {
+        "rate_limit": 1
+      },
+      "lastFailureAt": 1779868877581,
+      "cooldownUntil": 1779868907581,
+      "cooldownReason": "rate_limit",
+      "cooldownModel": "kimi-k2.5"
+    }
+  }
+}

@@ -1,0 +1,158 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-03-01 21:58:28 UTC
+============================================================
+
+🏆 SPORTS PICKS (7 found)
+----------------------------------------
+
+📌 KXNBA
+   Title: Will the Oklahoma City win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-OKC
+   Yes: 40% | No: 61%
+   Volume: 2,502,325
+   ⚡ High volume: 2,502,325
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXNHL
+   Title: Will Tampa Bay Lightning win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-TB
+   Yes: 18% | No: 84%
+   Volume: 522,081
+   ⚡ High volume: 522,081
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXBOXING
+   Title: Tyson Fury vs Arslanbek Makhmudov Winner?
+   Market: KXBOXING-26APR11TFURAMAK-AMAK
+   Yes: 25% | No: 79%
+   Volume: 6,726
+   ⚡ High volume: 6,726
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXBOXING
+   Title: Mike Tyson vs Floyd Mayweather Winner?
+   Market: KXBOXING-26APR25MTYSFMAY-MTYS
+   Yes: 22% | No: 80%
+   Volume: 50,780
+   ⚡ High volume: 50,780
+   ⚡ Underdog territory (22%) — worth watching
+
+📌 KXNBA
+   Title: Will the Washington win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-WAS
+   Yes: 1% | No: 100%
+   Volume: 6,131
+   ⚡ High volume: 6,131
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Utah win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-UTA
+   Yes: 1% | No: 100%
+   Volume: 22,188
+   ⚡ High volume: 22,188
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Toronto win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-TOR
+   Yes: 1% | No: 100%
+   Volume: 589,721
+   ⚡ High volume: 589,721
+   ⚡ Very low odds (1%) — contrarian long?
+
+🎯 HIGH VALUE OPPORTUNITIES (92 found)
+----------------------------------------
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 20, 2029?
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 93%
+   Volume: 103,904
+   ⚡ High volume: 103,904
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 1, 2027?
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Janet Yellen as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Volume: 34,118
+   ⚡ High volume: 34,118
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Rick Rieder as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-RREI
+   Yes: 1% | No: 100%
+   Volume: 14,393,318
+   ⚡ High volume: 14,393,318
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Larry Lindsey as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-LLIN
+   Yes: 1% | No: 100%
+   Volume: 46,506
+   ⚡ High volume: 46,506
+   ⚡ Very low odds (1%) — contrarian long?
+
+👁 WATCH LIST (82 markets)
+----------------------------------------
+  • KXBALANCE — Will Trump balance the budget?
+    Yes: 11% | Vol: 38,591
+  • KXDEBTGROWTH — Will the national debt hit $45 trillion during the Trump Administration?
+    Yes: 87% | Vol: 6,993
+  • KXGOVTCUTS — Will government spending decrease by 750 before 2028?
+    Yes: 19% | Vol: 4,908
+  • KXGOVTCUTS — Will government spending decrease by 2000 before 2028?
+    Yes: 10% | Vol: 8,316
+  • KXGOVTCUTS — Will government spending decrease by 1000 before 2028?
+    Yes: 13% | Vol: 13,145
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 11% | Vol: 33,347
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 3% | Vol: 2,439
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 4% | Vol: 3,024
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 5% | Vol: 965
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 5% | Vol: 561
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 6% | Vol: 3,005
+  • KXCAPCONTROL — Will Trump impose capital controls before 2029?
+    Yes: 22% | Vol: 4,743
+  • KXWITHDRAW — Will the U.S. withdraw from United Nations before Jan 20, 2029?
+    Yes: 16% | Vol: 4,496
+  • KXWITHDRAW — Will the U.S. withdraw from OECD before Jan 20, 2029?
+    Yes: 21% | Vol: 1,014
+  • KXWITHDRAW — Will the U.S. withdraw from Inter-American Development Bank before Jan 20, 2029?
+    Yes: 19% | Vol: 132
+
+📋 MONITORING (14 markets — no clear edge)
+----------------------------------------
+  • KXWITHDRAW | Yes: 12%
+  • KXWITHDRAW | Yes: 13%
+  • KXSCOURT | Yes: 10%
+  • KXSCOTUSPOWER | Yes: 74%
+  • SENATEPA | Yes: 72%
+  • SENATEOH | Yes: 66%
+  • SENATEGA | Yes: 70%
+  • SENATEFL | Yes: 85%
+  • KXABRAHAMSA | Yes: 14%
+  • KXABRAHAMSA | Yes: 68%
+
+============================================================
+Total markets analyzed: 223
+High value: 127 | Watch list: 82
+============================================================

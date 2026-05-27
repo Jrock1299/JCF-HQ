@@ -1,0 +1,2 @@
+default_model: openai-codex/gpt-5.2-codex
+fallback_model: google/gemini-3.1-pro

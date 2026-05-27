@@ -1,0 +1,46 @@
+{
+  "active": true,
+  "trade_id": "fb36a0e6",
+  "signal_id": "62510289-d82b-4bde-a2d0-32f3e42b7624",
+  "signal_type": "liquidity_sweep",
+  "direction": "long",
+  "entry_price": 74099.51,
+  "open_time": "2026-04-14T23:14:09.985506+00:00",
+  "open_ts": 1776208449.9855206,
+  "sl": 67900.71,
+  "sl_initial": 67900.71,
+  "tp_targets": [
+    87259.78
+  ],
+  "pos1": {
+    "btc_size": 0.007986,
+    "usd_value": 591.76,
+    "tp": 87259.78,
+    "closed": false,
+    "exit_price": null
+  },
+  "pos2": {
+    "btc_size": 0.007986,
+    "usd_value": 591.76,
+    "tp": 87259.78,
+    "closed": false,
+    "exit_price": null,
+    "trailing_sl": null,
+    "be_triggered": false
+  },
+  "be_triggered": false,
+  "tp1_hit": false,
+  "max_fav_exc": 0.0,
+  "max_adv_exc": 0.0,
+  "risk_usd": 99.01,
+  "total_btc": 0.015972,
+  "balance_at_open": 9900.81,
+  "score": 100,
+  "factors": {
+    "sweep_into_pool": 20,
+    "sweep_size": 15,
+    "pool_size": 10,
+    "trend_alignment": 9
+  },
+  "context": "Swept sell_stops at 68114 (pool size=5), closed back above. Trend: bullish. Sweep wick: 0.29%"
+}

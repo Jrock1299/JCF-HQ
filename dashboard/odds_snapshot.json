@@ -1,0 +1,888 @@
+{
+  "date": "2026-05-08",
+  "timestamp": "2026-05-08T06:30:04.570392+00:00",
+  "games": {
+    "30d614c5d781b768faf9cf885e890851": {
+      "away_team": "New York Knicks",
+      "home_team": "Philadelphia 76ers",
+      "odds": {
+        "h2h:New York Knicks:None": {
+          "price": 103,
+          "book": "betonlineag"
+        },
+        "h2h:Philadelphia 76ers:None": {
+          "price": -115,
+          "book": "bovada"
+        },
+        "spreads:New York Knicks:1.5": {
+          "price": -108,
+          "book": "fanduel"
+        },
+        "spreads:Philadelphia 76ers:-1.5": {
+          "price": -110,
+          "book": "betmgm"
+        },
+        "totals:Over:213.5": {
+          "price": -110,
+          "book": "draftkings"
+        },
+        "totals:Under:213.5": {
+          "price": -106,
+          "book": "fanduel"
+        },
+        "totals:Over:214.5": {
+          "price": -105,
+          "book": "betmgm"
+        },
+        "totals:Under:214.5": {
+          "price": -110,
+          "book": "mybookieag"
+        },
+        "totals:Over:214.0": {
+          "price": -110,
+          "book": "betonlineag"
+        },
+        "totals:Under:214.0": {
+          "price": -110,
+          "book": "betonlineag"
+        },
+        "spreads:New York Knicks:1.0": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "spreads:Philadelphia 76ers:-1.0": {
+          "price": -110,
+          "book": "bovada"
+        }
+      }
+    },
+    "1b5c084f510006e8f30cd6cac40e231d": {
+      "away_team": "San Antonio Spurs",
+      "home_team": "Minnesota Timberwolves",
+      "odds": {
+        "h2h:Minnesota Timberwolves:None": {
+          "price": 175,
+          "book": "bovada"
+        },
+        "h2h:San Antonio Spurs:None": {
+          "price": -196,
+          "book": "fanduel"
+        },
+        "spreads:Minnesota Timberwolves:4.5": {
+          "price": -105,
+          "book": "betmgm"
+        },
+        "spreads:San Antonio Spurs:-4.5": {
+          "price": -105,
+          "book": "draftkings"
+        },
+        "totals:Over:216.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Under:216.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Over:215.5": {
+          "price": -115,
+          "book": "draftkings"
+        },
+        "totals:Under:215.5": {
+          "price": -105,
+          "book": "draftkings"
+        }
+      }
+    },
+    "2734c350b90f332dbece882dd10b204e": {
+      "away_team": "Detroit Pistons",
+      "home_team": "Cleveland Cavaliers",
+      "odds": {
+        "h2h:Cleveland Cavaliers:None": {
+          "price": -169,
+          "book": "mybookieag"
+        },
+        "h2h:Detroit Pistons:None": {
+          "price": 155,
+          "book": "bovada"
+        },
+        "spreads:Cleveland Cavaliers:-4.5": {
+          "price": -104,
+          "book": "fanduel"
+        },
+        "spreads:Detroit Pistons:4.5": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "totals:Over:211.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Under:211.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "spreads:Cleveland Cavaliers:-4.0": {
+          "price": -110,
+          "book": "mybookieag"
+        },
+        "spreads:Detroit Pistons:4.0": {
+          "price": -108,
+          "book": "betonlineag"
+        },
+        "totals:Over:212.5": {
+          "price": -110,
+          "book": "betonlineag"
+        },
+        "totals:Under:212.5": {
+          "price": -110,
+          "book": "betonlineag"
+        },
+        "totals:Over:212.0": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "totals:Under:212.0": {
+          "price": -110,
+          "book": "bovada"
+        }
+      }
+    },
+    "40c8a29efb894c4dd6bf6acc5025c9cb": {
+      "away_team": "Oklahoma City Thunder",
+      "home_team": "Los Angeles Lakers",
+      "odds": {
+        "h2h:Los Angeles Lakers:None": {
+          "price": 305,
+          "book": "betonlineag"
+        },
+        "h2h:Oklahoma City Thunder:None": {
+          "price": -345,
+          "book": "draftkings"
+        },
+        "spreads:Los Angeles Lakers:9.5": {
+          "price": -118,
+          "book": "fanduel"
+        },
+        "spreads:Oklahoma City Thunder:-9.5": {
+          "price": -104,
+          "book": "fanduel"
+        },
+        "totals:Over:211.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Under:211.5": {
+          "price": -105,
+          "book": "betonlineag"
+        },
+        "spreads:Los Angeles Lakers:8.5": {
+          "price": -105,
+          "book": "draftkings"
+        },
+        "spreads:Oklahoma City Thunder:-8.5": {
+          "price": -105,
+          "book": "betonlineag"
+        },
+        "totals:Over:210.5": {
+          "price": -110,
+          "book": "draftkings"
+        },
+        "totals:Under:210.5": {
+          "price": -110,
+          "book": "draftkings"
+        },
+        "spreads:Los Angeles Lakers:9.0": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "spreads:Oklahoma City Thunder:-9.0": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "totals:Over:212.5": {
+          "price": -110,
+          "book": "bovada"
+        },
+        "totals:Under:212.5": {
+          "price": -110,
+          "book": "bovada"
+        }
+      }
+    },
+    "acc580d74344ea3b31bbcdd057fe6a9c": {
+      "away_team": "San Francisco 49ers",
+      "home_team": "Los Angeles Rams",
+      "odds": {
+        "h2h:Los Angeles Rams:None": {
+          "price": -148,
+          "book": "draftkings"
+        },
+        "h2h:San Francisco 49ers:None": {
+          "price": 125,
+          "book": "betmgm"
+        },
+        "spreads:Los Angeles Rams:-2.5": {
+          "price": -120,
+          "book": "draftkings"
+        },
+        "spreads:San Francisco 49ers:2.5": {
+          "price": 100,
+          "book": "draftkings"
+        },
+        "totals:Over:48.5": {
+          "price": -110,
+          "book": "draftkings"
+        },
+        "totals:Under:48.5": {
+          "price": -105,
+          "book": "betmgm"
+        }
+      }
+    },
+    "40150285b21b0e818a39c0940eca75d7": {
+      "away_team": "Houston Astros",
+      "home_team": "Cincinnati Reds",
+      "odds": {
+        "h2h:Cincinnati Reds:None": {
+          "price": -130,
+          "book": "fanduel"
+        },
+        "h2h:Houston Astros:None": {
+          "price": 122,
+          "book": "bovada"
+        },
+        "spreads:Cincinnati Reds:-1.5": {
+          "price": 152,
+          "book": "fanduel"
+        },
+        "spreads:Houston Astros:1.5": {
+          "price": -165,
+          "book": "betonlineag"
+        },
+        "totals:Over:9.5": {
+          "price": 100,
+          "book": "draftkings"
+        },
+        "totals:Under:9.5": {
+          "price": -115,
+          "book": "fanduel"
+        },
+        "totals:Over:9.0": {
+          "price": -118,
+          "book": "betmgm"
+        },
+        "totals:Under:9.0": {
+          "price": -102,
+          "book": "betmgm"
+        }
+      }
+    },
+    "0f65cc2fecae3661933682f1525e806d": {
+      "away_team": "Colorado Rockies",
+      "home_team": "Philadelphia Phillies",
+      "odds": {
+        "h2h:Colorado Rockies:None": {
+          "price": 189,
+          "book": "betonlineag"
+        },
+        "h2h:Philadelphia Phillies:None": {
+          "price": -210,
+          "book": "betonlineag"
+        },
+        "spreads:Colorado Rockies:1.5": {
+          "price": -120,
+          "book": "mybookieag"
+        },
+        "spreads:Philadelphia Phillies:-1.5": {
+          "price": 105,
+          "book": "fanduel"
+        },
+        "totals:Over:7.5": {
+          "price": 100,
+          "book": "betonlineag"
+        },
+        "totals:Under:7.5": {
+          "price": -108,
+          "book": "fanduel"
+        }
+      }
+    },
+    "76929aa734500b152f347bbddf390165": {
+      "away_team": "Athletics",
+      "home_team": "Baltimore Orioles",
+      "odds": {
+        "h2h:Athletics:None": {
+          "price": 124,
+          "book": "fanduel"
+        },
+        "h2h:Baltimore Orioles:None": {
+          "price": -132,
+          "book": "betonlineag"
+        },
+        "spreads:Athletics:1.5": {
+          "price": -160,
+          "book": "fanduel"
+        },
+        "spreads:Baltimore Orioles:-1.5": {
+          "price": 150,
+          "book": "bovada"
+        },
+        "totals:Over:9.5": {
+          "price": 104,
+          "book": "fanduel"
+        },
+        "totals:Under:9.5": {
+          "price": -115,
+          "book": "draftkings"
+        }
+      }
+    },
+    "92c3e303601373eee3d37fbb858409af": {
+      "away_team": "Los Angeles Angels",
+      "home_team": "Toronto Blue Jays",
+      "odds": {
+        "h2h:Los Angeles Angels:None": {
+          "price": 139,
+          "book": "betonlineag"
+        },
+        "h2h:Toronto Blue Jays:None": {
+          "price": -154,
+          "book": "betonlineag"
+        },
+        "spreads:Los Angeles Angels:1.5": {
+          "price": -155,
+          "book": "betonlineag"
+        },
+        "spreads:Toronto Blue Jays:-1.5": {
+          "price": 138,
+          "book": "fanduel"
+        },
+        "totals:Over:7.5": {
+          "price": -104,
+          "book": "mybookieag"
+        },
+        "totals:Under:7.5": {
+          "price": -110,
+          "book": "fanduel"
+        }
+      }
+    },
+    "739421696ed76f3cffaf12c7db22c763": {
+      "away_team": "Tampa Bay Rays",
+      "home_team": "Boston Red Sox",
+      "odds": {
+        "h2h:Boston Red Sox:None": {
+          "price": -133,
+          "book": "betonlineag"
+        },
+        "h2h:Tampa Bay Rays:None": {
+          "price": 122,
+          "book": "fanduel"
+        },
+        "spreads:Boston Red Sox:-1.5": {
+          "price": 150,
+          "book": "betmgm"
+        },
+        "spreads:Tampa Bay Rays:1.5": {
+          "price": -160,
+          "book": "mybookieag"
+        },
+        "totals:Over:8.5": {
+          "price": -115,
+          "book": "fanduel"
+        },
+        "totals:Under:8.5": {
+          "price": 102,
+          "book": "draftkings"
+        }
+      }
+    },
+    "ad17b69505e6a7e7c4c06dc7f6b91ac6": {
+      "away_team": "Washington Nationals",
+      "home_team": "Miami Marlins",
+      "odds": {
+        "h2h:Miami Marlins:None": {
+          "price": -120,
+          "book": "betonlineag"
+        },
+        "h2h:Washington Nationals:None": {
+          "price": 109,
+          "book": "betonlineag"
+        },
+        "spreads:Miami Marlins:-1.5": {
+          "price": 170,
+          "book": "betonlineag"
+        },
+        "spreads:Washington Nationals:1.5": {
+          "price": -195,
+          "book": "betonlineag"
+        },
+        "totals:Over:8.0": {
+          "price": -115,
+          "book": "fanduel"
+        },
+        "totals:Under:8.0": {
+          "price": 100,
+          "book": "betonlineag"
+        },
+        "spreads:Miami Marlins:1.5": {
+          "price": -197,
+          "book": "draftkings"
+        },
+        "spreads:Washington Nationals:-1.5": {
+          "price": 161,
+          "book": "draftkings"
+        },
+        "totals:Over:8.5": {
+          "price": 100,
+          "book": "betmgm"
+        },
+        "totals:Under:8.5": {
+          "price": -117,
+          "book": "draftkings"
+        }
+      }
+    },
+    "d0f880a5482c5178286681a63048600f": {
+      "away_team": "Minnesota Twins",
+      "home_team": "Cleveland Guardians",
+      "odds": {
+        "h2h:Cleveland Guardians:None": {
+          "price": -138,
+          "book": "fanduel"
+        },
+        "h2h:Minnesota Twins:None": {
+          "price": 125,
+          "book": "betonlineag"
+        },
+        "spreads:Cleveland Guardians:-1.5": {
+          "price": 157,
+          "book": "betonlineag"
+        },
+        "spreads:Minnesota Twins:1.5": {
+          "price": -175,
+          "book": "bovada"
+        },
+        "totals:Over:7.5": {
+          "price": -112,
+          "book": "draftkings"
+        },
+        "totals:Under:7.5": {
+          "price": 102,
+          "book": "fanduel"
+        }
+      }
+    },
+    "79db8c5227deae699a7b9c123aaf6d3f": {
+      "away_team": "Seattle Mariners",
+      "home_team": "Chicago White Sox",
+      "odds": {
+        "h2h:Chicago White Sox:None": {
+          "price": 125,
+          "book": "betonlineag"
+        },
+        "h2h:Seattle Mariners:None": {
+          "price": -138,
+          "book": "betonlineag"
+        },
+        "spreads:Chicago White Sox:1.5": {
+          "price": -140,
+          "book": "betonlineag"
+        },
+        "spreads:Seattle Mariners:-1.5": {
+          "price": 126,
+          "book": "fanduel"
+        },
+        "totals:Over:7.5": {
+          "price": -124,
+          "book": "fanduel"
+        },
+        "totals:Under:7.5": {
+          "price": 105,
+          "book": "betonlineag"
+        },
+        "totals:Over:8.0": {
+          "price": -107,
+          "book": "draftkings"
+        },
+        "totals:Under:8.0": {
+          "price": -110,
+          "book": "betmgm"
+        }
+      }
+    },
+    "6aa50c59681975bb7beff37ab4f46bb5": {
+      "away_team": "Detroit Tigers",
+      "home_team": "Kansas City Royals",
+      "odds": {
+        "h2h:Detroit Tigers:None": {
+          "price": 127,
+          "book": "betonlineag"
+        },
+        "h2h:Kansas City Royals:None": {
+          "price": -135,
+          "book": "betmgm"
+        },
+        "spreads:Detroit Tigers:1.5": {
+          "price": -160,
+          "book": "mybookieag"
+        },
+        "spreads:Kansas City Royals:-1.5": {
+          "price": 150,
+          "book": "fanduel"
+        },
+        "totals:Over:8.5": {
+          "price": -110,
+          "book": "betonlineag"
+        },
+        "totals:Under:8.5": {
+          "price": -105,
+          "book": "fanduel"
+        }
+      }
+    },
+    "3d859a4947ba1d62e82366cdebc59d78": {
+      "away_team": "New York Yankees",
+      "home_team": "Milwaukee Brewers",
+      "odds": {
+        "h2h:Milwaukee Brewers:None": {
+          "price": 121,
+          "book": "betonlineag"
+        },
+        "h2h:New York Yankees:None": {
+          "price": -133,
+          "book": "betonlineag"
+        },
+        "spreads:Milwaukee Brewers:1.5": {
+          "price": -145,
+          "book": "betonlineag"
+        },
+        "spreads:New York Yankees:-1.5": {
+          "price": 130,
+          "book": "fanduel"
+        },
+        "totals:Over:7.0": {
+          "price": -120,
+          "book": "betonlineag"
+        },
+        "totals:Under:7.0": {
+          "price": 105,
+          "book": "bovada"
+        }
+      }
+    },
+    "d03f5e26dab4993281752b81c816fe4b": {
+      "away_team": "Chicago Cubs",
+      "home_team": "Texas Rangers",
+      "odds": {
+        "h2h:Chicago Cubs:None": {
+          "price": -132,
+          "book": "betonlineag"
+        },
+        "h2h:Texas Rangers:None": {
+          "price": 121,
+          "book": "bovada"
+        },
+        "spreads:Chicago Cubs:-1.5": {
+          "price": 128,
+          "book": "fanduel"
+        },
+        "spreads:Texas Rangers:1.5": {
+          "price": -135,
+          "book": "mybookieag"
+        },
+        "totals:Over:8.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Under:8.5": {
+          "price": 100,
+          "book": "betmgm"
+        }
+      }
+    },
+    "bb96582815dabc42936e794a19c74217": {
+      "away_team": "New York Mets",
+      "home_team": "Arizona Diamondbacks",
+      "odds": {
+        "h2h:Arizona Diamondbacks:None": {
+          "price": 122,
+          "book": "betonlineag"
+        },
+        "h2h:New York Mets:None": {
+          "price": -135,
+          "book": "betonlineag"
+        },
+        "spreads:Arizona Diamondbacks:1.5": {
+          "price": -135,
+          "book": "betonlineag"
+        },
+        "spreads:New York Mets:-1.5": {
+          "price": 125,
+          "book": "bovada"
+        },
+        "totals:Over:8.5": {
+          "price": 100,
+          "book": "betmgm"
+        },
+        "totals:Under:8.5": {
+          "price": -110,
+          "book": "fanduel"
+        },
+        "totals:Over:8.0": {
+          "price": -115,
+          "book": "bovada"
+        },
+        "totals:Under:8.0": {
+          "price": -105,
+          "book": "bovada"
+        }
+      }
+    },
+    "24892453777c4e3f95360ff530e09902": {
+      "away_team": "St. Louis Cardinals",
+      "home_team": "San Diego Padres",
+      "odds": {
+        "h2h:San Diego Padres:None": {
+          "price": -142,
+          "book": "fanduel"
+        },
+        "h2h:St. Louis Cardinals:None": {
+          "price": 131,
+          "book": "betonlineag"
+        },
+        "spreads:San Diego Padres:-1.5": {
+          "price": 146,
+          "book": "fanduel"
+        },
+        "spreads:St. Louis Cardinals:1.5": {
+          "price": -160,
+          "book": "betonlineag"
+        },
+        "totals:Over:7.5": {
+          "price": -115,
+          "book": "bovada"
+        },
+        "totals:Under:7.5": {
+          "price": 100,
+          "book": "betonlineag"
+        },
+        "totals:Over:8.0": {
+          "price": -101,
+          "book": "draftkings"
+        },
+        "totals:Under:8.0": {
+          "price": -118,
+          "book": "mybookieag"
+        }
+      }
+    },
+    "9faf187505c47b0f5009cb7d7da5200c": {
+      "away_team": "Atlanta Braves",
+      "home_team": "Los Angeles Dodgers",
+      "odds": {
+        "h2h:Atlanta Braves:None": {
+          "price": 107,
+          "book": "betonlineag"
+        },
+        "h2h:Los Angeles Dodgers:None": {
+          "price": -116,
+          "book": "fanduel"
+        },
+        "spreads:Atlanta Braves:-1.5": {
+          "price": 165,
+          "book": "betmgm"
+        },
+        "spreads:Los Angeles Dodgers:1.5": {
+          "price": -192,
+          "book": "draftkings"
+        },
+        "totals:Over:8.5": {
+          "price": 102,
+          "book": "fanduel"
+        },
+        "totals:Under:8.5": {
+          "price": -124,
+          "book": "fanduel"
+        },
+        "spreads:Atlanta Braves:1.5": {
+          "price": -190,
+          "book": "betonlineag"
+        },
+        "spreads:Los Angeles Dodgers:-1.5": {
+          "price": 175,
+          "book": "bovada"
+        },
+        "totals:Over:8.0": {
+          "price": -107,
+          "book": "betonlineag"
+        },
+        "totals:Under:8.0": {
+          "price": -105,
+          "book": "betmgm"
+        }
+      }
+    },
+    "3caf2bb935e6671e34a4e56176d99797": {
+      "away_team": "Montr\u00e9al Canadiens",
+      "home_team": "Buffalo Sabres",
+      "odds": {
+        "h2h:Buffalo Sabres:None": {
+          "price": -128,
+          "book": "bovada"
+        },
+        "h2h:Montr\u00e9al Canadiens:None": {
+          "price": 115,
+          "book": "betonlineag"
+        },
+        "spreads:Buffalo Sabres:-1.5": {
+          "price": 195,
+          "book": "bovada"
+        },
+        "spreads:Montr\u00e9al Canadiens:1.5": {
+          "price": -220,
+          "book": "fanduel"
+        },
+        "totals:Over:5.5": {
+          "price": -124,
+          "book": "fanduel"
+        },
+        "totals:Under:5.5": {
+          "price": 105,
+          "book": "draftkings"
+        },
+        "totals:Over:6.0": {
+          "price": 102,
+          "book": "betonlineag"
+        },
+        "totals:Under:6.0": {
+          "price": -118,
+          "book": "betonlineag"
+        }
+      }
+    },
+    "2fa2791476f479767d443794d977469a": {
+      "away_team": "Vegas Golden Knights",
+      "home_team": "Anaheim Ducks",
+      "odds": {
+        "h2h:Anaheim Ducks:None": {
+          "price": -105,
+          "book": "fanduel"
+        },
+        "h2h:Vegas Golden Knights:None": {
+          "price": -108,
+          "book": "betonlineag"
+        },
+        "spreads:Anaheim Ducks:1.5": {
+          "price": -260,
+          "book": "fanduel"
+        },
+        "spreads:Vegas Golden Knights:-1.5": {
+          "price": 225,
+          "book": "draftkings"
+        },
+        "totals:Over:6.5": {
+          "price": 114,
+          "book": "fanduel"
+        },
+        "totals:Under:6.5": {
+          "price": -140,
+          "book": "fanduel"
+        },
+        "totals:Over:5.5": {
+          "price": -135,
+          "book": "draftkings"
+        },
+        "totals:Under:5.5": {
+          "price": 114,
+          "book": "draftkings"
+        },
+        "spreads:Anaheim Ducks:-1.5": {
+          "price": 230,
+          "book": "bovada"
+        },
+        "spreads:Vegas Golden Knights:1.5": {
+          "price": -275,
+          "book": "betmgm"
+        },
+        "totals:Over:6.0": {
+          "price": -110,
+          "book": "betmgm"
+        },
+        "totals:Under:6.0": {
+          "price": 100,
+          "book": "bovada"
+        }
+      }
+    },
+    "ff32d091f70d6cbd0449e919d784e5fc": {
+      "away_team": "Carolina Hurricanes",
+      "home_team": "Philadelphia Flyers",
+      "odds": {
+        "h2h:Carolina Hurricanes:None": {
+          "price": -176,
+          "book": "mybookieag"
+        },
+        "h2h:Philadelphia Flyers:None": {
+          "price": 164,
+          "book": "betonlineag"
+        },
+        "spreads:Carolina Hurricanes:-1.5": {
+          "price": 150,
+          "book": "mybookieag"
+        },
+        "spreads:Philadelphia Flyers:1.5": {
+          "price": -163,
+          "book": "betonlineag"
+        },
+        "totals:Over:5.5": {
+          "price": 121,
+          "book": "betonlineag"
+        },
+        "totals:Under:5.5": {
+          "price": -140,
+          "book": "betmgm"
+        }
+      }
+    },
+    "06019ea348b06f7e342d8998911baca1": {
+      "away_team": "Colorado Avalanche",
+      "home_team": "Minnesota Wild",
+      "odds": {
+        "h2h:Colorado Avalanche:None": {
+          "price": -125,
+          "book": "fanduel"
+        },
+        "h2h:Minnesota Wild:None": {
+          "price": 113,
+          "book": "betonlineag"
+        },
+        "spreads:Colorado Avalanche:-1.5": {
+          "price": 200,
+          "book": "draftkings"
+        },
+        "spreads:Minnesota Wild:1.5": {
+          "price": -220,
+          "book": "fanduel"
+        },
+        "totals:Over:6.5": {
+          "price": 110,
+          "book": "draftkings"
+        },
+        "totals:Under:6.5": {
+          "price": -120,
+          "book": "betonlineag"
+        },
+        "totals:Over:6.0": {
+          "price": -120,
+          "book": "betmgm"
+        },
+        "totals:Under:6.0": {
+          "price": 100,
+          "book": "betmgm"
+        }
+      }
+    }
+  }
+}

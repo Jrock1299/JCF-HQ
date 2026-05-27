@@ -1,0 +1,44 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v4 — EV-FIRST, MULTI-MARKET
+Generated: 2026-03-29 09:00 UTC  |  Bankroll: $340.93
+============================================================
+
+📊 Record: 7W–13L (35.0% WR) | P&L: -82.52
+   NCAAB: 5W-5L (50.0% WR, -7.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   MLB: 0W-3L (0.0% WR, -30.00)
+
+⚠️  FADING (bad historical edge):
+   ⛔ NBA — filtered from today's picks
+
+🏆 TODAY'S PICKS (positive EV only)
+--------------------------------------------------
+1. Washington Nationals @ Chicago Cubs
+   ✅ Pick: Washington Nationals (ML) (+219) @ betonlineag
+   📊 EV: +0.1% | Consensus: 31.4% vs Line: 31.3% | Edge: +0.0% (6 books)
+   💰 Stake: $5.00 (¼ Kelly) | MLB | ML
+   🕐 Mar 29 06:21PM ET
+   😴 Washington Nationals on B2B (rest: 1.0d)
+   😴 Chicago Cubs on B2B (rest: 1.0d)
+
+2. Colorado Rockies @ Miami Marlins
+   ✅ Pick: Under 8.0 (TOTAL) (+100) @ betmgm
+   📊 EV: +0.0% | Consensus: 50.0% vs Line: 50.0% | Edge: +0.0% (6 books)
+   💰 Stake: $5.00 (¼ Kelly) | MLB | TOTAL
+   🕐 Mar 29 05:41PM ET
+   😴 Colorado Rockies on B2B (rest: 0.9d)
+   😴 Miami Marlins on B2B (rest: 0.9d)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: -150 | Combined prob: 54.5% | Stake: $5.00 → Win: $3.33
+  Leg 1: Los Angeles Clippers (ML) (-750) [85.5%] — ML | NBA | Los Angeles Clippers @ Milwaukee Bucks
+  Leg 2: Denver Nuggets (ML) (-590) [82.6%] — ML | NBA | Golden State Warriors @ Denver Nuggets
+  Leg 3: Miami Heat (ML) (-390) [77.1%] — ML | NBA | Miami Heat @ Indiana Pacers
+
+Parlay 2 — 3 legs | Odds: +129 | Combined prob: 39.2% | Stake: $5.00 → Win: $6.46
+  Leg 1: Oklahoma City Thunder (ML) (-350) [75.1%] — ML | NBA | New York Knicks @ Oklahoma City Thunder
+  Leg 2: Michigan Wolverines (ML) (-325) [74.1%] — ML | NCAAB | Tennessee Volunteers @ Michigan Wolverines
+  Leg 3: Auburn Tigers (ML) (-275) [70.4%] — ML | NCAAB | Illinois St Redbirds @ Auburn Tigers
+
+============================================================

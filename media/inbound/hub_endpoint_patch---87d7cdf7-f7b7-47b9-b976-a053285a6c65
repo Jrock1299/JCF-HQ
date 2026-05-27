@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""
+Agent Hub — Storage Server Endpoint Patch
+==========================================
+Run this on the VPS to add the /hq/hub endpoint to hq_storage_server.py.
+
+This adds:
+  GET  /hq/hub          — Retrieve hub messages (with optional filters)
+  POST /hq/hub          — Post a new message to the hub
+  GET  /hq/hub/stats    — Quick stats (message count per agent, error count)
+
+Usage:
+    python3 hub_endpoint_patch.py
+"""
+
+import os
+import json
+import shutil
+
+SERVER_PATH = "/root/.openclaw/scripts/hq_storage_server.py"
+HUB_JSON_PATH = "/root/.openclaw/dashboard/agent_hub.json"
+
+# Create the hub JSON file if it doesn't exist
+if not os.path.exists(HUB_JSON_PATH):
+    with open(HUB_JSON_PATH, "w") as f:
+        json.dump({"messages": [], "max_messages": 500}, f, indent=2)
+    print(f"[OK] Created {HUB_JSON_PATH}")
+else:
+    print(f"[OK] {HUB_JSON_PATH} already exists")
+
+# Backup the server file
+BACKUP = SERVER_PATH + ".bak.pre_hub"
+shutil.copy2(SERVER_PATH, BACKUP)
+print(f"[OK] Backup saved to {BACKUP}")
+
+# Read current server code
+with open(SERVER_PATH, "r") as f:
+    content = f.read()
+
+# Check if hub endpoint already exists
+if "/hq/hub" in content:
+    print("[SKIP] /hq/hub endpoint already exists in server")
+    exit(0)
+
+# The new endpoint code to inject
+HUB_ENDPOINT_CODE = '''
+
+# ══════════════════════════════════════════════════════════
+# AGENT HUB ENDPOINTS (added by hub_endpoint_patch.py)
+# ══════════════════════════════════════════════════════════
+
+HUB_PATH = "/root/.openclaw/dashboard/agent_hub.json"
+HUB_MAX_MESSAGES = 500
+
+def load_hub():
+    try:
+        with open(HUB_PATH, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"messages": [], "max_messages": HUB_MAX_MESSAGES}
+
+def save_hub(data):
+    with open(HUB_PATH, "w") as f:
+        json.dump(data, f, indent=2)
+
+@app.route('/hq/hub', methods=['GET'])
+def get_hub():
+    hub = load_hub()
+    messages = hub.get("messages", [])
+
+    # Optional filters
+    agent = request.args.get("agent")
+    msg_type = request.args.get("type")
+    priority = request.args.get("priority")
+    limit = int(request.args.get("limit", 50))
+
+    if agent:
+        messages = [m for m in messages if m.get("agent") == agent]
+    if msg_type:
+        messages = [m for m in messages if m.get("type") == msg_type]
+    if priority:
+        messages = [m for m in messages if m.get("priority") == priority]
+
+    # Return most recent first, limited
+    messages = sorted(messages, key=lambda m: m.get("timestamp", ""), reverse=True)[:limit]
+
+    return (jsonify({"messages": messages, "total": len(hub.get("messages", []))}), 200, CORS_HEADERS)
+
+@app.route('/hq/hub', methods=['POST'])
+def post_hub():
+    data = request.get_json()
+    if not data or "agent" not in data or "message" not in data:
+        return (jsonify({"error": "agent and message required"}), 400, CORS_HEADERS)
+
+    hub = load_hub()
+    messages = hub.get("messages", [])
+
+    # Add the message
+    entry = {
+        "agent": data.get("agent", "unknown"),
+        "type": data.get("type", "status"),
+        "message": data.get("message", ""),
+        "priority": data.get("priority", "normal"),
+        "timestamp": data.get("timestamp", ""),
+        "session": data.get("session"),
+        "tags": data.get("tags", [])
+    }
+    messages.append(entry)
+
+    # Trim to max messages (keep most recent)
+    if len(messages) > HUB_MAX_MESSAGES:
+        messages = messages[-HUB_MAX_MESSAGES:]
+
+    hub["messages"] = messages
+    save_hub(hub)
+
+    return (jsonify({"ok": True, "total": len(messages)}), 200, CORS_HEADERS)
+
+@app.route('/hq/hub', methods=['OPTIONS'])
+def hub_options():
+    return ('', 204, CORS_HEADERS)
+
+@app.route('/hq/hub/stats', methods=['GET'])
+def hub_stats():
+    hub = load_hub()
+    messages = hub.get("messages", [])
+
+    # Count per agent
+    agent_counts = {}
+    error_count = 0
+    critical_count = 0
+    for m in messages:
+        agent = m.get("agent", "unknown")
+        agent_counts[agent] = agent_counts.get(agent, 0) + 1
+        if m.get("type") == "error":
+            error_count += 1
+        if m.get("priority") == "critical":
+            critical_count += 1
+
+    return (jsonify({
+        "total_messages": len(messages),
+        "per_agent": agent_counts,
+        "errors": error_count,
+        "critical": critical_count
+    }), 200, CORS_HEADERS)
+'''
+
+# Find where to inject — before the app.run() line or at the end of routes
+if "app.run(" in content:
+    # Insert before app.run()
+    content = content.replace("app.run(", HUB_ENDPOINT_CODE + "\napp.run(")
+elif "if __name__" in content:
+    content = content.replace("if __name__", HUB_ENDPOINT_CODE + "\nif __name__")
+else:
+    # Just append
+    content += HUB_ENDPOINT_CODE
+
+with open(SERVER_PATH, "w") as f:
+    f.write(content)
+
+print(f"[OK] Patched {SERVER_PATH} with /hq/hub endpoints")
+
+# Verify syntax
+import py_compile
+try:
+    py_compile.compile(SERVER_PATH, doraise=True)
+    print("[OK] Syntax check PASSED")
+except py_compile.PyCompileError as e:
+    print(f"[ERROR] Syntax check FAILED: {e}")
+    print("[ROLLBACK] Restoring backup...")
+    shutil.copy2(BACKUP, SERVER_PATH)
+    print("[OK] Backup restored")
+    exit(1)
+
+print("")
+print("Done! To activate:")
+print("  1. Restart the storage server:")
+print("     pkill -f hq_storage_server.py")
+print("     nohup python3 /root/.openclaw/scripts/hq_storage_server.py > /dev/null 2>&1 &")
+print("")
+print("  2. Test the endpoint:")
+print('     curl -s -X POST http://localhost:8900/hq/hub \\')
+print('       -H "Content-Type: application/json" \\')
+print('       -d \'{"agent":"huncho","type":"status","message":"Agent Hub is live.","tags":["infrastructure"]}\' ')
+print("")
+print("  3. Copy hub_post.py to /root/.openclaw/scripts/ so all agents can import it:")
+print("     cp hub_post.py /root/.openclaw/scripts/hub_post.py")

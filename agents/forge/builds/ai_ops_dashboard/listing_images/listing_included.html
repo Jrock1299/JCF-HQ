@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;500;600;700;900&family=Handjet:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 2000px;
+  height: 2000px;
+  overflow: hidden;
+}
+
+body {
+  background: #08080e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Background layers */
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(139,92,246,0.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 100% 100%, rgba(0,212,255,0.04) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Vertical grid lines */
+body::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px);
+  background-size: 200px 100%;
+  pointer-events: none;
+}
+
+/* Corner marks */
+.c { position: absolute; width: 60px; height: 60px; border-color: rgba(0,212,255,0.15); border-style: solid; }
+.c.tl { top: 56px; left: 56px; border-width: 2px 0 0 2px; }
+.c.tr { top: 56px; right: 56px; border-width: 2px 2px 0 0; }
+.c.bl { bottom: 56px; left: 56px; border-width: 0 0 2px 2px; }
+.c.br { bottom: 56px; right: 56px; border-width: 0 2px 2px 0; }
+
+/* Main card container */
+.main-card {
+  width: 1560px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.028) 0%, rgba(255,255,255,0.008) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 32px;
+  padding: 80px 100px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Gradient top border */
+.main-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 80px; right: 80px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, #8b5cf6, transparent);
+}
+
+/* Title */
+.title-section {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.eyebrow {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: #00d4ff;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 84px;
+  letter-spacing: 0.12em;
+  line-height: 1.0;
+  color: #fff;
+  text-shadow: 0 0 80px rgba(255,255,255,0.12);
+}
+
+.page-title span { color: #00d4ff; text-shadow: 0 0 60px rgba(0,212,255,0.5); }
+
+/* Checklist */
+.checklist {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 72px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+}
+
+.check-item:last-child { border-bottom: none; }
+
+.check-item:hover {}
+
+/* Alternating subtle highlight */
+.check-item:nth-child(even) {
+  background: rgba(0,212,255,0.018);
+  border-radius: 8px;
+}
+
+.check-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 44px;
+  text-align: center;
+}
+
+.check-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 21px;
+  font-weight: 500;
+  color: #c8d0e8;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+
+.check-item.primary .check-text {
+  color: #fff;
+  font-weight: 700;
+}
+
+.check-item.primary .check-icon::after {
+  filter: drop-shadow(0 0 4px rgba(0,212,255,0.8));
+}
+
+.check-badge {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 4px 16px;
+  border-radius: 100px;
+  flex-shrink: 0;
+}
+
+.badge-cyan {
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  color: #00d4ff;
+}
+
+.badge-purple {
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.25);
+  color: #a78bfa;
+}
+
+.badge-green {
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  color: #34d399;
+}
+
+/* Divider before price */
+.price-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 56px;
+}
+.pd-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent); }
+.pd-gem {
+  width: 12px; height: 12px; background: #00d4ff; border-radius: 50%;
+  box-shadow: 0 0 16px #00d4ff;
+}
+
+/* Price section */
+.price-section {
+  text-align: center;
+  width: 100%;
+}
+
+.price-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  color: #3a4068;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.price {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  font-size: 140px;
+  line-height: 1.0;
+  color: #00d4ff;
+  text-shadow: 0 0 80px rgba(0,212,255,0.6), 0 0 160px rgba(0,212,255,0.2);
+  letter-spacing: 0.08em;
+}
+
+.price-sub {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: #3a4068;
+  letter-spacing: 0.15em;
+  margin-top: 16px;
+}
+
+.price-sub span { color: #00d4ff; }
+
+/* Watermark */
+.wm {
+  position: absolute; bottom: 52px; right: 72px;
+  font-family: 'Syncopate', sans-serif; font-size: 16px;
+  letter-spacing: .12em; color: rgba(255,255,255,0.17);
+}
+</style>
+</head>
+<body>
+
+<div class="c tl"></div>
+<div class="c tr"></div>
+<div class="c bl"></div>
+<div class="c br"></div>
+
+<div class="main-card">
+
+  <div class="title-section">
+    <div class="eyebrow">AI Ops Dashboard · Digital Download</div>
+    <div class="page-title">WHAT'S <span>INCLUDED</span></div>
+  </div>
+
+  <div class="checklist">
+
+    <div class="check-item primary">
+      <div class="check-icon">✅</div>
+      <div class="check-text">3 Premium Dashboard Themes</div>
+      <div class="check-badge badge-cyan">3 Files</div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Dark Techy · Clean Minimal · Earthy Pastel</div>
+    </div>
+
+    <div class="check-item primary">
+      <div class="check-icon">✅</div>
+      <div class="check-text">18+ Built-In Color Customizations</div>
+      <div class="check-badge badge-purple">6 per theme</div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Custom Color Picker On Every Theme</div>
+    </div>
+
+    <div class="check-item primary">
+      <div class="check-icon">✅</div>
+      <div class="check-text">7 Pre-Loaded AI Platforms</div>
+      <div class="check-badge badge-green">Ready to use</div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Budget Alerts &amp; Spend Tracking</div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Monthly Spend History Chart</div>
+    </div>
+
+    <div class="check-item primary">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Works In Any Browser — No Software Needed</div>
+      <div class="check-badge badge-cyan">Offline</div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Instant Digital Download</div>
+    </div>
+
+    <div class="check-item primary">
+      <div class="check-icon">✅</div>
+      <div class="check-text">Lifetime Access — Free Updates</div>
+      <div class="check-badge badge-purple">Forever</div>
+    </div>
+
+  </div>
+
+  <div class="price-divider">
+    <div class="pd-line"></div>
+    <div class="pd-gem"></div>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="price-section">
+    <div class="price-label">One-Time Price</div>
+    <div class="price">$20</div>
+    <div class="price-sub">
+      <span>Instant download</span> &nbsp;·&nbsp; No subscription &nbsp;·&nbsp; <span>Yours forever</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="wm">JCF7Studio</div>
+
+</body>
+</html>

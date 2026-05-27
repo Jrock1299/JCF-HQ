@@ -1,0 +1,181 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-03-03 13:50:39 UTC
+============================================================
+
+🏆 SPORTS PICKS (7 found)
+----------------------------------------
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Michael Porter Jr.: 25+,yes Kon Knueppel: 20+,yes James Harden: 20+,yes Cade Cunningham: 25+,yes Julius Randle: 20+,yes Luka Dončić: 30+,yes Jalen Brunson: 25+,yes Matas Buzelis: 15+,yes Russell Westbrook: 15+,yes Tyrese Maxey: 25+,yes Paolo Banchero: 25+
+   Market: KXMVECROSSCATEGORY-S2026E5B7954FD2C-F9102252D1D
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:48 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 22,727
+   ⚡ High volume: 22,727
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Michael Porter Jr.: 25+,yes Kon Knueppel: 20+,yes James Harden: 20+,yes Cade Cunningham: 25+,yes Julius Randle: 20+,yes Jalen Brunson: 25+,yes Matas Buzelis: 15+,yes Russell Westbrook: 15+,yes Tyrese Maxey: 25+,yes Paolo Banchero: 25+
+   Market: KXMVECROSSCATEGORY-S20268172B980C1A-4FA95443349
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:49 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 11,983
+   ⚡ High volume: 11,983
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Miami wins by over 13.5 Points,yes Charlotte wins by over 12.5 Points,no Detroit wins by over 2.5 Points,yes Minnesota wins by over 12.5 Points,no Los Angeles L wins by over 8.5 Points,yes New York wins by over 2.5 Points,yes Oklahoma City wins by over 10.5 Points,yes Phoenix wins by over 10.5 Points,yes San Antonio wins by over 6.5 Points,no Orlando wins by over 14.5 Points
+   Market: KXMVECROSSCATEGORY-S2026E24FD300CAC-35668571440
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:47 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 9,090
+   ⚡ High volume: 9,090
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Benjamin Bonzi,yes Christopher O'Connell,yes Thiago Agustin Tirante,yes Bournemouth,yes Everton,yes Leeds United,yes Liverpool,yes Miami wins by over 13.5 Points,yes Charlotte wins by over 12.5 Points,yes Detroit wins by over 2.5 Points,yes Orlando wins by over 14.5 Points,yes FLA Panthers,yes CBJ Blue Jackets,yes BOS Bruins,yes BUF Sabres,yes Kamilla Rakhimova,yes Anastasia Zakharova,yes Talia Gibson
+   Market: KXMVECROSSCATEGORY-S2026B288F6D8802-BE04FB9BA97
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:48 UTC
+   Close: 2026-03-17 18:00 UTC
+   Volume: 5,813
+   ⚡ High volume: 5,813
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Benjamin Bonzi,yes Christopher O'Connell,yes Over 2.5 goals scored,yes Over 2.5 goals scored,yes Miami,yes Charlotte,yes Minnesota,yes Los Angeles L,yes San Antonio,yes BYU,yes St. John's,yes Kansas,yes Tennessee,yes Miami (OH),yes Linda Fruhvirtova,yes Priscilla Hon
+   Market: KXMVECROSSCATEGORY-S2026D4A797B1EB8-CB66CDE1785
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:47 UTC
+   Close: 2026-03-17 18:00 UTC
+   Volume: 4,672
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVECROSSCATEGORY
+   Title: yes Michael Porter Jr.: 15+,yes Bam Adebayo: 15+,yes Brandon Miller: 20+,yes Dennis Schröder: 10+,yes Evan Mobley: 10+,yes Jarrett Allen: 10+,yes Cade Cunningham: 20+,yes Donte DiVincenzo: 10+,yes Matas Buzelis: 10+,yes VJ Edgecombe: 10+,yes Devin Vassell: 10+,yes Desmond Bane: 15+,yes Paolo Banchero: 20+,yes Jalen Suggs: 2+,yes Paolo Banchero: 6+,yes Miami wins by over 13.5 Points,yes Charlotte wins by over 12.5 Points,yes New York wins by over 2.5 Points,yes San Antonio wins by over 6.5 Points,yes Orlando wins by over 14.5 Points
+   Market: KXMVECROSSCATEGORY-S20261F175296423-FB94141E210
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:47 UTC
+   Close: 2026-03-18 00:30 UTC
+   Volume: 4,545
+   ⚡ Near certainty (100%) — low risk yes?
+
+📌 KXMVESPORTSMULTIGAMEEXTENDED
+   Title: yes Anthony Edwards: 5+,yes Minnesota,yes Jaylen Wells: 15+,yes Anthony Edwards: 30+,yes Over 229.5 points scored
+   Market: KXMVESPORTSMULTIGAMEEXTENDED-S2026ED5C29869EC-09F1D29B313
+   Yes: 100% | No: 100%
+   Open: 2026-03-03 13:48 UTC
+   Close: 2026-03-18 01:00 UTC
+   Volume: 2,931
+   ⚡ Near certainty (100%) — low risk yes?
+
+🎯 HIGH VALUE OPPORTUNITIES (167 found)
+----------------------------------------
+
+📌 KXFTAPRC
+   Title: Will Trump make a new free trade agreement with China before Jan 20, 2029?
+   Market: KXFTAPRC-29
+   Yes: 35% | No: 66%
+   Open: 2025-01-10 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 47,480
+   ⚡ High volume: 47,480
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXAPPLEUS
+   Title: DOJ wins their anti-trust case against Apple?
+   Market: APPLEUS-29DEC31
+   Yes: 35% | No: 68%
+   Open: 2024-03-26 12:00 UTC
+   Close: 2030-01-01 15:00 UTC
+   Volume: 46,096
+   ⚡ High volume: 46,096
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 20, 2029?
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 93%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 103,971
+   ⚡ High volume: 103,971
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 1, 2027?
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Open: 2024-11-21 15:00 UTC
+   Close: 2027-01-01 15:00 UTC
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Janet Yellen as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Open: 2025-08-13 20:06 UTC
+   Close: 2029-01-20 15:00 UTC
+   Volume: 34,118
+   ⚡ High volume: 34,118
+   ⚡ Very low odds (1%) — contrarian long?
+
+👁 WATCH LIST (276 markets)
+----------------------------------------
+  • KXMVECROSSCATEGORY — yes Akron,yes Virginia Tech,yes Hofstra,yes VCU,yes St. John's,yes William & Mary,yes Kent St.,yes Auburn,yes Alcorn St.,yes Campbell,yes UCF,yes Illinois,yes Louisville,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Virginia
+    Yes: 7% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Sacramento,yes San Antonio wins by over 6.5 Points,yes Alabama,yes Tennessee,yes Miami (OH)
+    Yes: 5% | Vol: 0 | Close: 2026-03-18 04:00 UTC
+  • KXMVECROSSCATEGORY — yes Miami,yes Charlotte,yes Minnesota,yes Orlando,yes Nebraska
+    Yes: 32% | Vol: 0 | Close: 2026-03-18 00:30 UTC
+  • KXMVECROSSCATEGORY — yes Western Michigan,yes St. John's,yes Tennessee,yes Miami (OH)
+    Yes: 41% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes North Carolina,yes Texas Tech,yes Miami (OH),yes Virginia
+    Yes: 43% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Dayton,yes Buffalo,yes Alabama wins by over 2.5 Points
+    Yes: 23% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Sacramento,yes San Antonio wins by over 6.5 Points,yes Alabama,yes Tennessee
+    Yes: 6% | Vol: 0 | Close: 2026-03-18 04:00 UTC
+  • KXMVECROSSCATEGORY — yes Buffalo,yes Alabama wins by over 2.5 Points,yes Dayton wins by over 4.5 Points
+    Yes: 18% | Vol: 0 | Close: 2026-03-17 23:30 UTC
+  • KXMVECROSSCATEGORY — yes Akron,yes Virginia Tech,yes Hofstra,yes VCU,yes St. John's,yes William & Mary,yes Kent St.,yes Alcorn St.,yes Campbell,yes UCF,yes Illinois,yes Louisville,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Virginia
+    Yes: 9% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes North Carolina,yes Kansas,yes Nebraska,yes UCF,yes Louisville,yes Texas Tech,yes Tennessee,yes Miami (OH),yes Texas A&M,yes UMBC
+    Yes: 4% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes St. John's wins by over 6.5 Points,yes Texas Tech wins by over 4.5 Points,yes Virginia wins by over 8.5 Points
+    Yes: 48% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Dayton,yes UCF,yes Tennessee,yes Miami (OH),yes Over 166.5 points scored
+    Yes: 29% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Miami,yes Charlotte,yes Orlando,yes Nebraska
+    Yes: 38% | Vol: 0 | Close: 2026-03-18 00:30 UTC
+  • KXMVECROSSCATEGORY — yes Charlotte,yes Orlando,yes Nebraska
+    Yes: 43% | Vol: 0 | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY — yes Kansas wins by over 5.5 Points,yes Tennessee wins by over 8.5 Points,no Miami (OH) wins by over 8.5 Points,yes Pittsburgh wins by over 1.5 goals
+    Yes: 5% | Vol: 0 | Close: 2026-03-18 02:00 UTC
+
+📋 MONITORING (39 markets — no clear edge)
+----------------------------------------
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-18 04:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 67% | Close: 2026-03-18 03:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 10% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:00 UTC
+  • KXMVESPORTSMULTIGAMEEXTENDED | Yes: 14% | Close: 2026-03-18 00:30 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 14% | Close: 2026-03-18 00:00 UTC
+  • KXMVECROSSCATEGORY | Yes: 12% | Close: 2026-03-18 00:30 UTC
+
+============================================================
+Total markets analyzed: 442
+High value: 127 | Watch list: 276
+============================================================

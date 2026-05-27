@@ -1,0 +1,172 @@
+{
+  "research_date": "2026-04-15",
+  "market_overview": "The Etsy digital product market is in a high-growth phase, with the digital downloads category growing 40%+ year-over-year and top sellers reporting $10,000\u2013$50,000/month. Buyers in 2026 have shifted decisively away from generic static PDFs toward curated, hyper-specific, editable systems that solve niche problems \u2014 generic AI-dumped content is easy to beat with quality. The creator economy is simultaneously booming ($20.6B in social creator revenue in 2026) and fragmenting, creating massive unmet demand for operational tools that help independent professionals manage multi-stream income, track deals, and run like a business.",
+  "niches": [
+    {
+      "name": "Creator Revenue Command Center",
+      "description": "A multi-platform income dashboard for content creators that unifies brand deal tracking, platform payouts (YouTube, TikTok, Substack, Patreon), affiliate commissions, and tax estimation in one visual Google Sheets system.",
+      "target_buyer": "Mid-tier content creators (10K\u2013500K followers) earning from 3+ revenue streams who are overwhelmed by scattered income sources and terrified of tax season",
+      "gap_identified": "Existing Etsy competitors (e.g., the Influencer/Creator Dashboard Notion template by a 2023 seller with minimal reviews, and the UGC Influencer Finance Tracker listed March 2026 with near-zero sales) only address brand deals or basic expense tracking in isolation. None consolidate cross-platform RPM benchmarking, brand deal pipeline CRM, affiliate link performance, and quarterly estimated tax in a single dashboard. Research from Creator.com's 2025\u20132026 State of the Creator Economy shows 68% of creators don't track earnings by platform \u2014 a massive pain point with no dominant Etsy solution. The Solopreneur Playbook (listed April 2026) covers freelance business setup but lacks creator-specific platform revenue columns, RPM tracking, and sponsorship negotiation tools.",
+      "scores": {
+        "demand": 9,
+        "competition": 8,
+        "build_difficulty": 7,
+        "price_potential": 8,
+        "recurring_potential": 8
+      },
+      "total_score": 40,
+      "suggested_price": "$27.99\u2013$44.99",
+      "estimated_monthly_sales": "high",
+      "build_spec": {
+        "type": "google_sheets",
+        "themes": [
+          "dark_techy",
+          "clean_minimal"
+        ],
+        "key_features": [
+          "Multi-platform income log: YouTube AdSense, TikTok Creator Fund, Substack, Patreon, brand deals, affiliates \u2014 all on one master dashboard with monthly/annual totals",
+          "Brand Deal CRM pipeline: prospect \u2192 negotiating \u2192 signed \u2192 delivered \u2192 paid stages with rate card, deliverables, and payment due date columns",
+          "Quarterly estimated tax calculator: auto-calculates self-employment tax liability based on net income with reminders for Q1\u2013Q4 deadlines",
+          "Platform RPM benchmarking tab: compare your per-platform revenue efficiency against 2026 industry averages (finance $45 RPM, lifestyle $22 RPM, entertainment $18 RPM)",
+          "Annual income forecasting chart: trend line projection based on trailing 3-month data with goal gap visualization"
+        ]
+      }
+    },
+    {
+      "name": "AI Workflow Prompt OS",
+      "description": "A structured Notion-based operating system for freelancers and solopreneurs that organizes, categorizes, and version-controls their personal AI prompt library across ChatGPT, Claude, and Gemini \u2014 with pre-built prompt packs for 8 core business tasks.",
+      "target_buyer": "Freelancers, consultants, and solopreneurs who use AI tools daily but lose their best prompts in chat history or scattered notes and want a reusable, organized system",
+      "gap_identified": "The Etsy Notion AI market (etsy.com/market/notion_ai) returns thin, low-review results \u2014 most existing listings are 2023-era basic prompt lists with no organizational system. Free Notion AI prompt templates on super.so and notion.com are designed for personal note-taking, not business workflows. The paid market gap is a proper 'prompt OS' \u2014 one with tagged categories (copywriting, client comms, SEO, finance, outreach), version history to track what works, output examples, and pre-built prompt packs for real business use cases. Research shows AI digital products like prompt libraries and workflow templates earn $500\u2013$1,500/month for solo creators, and the Notion template market has surpassed $50M annually. Yet no dominant Etsy seller has claimed this specific niche with a well-designed, business-focused prompt management system.",
+      "scores": {
+        "demand": 9,
+        "competition": 8,
+        "build_difficulty": 8,
+        "price_potential": 7,
+        "recurring_potential": 9
+      },
+      "total_score": 41,
+      "suggested_price": "$19.99\u2013$34.99",
+      "estimated_monthly_sales": "high",
+      "build_spec": {
+        "type": "notion",
+        "themes": [
+          "dark_techy",
+          "clean_minimal"
+        ],
+        "key_features": [
+          "Master prompt database with multi-select tags: tool (ChatGPT/Claude/Gemini), category (copywriting/outreach/SEO/finance/client comms/content/code/research), and rating system",
+          "Pre-built prompt packs: 8 categories \u00d7 10 curated, tested prompts each \u2014 80 ready-to-use prompts with output examples included",
+          "Version control log: track prompt iterations, note what changed, and compare output quality across versions",
+          "Quick-access sidebar: pinned 'daily driver' prompts for instant copy-paste without searching the full database",
+          "Prompt request + ideas inbox: capture new prompt ideas on the fly and move them to 'tested' or 'archived' status"
+        ]
+      }
+    },
+    {
+      "name": "Freelancer Client & Tax Command Hub",
+      "description": "An all-in-one Google Sheets dashboard for freelancers that combines client CRM, project pipeline, hourly rate calculator, invoice tracker, and quarterly self-employment tax estimator \u2014 purpose-built for the multi-client solopreneur.",
+      "target_buyer": "Freelancers (designers, developers, writers, marketers, consultants) earning $3K\u2013$15K/month from 3\u201310 active clients who are juggling work in spreadsheets, DMs, and mental notes",
+      "gap_identified": "The most-reviewed Etsy freelancer templates (e.g., listing 1817525833 with a multi-year income/expense tracker, and listing 1681574869 with a simple income/project tracker) are basic bookkeeping tools \u2014 they track money in/out but lack client relationship management, proposal-to-payment pipeline status, or tax planning. The WealthMavenTemplates 'Freelancer Finance Tracker' (listed Aug 2025) has only 11 favorites, proving even recent listings are underperforming. The market gap is a unified system: client onboarding status + billable hours by project + auto-calculated invoice totals + real-time quarterly tax liability \u2014 the 'four things every freelancer needs in one place' that no current high-selling Etsy product delivers with clean UI and dark/professional design aesthetics.",
+      "scores": {
+        "demand": 9,
+        "competition": 6,
+        "build_difficulty": 7,
+        "price_potential": 8,
+        "recurring_potential": 7
+      },
+      "total_score": 37,
+      "suggested_price": "$24.99\u2013$39.99",
+      "estimated_monthly_sales": "high",
+      "build_spec": {
+        "type": "google_sheets",
+        "themes": [
+          "dark_techy",
+          "clean_minimal"
+        ],
+        "key_features": [
+          "Client CRM tab: prospect \u2192 proposal \u2192 active \u2192 invoiced \u2192 paid pipeline with contact info, project type, agreed rate, and follow-up date",
+          "Project time & billing tracker: log hours per client per project, auto-calculate billable totals at hourly or project rate",
+          "Invoice tracker: invoice number, date sent, due date, amount, paid/overdue status with conditional color coding",
+          "Quarterly SE tax estimator: input net profit YTD, auto-outputs Q1\u2013Q4 estimated payment amounts with IRS safe harbor calculation",
+          "Rate calculator wizard: reverse-engineer your minimum hourly rate from desired annual income, billable hours target, and overhead expenses"
+        ]
+      }
+    },
+    {
+      "name": "Options Trade Psychology Journal",
+      "description": "A dark-themed Google Sheets trading journal for retail options traders that combines detailed trade logging with a psychology scoring system \u2014 tracking not just P&L but emotional discipline, pre-trade bias, and pattern-of-mistake analytics.",
+      "target_buyer": "Retail options traders (beginner to intermediate) who know they're making emotional mistakes but have no structured system to identify and break bad patterns",
+      "gap_identified": "The options trading journal space on Etsy has clear demand (multiple listings with 39\u201345 favorites) but all existing top products \u2014 including ExcelCaroline's 'Options Trade Tracker Pro' (39 favorites, relisted Feb 2026) and listing 4303017665 \u2014 focus purely on mechanical P&L and strategy tracking. None include a psychology layer: pre-trade emotional state logging, discipline scoring, bias detection (FOMO, revenge trading, overconfidence flags), or a 'mistake pattern' breakdown chart that shows which emotional triggers cost the most money. The fully-featured trading journal at listing 4343862284 includes mood/discipline scoring for stocks/futures/options but is aesthetically plain and buried under a generic ticker. A visually superior, options-specific version with a dark, professional dashboard UI and psychology-first design would own this sub-niche.",
+      "scores": {
+        "demand": 8,
+        "competition": 6,
+        "build_difficulty": 7,
+        "price_potential": 8,
+        "recurring_potential": 7
+      },
+      "total_score": 36,
+      "suggested_price": "$24.99\u2013$34.99",
+      "estimated_monthly_sales": "medium",
+      "build_spec": {
+        "type": "google_sheets",
+        "themes": [
+          "dark_techy"
+        ],
+        "key_features": [
+          "Trade log with full options data: ticker, strategy (iron condor, spread, naked put, covered call, etc.), expiration, strike, premium, open/close P&L, and R-multiple",
+          "Pre-trade psychology checklist: rate confidence (1\u20135), market bias, emotional state (calm/anxious/FOMO/revenge), and whether trade matches written plan \u2014 logged per trade",
+          "Discipline score dashboard: auto-calculates weekly discipline score based on plan adherence, stop-loss respect, and emotional state vs. outcome correlation",
+          "Mistake pattern analyzer: breakdown chart of P&L lost by mistake type (FOMO entries, held losers too long, oversized positions, off-plan trades) to identify the #1 leak",
+          "Equity curve + monthly P&L calendar: cumulative curve with green/red day heat map and rolling 30-day win rate, profit factor, and average R shown on main dashboard"
+        ]
+      }
+    },
+    {
+      "name": "Small Business Profit Clarity Dashboard",
+      "description": "A clean, visually polished Google Sheets profit-and-loss dashboard for Etsy sellers, Shopify store owners, and service-based small businesses \u2014 going beyond basic income/expense tracking to show true profit margins, fee breakdowns, and platform-specific cost analysis.",
+      "target_buyer": "Etsy sellers, Shopify merchants, and small service business owners doing $1K\u2013$20K/month in revenue who suspect their fees are eating their margins but can't see exactly where the money goes",
+      "gap_identified": "The 'Small Business Income Tracker 2026' listing (listing 4397601760) is a direct competitor \u2014 it has clean design and solid features but uses a 'cozy beige' aesthetic that doesn't appeal to serious business operators. Its 5-tab structure lacks platform fee breakdowns and doesn't compare across multiple sales channels. The Paper and Spark ecosystem (popular off-Etsy) targets makers/crafters with a dated UX. The market gap is a business-operator-grade P&L tool: Etsy + Shopify + PayPal fee auto-calculation (the 2026 Etsy transaction fee is 6.5% + $0.20 per listing + payment processing at 3% + $0.25 that sellers routinely undercount), multi-channel revenue comparison, COGS margin analysis by product line, and a clean dark or minimal professional aesthetic that signals 'serious business tool' rather than 'cute planner.' High-volume demand validated: budget/P&L trackers are consistently top-favorited digital products on Etsy.",
+      "scores": {
+        "demand": 9,
+        "competition": 5,
+        "build_difficulty": 8,
+        "price_potential": 7,
+        "recurring_potential": 7
+      },
+      "total_score": 36,
+      "suggested_price": "$19.99\u2013$29.99",
+      "estimated_monthly_sales": "high",
+      "build_spec": {
+        "type": "google_sheets",
+        "themes": [
+          "dark_techy",
+          "clean_minimal"
+        ],
+        "key_features": [
+          "Multi-channel revenue tracker: separate columns for Etsy, Shopify, Amazon Handmade, direct sales \u2014 with auto-aggregation to a unified monthly/annual total",
+          "Platform fee auto-calculator: pre-loaded 2026 Etsy fee structure (6.5% transaction + $0.20 listing + 3%+$0.25 payment processing) and Shopify tier fees \u2014 shows true net per channel",
+          "COGS + gross margin analyzer: enter product cost, auto-calculates gross margin % per SKU or category with a margin health traffic-light indicator (red/yellow/green)",
+          "Monthly P&L with visual charts: waterfall chart showing revenue \u2192 fees \u2192 COGS \u2192 net profit, plus year-over-year comparison bar chart",
+          "Tax prep summary tab: auto-pulls annual totals for Schedule C categories (revenue, COGS, advertising, software subscriptions, home office) ready for accountant handoff"
+        ]
+      }
+    }
+  ],
+  "trending_keywords": [
+    "creator revenue tracker google sheets",
+    "AI prompt library notion template",
+    "freelancer client CRM spreadsheet",
+    "options trading psychology journal",
+    "etsy seller profit dashboard 2026"
+  ],
+  "seasonal_notes": "Q2 2026 (April\u2013June) is strong for freelancer/business finance tools as U.S. self-employment tax Q1 deadlines (April 15) drive search spikes for income trackers and tax estimators \u2014 ideal launch window for the Freelancer Client & Tax Command Hub. The options trading journal benefits from earnings season volatility (April\u2013May, July\u2013August) driving retail trader activity. Creator economy tools have no strong seasonality but benefit from the January 'new year, new systems' wave and Q4 brand deal budget season (October\u2013December). Back-to-school season (August\u2013September) historically boosts all productivity/planning template categories across the board. Note: The 2026 FIFA World Cup (June\u2013July, North America) could create a short spike demand for sports analytics and betting tracker tools adjacent to the existing Sports Bankroll Manager \u2014 consider a companion 'World Cup Prop Bet Tracker' as a limited seasonal product.",
+  "_meta": {
+    "timestamp": "2026-04-15T14:24:55.440687+00:00",
+    "market_focus": null,
+    "input_tokens": 287544,
+    "output_tokens": 4445,
+    "web_searches": 11,
+    "cost_usd": 0.929307,
+    "model": "claude-sonnet-4-6"
+  }
+}

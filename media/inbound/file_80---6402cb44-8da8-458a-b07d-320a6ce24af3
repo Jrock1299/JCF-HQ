@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCF HQ — Mission Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050508;
+  --bg2: #08080f;
+  --surface: rgba(255,255,255,0.03);
+  --surface2: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --blue: #00d4ff;
+  --blue-dim: rgba(0,212,255,0.15);
+  --blue-glow: rgba(0,212,255,0.3);
+  --gold: #ffd166;
+  --gold-dim: rgba(255,209,102,0.15);
+  --gold-glow: rgba(255,209,102,0.3);
+  --green: #3ddc84;
+  --red: #ff5b5b;
+  --purple: #c084fc;
+  --text: #e8eaf0;
+  --text2: #8892a4;
+  --text3: #4a5568;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --gap: 20px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-50%;left:-20%;width:60%;height:80%;background:radial-gradient(ellipse,rgba(0,212,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-30%;right:-10%;width:50%;height:70%;background:radial-gradient(ellipse,rgba(255,209,102,0.03) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;background:rgba(5,5,8,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#050508;flex-shrink:0}
+.logo-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:.05em;white-space:nowrap}
+.logo-text span{color:var(--gold)}
+.header-nav{display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:3px;flex-shrink:0}
+.nav-tab{padding:6px 11px;border-radius:7px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;border:none;background:none;font-family:'DM Sans',sans-serif}
+.nav-tab:hover{color:var(--text);background:var(--surface2)}
+.nav-tab.active{color:#050508;background:linear-gradient(135deg,var(--blue),#0099cc);box-shadow:0 0 14px var(--blue-glow)}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:7px 12px;transition:all .2s}
+.search-bar:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-dim)}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;width:140px}
+.search-bar input::placeholder{color:var(--text3)}
+.search-hint{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 7px var(--green)}50%{opacity:.5;box-shadow:0 0 3px var(--green)}}
+
+/* LAYOUT */
+.main{max-width:1600px;margin:0 auto;padding:2rem;position:relative;z-index:1}
+.tab-content{display:none;animation:fadeInUp .3s ease}
+.tab-content.active{display:block}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.glass-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);backdrop-filter:blur(12px);padding:22px;transition:border-color .2s}
+.glass-card:hover{border-color:var(--border2)}
+.card-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:14px}
+.section-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:18px}
+
+/* WELCOME */
+.welcome-bar{background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(255,209,102,0.06));border:1px solid rgba(0,212,255,0.15);border-radius:var(--radius);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--gap)}
+.welcome-greeting{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
+.welcome-greeting span{color:var(--blue)}
+.welcome-date{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;margin-top:3px}
+.welcome-goal-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em}
+.welcome-goal-value{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gold)}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:all .2s}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.metric-card.blue::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.metric-card.gold::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.metric-card.green::before{background:linear-gradient(90deg,var(--green),transparent)}
+.metric-card.purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.metric-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.metric-icon{font-size:20px;margin-bottom:10px}
+.metric-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+.metric-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
+.metric-value.blue{color:var(--blue)}.metric-value.gold{color:var(--gold)}.metric-value.green{color:var(--green)}.metric-value.purple{color:var(--purple)}
+.metric-trend{font-size:11px;color:var(--text2);margin-top:7px;display:flex;align-items:center;gap:4px}
+.trend-up{color:var(--green)}.trend-down{color:var(--red)}
+.progress-bar-wrap{margin-top:9px;background:var(--surface2);border-radius:4px;height:4px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .8s ease}
+
+/* DASHBOARD GRID */
+.dashboard-grid{display:grid;grid-template-columns:1fr 360px;gap:var(--gap)}
+.activity-feed{max-height:300px;overflow-y:auto}
+.activity-feed::-webkit-scrollbar{width:3px}
+.activity-feed::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.activity-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:5px;flex-shrink:0}
+.activity-dot.gold{background:var(--gold)}.activity-dot.green{background:var(--green)}
+.activity-text{font-size:12px;color:var(--text);flex:1}
+.activity-time{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;white-space:nowrap}
+.priorities-list{list-style:none}
+.priority-item{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:7px;cursor:pointer;transition:all .15s}
+.priority-item:hover{background:rgba(255,255,255,0.07)}
+.priority-item.done .priority-text{text-decoration:line-through;color:var(--text3)}
+.priority-check{width:16px;height:16px;border:2px solid var(--border2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px}
+.priority-item.done .priority-check{background:var(--blue);border-color:var(--blue)}
+.priority-text{font-size:12px;flex:1}
+.add-btn{width:100%;padding:9px;border:1px dashed var(--border2);border-radius:var(--radius-sm);background:none;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;margin-top:4px}
+.add-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* KANBAN */
+.kanban-board{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+.kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.kanban-col-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.kanban-col-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px}
+.kanban-count{background:var(--surface2);border-radius:20px;padding:2px 9px;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+.task-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:9px;cursor:pointer;transition:all .15s}
+.task-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.task-title{font-size:12px;font-weight:600;margin-bottom:5px}
+.task-desc{font-size:11px;color:var(--text2);margin-bottom:9px;line-height:1.5}
+.task-footer{display:flex;justify-content:space-between;align-items:center}
+.priority-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em}
+.priority-badge.high{background:rgba(255,91,91,0.15);color:var(--red)}
+.priority-badge.medium{background:rgba(255,209,102,0.15);color:var(--gold)}
+.priority-badge.low{background:rgba(61,220,132,0.15);color:var(--green)}
+.task-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:36px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--blue),var(--gold),transparent)}
+.phase{position:relative;margin-bottom:36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;transition:all .2s}
+.phase.current{border-color:rgba(0,212,255,0.3);box-shadow:0 0 20px rgba(0,212,255,0.07)}
+.phase::before{content:'';position:absolute;left:-30px;top:26px;width:11px;height:11px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue-glow);border:2px solid var(--bg)}
+.phase.done::before{background:var(--green);box-shadow:0 0 10px rgba(61,220,132,0.4)}
+.phase.future::before{background:var(--text3);box-shadow:none}
+.phase-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.phase-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.phase-dates{font-size:11px;color:var(--text2);font-family:'DM Mono',monospace}
+.phase-badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em}
+.phase-badge.current{background:var(--blue-dim);color:var(--blue)}
+.phase-badge.done{background:rgba(61,220,132,0.15);color:var(--green)}
+.phase-badge.upcoming{background:var(--surface2);color:var(--text2)}
+.phase-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.milestone-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.milestone{display:flex;align-items:center;gap:9px;font-size:12px}
+.milestone.done{color:var(--text2)}.milestone.pending{color:var(--text)}
+
+/* REVENUE */
+.revenue-grid{display:grid;grid-template-columns:280px 1fr;gap:var(--gap);margin-bottom:var(--gap)}
+.chart-bars{display:flex;align-items:flex-end;gap:10px;height:140px;padding:0 6px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px}
+.chart-bar{width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--blue),rgba(0,212,255,0.3));transition:height .8s ease;min-height:4px}
+.chart-bar.gold{background:linear-gradient(180deg,var(--gold),rgba(255,209,102,0.3))}
+.chart-label{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace}
+.chart-val{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace}
+.agents-pnl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.agent-pnl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.agent-pnl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.agent-pnl-card.crisp::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.agent-pnl-card.blade::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.agent-pnl-card.oracle::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.agent-pnl-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:3px}
+.agent-pnl-role{font-size:11px;color:var(--text2);margin-bottom:14px}
+.agent-pnl-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.agent-pnl-val.pos{color:var(--green)}.agent-pnl-val.neg{color:var(--red)}
+.agent-pnl-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+.agent-pnl-stat{background:var(--surface2);border-radius:7px;padding:7px 9px}
+.agent-pnl-stat-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.agent-pnl-stat-val{font-size:12px;font-weight:600;font-family:'DM Mono',monospace;margin-top:2px}
+.clients-list{display:flex;flex-direction:column;gap:7px}
+.client-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm)}
+.client-name{font-size:13px;font-weight:600;flex:1}
+.client-mrr{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold)}
+.client-delete{color:var(--text3);cursor:pointer;font-size:15px;transition:color .15s}
+.client-delete:hover{color:var(--red)}
+.projection-card{background:linear-gradient(135deg,rgba(0,212,255,0.06),rgba(255,209,102,0.04));border:1px solid rgba(0,212,255,0.15);border-radius:var(--radius);padding:22px}
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.proj-item{text-align:center}
+.proj-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+.proj-value{font-family:'Syne',sans-serif;font-size:20px;font-weight:800}
+
+/* COMMAND CENTER */
+.agents-grid-cc{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.agent-card-cc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s}
+.agent-card-cc:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.3)}
+.agent-avatar{display:flex;align-items:center;justify-content:center;border-radius:12px}
+.agent-avatar.blue{background:var(--blue-dim)}.agent-avatar.gold{background:var(--gold-dim)}.agent-avatar.purple{background:rgba(192,132,252,0.15)}.agent-avatar.green{background:rgba(61,220,132,0.15)}
+.agent-status-wrap{display:flex;align-items:center;gap:5px}
+.agent-status-dot{width:7px;height:7px;border-radius:50%}
+.agent-status-dot.online{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+.agent-status-dot.busy{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+.agent-status-dot.offline{background:var(--text3)}
+.agent-status-text{font-size:11px;color:var(--text2)}
+.agent-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:2px}
+.agent-role{font-size:11px;color:var(--text2);margin-bottom:12px}
+.agent-model{font-size:10px;font-family:'DM Mono',monospace;color:var(--blue);background:var(--blue-dim);padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:9px}
+.decisions-list{display:flex;flex-direction:column;gap:10px}
+.decision-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.decision-header{display:flex;justify-content:space-between;margin-bottom:7px}
+.decision-question{font-size:12px;font-weight:600}
+.decision-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.decision-summary{font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:7px}
+.decision-agents{display:flex;gap:5px;flex-wrap:wrap}
+.decision-agent-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blue-dim);color:var(--blue);font-family:'DM Mono',monospace}
+
+/* AGENTS TAB */
+.ag-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .2s}
+.ag-card:hover{border-color:var(--border2)}
+.ag-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.capper-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+
+/* INTEL */
+.daily-brief{background:linear-gradient(135deg,rgba(0,212,255,0.06),rgba(255,209,102,0.04));border:1px solid rgba(0,212,255,0.2);border-radius:var(--radius);padding:22px;margin-bottom:var(--gap)}
+.brief-item{display:flex;align-items:flex-start;gap:10px;padding:10px;background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);margin-top:8px}
+.brief-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.brief-summary{font-size:11px;color:var(--text2);line-height:1.5}
+.intel-filters{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.active{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
+.intel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.intel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;transition:all .15s}
+.intel-card:hover{border-color:var(--border2)}
+.intel-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.intel-card-title{font-size:12px;font-weight:600;flex:1;margin-right:8px}
+.intel-tag{font-size:10px;padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;white-space:nowrap}
+.intel-tag.ai{background:var(--blue-dim);color:var(--blue)}
+.intel-tag.finance{background:var(--gold-dim);color:var(--gold)}
+.intel-tag.opportunity{background:rgba(61,220,132,0.15);color:var(--green)}
+.intel-tag.trend{background:rgba(192,132,252,0.15);color:var(--purple)}
+.intel-tag.forex{background:rgba(255,209,102,0.15);color:var(--gold)}
+.intel-summary{font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:9px}
+.intel-footer{display:flex;justify-content:space-between;align-items:center}
+.intel-source{font-size:10px;color:var(--blue);text-decoration:none}
+.intel-source:hover{text-decoration:underline}
+.intel-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.add-intel-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:var(--gap);display:none}
+.add-intel-form.open{display:block}
+
+/* BASKETBALL */
+.bball-hero{background:linear-gradient(135deg,rgba(255,209,102,0.08),rgba(0,212,255,0.05));border:1px solid rgba(255,209,102,0.15);border-radius:var(--radius);padding:22px 26px;display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--gap)}
+.bball-number{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;color:var(--gold);line-height:1;opacity:.6}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center}
+.stat-box-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--gold)}
+.stat-box-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-top:5px}
+.stat-box-trend{font-size:10px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
+.bball-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.game-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:6px}
+.game-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);min-width:76px}
+.game-matchup{font-size:12px;font-weight:600;flex:1}
+.game-location{font-size:11px;color:var(--text2)}
+.game-result{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;min-width:50px;text-align:right}
+.game-result.w{color:var(--green)}.game-result.l{color:var(--red)}.game-result.upcoming{color:var(--text3)}
+.training-goal{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:7px}
+.training-goal-label{flex:1;font-size:12px}
+.training-goal-bar{height:5px;background:var(--surface);border-radius:4px;overflow:hidden;flex:1}
+.training-goal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--blue))}
+.training-goal-pct{font-size:11px;color:var(--gold);font-family:'DM Mono',monospace;min-width:34px;text-align:right}
+
+/* SLIDE PANEL */
+.slide-panel{position:fixed;top:0;right:-480px;width:480px;height:100%;background:rgba(8,8,15,0.96);backdrop-filter:blur(24px);border-left:1px solid var(--border);z-index:200;transition:right .3s ease;overflow-y:auto;padding:28px}
+.slide-panel.open{right:0}
+.slide-panel-close{position:absolute;top:18px;right:18px;background:var(--surface2);border:none;color:var(--text2);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.slide-panel-close:hover{color:var(--text);background:var(--border2)}
+.log-item{background:var(--surface2);border-radius:7px;padding:9px 11px;font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:7px}
+.log-item-time{font-family:'DM Mono',monospace;color:var(--text3);font-size:10px;margin-top:3px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#0d0d18;border:1px solid var(--border2);border-radius:var(--radius);padding:26px;width:460px;max-width:90vw;animation:fadeInUp .2s ease}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:18px}
+.modal-actions{display:flex;gap:9px;margin-top:18px;justify-content:flex-end}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em}
+.form-input,.form-select,.form-textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}
+.form-textarea{resize:vertical;min-height:70px}
+.form-select option{background:#0d0d18}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--blue),#0099cc);color:#050508}
+.btn-primary:hover{box-shadow:0 0 14px var(--blue-glow)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#cc9900);color:#050508}
+.btn-gold:hover{box-shadow:0 0 14px var(--gold-glow)}
+.btn-ghost{background:var(--surface2);color:var(--text2)}
+.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:rgba(255,91,91,0.15);color:var(--red)}
+.btn-danger:hover{background:rgba(255,91,91,0.25)}
+
+/* UTILS */
+.flex{display:flex}.flex-between{display:flex;justify-content:space-between;align-items:center}
+.gap-2{gap:8px}.gap-3{gap:12px}.mb-4{margin-bottom:16px}.mb-5{margin-bottom:20px}
+.text-muted{color:var(--text2);font-size:12px}
+.overlay-backdrop{position:fixed;inset:0;z-index:150;display:none}
+.overlay-backdrop.open{display:block}
+
+/* PORTFOLIO */
+.port-hero{background:linear-gradient(135deg,rgba(255,209,102,0.08),rgba(0,212,255,0.05));border:1px solid rgba(255,209,102,0.2);border-radius:var(--radius);padding:28px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--gap)}
+.port-accounts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--gap)}
+.port-account-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:all .2s;cursor:pointer}
+.port-account-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.port-account-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.port-account-card.robinhood::before{background:linear-gradient(90deg,#00c805,transparent)}
+.port-account-card.tradelocker::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.port-account-card.crypto::before{background:linear-gradient(90deg,#f7931a,transparent)}
+.port-account-card.cash::before{background:linear-gradient(90deg,var(--green),transparent)}
+.port-account-card.insurance::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.port-account-icon{font-size:24px;margin-bottom:12px}
+.port-account-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.port-account-balance{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1;margin-bottom:6px}
+.port-account-sub{font-size:11px;color:var(--text2)}
+.port-account-change{font-size:12px;font-family:'DM Mono',monospace;margin-top:8px}
+.port-account-change.pos{color:var(--green)}.port-account-change.neg{color:var(--red)}
+
+/* P&L CALENDAR */
+.cal-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:var(--gap)}
+.cal-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.cal-months-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.cal-month{background:var(--surface2);border-radius:var(--radius-sm);padding:14px}
+.cal-month-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cal-day-label{font-size:9px;color:var(--text3);text-align:center;font-family:'DM Mono',monospace}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:'DM Mono',monospace;cursor:pointer;transition:all .15s;position:relative}
+.cal-day.empty{background:transparent;cursor:default}
+.cal-day.no-trade{background:rgba(255,255,255,0.03);color:var(--text3)}
+.cal-day.profit{background:rgba(61,220,132,0.2);color:var(--green)}
+.cal-day.profit:hover{background:rgba(61,220,132,0.35)}
+.cal-day.loss{background:rgba(255,91,91,0.2);color:var(--red)}
+.cal-day.loss:hover{background:rgba(255,91,91,0.35)}
+.cal-day.breakeven{background:rgba(255,209,102,0.15);color:var(--gold)}
+.cal-day.today{outline:1px solid var(--blue)}
+.cal-month-footer{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;font-family:'DM Mono',monospace}
+
+/* TRADE TABLE */
+.port-trade-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.port-trade-header{display:grid;grid-template-columns:100px 120px 1fr 90px 90px 90px 100px 90px;gap:8px;padding:12px 16px;background:var(--surface2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text2)}
+.port-trade-row{display:grid;grid-template-columns:100px 120px 1fr 90px 90px 90px 100px 90px;gap:8px;padding:11px 16px;border-top:1px solid var(--border);font-size:12px;transition:background .15s;align-items:center}
+.port-trade-row:hover{background:var(--surface2)}
+.trade-account-badge{font-size:9px;padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;font-weight:600}
+.trade-account-badge.tradelocker{background:var(--blue-dim);color:var(--blue)}
+.trade-account-badge.robinhood{background:rgba(0,200,5,0.15);color:#00c805}
+.trade-account-badge.crisp{background:var(--blue-dim);color:var(--blue)}
+.trade-account-badge.blade{background:var(--gold-dim);color:var(--gold)}
+.trade-dir{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.trade-dir.long{background:rgba(61,220,132,0.15);color:var(--green)}
+.trade-dir.short{background:rgba(255,91,91,0.15);color:var(--red)}
+.trade-pnl{font-family:'DM Mono',monospace;font-weight:600}
+.trade-pnl.pos{color:var(--green)}.trade-pnl.neg{color:var(--red)}
+.trade-status{font-size:10px;padding:2px 7px;border-radius:4px}
+.trade-status.open{background:var(--gold-dim);color:var(--gold)}
+.trade-status.closed{background:var(--surface2);color:var(--text2)}
+
+@media(max-width:1200px){
+  .port-accounts-grid{grid-template-columns:repeat(3,1fr)}
+  .cal-months-grid{grid-template-columns:repeat(2,1fr)}
+  .port-trade-header,.port-trade-row{grid-template-columns:90px 100px 1fr 80px 80px 80px 90px 80px;font-size:11px}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .dashboard-grid{grid-template-columns:1fr}
+  .kanban-board{grid-template-columns:1fr}
+  .agents-pnl-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .bball-grid{grid-template-columns:1fr}
+  .intel-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="flex gap-2" style="align-items:center;flex-shrink:0">
+    <div class="logo-mark">JCF</div>
+    <div class="logo-text">JCF <span>HQ</span></div>
+  </div>
+  <nav class="header-nav">
+    <button class="nav-tab active" onclick="switchTab('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-tab" onclick="switchTab('projects',this)">📋 Projects</button>
+    <button class="nav-tab" onclick="switchTab('timeline',this)">📅 Timeline</button>
+    <button class="nav-tab" onclick="switchTab('revenue',this)">💰 Revenue</button>
+    <button class="nav-tab" onclick="switchTab('command',this)">🏢 Command</button>
+    <button class="nav-tab" onclick="switchTab('agents',this)">🤖 Agents</button>
+    <button class="nav-tab" onclick="switchTab('intel',this)">📡 Intel</button>
+    <button class="nav-tab" onclick="switchTab('basketball',this)">🏀 Basketball</button>
+    <button class="nav-tab" onclick="switchTab('portfolio',this)">💼 Portfolio</button>
+  </nav>
+  <div class="flex gap-2" style="align-items:center;flex-shrink:0">
+    <div class="search-bar">
+      <span style="color:var(--text3)">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search JCF HQ…"/>
+      <span class="search-hint">⌘K</span>
+    </div>
+    <div class="status-dot" title="Systems Online"></div>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- ===== DASHBOARD ===== -->
+<div id="tab-dashboard" class="tab-content active">
+  <div class="welcome-bar">
+    <div>
+      <div class="welcome-greeting">Good <span id="timeOfDay">morning</span>, Jase ⚡</div>
+      <div class="welcome-date" id="liveDate"></div>
+    </div>
+    <div style="text-align:right">
+      <div class="welcome-goal-label">2030 Net Worth Goal</div>
+      <div class="welcome-goal-value" id="netWorthDisplay">$0 / $10M</div>
+    </div>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card blue">
+      <div class="metric-icon">🎯</div>
+      <div class="metric-label">Net Worth Progress</div>
+      <div class="metric-value blue" id="nwPct">0%</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="nwBar" style="width:0%"></div></div>
+      <div class="metric-trend"><span class="trend-up">↑</span> <span id="daysLeft">0</span> days to 2030</div>
+    </div>
+    <div class="metric-card gold">
+      <div class="metric-icon">📁</div>
+      <div class="metric-label">Active Projects</div>
+      <div class="metric-value gold" id="activeProjectsCount">0</div>
+      <div class="metric-trend">In Progress</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-icon">✅</div>
+      <div class="metric-label">Priorities Today</div>
+      <div class="metric-value green" id="prioritiesCount">0</div>
+      <div class="metric-trend">Remaining</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-icon">🤖</div>
+      <div class="metric-label">Agents Active</div>
+      <div class="metric-value purple">3</div>
+      <div class="metric-trend">Crisp · Blade · Oracle</div>
+    </div>
+  </div>
+  <div class="dashboard-grid">
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <div class="section-title">Activity Feed</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="addActivity()">+ Add</button>
+      </div>
+      <div class="activity-feed" id="activityFeed"></div>
+    </div>
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <div class="section-title">Top Priorities</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="openNetWorthModal()">Set Goal</button>
+      </div>
+      <ul class="priorities-list" id="prioritiesList"></ul>
+      <button class="add-btn" onclick="addPriority()">+ Add Priority</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROJECTS ===== -->
+<div id="tab-projects" class="tab-content">
+  <div class="flex-between mb-5">
+    <div class="section-title" style="margin:0">Projects & Tasks</div>
+    <button class="btn btn-primary" onclick="openTaskModal()">+ New Task</button>
+  </div>
+  <div class="kanban-board">
+    <div class="kanban-col">
+      <div class="kanban-col-header"><span class="kanban-col-title">📋 Backlog</span><span class="kanban-count" id="count-backlog">0</span></div>
+      <div id="tasks-backlog"></div>
+      <button class="add-btn" onclick="openTaskModal('backlog')">+ Add Task</button>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header"><span class="kanban-col-title" style="color:var(--blue)">⚡ In Progress</span><span class="kanban-count" id="count-inprogress">0</span></div>
+      <div id="tasks-inprogress"></div>
+      <button class="add-btn" onclick="openTaskModal('inprogress')">+ Add Task</button>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-header"><span class="kanban-col-title" style="color:var(--green)">✅ Done</span><span class="kanban-count" id="count-done">0</span></div>
+      <div id="tasks-done"></div>
+      <button class="add-btn" onclick="openTaskModal('done')">+ Add Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TIMELINE ===== -->
+<div id="tab-timeline" class="tab-content">
+  <div class="section-title mb-5">🗺️ Road to Dream Life — 2025–2030</div>
+  <div class="timeline" id="timelineContainer"></div>
+</div>
+
+<!-- ===== REVENUE ===== -->
+<div id="tab-revenue" class="tab-content">
+  <div class="flex-between mb-5">
+    <div class="section-title" style="margin:0">💰 Revenue & P&L</div>
+    <button class="btn btn-gold" onclick="openRevenueGoalModal()">Set Monthly Goal</button>
+  </div>
+  <div class="revenue-grid mb-5">
+    <div class="glass-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="card-label">Monthly Revenue Goal</div>
+      <div style="position:relative;display:inline-block">
+        <svg width="160" height="160" id="gaugeSvg">
+          <circle cx="80" cy="80" r="62" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+          <circle cx="80" cy="80" r="62" fill="none" stroke="url(#gaugeGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="390" id="gaugeArc" stroke-dashoffset="390" transform="rotate(-90 80 80)"/>
+          <defs><linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#ffd166"/></linearGradient></defs>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--gold)" id="gaugePct">0%</div>
+          <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">of goal</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">MRR: <span id="mrrDisplay" style="color:var(--gold)">$0</span></div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">Goal: <span id="goalDisplay" style="color:var(--green)">$0</span></div>
+      </div>
+    </div>
+    <div class="glass-card">
+      <div class="card-label">Last 6 Months Revenue</div>
+      <div class="chart-bars" id="revChart"></div>
+    </div>
+  </div>
+  <div class="section-title mb-4">🤖 Agent P&L Tracker</div>
+  <div class="agents-pnl-grid mb-5">
+    <div class="agent-pnl-card crisp">
+      <div class="agent-pnl-name">⚡ Crisp</div>
+      <div class="agent-pnl-role">Crypto ORB — Binance Paper</div>
+      <div class="agent-pnl-val pos" id="crispPnl">+$0.00</div>
+      <div class="agent-pnl-stats">
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Trades</div><div class="agent-pnl-stat-val" id="crispTrades">0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Win Rate</div><div class="agent-pnl-stat-val" id="crispWR">0%</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Best Trade</div><div class="agent-pnl-stat-val" id="crispBest">$0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Sessions</div><div class="agent-pnl-stat-val" id="crispSessions">0</div></div>
+      </div>
+    </div>
+    <div class="agent-pnl-card blade">
+      <div class="agent-pnl-name">🗡️ Blade</div>
+      <div class="agent-pnl-role">Forex ORB — OANDA Paper</div>
+      <div class="agent-pnl-val pos" id="bladePnl">+$0.00</div>
+      <div class="agent-pnl-stats">
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Trades</div><div class="agent-pnl-stat-val" id="bladeTrades">0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Win Rate</div><div class="agent-pnl-stat-val" id="bladeWR">0%</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Best Trade</div><div class="agent-pnl-stat-val" id="bladeBest">$0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Sessions</div><div class="agent-pnl-stat-val" id="bladeSessions">0</div></div>
+      </div>
+    </div>
+    <div class="agent-pnl-card oracle">
+      <div class="agent-pnl-name">🔮 Oracle</div>
+      <div class="agent-pnl-role">Kalshi Intelligence</div>
+      <div class="agent-pnl-val pos" id="oraclePnl">+$0.00</div>
+      <div class="agent-pnl-stats">
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Picks</div><div class="agent-pnl-stat-val" id="oraclePicks">0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Accuracy</div><div class="agent-pnl-stat-val" id="oracleAcc">0%</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Best Pick</div><div class="agent-pnl-stat-val" id="oracleBest">$0</div></div>
+        <div class="agent-pnl-stat"><div class="agent-pnl-stat-label">Reports</div><div class="agent-pnl-stat-val" id="oracleReports">0</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="flex-between mb-4">
+    <div class="section-title" style="margin:0">📋 Revenue Streams</div>
+    <button class="btn btn-primary" onclick="openClientModal()">+ Add Stream</button>
+  </div>
+  <div class="clients-list mb-5" id="clientsList"></div>
+  <div class="projection-card">
+    <div class="flex-between">
+      <div class="section-title" style="margin:0">📈 Projections</div>
+      <span style="font-size:11px;color:var(--text2)">Based on current MRR</span>
+    </div>
+    <div class="proj-grid">
+      <div class="proj-item"><div class="proj-label">Projected Annual</div><div class="proj-value blue" id="projAnnual">$0</div></div>
+      <div class="proj-item"><div class="proj-label">Growth Needed</div><div class="proj-value gold" id="projGrowth">$0</div></div>
+      <div class="proj-item"><div class="proj-label">Goal Hit Date</div><div class="proj-value green" id="projDate">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COMMAND CENTER ===== -->
+<div id="tab-command" class="tab-content">
+  <div class="flex-between mb-5">
+    <div class="section-title" style="margin:0">🏢 Command Center</div>
+    <button class="btn btn-primary" onclick="openAddAgentModal()">+ Add Agent</button>
+  </div>
+  <div class="agents-grid-cc" id="agentsGrid"></div>
+  <div class="flex-between mb-4">
+    <div class="section-title" style="margin:0">⚖️ Executive Decisions</div>
+    <button class="btn btn-ghost" onclick="openDecisionModal()">+ Log Decision</button>
+  </div>
+  <div class="decisions-list" id="decisionsList"></div>
+</div>
+
+<!-- ===== AGENTS TAB ===== -->
+<div id="tab-agents" class="tab-content">
+  <div class="flex-between mb-5">
+    <div class="section-title" style="margin:0">🤖 Agent Roster</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);margin-bottom:32px" id="agentCardsGrid"></div>
+
+  <!-- ORACLE SECTION -->
+  <div style="border-top:1px solid var(--border);padding-top:28px;margin-top:8px">
+    <div class="flex-between mb-5">
+      <div>
+        <div class="section-title" style="margin:0;color:var(--purple)">🔮 Oracle — Capper Intelligence</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Track expert cappers, log picks, monitor W/L records</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddCapperModal()">+ Add Capper</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-bottom:28px" id="capperGrid"></div>
+
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <div class="section-title" style="margin:0">📋 Recent Picks Feed</div>
+        <span style="font-size:11px;color:var(--text2)">Last 15 picks across all cappers</span>
+      </div>
+      <div id="recentPicksFeed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INTEL ===== -->
+<div id="tab-intel" class="tab-content">
+  <div class="flex-between mb-4">
+    <div class="section-title" style="margin:0">📡 Intelligence Feed</div>
+    <button class="btn btn-primary" onclick="toggleIntelForm()">+ Add Intel</button>
+  </div>
+  <div class="add-intel-form" id="intelForm">
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="intelTitle" placeholder="Intel item title"></div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="form-select" id="intelCategory">
+          <option value="ai">AI News</option>
+          <option value="finance">Finance/Markets</option>
+          <option value="forex">Forex Calendar</option>
+          <option value="opportunity">Opportunity</option>
+          <option value="trend">Industry Trend</option>
+        </select>
+      </div>
+      <div class="form-group full"><label class="form-label">Summary</label><textarea class="form-textarea" id="intelSummary" placeholder="Brief summary…"></textarea></div>
+      <div class="form-group"><label class="form-label">Source URL</label><input class="form-input" id="intelSource" placeholder="https://…"></div>
+      <div class="form-group"><label class="form-label">Importance</label>
+        <select class="form-select" id="intelImportance">
+          <option value="🔥">🔥 Hot</option>
+          <option value="⚡">⚡ Notable</option>
+          <option value="📌">📌 Reference</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="toggleIntelForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveIntel()">Save Intel</button>
+    </div>
+  </div>
+  <div class="daily-brief">
+    <div class="flex-between">
+      <div class="section-title" style="margin:0">☀️ Daily Brief</div>
+      <span style="font-size:11px;color:var(--text2)">Top items by importance</span>
+    </div>
+    <div id="dailyBrief"></div>
+  </div>
+  <div class="intel-filters" id="intelFilters">
+    <button class="filter-btn active" onclick="filterIntel('all',this)">All</button>
+    <button class="filter-btn" onclick="filterIntel('ai',this)">🤖 AI</button>
+    <button class="filter-btn" onclick="filterIntel('finance',this)">💹 Finance</button>
+    <button class="filter-btn" onclick="filterIntel('forex',this)">📅 Forex Calendar</button>
+    <button class="filter-btn" onclick="filterIntel('opportunity',this)">💡 Opportunities</button>
+    <button class="filter-btn" onclick="filterIntel('trend',this)">📈 Trends</button>
+  </div>
+  <div class="intel-grid" id="intelGrid"></div>
+</div>
+
+<!-- ===== BASKETBALL ===== -->
+<div id="tab-basketball" class="tab-content">
+  <div class="bball-hero mb-5">
+    <div class="flex gap-3" style="align-items:center">
+      <div class="bball-number" id="playerNumber">#00</div>
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">Jase Febres</h2>
+        <p style="font-size:12px;color:var(--text2)" id="playerTeamPos">Pro Basketball Player</p>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em">Season Record</div>
+      <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--gold)" id="seasonRecord">0-0</div>
+    </div>
+    <button class="btn btn-gold" onclick="openBballSettingsModal()">Edit Profile</button>
+  </div>
+  <div class="stats-grid mb-5">
+    <div class="stat-box"><div class="stat-box-val" id="statPPG">0.0</div><div class="stat-box-label">PPG</div><div class="stat-box-trend">Points Per Game</div></div>
+    <div class="stat-box"><div class="stat-box-val" id="statRPG">0.0</div><div class="stat-box-label">RPG</div><div class="stat-box-trend">Rebounds Per Game</div></div>
+    <div class="stat-box"><div class="stat-box-val" id="statAPG">0.0</div><div class="stat-box-label">APG</div><div class="stat-box-trend">Assists Per Game</div></div>
+    <div class="stat-box"><div class="stat-box-val" id="statFGP">0%</div><div class="stat-box-label">FG%</div><div class="stat-box-trend">Field Goal %</div></div>
+    <div class="stat-box"><div class="stat-box-val" id="stat3PP">0%</div><div class="stat-box-label">3P%</div><div class="stat-box-trend">Three Point %</div></div>
+  </div>
+  <div class="bball-grid">
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <div class="section-title" style="margin:0">📅 Schedule</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="openGameModal()">+ Add Game</button>
+      </div>
+      <div id="scheduleList"></div>
+    </div>
+    <div class="glass-card">
+      <div class="flex-between mb-4">
+        <div class="section-title" style="margin:0">💪 Training Goals</div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="openTrainingModal()">+ Add Goal</button>
+      </div>
+      <div id="trainingGoals"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PORTFOLIO TAB ===== -->
+<div id="tab-portfolio" class="tab-content">
+
+  <div class="port-hero">
+    <div>
+      <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px">Total Net Worth</div>
+      <div style="font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1" id="portTotalNW">$0</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:6px">Last updated: <span id="portLastUpdate">—</span></div>
+    </div>
+    <div style="display:flex;gap:36px;align-items:center">
+      <div style="text-align:center">
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Today's P&L</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800" id="portTodayPnl">$0.00</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">YTD P&L</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800" id="portYtdPnl">$0.00</div>
+      </div>
+      <button class="btn btn-gold" onclick="openPortEditModal()">✏️ Update Balances</button>
+    </div>
+  </div>
+
+  <!-- ACCOUNT CARDS CAROUSEL -->
+  <div style="position:relative;margin-bottom:var(--gap)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="slideAccount(-1)" style="background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">‹</button>
+      <div style="flex:1;overflow:hidden">
+        <div id="portAccountsGrid" style="display:flex;transition:transform .3s ease"></div>
+      </div>
+      <button onclick="slideAccount(1)" style="background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;color:var(--text);font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">›</button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:12px" id="portDots"></div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div class="flex-between mb-5">
+      <div class="section-title" style="margin:0">📅 P&L Calendar</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="form-select" id="calYearSelect" style="width:100px;font-size:12px" onchange="renderAllCalendars()"></select>
+        <select class="form-select" id="calMonthSelect" style="width:110px;font-size:12px" onchange="renderAllCalendars()">
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+        <select class="form-select" id="calAccountSelect" style="width:150px;font-size:12px" onchange="renderAllCalendars()">
+          <option value="all">All Trading Accounts</option>
+          <option value="tradelocker">TradeLocker</option>
+          <option value="robinhood">Robinhood</option>
+          <option value="crisp">Crisp</option>
+          <option value="blade">Blade</option>
+        </select>
+      </div>
+    </div>
+    <div id="calendarSection"></div>
+  </div>
+
+  <div style="margin-top:32px">
+    <div class="flex-between mb-4">
+      <div class="section-title" style="margin:0">📋 Trade Log</div>
+      <div style="display:flex;gap:8px">
+        <select class="form-select" id="tradeLogFilter" style="width:150px;font-size:12px" onchange="renderTradeLog()">
+          <option value="all">All Accounts</option>
+          <option value="tradelocker">TradeLocker</option>
+          <option value="robinhood">Robinhood</option>
+          <option value="crisp">Crisp</option>
+          <option value="blade">Blade</option>
+        </select>
+        <button class="btn btn-primary" onclick="openAddTradeModal()">+ Log Trade</button>
+      </div>
+    </div>
+    <div class="port-trade-table">
+      <div class="port-trade-header">
+        <span>Date</span><span>Account</span><span>Asset</span><span>Direction</span><span>Entry</span><span>Exit</span><span>P&L</span><span>Status</span>
+      </div>
+      <div id="tradeLogBody"></div>
+    </div>
+  </div>
+
+</div>
+
+</main>
+
+<!-- SLIDE PANEL -->
+<div class="overlay-backdrop" id="panelBackdrop" onclick="closePanel()"></div>
+<div class="slide-panel" id="slidePanel">
+  <button class="slide-panel-close" onclick="closePanel()">✕</button>
+  <div id="panelContent"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+/* ============================================================
+   STORAGE
+   ============================================================ */
+const S={get:k=>{try{return JSON.parse(localStorage.getItem('jcf_'+k))}catch(e){return null}},set:(k,v)=>localStorage.setItem('jcf_'+k,JSON.stringify(v))};
+
+/* ============================================================
+   NAV
+   ============================================================ */
+function switchTab(tab,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  el.classList.add('active');
+  if(tab==='revenue')renderRevenue();
+  if(tab==='command')renderCommand();
+  if(tab==='agents')renderAgentsTab();
+  if(tab==='intel')renderIntel();
+  if(tab==='basketball')renderBasketball();
+  if(tab==='portfolio')renderPortfolio();
+}
+
+/* ============================================================
+   CLOCK
+   ============================================================ */
+function updateClock(){
+  const now=new Date(),h=now.getHours();
+  document.getElementById('timeOfDay').textContent=h<12?'morning':h<17?'afternoon':'evening';
+  document.getElementById('liveDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · '+now.toLocaleTimeString();
+  const daysLeft=Math.ceil((new Date('2030-01-01')-now)/86400000);
+  document.getElementById('daysLeft').textContent=daysLeft.toLocaleString();
+}
+setInterval(updateClock,1000);updateClock();
+
+/* ============================================================
+   NET WORTH
+   ============================================================ */
+function updateNetWorth(){
+  const d=S.get('networth')||{current:0,goal:10000000};
+  const pct=Math.min(100,(d.current/d.goal)*100);
+  const fmt=n=>n>=1000000?'$'+(n/1e6).toFixed(2)+'M':n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+n;
+  document.getElementById('nwPct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('nwBar').style.width=pct+'%';
+  document.getElementById('netWorthDisplay').textContent=fmt(d.current)+' / '+fmt(d.goal);
+}
+function openNetWorthModal(){
+  const d=S.get('networth')||{current:0,goal:10000000};
+  showModal(`<div class="modal-title">💎 Net Worth Tracker</div>
+    <div class="form-group mb-4"><label class="form-label">Current Net Worth ($)</label><input class="form-input" id="m_nwCurrent" value="${d.current}" type="number" style="width:100%"></div>
+    <div class="form-group"><label class="form-label">Goal ($)</label><input class="form-input" id="m_nwGoal" value="${d.goal}" type="number" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNetWorth()">Save</button></div>`);
+}
+function saveNetWorth(){
+  S.set('networth',{current:parseFloat(document.getElementById('m_nwCurrent').value)||0,goal:parseFloat(document.getElementById('m_nwGoal').value)||10000000});
+  updateNetWorth();closeModal();
+}
+
+/* ============================================================
+   ACTIVITY FEED
+   ============================================================ */
+function renderActivityFeed(){
+  const items=S.get('activity')||[
+    {text:'JCF HQ v2 — Mission Control online',time:new Date().toISOString(),color:'blue'},
+    {text:'Crisp & Blade paper trading sessions configured',time:new Date().toISOString(),color:'gold'},
+    {text:'Oracle intelligence system activated',time:new Date().toISOString(),color:'green'},
+  ];
+  document.getElementById('activityFeed').innerHTML=items.slice(-20).reverse().map(i=>`
+    <div class="activity-item"><div class="activity-dot ${i.color||'blue'}"></div><div class="activity-text">${i.text}</div><div class="activity-time">${timeAgo(i.time)}</div></div>`).join('');
+}
+function addActivity(text){
+  if(!text){const t=prompt('New activity:');if(!t)return;text=t;}
+  const items=S.get('activity')||[];
+  items.push({text,time:new Date().toISOString(),color:'blue'});
+  S.set('activity',items);renderActivityFeed();
+}
+function timeAgo(iso){
+  const d=Date.now()-new Date(iso);
+  if(d<60000)return'just now';if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';return Math.floor(d/86400000)+'d ago';
+}
+
+/* ============================================================
+   PRIORITIES
+   ============================================================ */
+function renderPriorities(){
+  const items=S.get('priorities')||[{text:'Review trading session results',done:false},{text:'Check Oracle intelligence report',done:false},{text:'Training session — shooting drills',done:false}];
+  document.getElementById('prioritiesList').innerHTML=items.map((item,i)=>`
+    <li class="priority-item ${item.done?'done':''}" onclick="togglePriority(${i})">
+      <div class="priority-check">${item.done?'✓':''}</div>
+      <span class="priority-text">${item.text}</span>
+    </li>`).join('');
+  document.getElementById('prioritiesCount').textContent=items.filter(i=>!i.done).length;
+}
+function togglePriority(i){const items=S.get('priorities')||[];items[i].done=!items[i].done;S.set('priorities',items);renderPriorities();}
+function addPriority(){const t=prompt('New priority:');if(!t)return;const items=S.get('priorities')||[];items.push({text:t,done:false});S.set('priorities',items);renderPriorities();}
+
+/* ============================================================
+   KANBAN
+   ============================================================ */
+function renderKanban(){
+  const tasks=S.get('tasks')||[];
+  ['backlog','inprogress','done'].forEach(col=>{
+    const ct=tasks.filter(t=>t.status===col);
+    document.getElementById('tasks-'+col).innerHTML=ct.map(t=>`
+      <div class="task-card" onclick="editTask('${t.id}')">
+        <div class="task-title">${t.title}</div>
+        <div class="task-desc">${t.desc||''}</div>
+        <div class="task-footer"><span class="priority-badge ${t.priority}">${t.priority}</span><span class="task-date">${t.created?new Date(t.created).toLocaleDateString():''}</span></div>
+      </div>`).join('');
+    document.getElementById('count-'+col).textContent=ct.length;
+  });
+  document.getElementById('activeProjectsCount').textContent=tasks.filter(t=>t.status==='inprogress').length;
+}
+function openTaskModal(status='backlog'){
+  showModal(`<div class="modal-title">📋 New Task</div>
+    <div class="form-group mb-4"><label class="form-label">Title</label><input class="form-input" id="m_taskTitle" placeholder="Task title" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Description</label><textarea class="form-textarea" id="m_taskDesc" style="width:100%"></textarea></div>
+    <div class="form-group mb-4"><label class="form-label">Priority</label><select class="form-select" id="m_taskPriority" style="width:100%"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div>
+    <div class="form-group mb-4"><label class="form-label">Status</label><select class="form-select" id="m_taskStatus" style="width:100%"><option value="backlog" ${status==='backlog'?'selected':''}>Backlog</option><option value="inprogress" ${status==='inprogress'?'selected':''}>In Progress</option><option value="done" ${status==='done'?'selected':''}>Done</option></select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTask()">Add Task</button></div>`);
+}
+function saveTask(id){
+  const tasks=S.get('tasks')||[];
+  const task={id:id||Date.now().toString(),title:document.getElementById('m_taskTitle').value||'Untitled',desc:document.getElementById('m_taskDesc').value,priority:document.getElementById('m_taskPriority').value,status:document.getElementById('m_taskStatus').value,created:new Date().toISOString()};
+  if(id){const idx=tasks.findIndex(t=>t.id===id);if(idx>=0)tasks[idx]=task;}else tasks.push(task);
+  S.set('tasks',tasks);renderKanban();closeModal();
+}
+function editTask(id){
+  const tasks=S.get('tasks')||[];const t=tasks.find(t=>t.id===id);if(!t)return;
+  showModal(`<div class="modal-title">✏️ Edit Task</div>
+    <div class="form-group mb-4"><label class="form-label">Title</label><input class="form-input" id="m_taskTitle" value="${t.title}" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Description</label><textarea class="form-textarea" id="m_taskDesc" style="width:100%">${t.desc||''}</textarea></div>
+    <div class="form-group mb-4"><label class="form-label">Priority</label><select class="form-select" id="m_taskPriority" style="width:100%"><option value="high" ${t.priority==='high'?'selected':''}>🔴 High</option><option value="medium" ${t.priority==='medium'?'selected':''}>🟡 Medium</option><option value="low" ${t.priority==='low'?'selected':''}>🟢 Low</option></select></div>
+    <div class="form-group mb-4"><label class="form-label">Status</label><select class="form-select" id="m_taskStatus" style="width:100%"><option value="backlog" ${t.status==='backlog'?'selected':''}>Backlog</option><option value="inprogress" ${t.status==='inprogress'?'selected':''}>In Progress</option><option value="done" ${t.status==='done'?'selected':''}>Done</option></select></div>
+    <div class="modal-actions"><button class="btn btn-danger" onclick="deleteTask('${id}')">Delete</button><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTask('${id}')">Save</button></div>`);
+}
+function deleteTask(id){let tasks=S.get('tasks')||[];tasks=tasks.filter(t=>t.id!==id);S.set('tasks',tasks);renderKanban();closeModal();}
+
+/* ============================================================
+   TIMELINE
+   ============================================================ */
+const PHASES=[
+  {title:'Foundation',dates:'2025 Q1–Q2',status:'done',desc:'Build the infrastructure for success. Set up AI trading systems, financial tracking, and professional systems.',milestones:[{text:'OpenClaw workspace deployed',done:true},{text:'Crisp & Blade configured',done:true},{text:'Oracle intelligence system live',done:true},{text:'JCF HQ mission control built',done:true}]},
+  {title:'Momentum',dates:'2025 Q3–2026 Q2',status:'current',desc:'Generate first revenue from trading systems. Sharpen basketball skills. Begin building brand and investment portfolio.',milestones:[{text:'First profitable trading month',done:false},{text:'Oracle sports picks generating edge',done:false},{text:'Basketball contract secured/renewed',done:false},{text:'First investment position opened',done:false}]},
+  {title:'Scale',dates:'2026 Q3–2027',status:'upcoming',desc:'Scale what is working. Move from paper to live trading. Increase revenue streams. Expand investment portfolio.',milestones:[{text:'Live trading deployed',done:false},{text:'$10K/month trading revenue',done:false},{text:'Investment portfolio at $100K+',done:false},{text:'Brand partnerships established',done:false}]},
+  {title:'Domination',dates:'2028–2029',status:'upcoming',desc:'Multiple income streams firing. Peak basketball performance. Net worth growing aggressively toward goal.',milestones:[{text:'Trading revenue $50K/month',done:false},{text:'Investment portfolio $1M+',done:false},{text:'Peak basketball season',done:false},{text:'Brand/business revenue significant',done:false}]},
+  {title:'Dream Life',dates:'2030',status:'upcoming',desc:'Full realization. $10M net worth. Financial freedom. Peak athlete. World-class investor and trader.',milestones:[{text:'$10M net worth achieved',done:false},{text:'Fully automated income systems',done:false},{text:'Legendary career complete',done:false},{text:'Next chapter begins',done:false}]},
+];
+function renderTimeline(){
+  document.getElementById('timelineContainer').innerHTML=PHASES.map(p=>`
+    <div class="phase ${p.status}">
+      <div class="phase-header"><div><div class="phase-title">${p.title}</div><div class="phase-dates">${p.dates}</div></div><span class="phase-badge ${p.status}">${p.status==='current'?'▶ Current':p.status==='done'?'✓ Complete':'◦ Upcoming'}</span></div>
+      <div class="phase-desc">${p.desc}</div>
+      <ul class="milestone-list">${p.milestones.map(m=>`<li class="milestone ${m.done?'done':'pending'}"><span>${m.done?'✅':'◦'}</span>${m.text}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+/* ============================================================
+   REVENUE
+   ============================================================ */
+function renderRevenue(){
+  const data=S.get('revenue')||{goal:10000,months:[],clients:[]};
+  const mrr=(data.clients||[]).reduce((s,c)=>s+(c.mrr||0),0);
+  const goal=data.goal||10000;
+  const pct=Math.min(100,(mrr/goal)*100);
+  document.getElementById('gaugePct').textContent=pct.toFixed(0)+'%';
+  document.getElementById('gaugeArc').style.strokeDashoffset=390-(390*pct/100);
+  document.getElementById('mrrDisplay').textContent='$'+mrr.toLocaleString();
+  document.getElementById('goalDisplay').textContent='$'+goal.toLocaleString();
+  const months=data.months||[];
+  const maxVal=Math.max(...months.map(m=>m.val),1);
+  document.getElementById('revChart').innerHTML=months.slice(-6).map((m,i)=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-val">$${m.val>=1000?(m.val/1000).toFixed(1)+'K':m.val}</div>
+      <div class="chart-bar ${i===months.length-1?'gold':''}" style="height:${Math.max(6,(m.val/maxVal)*120)}px"></div>
+      <div class="chart-label">${m.label}</div>
+    </div>`).join('')||'<div style="color:var(--text3);font-size:12px;padding:20px">No revenue data yet</div>';
+  document.getElementById('clientsList').innerHTML=(data.clients||[]).map((c,i)=>`
+    <div class="client-row"><div class="client-name">${c.name}</div><div class="client-mrr">$${c.mrr.toLocaleString()}/mo</div><div class="client-delete" onclick="deleteClient(${i})">✕</div></div>`).join('')||'<div style="color:var(--text3);font-size:12px;padding:12px">No revenue streams added yet</div>';
+  const annual=mrr*12;
+  document.getElementById('projAnnual').textContent='$'+annual.toLocaleString();
+  document.getElementById('projGrowth').textContent=mrr>0?'$'+Math.max(0,goal-mrr).toLocaleString()+'/mo needed':'Add revenue';
+  if(mrr>0){const d=new Date();d.setMonth(d.getMonth()+Math.ceil((goal*12-annual)/mrr));document.getElementById('projDate').textContent=d.toLocaleDateString('en-US',{month:'short',year:'numeric'});}
+  else document.getElementById('projDate').textContent='—';
+}
+function openRevenueGoalModal(){
+  const d=S.get('revenue')||{goal:10000};
+  showModal(`<div class="modal-title">💰 Set Revenue Goal</div>
+    <div class="form-group mb-4"><label class="form-label">Monthly Revenue Goal ($)</label><input class="form-input" id="m_revGoal" value="${d.goal}" type="number" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Add Month Label</label><input class="form-input" id="m_monthLabel" placeholder="e.g. Mar 2026" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Month Revenue ($)</label><input class="form-input" id="m_monthVal" type="number" placeholder="0" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-gold" onclick="saveRevenueGoal()">Save</button></div>`);
+}
+function saveRevenueGoal(){
+  const d=S.get('revenue')||{goal:10000,months:[],clients:[]};
+  d.goal=parseFloat(document.getElementById('m_revGoal').value)||10000;
+  const label=document.getElementById('m_monthLabel').value,val=parseFloat(document.getElementById('m_monthVal').value)||0;
+  if(label&&val)d.months.push({label,val});
+  S.set('revenue',d);renderRevenue();closeModal();
+}
+function openClientModal(){
+  showModal(`<div class="modal-title">+ Add Revenue Stream</div>
+    <div class="form-group mb-4"><label class="form-label">Source Name</label><input class="form-input" id="m_clientName" placeholder="e.g. Basketball Contract" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Monthly Amount ($)</label><input class="form-input" id="m_clientMrr" type="number" placeholder="0" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveClient()">Add</button></div>`);
+}
+function saveClient(){
+  const d=S.get('revenue')||{goal:10000,months:[],clients:[]};
+  d.clients=d.clients||[];d.clients.push({name:document.getElementById('m_clientName').value||'Stream',mrr:parseFloat(document.getElementById('m_clientMrr').value)||0});
+  S.set('revenue',d);renderRevenue();closeModal();
+}
+function deleteClient(i){const d=S.get('revenue')||{};d.clients.splice(i,1);S.set('revenue',d);renderRevenue();}
+
+/* ============================================================
+   COMMAND CENTER
+   ============================================================ */
+const DEFAULT_AGENTS=[
+  {id:'huncho',name:'Huncho',emoji:'🎯',role:'Chief of Staff',status:'online',model:'gpt-5.2-codex',color:'blue',desc:'Primary orchestrator.',capabilities:['Orchestration','Code Execution','Web Search','Agent Management'],activity:['Model routing updated','Telegram reconnected','Oracle prompt relayed']},
+  {id:'crisp',name:'Crisp',emoji:'⚡',role:'Crypto ORB Trader',status:'busy',model:'Python Script',color:'blue',desc:'Crypto ORB trader on Binance paper.',capabilities:['BTC/ETH/SOL trading','Regime Detection','ORB Strategy'],activity:['NY session completed','Asia session monitoring','No valid setups']},
+  {id:'blade',name:'Blade',emoji:'🗡️',role:'Forex ORB Trader',status:'busy',model:'Python Script',color:'gold',desc:'Forex ORB trader on OANDA paper.',capabilities:['EUR/USD trading','London Session','ORB Strategy'],activity:['London session active','Monitoring EUR/USD','Awaiting entry']},
+  {id:'oracle',name:'Oracle',emoji:'🔮',role:'Kalshi Intelligence',status:'online',model:'gemini-2.5-flash',color:'purple',desc:'Kalshi intelligence & capper tracking.',capabilities:['Kalshi API','Sports Analysis','Pick Tracking','Tavily Research'],activity:['Daily report generated','Sports picks ready','Capper feed monitored']},
+];
+function renderCommand(){
+  const agents=S.get('agents_cc')||DEFAULT_AGENTS;
+  document.getElementById('agentsGrid').innerHTML=agents.map((a,i)=>`
+    <div class="agent-card-cc" onclick="openAgentPanel(${i})">
+      <div class="flex-between mb-4">
+        <div class="agent-avatar ${a.color}" style="width:42px;height:42px;font-size:19px">${a.emoji}</div>
+        <div class="agent-status-wrap"><div class="agent-status-dot ${a.status}"></div><span class="agent-status-text">${a.status}</span></div>
+      </div>
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role}</div>
+      <div class="agent-model">${a.model}</div>
+    </div>`).join('');
+  const decisions=S.get('decisions')||[
+    {question:'Which model should be primary for Huncho?',date:'2026-03-02',summary:'Switched to GPT-5.2-Codex as primary with Gemini 2.5 Flash fallback.',agents:['Huncho']},
+    {question:'Should we add a heartbeat system?',date:'2026-03-02',summary:'Decided against for now — morning dashboard serves as natural check.',agents:['Huncho','Oracle']},
+    {question:'How to handle Oracle sports picks?',date:'2026-03-03',summary:'Split into daily games (48-72hr filter) and futures. Daily prioritized.',agents:['Oracle']},
+  ];
+  document.getElementById('decisionsList').innerHTML=decisions.map(d=>`
+    <div class="decision-card">
+      <div class="decision-header"><div class="decision-question">${d.question}</div><div class="decision-date">${d.date}</div></div>
+      <div class="decision-summary">${d.summary}</div>
+      <div class="decision-agents">${d.agents.map(a=>`<span class="decision-agent-tag">${a}</span>`).join('')}</div>
+    </div>`).join('');
+}
+function openAgentPanel(i){
+  const agents=S.get('agents_cc')||DEFAULT_AGENTS;const a=agents[i];
+  document.getElementById('panelContent').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;margin-top:8px">
+      <div class="agent-avatar ${a.color}" style="width:52px;height:52px;font-size:24px;border-radius:14px">${a.emoji}</div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:19px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--text2)">${a.role}</div><div class="agent-model" style="margin-top:5px">${a.model}</div></div>
+    </div>
+    <div class="card-label">About</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:18px">${a.desc}</div>
+    <div class="card-label">Capabilities</div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px">${a.capabilities.map(c=>`<span style="background:var(--surface2);border-radius:5px;padding:3px 9px;font-size:11px">${c}</span>`).join('')}</div>
+    <div class="card-label">Recent Activity</div>
+    <div>${a.activity.map(act=>`<div class="log-item">${act}<div class="log-item-time">Today</div></div>`).join('')}</div>
+    <button class="btn btn-primary" style="width:100%;margin-top:22px" onclick="openSendTaskModal(${i})">📤 Send Task</button>`;
+  document.getElementById('slidePanel').classList.add('open');
+  document.getElementById('panelBackdrop').classList.add('open');
+}
+function openSendTaskModal(i){
+  const agents=S.get('agents_cc')||DEFAULT_AGENTS;const a=agents[i];
+  showModal(`<div class="modal-title">📤 Send Task to ${a.name}</div>
+    <div class="form-group mb-4"><label class="form-label">Task</label><textarea class="form-textarea" id="m_taskText" style="width:100%;min-height:110px"></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="sendAgentTask(${i})">Send</button></div>`);
+}
+function sendAgentTask(i){
+  const agents=S.get('agents_cc')||DEFAULT_AGENTS;const task=document.getElementById('m_taskText').value;
+  if(task){agents[i].activity=agents[i].activity||[];agents[i].activity.unshift('Task: '+task.substring(0,50));S.set('agents_cc',agents);addActivity('Task sent to '+agents[i].name);}
+  closeModal();
+}
+function closePanel(){document.getElementById('slidePanel').classList.remove('open');document.getElementById('panelBackdrop').classList.remove('open');}
+function openDecisionModal(){
+  showModal(`<div class="modal-title">⚖️ Log Decision</div>
+    <div class="form-group mb-4"><label class="form-label">Question / Problem</label><input class="form-input" id="m_dQ" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Decision Summary</label><textarea class="form-textarea" id="m_dS" style="width:100%"></textarea></div>
+    <div class="form-group mb-4"><label class="form-label">Agents Consulted (comma separated)</label><input class="form-input" id="m_dA" placeholder="Huncho, Oracle" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveDecision()">Log It</button></div>`);
+}
+function saveDecision(){
+  const decisions=S.get('decisions')||[];
+  decisions.unshift({question:document.getElementById('m_dQ').value,date:new Date().toISOString().split('T')[0],summary:document.getElementById('m_dS').value,agents:document.getElementById('m_dA').value.split(',').map(s=>s.trim()).filter(Boolean)});
+  S.set('decisions',decisions);renderCommand();closeModal();
+}
+function openAddAgentModal(){
+  showModal(`<div class="modal-title">🤖 Add Agent</div>
+    <div class="form-group mb-4"><label class="form-label">Name</label><input class="form-input" id="m_aName" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Role</label><input class="form-input" id="m_aRole" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Model</label><input class="form-input" id="m_aModel" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Description</label><textarea class="form-textarea" id="m_aDesc" style="width:100%"></textarea></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewAgent()">Add</button></div>`);
+}
+function saveNewAgent(){
+  const agents=S.get('agents_cc')||DEFAULT_AGENTS;
+  agents.push({name:document.getElementById('m_aName').value||'Agent',role:document.getElementById('m_aRole').value||'',model:document.getElementById('m_aModel').value||'',desc:document.getElementById('m_aDesc').value||'',status:'offline',emoji:'🤖',color:'blue',capabilities:[],activity:[]});
+  S.set('agents_cc',agents);renderCommand();closeModal();
+}
+
+/* ============================================================
+   AGENTS TAB
+   ============================================================ */
+const DEFAULT_AGENTS_V2=[
+  {id:'huncho',name:'Huncho',emoji:'🎯',role:'Chief of Staff / Orchestrator',status:'online',model:'gpt-5.2-codex',color:'blue',currentTask:'Monitoring all systems, awaiting instructions',skills:['Task Orchestration','Code Execution','Web Search','File Management','Telegram Integration','Agent Spawning'],desc:'Primary orchestrator. Manages all sub-agents, handles complex tasks, coordinates operations.'},
+  {id:'crisp',name:'Crisp',emoji:'⚡',role:'Crypto ORB Trader',status:'busy',model:'Python Script',color:'blue',currentTask:'Running NY session — monitoring BTC regime',skills:['Binance API','ORB Strategy','Regime Detection','Risk Management','Paper Trading'],desc:'Crypto Opening Range Breakout trader on Binance paper trading.'},
+  {id:'blade',name:'Blade',emoji:'🗡️',role:'Forex ORB Trader',status:'busy',model:'Python Script',color:'gold',currentTask:'London session active — watching EUR/USD',skills:['OANDA API','ORB Strategy','Forex Analysis','Pip Management','London Session'],desc:'Forex Opening Range Breakout trader on OANDA practice account.'},
+  {id:'oracle',name:'Oracle',emoji:'🔮',role:'Intelligence & Betting Analyst',status:'online',model:'gemini-2.5-flash',color:'purple',currentTask:'Daily Kalshi scan complete — monitoring capper feeds',skills:['Kalshi API','Sports Analysis','Pick Tracking','Market Intelligence','Firecrawl','Tavily Research'],desc:'Intelligence system. Scans Kalshi markets, tracks capper picks, generates daily reports.'},
+];
+
+function renderAgentsTab(){
+  const agents=S.get('agents_v2')||DEFAULT_AGENTS_V2;
+  const cappers=S.get('cappers')||[];
+  const picks=S.get('picks')||[];
+
+  document.getElementById('agentCardsGrid').innerHTML=agents.map((a,i)=>`
+    <div class="ag-card" style="border-top:3px solid var(--${a.color==='purple'?'purple':a.color==='gold'?'gold':'blue'})">
+      <div class="ag-card-top">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div class="agent-avatar ${a.color}" style="width:42px;height:42px;font-size:19px;border-radius:11px">${a.emoji}</div>
+          <div><div class="agent-name">${a.name}</div><div class="agent-role">${a.role}</div></div>
+        </div>
+        <div class="agent-status-wrap"><div class="agent-status-dot ${a.status}"></div><span class="agent-status-text">${a.status}</span></div>
+      </div>
+      <div class="agent-model" style="margin-bottom:9px">${a.model}</div>
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">Current Task</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">${a.currentTask}</div>
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">Skills</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">${a.skills.map(s=>`<span style="background:var(--surface2);border-radius:5px;padding:3px 8px;font-size:10px;color:var(--text2)">${s}</span>`).join('')}</div>
+      <button class="btn btn-ghost" style="width:100%;font-size:11px" onclick="editAgentTask(${i})">Update Task / Status</button>
+    </div>`).join('');
+
+  const capperStats=cappers.map(c=>{
+    const cp=picks.filter(p=>p.capperId===c.id);
+    const wins=cp.filter(p=>p.result==='W').length;
+    const losses=cp.filter(p=>p.result==='L').length;
+    const pushes=cp.filter(p=>p.result==='P').length;
+    const total=wins+losses;
+    const wp=total>0?((wins/total)*100).toFixed(0):0;
+    return{...c,wins,losses,pushes,total,winPct:wp};
+  });
+
+  document.getElementById('capperGrid').innerHTML=capperStats.length?capperStats.map((c,i)=>`
+    <div class="capper-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px">${c.name}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${c.sport} · ${c.platform||'Telegram'}</div></div>
+        <div style="text-align:right"><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:${parseInt(c.winPct)>=55?'var(--green)':parseInt(c.winPct)>=50?'var(--gold)':'var(--red)'}">${c.winPct}%</div><div style="font-size:10px;color:var(--text3)">win rate</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
+        <div style="background:rgba(61,220,132,.1);border-radius:7px;padding:7px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--green)">${c.wins}</div><div style="font-size:9px;color:var(--text3)">W</div></div>
+        <div style="background:rgba(255,91,91,.1);border-radius:7px;padding:7px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--red)">${c.losses}</div><div style="font-size:9px;color:var(--text3)">L</div></div>
+        <div style="background:var(--surface2);border-radius:7px;padding:7px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--text2)">${c.pushes}</div><div style="font-size:9px;color:var(--text3)">P</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">${c.total} picks · ${c.notes||'No notes'}</div>
+      <div style="display:flex;gap:7px">
+        <button class="btn btn-primary" style="flex:1;font-size:11px;padding:6px" onclick="openLogPickModal('${c.id}','${c.name}')">+ Log Pick</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:6px" onclick="viewCapperPicks('${c.id}','${c.name}')">History</button>
+        <button class="btn btn-danger" style="font-size:11px;padding:6px" onclick="deleteCapper(${i})">✕</button>
+      </div>
+    </div>`).join(''):'<div style="color:var(--text3);font-size:12px;padding:16px">No cappers added yet</div>';
+
+  const recentPicks=[...picks].reverse().slice(0,15);
+  document.getElementById('recentPicksFeed').innerHTML=recentPicks.length?recentPicks.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:7px;margin-bottom:5px">
+      <div style="font-size:13px">${p.result==='W'?'✅':p.result==='L'?'❌':p.result==='P'?'➡️':'⏳'}</div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600">${p.pick}</div><div style="font-size:10px;color:var(--text2)">${p.capper} · ${p.sport} · ${p.date}</div></div>
+      <div style="font-size:11px;font-family:'DM Mono',monospace;color:${p.result==='W'?'var(--green)':p.result==='L'?'var(--red)':'var(--text3)'}">${p.result||'PENDING'}</div>
+      ${(!p.result||p.result==='PENDING')?`<button onclick="resolvePick('${p.id}')" style="font-size:10px;padding:3px 7px;border-radius:4px;background:var(--surface);border:1px solid var(--border);color:var(--text2);cursor:pointer">Resolve</button>`:''}
+    </div>`).join(''):'<div style="color:var(--text3);font-size:12px;padding:12px">No picks logged yet</div>';
+}
+
+function editAgentTask(i){
+  const agents=S.get('agents_v2')||DEFAULT_AGENTS_V2;const a=agents[i];
+  showModal(`<div class="modal-title">⚡ Update ${a.name}</div>
+    <div class="form-group mb-4"><label class="form-label">Current Task</label><textarea class="form-textarea" id="m_agTask" style="width:100%">${a.currentTask}</textarea></div>
+    <div class="form-group mb-4"><label class="form-label">Status</label><select class="form-select" id="m_agStatus" style="width:100%"><option value="online" ${a.status==='online'?'selected':''}>Online</option><option value="busy" ${a.status==='busy'?'selected':''}>Busy</option><option value="offline" ${a.status==='offline'?'selected':''}>Offline</option></select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAgentTask(${i})">Save</button></div>`);
+}
+function saveAgentTask(i){
+  const agents=S.get('agents_v2')||DEFAULT_AGENTS_V2;
+  agents[i].currentTask=document.getElementById('m_agTask').value;
+  agents[i].status=document.getElementById('m_agStatus').value;
+  S.set('agents_v2',agents);renderAgentsTab();closeModal();
+}
+function openAddCapperModal(){
+  showModal(`<div class="modal-title">+ Add Capper</div>
+    <div class="form-group mb-4"><label class="form-label">Capper Name / Handle</label><input class="form-input" id="m_cName" placeholder="e.g. @SharpMike" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Sport Focus</label><select class="form-select" id="m_cSport" style="width:100%"><option value="NBA">NBA</option><option value="NCAAM">Mens College Basketball</option><option value="MLB">MLB</option><option value="NHL">NHL</option><option value="Multi">Multi-Sport</option></select></div>
+    <div class="form-group mb-4"><label class="form-label">Platform</label><select class="form-select" id="m_cPlatform" style="width:100%"><option value="Telegram">Telegram</option><option value="Discord">Discord</option><option value="Twitter">Twitter/X</option><option value="Other">Other</option></select></div>
+    <div class="form-group mb-4"><label class="form-label">Notes</label><input class="form-input" id="m_cNotes" placeholder="e.g. Sharp money follower, focuses on unders" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveCapper()">Add Capper</button></div>`);
+}
+function saveCapper(){
+  const cappers=S.get('cappers')||[];
+  cappers.push({id:Date.now().toString(),name:document.getElementById('m_cName').value||'Unknown',sport:document.getElementById('m_cSport').value,platform:document.getElementById('m_cPlatform').value,notes:document.getElementById('m_cNotes').value});
+  S.set('cappers',cappers);renderAgentsTab();closeModal();
+}
+function deleteCapper(i){
+  if(!confirm('Delete this capper?'))return;
+  const cappers=S.get('cappers')||[];cappers.splice(i,1);S.set('cappers',cappers);renderAgentsTab();
+}
+function openLogPickModal(capperId,capperName){
+  showModal(`<div class="modal-title">📝 Log Pick — ${capperName}</div>
+    <div class="form-group mb-4"><label class="form-label">Pick</label><input class="form-input" id="m_pPick" placeholder="e.g. Lakers -4.5, Over 224.5, Celtics ML" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Sport</label><select class="form-select" id="m_pSport" style="width:100%"><option value="NBA">NBA</option><option value="NCAAM">NCAAM</option><option value="MLB">MLB</option><option value="NHL">NHL</option></select></div>
+    <div class="form-group mb-4"><label class="form-label">Date</label><input class="form-input" id="m_pDate" type="date" style="width:100%" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="form-group mb-4"><label class="form-label">Result</label><select class="form-select" id="m_pResult" style="width:100%"><option value="PENDING">⏳ Pending</option><option value="W">✅ Win</option><option value="L">❌ Loss</option><option value="P">➡️ Push</option></select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="savePick('${capperId}','${capperName}')">Log Pick</button></div>`);
+}
+function savePick(capperId,capperName){
+  const picks=S.get('picks')||[];
+  const pick=document.getElementById('m_pPick').value;
+  picks.push({id:Date.now().toString(),capper:capperName,capperId,pick,sport:document.getElementById('m_pSport').value,date:document.getElementById('m_pDate').value,result:document.getElementById('m_pResult').value,logged:new Date().toISOString()});
+  S.set('picks',picks);renderAgentsTab();closeModal();addActivity('Pick logged: '+pick+' ('+capperName+')');
+}
+function resolvePick(pickId){
+  const picks=S.get('picks')||[];const pick=picks.find(p=>p.id===pickId);if(!pick)return;
+  showModal(`<div class="modal-title">Resolve Pick</div>
+    <div style="font-size:13px;margin-bottom:18px;color:var(--text2)">${pick.pick} · ${pick.capper}</div>
+    <div class="modal-actions" style="justify-content:center;gap:10px">
+      <button class="btn" style="background:rgba(61,220,132,.2);color:var(--green);font-size:13px;padding:10px 20px" onclick="setPickResult('${pickId}','W')">✅ Win</button>
+      <button class="btn" style="background:rgba(255,91,91,.2);color:var(--red);font-size:13px;padding:10px 20px" onclick="setPickResult('${pickId}','L')">❌ Loss</button>
+      <button class="btn btn-ghost" style="font-size:13px;padding:10px 20px" onclick="setPickResult('${pickId}','P')">➡️ Push</button>
+    </div>`);
+}
+function setPickResult(pickId,result){
+  const picks=S.get('picks')||[];const idx=picks.findIndex(p=>p.id===pickId);
+  if(idx>=0)picks[idx].result=result;S.set('picks',picks);renderAgentsTab();closeModal();
+}
+function viewCapperPicks(capperId,capperName){
+  const picks=S.get('picks')||[];const cp=picks.filter(p=>p.capperId===capperId).reverse();
+  showModal(`<div class="modal-title">📊 ${capperName} — History</div>
+    <div style="max-height:380px;overflow-y:auto">
+      ${cp.length?cp.map(p=>`<div style="display:flex;align-items:center;gap:9px;padding:9px;background:var(--surface2);border-radius:7px;margin-bottom:5px"><div>${p.result==='W'?'✅':p.result==='L'?'❌':p.result==='P'?'➡️':'⏳'}</div><div style="flex:1"><div style="font-size:12px;font-weight:600">${p.pick}</div><div style="font-size:10px;color:var(--text2)">${p.sport} · ${p.date}</div></div></div>`).join(''):'<div style="color:var(--text3);padding:16px">No picks logged yet</div>'}
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Close</button></div>`);
+}
+
+/* ============================================================
+   INTEL
+   ============================================================ */
+let intelFilter='all';
+const DEFAULT_INTEL=[
+  {title:'Kalshi daily sports markets now include NBA & NHL game winners',summary:'Daily game markets open same-day with real-time odds. Oracle actively scanning for edges.',category:'opportunity',importance:'🔥',source:'https://kalshi.com',date:new Date().toISOString()},
+  {title:'GPT-5.2-Codex confirmed working as Huncho primary model',summary:'OpenAI Codex integration stable after switching from gpt-5.3-codex-spark which was unsupported.',category:'ai',importance:'⚡',source:'#',date:new Date().toISOString()},
+  {title:'NFP Report — High Impact USD Event',summary:'Non-Farm Payrolls release. Major USD volatility expected. Blade should avoid trading 30min before and after.',category:'forex',importance:'🔥',source:'https://www.forexfactory.com',date:new Date().toISOString()},
+  {title:'Gemini 2.5 Flash Tier 1 — 1000 RPM Available',summary:'Google Gemini 2.5 Flash now supports 1000 requests/min at Tier 1. Strong fallback for all agents.',category:'ai',importance:'📌',source:'https://ai.google.dev',date:new Date().toISOString()},
+  {title:'FOMC Meeting Minutes — USD Rate Decision',summary:'Federal Reserve interest rate decision. Red folder event on Forex Factory. Major impact on USD pairs.',category:'forex',importance:'🔥',source:'https://www.forexfactory.com',date:new Date().toISOString()},
+];
+function renderIntel(){
+  const items=S.get('intel')||DEFAULT_INTEL;
+  const filtered=intelFilter==='all'?items:items.filter(i=>i.category===intelFilter);
+  const hot=items.filter(i=>i.importance==='🔥').slice(0,5);
+  document.getElementById('dailyBrief').innerHTML=hot.map(i=>`
+    <div class="brief-item">
+      <div style="font-size:15px">${i.importance}</div>
+      <div><div class="brief-title">${i.title}</div><div class="brief-summary">${i.summary}</div></div>
+    </div>`).join('')||'<div style="color:var(--text3);font-size:12px;margin-top:12px">No hot items yet</div>';
+  document.getElementById('intelGrid').innerHTML=filtered.map(item=>`
+    <div class="intel-card">
+      <div class="intel-card-header"><div class="intel-card-title">${item.title}</div><span class="intel-tag ${item.category}">${item.category}</span></div>
+      <div class="intel-summary">${item.summary}</div>
+      <div class="intel-footer"><a href="${item.source}" class="intel-source" target="_blank">Source →</a><span style="font-size:13px">${item.importance}</span><span class="intel-date">${new Date(item.date).toLocaleDateString()}</span></div>
+    </div>`).join('')||'<div style="color:var(--text3);font-size:12px;padding:16px">No items in this category</div>';
+}
+function filterIntel(cat,btn){intelFilter=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderIntel();}
+function toggleIntelForm(){document.getElementById('intelForm').classList.toggle('open');}
+function saveIntel(){
+  const items=S.get('intel')||DEFAULT_INTEL;
+  items.unshift({title:document.getElementById('intelTitle').value||'Untitled',summary:document.getElementById('intelSummary').value,category:document.getElementById('intelCategory').value,importance:document.getElementById('intelImportance').value,source:document.getElementById('intelSource').value||'#',date:new Date().toISOString()});
+  S.set('intel',items);toggleIntelForm();renderIntel();
+}
+
+/* ============================================================
+   BASKETBALL
+   ============================================================ */
+function renderBasketball(){
+  const d=S.get('bball')||{number:'3',team:'Pro Basketball Player',ppg:0,rpg:0,apg:0,fgp:0,threep:0,wins:0,losses:0,games:[],training:[]};
+  document.getElementById('playerNumber').textContent='#'+(d.number||'00');
+  document.getElementById('playerTeamPos').textContent=d.team||'Pro Basketball Player';
+  document.getElementById('seasonRecord').textContent=(d.wins||0)+'-'+(d.losses||0);
+  document.getElementById('statPPG').textContent=(d.ppg||0).toFixed(1);
+  document.getElementById('statRPG').textContent=(d.rpg||0).toFixed(1);
+  document.getElementById('statAPG').textContent=(d.apg||0).toFixed(1);
+  document.getElementById('statFGP').textContent=(d.fgp||0)+'%';
+  document.getElementById('stat3PP').textContent=(d.threep||0)+'%';
+  document.getElementById('scheduleList').innerHTML=(d.games||[]).map(g=>`
+    <div class="game-row"><div class="game-date">${g.date}</div><div class="game-matchup">${g.opponent}</div><div class="game-location">${g.location}</div><div class="game-result ${g.result?g.result.toLowerCase():'upcoming'}">${g.result||'TBD'}</div></div>`).join('')||'<div style="color:var(--text3);font-size:12px;padding:12px">No games scheduled yet</div>';
+  document.getElementById('trainingGoals').innerHTML=(d.training||[]).map(t=>`
+    <div class="training-goal"><div class="training-goal-label">${t.label}</div><div class="training-goal-bar"><div class="training-goal-fill" style="width:${t.pct}%"></div></div><div class="training-goal-pct">${t.pct}%</div></div>`).join('')||'<div style="color:var(--text3);font-size:12px;padding:12px">No training goals set</div>';
+}
+function openBballSettingsModal(){
+  const d=S.get('bball')||{};
+  showModal(`<div class="modal-title">🏀 Player Profile</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Jersey #</label><input class="form-input" id="m_bNumber" value="${d.number||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Team / League</label><input class="form-input" id="m_bTeam" value="${d.team||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">PPG</label><input class="form-input" id="m_bPpg" value="${d.ppg||0}" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">RPG</label><input class="form-input" id="m_bRpg" value="${d.rpg||0}" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">APG</label><input class="form-input" id="m_bApg" value="${d.apg||0}" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">FG%</label><input class="form-input" id="m_bFgp" value="${d.fgp||0}" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">3P%</label><input class="form-input" id="m_bThreep" value="${d.threep||0}" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Wins</label><input class="form-input" id="m_bWins" value="${d.wins||0}" type="number" style="width:100%"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:18px"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-gold" onclick="saveBballProfile()">Save</button></div>`);
+}
+function saveBballProfile(){
+  const d=S.get('bball')||{};
+  d.number=document.getElementById('m_bNumber').value;d.team=document.getElementById('m_bTeam').value;
+  d.ppg=parseFloat(document.getElementById('m_bPpg').value)||0;d.rpg=parseFloat(document.getElementById('m_bRpg').value)||0;
+  d.apg=parseFloat(document.getElementById('m_bApg').value)||0;d.fgp=parseFloat(document.getElementById('m_bFgp').value)||0;
+  d.threep=parseFloat(document.getElementById('m_bThreep').value)||0;d.wins=parseInt(document.getElementById('m_bWins').value)||0;
+  S.set('bball',d);renderBasketball();closeModal();
+}
+function openGameModal(){
+  showModal(`<div class="modal-title">📅 Add Game</div>
+    <div class="form-group mb-4"><label class="form-label">Date</label><input class="form-input" id="m_gDate" type="date" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Opponent</label><input class="form-input" id="m_gOpp" placeholder="vs. Team Name" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Location</label><input class="form-input" id="m_gLoc" placeholder="Home / Away / City" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Result</label><select class="form-select" id="m_gResult" style="width:100%"><option value="">Upcoming</option><option value="W">Win</option><option value="L">Loss</option></select></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-gold" onclick="saveGame()">Add</button></div>`);
+}
+function saveGame(){
+  const d=S.get('bball')||{};d.games=d.games||[];
+  const result=document.getElementById('m_gResult').value;
+  d.games.push({date:document.getElementById('m_gDate').value,opponent:document.getElementById('m_gOpp').value,location:document.getElementById('m_gLoc').value,result});
+  if(result==='W')d.wins=(d.wins||0)+1;if(result==='L')d.losses=(d.losses||0)+1;
+  S.set('bball',d);renderBasketball();closeModal();
+}
+function openTrainingModal(){
+  showModal(`<div class="modal-title">💪 Add Training Goal</div>
+    <div class="form-group mb-4"><label class="form-label">Goal</label><input class="form-input" id="m_tLabel" placeholder="e.g. 3-point shooting accuracy" style="width:100%"></div>
+    <div class="form-group mb-4"><label class="form-label">Progress (%)</label><input class="form-input" id="m_tPct" type="number" min="0" max="100" value="0" style="width:100%"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-gold" onclick="saveTrainingGoal()">Add</button></div>`);
+}
+function saveTrainingGoal(){
+  const d=S.get('bball')||{};d.training=d.training||[];
+  d.training.push({label:document.getElementById('m_tLabel').value,pct:parseInt(document.getElementById('m_tPct').value)||0});
+  S.set('bball',d);renderBasketball();closeModal();
+}
+
+/* ============================================================
+   PORTFOLIO TAB
+   ============================================================ */
+const PORT_ACCOUNTS = [
+  { id:'robinhood', label:'Robinhood', icon:'📈', cls:'robinhood', sub:'Stocks + Options + Roth IRA', fields:['stocks','options','roth_ira'] },
+  { id:'tradelocker', label:'TradeLocker', icon:'⚡', cls:'tradelocker', sub:'Manual Trades', fields:['balance'] },
+  { id:'crypto', label:'Trust Wallet', icon:'🪙', cls:'crypto', sub:'Crypto Holdings', fields:['balance'] },
+  { id:'cash', label:'HYSA', icon:'🏦', cls:'cash', sub:'High Yield Savings', fields:['balance'] },
+  { id:'insurance', label:'Northwestern Mutual', icon:'🛡️', cls:'insurance', sub:'Life Insurance Cash Value', fields:['cash_value'] },
+];
+
+function getPortData() { return S.get('portfolio') || { accounts:{}, trades:[] }; }
+function savePortData(d) { S.set('portfolio', d); }
+
+function calcTotal(d) {
+  const accs = d.accounts || {};
+  let total = 0;
+  total += (accs.robinhood?.stocks||0) + (accs.robinhood?.options||0) + (accs.robinhood?.roth_ira||0);
+  total += (accs.tradelocker?.balance||0);
+  total += (accs.crypto?.balance||0);
+  total += (accs.cash?.balance||0);
+  total += (accs.insurance?.cash_value||0);
+  return total;
+}
+
+function fmtMoney(n, short=false) {
+  if(short) { if(Math.abs(n)>=1000000) return '$'+(n/1e6).toFixed(2)+'M'; if(Math.abs(n)>=1000) return '$'+(n/1000).toFixed(1)+'K'; }
+  return (n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function renderPortfolio() {
+  const d = getPortData();
+  const total = calcTotal(d);
+  document.getElementById('portTotalNW').textContent = fmtMoney(total, true);
+  document.getElementById('portLastUpdate').textContent = d.lastUpdate ? new Date(d.lastUpdate).toLocaleDateString() : 'Not set';
+
+  // Today P&L from trades
+  const today = new Date().toISOString().split('T')[0];
+  const trades = d.trades || [];
+  const todayPnl = trades.filter(t=>t.date===today&&t.pnl).reduce((s,t)=>s+(t.pnl||0),0);
+  const ytdPnl = trades.filter(t=>t.date&&t.date.startsWith(new Date().getFullYear().toString())&&t.pnl).reduce((s,t)=>s+(t.pnl||0),0);
+  const todayEl = document.getElementById('portTodayPnl');
+  const ytdEl = document.getElementById('portYtdPnl');
+  todayEl.textContent = fmtMoney(todayPnl);
+  todayEl.style.color = todayPnl>=0?'var(--green)':todayPnl<0?'var(--red)':'var(--text)';
+  ytdEl.textContent = fmtMoney(ytdPnl);
+  ytdEl.style.color = ytdPnl>=0?'var(--green)':ytdPnl<0?'var(--red)':'var(--text)';
+
+  // Account carousel
+  let currentAccIdx = 0;
+  const accCards = PORT_ACCOUNTS.map(a => {
+    const acc = (d.accounts||{})[a.id] || {};
+    let balance = 0, subLines = [];
+    if(a.id==='robinhood') {
+      balance = (acc.stocks||0)+(acc.options||0)+(acc.roth_ira||0);
+      subLines = [`Stocks: ${fmtMoney(acc.stocks||0,true)}`,`Options: ${fmtMoney(acc.options||0,true)}`,`Roth IRA: ${fmtMoney(acc.roth_ira||0,true)}`];
+    } else if(a.id==='insurance') {
+      balance = acc.cash_value||0;
+    } else {
+      balance = acc.balance||0;
+    }
+    const pct = total>0?(balance/total*100).toFixed(1):0;
+    const color = a.id==='robinhood'?'#00c805':a.id==='crypto'?'#f7931a':a.id==='cash'?'var(--green)':a.id==='insurance'?'var(--purple)':'var(--blue)';
+    return `<div class="port-account-card ${a.cls}" style="min-width:100%;box-sizing:border-box" onclick="openPortEditModal()">
+      <div class="port-account-icon">${a.icon}</div>
+      <div class="port-account-label">${a.label}</div>
+      <div class="port-account-balance" style="color:${color}">${fmtMoney(balance,true)}</div>
+      <div class="port-account-sub">${a.sub}</div>
+      ${subLines.map(l=>`<div style="font-size:11px;color:var(--text3);margin-top:3px">${l}</div>`).join('')}
+      <div style="margin-top:12px;font-size:11px;color:var(--text2)">${pct}% of portfolio</div>
+      <div style="margin-top:6px;background:var(--surface2);border-radius:3px;height:4px"><div style="height:100%;border-radius:3px;background:${color};width:${pct}%"></div></div>
+    </div>`;
+  });
+  document.getElementById('portAccountsGrid').innerHTML = accCards.join('');
+  // dots
+  document.getElementById('portDots').innerHTML = PORT_ACCOUNTS.map((_,i)=>`<div style="width:7px;height:7px;border-radius:50%;background:${i===currentAccIdx?'var(--blue)':'var(--surface2)'};transition:background .2s;cursor:pointer" onclick="goToAccount(${i})"></div>`).join('');
+  goToAccount(currentAccIdx);
+
+  // Year + month selector
+  const yr = new Date().getFullYear();
+  const yrSel = document.getElementById('calYearSelect');
+  if(yrSel && !yrSel.options.length) {
+    for(let y=yr;y>=yr-2;y--) { const o=document.createElement('option'); o.value=y; o.textContent=y; yrSel.appendChild(o); }
+  }
+  // Default month to current
+  const mSel = document.getElementById('calMonthSelect');
+  if(mSel && mSel.value === '0' && new Date().getMonth() !== 0) {
+    mSel.value = new Date().getMonth().toString();
+  }
+
+  renderAllCalendars();
+  renderTradeLog();
+
+  // Sync net worth to dashboard
+  const nwData = S.get('networth')||{current:0,goal:10000000};
+  nwData.current = total;
+  S.set('networth', nwData);
+  updateNetWorth();
+}
+
+function slideAccount(dir) {
+  currentAccIdx = (currentAccIdx + dir + PORT_ACCOUNTS.length) % PORT_ACCOUNTS.length;
+  goToAccount(currentAccIdx);
+}
+function goToAccount(i) {
+  currentAccIdx = i;
+  const grid = document.getElementById('portAccountsGrid');
+  if(grid) grid.style.transform = `translateX(-${i*100}%)`;
+  const dots = document.getElementById('portDots');
+  if(dots) dots.querySelectorAll('div').forEach((d,idx)=>d.style.background=idx===i?'var(--blue)':'var(--surface2)');
+}
+let currentAccIdx = 0;
+
+function renderAllCalendars() {
+  const d = getPortData();
+  const trades = d.trades || [];
+  const yr = parseInt(document.getElementById('calYearSelect')?.value || new Date().getFullYear());
+  const m = parseInt(document.getElementById('calMonthSelect')?.value ?? new Date().getMonth());
+  const accFilter = document.getElementById('calAccountSelect')?.value || 'all';
+  const filtered = accFilter==='all' ? trades : trades.filter(t=>t.account===accFilter);
+
+  const dayMap = {};
+  filtered.forEach(t => {
+    if(!t.date||t.pnl==null) return;
+    dayMap[t.date] = (dayMap[t.date]||0) + t.pnl;
+  });
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = new Date().toISOString().split('T')[0];
+
+  const firstDay = new Date(yr, m, 1).getDay();
+  const daysInMonth = new Date(yr, m+1, 0).getDate();
+  let monthProfit=0, monthLoss=0, tradeDays=0;
+
+  let daysHtml = '';
+  for(let i=0;i<firstDay;i++) daysHtml += '<div class="cal-day empty"></div>';
+  for(let day=1;day<=daysInMonth;day++) {
+    const dateStr = `${yr}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const pnl = dayMap[dateStr];
+    let cls = 'no-trade';
+    if(pnl !== undefined) {
+      tradeDays++;
+      if(pnl>0){cls='profit';monthProfit+=pnl;}
+      else if(pnl<0){cls='loss';monthLoss+=pnl;}
+      else cls='breakeven';
+    }
+    const isToday = dateStr===today?' today':'';
+    const tooltip = pnl!==undefined?` title="${dateStr}: ${fmtMoney(pnl)}"`:` title="${dateStr}"`;
+    daysHtml += `<div class="cal-day ${cls}${isToday}"${tooltip} onclick="showDayTrades('${dateStr}')" style="font-size:12px;padding:6px">${day}</div>`;
+  }
+
+  const netMonth = monthProfit+monthLoss;
+  const section = document.getElementById('calendarSection');
+  if(section) section.innerHTML = `
+    <div class="cal-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${MONTHS[m]} ${yr}</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="prevMonth()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:5px 12px;color:var(--text);cursor:pointer;font-size:14px">‹ Prev</button>
+          <button onclick="nextMonth()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:5px 12px;color:var(--text);cursor:pointer;font-size:14px">Next ›</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
+        ${DAYS.map(d=>`<div style="font-size:10px;color:var(--text3);text-align:center;font-weight:600;padding:4px">${d}</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${daysHtml}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Profit Days</div>
+          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green)">${fmtMoney(monthProfit,true)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Trade Days</div>
+          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--text)">${tradeDays}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Net P&L</div>
+          <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:${netMonth>=0?'var(--green)':'var(--red)'}">${fmtMoney(netMonth,true)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Loss Days</div>
+          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--red)">${fmtMoney(monthLoss,true)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function prevMonth() {
+  const mSel = document.getElementById('calMonthSelect');
+  const yrSel = document.getElementById('calYearSelect');
+  let m = parseInt(mSel.value);
+  let y = parseInt(yrSel.value);
+  if(m===0){m=11;y--;}else m--;
+  mSel.value=m;yrSel.value=y;
+  renderAllCalendars();
+}
+function nextMonth() {
+  const mSel = document.getElementById('calMonthSelect');
+  const yrSel = document.getElementById('calYearSelect');
+  let m = parseInt(mSel.value);
+  let y = parseInt(yrSel.value);
+  if(m===11){m=0;y++;}else m++;
+  mSel.value=m;yrSel.value=y;
+  renderAllCalendars();
+}
+
+function showDayTrades(date) {
+  const d = getPortData();
+  const trades = (d.trades||[]).filter(t=>t.date===date);
+  if(!trades.length) return;
+  showModal(`<div class="modal-title">📅 Trades — ${date}</div>
+    <div style="max-height:360px;overflow-y:auto">
+      ${trades.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface2);border-radius:7px;margin-bottom:6px">
+        <div><div style="font-size:12px;font-weight:600">${t.asset}</div><div style="font-size:11px;color:var(--text2)">${t.account} · ${t.direction}</div></div>
+        <div class="trade-pnl ${(t.pnl||0)>=0?'pos':'neg'}">${fmtMoney(t.pnl||0)}</div>
+      </div>`).join('')}
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Close</button></div>`);
+}
+
+function renderTradeLog() {
+  const d = getPortData();
+  const filter = document.getElementById('tradeLogFilter')?.value||'all';
+  const trades = [...(d.trades||[])].filter(t=>filter==='all'||t.account===filter).reverse().slice(0,50);
+  document.getElementById('tradeLogBody').innerHTML = trades.length ? trades.map(t=>`
+    <div class="port-trade-row">
+      <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text2)">${t.date||'—'}</span>
+      <span><span class="trade-account-badge ${t.account}">${t.account}</span></span>
+      <span style="font-size:12px;font-weight:600">${t.asset||'—'}</span>
+      <span><span class="trade-dir ${t.direction==='Long'?'long':'short'}">${t.direction||'—'}</span></span>
+      <span style="font-size:11px;font-family:'DM Mono',monospace">${t.entry||'—'}</span>
+      <span style="font-size:11px;font-family:'DM Mono',monospace">${t.exit||'—'}</span>
+      <span class="trade-pnl ${(t.pnl||0)>=0?'pos':'neg'}">${t.pnl!=null?fmtMoney(t.pnl):'—'}</span>
+      <span style="display:flex;gap:4px;align-items:center">
+        <span class="trade-status ${t.status==='Open'?'open':'closed'}">${t.status||'Closed'}</span>
+        ${t.id?`<button onclick="editTrade('${t.id}')" style="font-size:10px;padding:3px 7px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer">✏️</button><button onclick="deleteTrade('${t.id}')" style="font-size:10px;padding:3px 7px;border-radius:4px;background:rgba(255,91,91,0.15);border:none;color:var(--red);cursor:pointer">✕</button>`:''}
+      </span>
+    </div>`).join('') : '<div style="padding:20px;color:var(--text3);font-size:12px;text-align:center">No trades logged yet — click + Log Trade to add your first trade</div>';
+}
+
+
+function editTrade(id){
+  const d=getPortData();
+  const t=d.trades.find(t=>t.id===id);
+  if(!t)return;
+  showModal(`<div class="modal-title">✏️ Edit Trade</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Account</label><select class="form-select" id="m_trAcc" style="width:100%"><option value="tradelocker" ${t.account==='tradelocker'?'selected':''}>TradeLocker</option><option value="robinhood" ${t.account==='robinhood'?'selected':''}>Robinhood</option><option value="crisp" ${t.account==='crisp'?'selected':''}>Crisp</option><option value="blade" ${t.account==='blade'?'selected':''}>Blade</option></select></div>
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="m_trDate" type="date" value="${t.date||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Asset</label><input class="form-input" id="m_trAsset" value="${t.asset||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Direction</label><select class="form-select" id="m_trDir" style="width:100%"><option value="Long" ${t.direction==='Long'?'selected':''}>Long</option><option value="Short" ${t.direction==='Short'?'selected':''}>Short</option></select></div>
+      <div class="form-group"><label class="form-label">Entry Price</label><input class="form-input" id="m_trEntry" type="number" value="${t.entry||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Exit Price</label><input class="form-input" id="m_trExit" type="number" value="${t.exit||''}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">P&L ($)</label><input class="form-input" id="m_trPnl" type="number" value="${t.pnl||0}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="m_trStatus" style="width:100%"><option value="Closed" ${t.status==='Closed'?'selected':''}>Closed</option><option value="Open" ${t.status==='Open'?'selected':''}>Open</option></select></div>
+      <div class="form-group full"><label class="form-label">Notes</label><input class="form-input" id="m_trNotes" value="${t.notes||''}" style="width:100%"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn btn-danger" onclick="deleteTrade('${id}')">Delete</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditTrade('${id}')">Save</button>
+    </div>`);
+}
+
+function saveEditTrade(id){
+  const d=getPortData();
+  const idx=d.trades.findIndex(t=>t.id===id);
+  if(idx<0)return;
+  d.trades[idx]={...d.trades[idx],account:document.getElementById('m_trAcc').value,date:document.getElementById('m_trDate').value,asset:document.getElementById('m_trAsset').value,direction:document.getElementById('m_trDir').value,entry:parseFloat(document.getElementById('m_trEntry').value)||null,exit:parseFloat(document.getElementById('m_trExit').value)||null,pnl:parseFloat(document.getElementById('m_trPnl').value)||0,status:document.getElementById('m_trStatus').value,notes:document.getElementById('m_trNotes').value};
+  savePortData(d);renderPortfolio();closeModal();
+}
+
+function deleteTrade(id){
+  if(!confirm('Delete this trade?'))return;
+  const d=getPortData();
+  d.trades=d.trades.filter(t=>t.id!==id);
+  savePortData(d);renderPortfolio();closeModal();
+}
+  showModal(`<div class="modal-title">+ Log Trade</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Account</label>
+        <select class="form-select" id="m_trAcc" style="width:100%">
+          <option value="tradelocker">TradeLocker</option>
+          <option value="robinhood">Robinhood</option>
+          <option value="crisp">Crisp</option>
+          <option value="blade">Blade</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="m_trDate" type="date" value="${new Date().toISOString().split('T')[0]}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Asset / Symbol</label><input class="form-input" id="m_trAsset" placeholder="e.g. BTC/USD, AAPL, EUR/USD" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Direction</label>
+        <select class="form-select" id="m_trDir" style="width:100%"><option value="Long">Long</option><option value="Short">Short</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Entry Price</label><input class="form-input" id="m_trEntry" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Exit Price</label><input class="form-input" id="m_trExit" type="number" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">P&L ($)</label><input class="form-input" id="m_trPnl" type="number" placeholder="Negative for loss" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-select" id="m_trStatus" style="width:100%"><option value="Closed">Closed</option><option value="Open">Open</option></select>
+      </div>
+      <div class="form-group full"><label class="form-label">Notes</label><input class="form-input" id="m_trNotes" placeholder="Setup, reasoning, lessons..." style="width:100%"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveTrade()">Log Trade</button></div>`);
+}
+
+function saveTrade() {
+  const d = getPortData();
+  d.trades = d.trades||[];
+  d.trades.push({
+    id: Date.now().toString(),
+    account: document.getElementById('m_trAcc').value,
+    date: document.getElementById('m_trDate').value,
+    asset: document.getElementById('m_trAsset').value,
+    direction: document.getElementById('m_trDir').value,
+    entry: parseFloat(document.getElementById('m_trEntry').value)||null,
+    exit: parseFloat(document.getElementById('m_trExit').value)||null,
+    pnl: parseFloat(document.getElementById('m_trPnl').value)||0,
+    status: document.getElementById('m_trStatus').value,
+    notes: document.getElementById('m_trNotes').value,
+  });
+  savePortData(d);
+  renderPortfolio();
+  closeModal();
+  addActivity('Trade logged: '+document.getElementById('m_trAsset').value);
+}
+
+function openPortEditModal(accountId) {
+  const d = getPortData();
+  const accs = d.accounts||{};
+  showModal(`<div class="modal-title">💼 Update Balances</div>
+    <div class="form-group mb-4" style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:14px">
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px">📈 Robinhood</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Stocks ($)</label><input class="form-input" id="m_rbStocks" type="number" value="${accs.robinhood?.stocks||0}" style="width:100%"></div>
+        <div class="form-group"><label class="form-label">Options ($)</label><input class="form-input" id="m_rbOptions" type="number" value="${accs.robinhood?.options||0}" style="width:100%"></div>
+        <div class="form-group full"><label class="form-label">Roth IRA ($)</label><input class="form-input" id="m_rbRoth" type="number" value="${accs.robinhood?.roth_ira||0}" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">⚡ TradeLocker ($)</label><input class="form-input" id="m_tlBal" type="number" value="${accs.tradelocker?.balance||0}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">🪙 Trust Wallet ($)</label><input class="form-input" id="m_twBal" type="number" value="${accs.crypto?.balance||0}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">🏦 HYSA ($)</label><input class="form-input" id="m_hysaBal" type="number" value="${accs.cash?.balance||0}" style="width:100%"></div>
+      <div class="form-group"><label class="form-label">🛡️ NW Mutual Cash Value ($)</label><input class="form-input" id="m_nwmCv" type="number" value="${accs.insurance?.cash_value||0}" style="width:100%"></div>
+    </div>
+    <div class="modal-actions" style="margin-top:14px"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-gold" onclick="savePortBalances()">Save All</button></div>`);
+}
+
+function savePortBalances() {
+  const d = getPortData();
+  d.accounts = {
+    robinhood: { stocks: parseFloat(document.getElementById('m_rbStocks').value)||0, options: parseFloat(document.getElementById('m_rbOptions').value)||0, roth_ira: parseFloat(document.getElementById('m_rbRoth').value)||0 },
+    tradelocker: { balance: parseFloat(document.getElementById('m_tlBal').value)||0 },
+    crypto: { balance: parseFloat(document.getElementById('m_twBal').value)||0 },
+    cash: { balance: parseFloat(document.getElementById('m_hysaBal').value)||0 },
+    insurance: { cash_value: parseFloat(document.getElementById('m_nwmCv').value)||0 },
+  };
+  d.lastUpdate = new Date().toISOString();
+  savePortData(d);
+  renderPortfolio();
+  closeModal();
+  addActivity('Portfolio balances updated');
+}
+
+
+function showModal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modalOverlay').classList.add('open');}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('searchInput').focus();}
+  if(e.key==='Escape'){closeModal();closePanel();}
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init(){
+  updateNetWorth();renderActivityFeed();renderPriorities();renderKanban();renderTimeline();
+}
+init();
+</script>
+</body>
+</html>

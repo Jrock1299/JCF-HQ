@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""
+JCF HQ Storage Server
+Tiny Flask API that persists dashboard data server-side
+so balances/stats survive across devices and browsers.
+Runs on port 8900, served alongside the dashboard.
+"""
+from flask import Flask, request, jsonify
+import json, os
+from datetime import datetime, timezone
+
+app = Flask(__name__)
+STORAGE_FILE = '/root/.openclaw/dashboard/hq_userdata.json'
+
+CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+def load_data():
+    if os.path.exists(STORAGE_FILE):
+        try:
+            return json.load(open(STORAGE_FILE))
+        except:
+            pass
+    return {
+        "accounts": {},
+        "income_entries": [],
+        "trading_accounts": [],
+        "basketball": {},
+        "last_updated": None
+    }
+
+def save_data(data):
+    data['last_updated'] = datetime.now(timezone.utc).isoformat()
+    with open(STORAGE_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
+
+@app.route('/hq/data', methods=['GET', 'OPTIONS'])
+def get_data():
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    data = load_data()
+    return (jsonify(data), 200, CORS_HEADERS)
+
+@app.route('/hq/data', methods=['POST'])
+def set_data():
+    body = request.get_json(force=True)
+    data = load_data()
+    # Merge — only update keys that are sent
+    for key in ['accounts', 'income_entries', 'trading_accounts', 'basketball']:
+        if key in body:
+            data[key] = body[key]
+    save_data(data)
+    return (jsonify({'ok': True, 'last_updated': data['last_updated']}), 200, CORS_HEADERS)
+
+@app.route('/hq/account/<key>', methods=['POST', 'OPTIONS'])
+def set_account(key):
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    body = request.get_json(force=True)
+    data = load_data()
+    data['accounts'][key] = body
+    save_data(data)
+    return (jsonify({'ok': True}), 200, CORS_HEADERS)
+
+@app.route('/hq/income', methods=['POST', 'OPTIONS'])
+def add_income():
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    body = request.get_json(force=True)
+    data = load_data()
+    data['income_entries'].insert(0, body)
+    save_data(data)
+    return (jsonify({'ok': True}), 200, CORS_HEADERS)
+
+@app.route('/hq/income/<int:entry_id>', methods=['DELETE', 'OPTIONS'])
+def delete_income(entry_id):
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    data = load_data()
+    data['income_entries'] = [e for e in data['income_entries'] if e.get('id') != entry_id]
+    save_data(data)
+    return (jsonify({'ok': True}), 200, CORS_HEADERS)
+
+@app.route('/hq/trading-accounts', methods=['POST', 'OPTIONS'])
+def add_trading_acct():
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    body = request.get_json(force=True)
+    data = load_data()
+    data['trading_accounts'].append(body)
+    save_data(data)
+    return (jsonify({'ok': True}), 200, CORS_HEADERS)
+
+@app.route('/hq/basketball', methods=['POST', 'OPTIONS'])
+def set_basketball():
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    body = request.get_json(force=True)
+    data = load_data()
+    data['basketball'] = body
+    save_data(data)
+    return (jsonify({'ok': True}), 200, CORS_HEADERS)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8900, debug=False)

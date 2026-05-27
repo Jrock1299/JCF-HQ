@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;500;600;700;900&family=Handjet:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 2000px;
+  height: 2000px;
+  overflow: hidden;
+}
+
+body {
+  background: radial-gradient(ellipse at 50% 30%, #1e0a4a 0%, #0d0d2b 40%, #060610 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 72px;
+  position: relative;
+}
+
+/* Subtle grid overlay */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.022) 1px, transparent 1px);
+  background-size: 100px 100px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Bottom glow orb */
+body::after {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1200px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(139,92,246,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* All direct children above the bg layers */
+body > * { position: relative; z-index: 1; }
+
+/* Top accent bar */
+.top-accent {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 44px;
+}
+.accent-line {
+  width: 200px; height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff);
+}
+.accent-line.r { background: linear-gradient(90deg, #00d4ff, transparent); }
+.accent-gem {
+  width: 10px; height: 10px;
+  background: #00d4ff;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #00d4ff, 0 0 28px rgba(0,212,255,0.4);
+}
+
+/* Headline */
+.headline {
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.0;
+}
+.hl-1 {
+  display: block;
+  font-size: 118px;
+  letter-spacing: 0.22em;
+  color: #fff;
+  text-shadow: 0 0 100px rgba(255,255,255,0.12);
+}
+.hl-2 {
+  display: block;
+  font-size: 118px;
+  letter-spacing: 0.28em;
+  color: #00d4ff;
+  text-shadow: 0 0 80px rgba(0,212,255,0.55), 0 0 160px rgba(0,212,255,0.2);
+}
+
+.sub-headline {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  color: #3a4068;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* ─── LAPTOP MOCKUP ─── */
+.laptop-wrap {
+  margin-top: 52px;
+  position: relative;
+  filter: drop-shadow(0 48px 80px rgba(0,0,0,0.7))
+          drop-shadow(0 0 80px rgba(0,212,255,0.08));
+}
+
+.bezel {
+  width: 1380px;
+  height: 860px;
+  background: linear-gradient(150deg, #1c1c3c 0%, #121228 60%, #0e0e20 100%);
+  border-radius: 22px 22px 0 0;
+  border: 2px solid #262650;
+  border-bottom: none;
+  padding: 16px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+.cam {
+  width: 10px; height: 10px;
+  background: #1c1c3e;
+  border-radius: 50%;
+  border: 1px solid #282850;
+  flex-shrink: 0;
+}
+
+.screen {
+  flex: 1;
+  width: 100%;
+  background: #060612;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #181830;
+}
+
+.hinge {
+  width: 1380px;
+  height: 6px;
+  background: linear-gradient(to bottom, #0e0e20, #080818);
+  border-left: 2px solid #1c1c38;
+  border-right: 2px solid #1c1c38;
+}
+
+.base {
+  width: 1480px;
+  height: 98px;
+  background: linear-gradient(160deg, #181832 0%, #111124 100%);
+  border-radius: 0 0 30px 30px;
+  border: 2px solid #262650;
+  border-top: none;
+  clip-path: polygon(2% 0, 98% 0, 94% 100%, 6% 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.keys {
+  width: 860px; height: 46px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1c1c3a 0, #1c1c3a 22px,
+    #141430 22px, #141430 26px
+  );
+  border-radius: 6px;
+  opacity: 0.5;
+}
+
+.tpad {
+  width: 170px; height: 20px;
+  background: #1a1a36;
+  border-radius: 4px;
+  border: 1px solid #242248;
+}
+
+/* ─── DASHBOARD INSIDE SCREEN ─── */
+.dash {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 22px;
+  gap: 12px;
+  overflow: hidden;
+  background: #060612;
+}
+
+/* Header */
+.dash-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.055);
+  flex-shrink: 0;
+}
+.dash-hdr-title {
+  font-family: 'Syncopate', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #dde4ff;
+  letter-spacing: 0.12em;
+}
+.dash-hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.btrack {
+  width: 180px; height: 5px;
+  background: #1a1a38;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bfill { width: 50%; height: 100%; background: linear-gradient(90deg, #00d4ff, #0070ff); border-radius: 3px; }
+.btext {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  color: #00d4ff;
+}
+
+/* Summary */
+.sum-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sc {
+  background: #0b0b1e;
+  border: 1px solid #1c1c3a;
+  border-radius: 12px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.sc::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 12px 12px 0 0;
+}
+.sc.c1::before { background: linear-gradient(90deg,#00d4ff,rgba(0,212,255,0)); }
+.sc.c2::before { background: linear-gradient(90deg,#8b5cf6,rgba(139,92,246,0)); }
+.sc.c3::before { background: linear-gradient(90deg,#10b981,rgba(16,185,129,0)); }
+.sc-lbl { font-family:'Orbitron',sans-serif; font-size:9px; color:#323868; text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px; }
+.sc-val { font-family:'Orbitron',sans-serif; font-weight:700; font-size:30px; line-height:1; }
+.v-c { color:#00d4ff; text-shadow:0 0 20px rgba(0,212,255,.5); }
+.v-p { color:#a78bfa; text-shadow:0 0 20px rgba(167,139,250,.4); }
+.v-g { color:#34d399; text-shadow:0 0 20px rgba(52,211,153,.4); }
+.sc-sub { font-family:'Orbitron',sans-serif; font-size:9px; color:#22284a; margin-top:6px; }
+
+/* Section label */
+.slbl {
+  font-family:'Syncopate',sans-serif; font-size:9px; font-weight:700;
+  color:#252b55; letter-spacing:.22em; text-transform:uppercase; flex-shrink:0;
+}
+
+/* Platforms */
+.plats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  flex-shrink: 0;
+}
+.pc {
+  background: #0b0b1e;
+  border: 1px solid #1a1a36;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pc.on { border-color: rgba(0,212,255,.18); box-shadow: 0 0 16px rgba(0,212,255,.04); }
+.pc-name { font-family:'Syncopate',sans-serif; font-size:10px; font-weight:700; color:#bec8e8; letter-spacing:.04em; }
+.pc-type { font-family:'Orbitron',sans-serif; font-size:8px; color:#242a50; text-transform:uppercase; letter-spacing:.1em; }
+.pc-amt { font-family:'Orbitron',sans-serif; font-weight:700; font-size:20px; }
+.pbar-bg { height:4px; background:#1a1a38; border-radius:2px; overflow:hidden; }
+.pbar { height:100%; border-radius:2px; }
+.pc-foot { display:flex; justify-content:space-between; align-items:center; }
+.pc-pct { font-family:'Orbitron',sans-serif; font-size:7px; color:#22284a; }
+.tog { width:24px; height:13px; border-radius:7px; position:relative; }
+.tog::after { content:''; position:absolute; right:2px; top:2px; width:9px; height:9px; background:#fff; border-radius:50%; }
+
+/* Alerts */
+.alerts { flex:1; display:flex; flex-direction:column; gap:7px; overflow:hidden; }
+.ai {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px;
+  background:#0b0b1e;
+  border:1px solid #181830;
+  border-radius:8px;
+  flex-shrink:0;
+}
+.adot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.aname { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:600; color:#bec8e8; }
+.amsg { font-family:'Orbitron',sans-serif; font-size:8px; color:#323868; margin-top:2px; }
+
+/* ─── BOTTOM COPY ─── */
+.bottom-copy { margin-top: 52px; text-align: center; }
+.copy1 {
+  font-family:'Orbitron',sans-serif; font-size:30px; font-weight:600;
+  color:#fff; letter-spacing:.05em;
+  text-shadow:0 0 40px rgba(255,255,255,.08);
+}
+.copy2 {
+  font-family:'Orbitron',sans-serif; font-size:17px;
+  color:#323868; letter-spacing:.09em; margin-top:14px;
+}
+.copy2 .hl { color:#00d4ff; }
+
+/* Watermark */
+.wm {
+  position:absolute; bottom:52px; right:72px;
+  font-family:'Syncopate',sans-serif; font-size:16px;
+  letter-spacing:.12em; color:rgba(255,255,255,.17);
+}
+</style>
+</head>
+<body>
+
+<div class="top-accent">
+  <div class="accent-line"></div>
+  <div class="accent-gem"></div>
+  <div class="accent-line r"></div>
+</div>
+
+<div class="headline">
+  <span class="hl-1">AI OPS</span>
+  <span class="hl-2">DASHBOARD</span>
+</div>
+
+<div class="sub-headline">The Complete AI Spending Tracker</div>
+
+<div class="laptop-wrap">
+  <div class="bezel">
+    <div class="cam"></div>
+    <div class="screen">
+      <div class="dash">
+
+        <!-- Header -->
+        <div class="dash-hdr">
+          <div class="dash-hdr-title">AI OPS DASHBOARD</div>
+          <div class="dash-hdr-right">
+            <div class="btrack"><div class="bfill"></div></div>
+            <div class="btext">$247.83 / $500.00</div>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="sum-row">
+          <div class="sc c1">
+            <div class="sc-lbl">Total Monthly Spend</div>
+            <div class="sc-val v-c">$247.83</div>
+            <div class="sc-sub">4 active platforms</div>
+          </div>
+          <div class="sc c2">
+            <div class="sc-lbl">Projected Month-End</div>
+            <div class="sc-val v-p">$312.40</div>
+            <div class="sc-sub">Based on current rate</div>
+          </div>
+          <div class="sc c3">
+            <div class="sc-lbl">Budget Remaining</div>
+            <div class="sc-val v-g">$252.17</div>
+            <div class="sc-sub">50.4% of monthly budget</div>
+          </div>
+        </div>
+
+        <div class="slbl">Active Platforms</div>
+
+        <!-- Platform Cards -->
+        <div class="plats">
+          <div class="pc on">
+            <div class="pc-name">CLAUDE</div>
+            <div class="pc-type">Anthropic · LLM</div>
+            <div class="pc-amt" style="color:#00d4ff">$89.40</div>
+            <div class="pbar-bg"><div class="pbar" style="width:72%;background:linear-gradient(90deg,#00d4ff,#0080ff)"></div></div>
+            <div class="pc-foot">
+              <div class="pc-pct">72% of $124 budget</div>
+              <div class="tog" style="background:#00d4ff"></div>
+            </div>
+          </div>
+          <div class="pc on">
+            <div class="pc-name">CHATGPT</div>
+            <div class="pc-type">OpenAI · LLM</div>
+            <div class="pc-amt" style="color:#a78bfa">$78.20</div>
+            <div class="pbar-bg"><div class="pbar" style="width:65%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+            <div class="pc-foot">
+              <div class="pc-pct">65% of $120 budget</div>
+              <div class="tog" style="background:#8b5cf6"></div>
+            </div>
+          </div>
+          <div class="pc on">
+            <div class="pc-name">GEMINI</div>
+            <div class="pc-type">Google · LLM</div>
+            <div class="pc-amt" style="color:#34d399">$52.14</div>
+            <div class="pbar-bg"><div class="pbar" style="width:42%;background:linear-gradient(90deg,#10b981,#34d399)"></div></div>
+            <div class="pc-foot">
+              <div class="pc-pct">42% of $124 budget</div>
+              <div class="tog" style="background:#10b981"></div>
+            </div>
+          </div>
+          <div class="pc on">
+            <div class="pc-name">GROK</div>
+            <div class="pc-type">xAI · LLM</div>
+            <div class="pc-amt" style="color:#fbbf24">$28.09</div>
+            <div class="pbar-bg"><div class="pbar" style="width:28%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+            <div class="pc-foot">
+              <div class="pc-pct">28% of $100 budget</div>
+              <div class="tog" style="background:#f59e0b"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slbl">Live Alerts</div>
+
+        <!-- Alerts -->
+        <div class="alerts">
+          <div class="ai">
+            <div class="adot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b80"></div>
+            <div>
+              <div class="aname">CLAUDE</div>
+              <div class="amsg">72% of monthly budget consumed — $35 remaining before alert threshold</div>
+            </div>
+          </div>
+          <div class="ai">
+            <div class="adot" style="background:#ef4444;box-shadow:0 0 6px #ef444480"></div>
+            <div>
+              <div class="aname">CHATGPT</div>
+              <div class="amsg">Approaching 80% budget threshold — review usage to avoid overrun</div>
+            </div>
+          </div>
+          <div class="ai">
+            <div class="adot" style="background:#10b981;box-shadow:0 0 6px #10b98180"></div>
+            <div>
+              <div class="aname">GEMINI</div>
+              <div class="amsg">Spend on track — projected end-of-month: $68.40 / $124 budget</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="hinge"></div>
+  <div class="base">
+    <div class="keys"></div>
+    <div class="tpad"></div>
+  </div>
+</div>
+
+<div class="bottom-copy">
+  <div class="copy1">Track Every AI Platform In One Place</div>
+  <div class="copy2">
+    <span class="hl">3 Premium Themes</span> &nbsp;·&nbsp; Built-In Color Customization &nbsp;·&nbsp; <span class="hl">Instant Download</span>
+  </div>
+</div>
+
+<div class="wm">JCF7Studio</div>
+
+</body>
+</html>

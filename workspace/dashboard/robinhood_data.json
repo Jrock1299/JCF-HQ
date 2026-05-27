@@ -1,0 +1,39 @@
+{
+  "stocks": 14307.48,
+  "options": 0.0,
+  "roth_ira": 0.0,
+  "total_equity": 14886.11,
+  "last_update": "2026-03-04T15:47:04+00:00",
+  "trades": [
+    {
+      "date": "2026-03-03",
+      "asset": "MSTR",
+      "direction": "Long",
+      "entry": 135.325,
+      "exit": 135.325,
+      "pnl": 0.0,
+      "status": "Closed",
+      "account": "robinhood"
+    },
+    {
+      "date": "2026-03-03",
+      "asset": "OKLO",
+      "direction": "Long",
+      "entry": 63.7166,
+      "exit": 63.7166,
+      "pnl": 0.0,
+      "status": "Closed",
+      "account": "robinhood"
+    },
+    {
+      "date": "2026-03-02",
+      "asset": "SLV",
+      "direction": "Short",
+      "entry": 81.352,
+      "exit": 81.352,
+      "pnl": 0.0,
+      "status": "Closed",
+      "account": "robinhood"
+    }
+  ]
+}

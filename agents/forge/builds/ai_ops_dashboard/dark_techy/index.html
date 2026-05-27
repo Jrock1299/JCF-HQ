@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ops Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Handjet:wght@300;400;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Custom Properties ── */
+:root {
+  --color-bg: #0a0a0f;
+  --color-card-bg: #12121a;
+  --color-accent: #00d4ff;
+  --color-accent-alt: #7c3aed;
+  --color-text: #e2e8f0;
+  --color-text-muted: #64748b;
+  --color-border: #1e293b;
+  --color-danger: #ff3b5c;
+  --color-warning: #f59e0b;
+  --color-success: #10b981;
+  --font-heading: 'Orbitron', sans-serif;
+  --font-body: 'Orbitron', sans-serif;
+  --font-numbers: 'Syncopate', sans-serif;
+  --font-status: 'Handjet', sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.15);
+  --shadow-glow-alt: 0 0 20px rgba(124, 58, 237, 0.15);
+  --shadow-danger: 0 0 20px rgba(255, 59, 92, 0.3);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* ── Loading State ── */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+}
+.loader-text {
+  font-family: var(--font-status);
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  letter-spacing: 0.3em;
+  animation: pulse-text 1.5s ease-in-out infinite;
+}
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.loader-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* ── Background Matrix Effect ── */
+.matrix-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  overflow: hidden;
+}
+.matrix-col {
+  position: absolute;
+  top: -100%;
+  font-family: var(--font-numbers);
+  font-size: 12px;
+  color: var(--color-accent);
+  animation: matrix-fall linear infinite;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+}
+@keyframes matrix-fall {
+  to { transform: translateY(200vh); }
+}
+
+/* ── Main Layout ── */
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+#app.loaded { opacity: 1; }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: var(--transition);
+  box-shadow: var(--shadow-glow);
+}
+.logo-placeholder:hover { transform: scale(1.05); }
+.logo-placeholder input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.logo-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.title-field {
+  background: transparent;
+  border: none;
+  font-family: var(--font-numbers);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  outline: none;
+  cursor: text;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  min-width: 200px;
+}
+.title-field:focus {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-group {
+  display: flex;
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  padding: 4px;
+  gap: 4px;
+}
+.toggle-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.toggle-btn.active {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+.toggle-btn:hover:not(.active) { color: var(--color-text); background: rgba(255,255,255,0.05); }
+
+.btn-primary {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); opacity: 0.9; }
+.btn-primary:active { transform: translateY(0); }
+
+/* ── Summary Cards Row ── */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-alt));
+}
+.summary-card:hover { border-color: rgba(0,212,255,0.3); box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+
+.summary-label {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.summary-value {
+  font-family: var(--font-numbers);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.summary-sub {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.summary-icon {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 1.8rem;
+  opacity: 0.4;
+}
+
+/* ── Platform Cards Grid ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ── Platform Card ── */
+.platform-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  animation: card-fade-in 0.4s ease both;
+}
+@keyframes card-fade-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.platform-card:hover {
+  border-color: rgba(0,212,255,0.25);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+.platform-card.danger {
+  border-color: var(--color-danger);
+  box-shadow: var(--shadow-danger);
+  animation: card-fade-in 0.4s ease both, danger-glow 2s ease-in-out infinite;
+}
+@keyframes danger-glow {
+  0%, 100% { box-shadow: var(--shadow-danger); }
+  50% { box-shadow: 0 0 30px rgba(255, 59, 92, 0.5); }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-platform-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.platform-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.platform-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+.platform-name {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.platform-type-badge {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  font-family: var(--font-heading);
+  letter-spacing: 0.1em;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: var(--transition);
+}
+.platform-card:hover .card-actions { opacity: 1; }
+
+.action-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: var(--transition);
+}
+.action-btn:hover { border-color: var(--color-accent); color: var(--color-accent); background: rgba(0,212,255,0.1); }
+.action-btn.delete:hover { border-color: var(--color-danger); color: var(--color-danger); background: rgba(255,59,92,0.1); }
+
+/* ── Usage Bar ── */
+.usage-section { margin-bottom: 12px; }
+.usage-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.usage-amount {
+  font-family: var(--font-numbers);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.usage-budget {
+  font-family: var(--font-numbers);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.usage-bar-track {
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+}
+.usage-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+  position: relative;
+  min-width: 0;
+}
+.usage-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 4px; height: 100%;
+  background: rgba(255,255,255,0.6);
+  border-radius: 100px;
+  animation: bar-shine 2s ease-in-out infinite;
+}
+@keyframes bar-shine {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.usage-bar-fill.safe {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-alt));
+  box-shadow: 0 0 10px rgba(0,212,255,0.4);
+}
+.usage-bar-fill.warning {
+  background: linear-gradient(90deg, var(--color-warning), #ef4444);
+  box-shadow: 0 0 10px rgba(245,158,11,0.4);
+}
+.usage-bar-fill.danger {
+  background: linear-gradient(90deg, var(--color-danger), #ff0040);
+  box-shadow: 0 0 10px rgba(255,59,92,0.6);
+}
+
+.usage-percentage {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pct-value { color: var(--color-text-muted); font-family: var(--font-numbers); }
+.pct-alert { color: var(--color-danger); font-size: 0.65rem; font-family: var(--font-heading); animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ── Token Mode Info ── */
+.token-info {
+  background: rgba(0,212,255,0.05);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.token-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.token-label {
+  font-family: var(--font-heading);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+.token-value {
+  font-family: var(--font-numbers);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/* ── Quick Input ── */
+.quick-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.quick-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  outline: none;
+  transition: var(--transition);
+}
+.quick-input:focus { border-color: var(--color-accent); background: rgba(0,212,255,0.05); }
+.quick-input::placeholder { color: var(--color-text-muted); }
+
+.btn-sm {
+  padding: 8px 14px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-sm:hover { background: rgba(0,212,255,0.2); }
+
+/* ── Bottom Section ── */
+.bottom-section {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* ── Chart ── */
+.chart-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent-alt), var(--color-accent));
+}
+.chart-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+#spend-chart {
+  width: 100%;
+  display: block;
+}
+
+/* ── Alert Panel ── */
+.alert-panel {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.alert-panel-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255,59,92,0.08);
+  border: 1px solid rgba(255,59,92,0.2);
+  border-radius: var(--radius-md);
+  animation: alert-fade 0.3s ease;
+}
+@keyframes alert-fade { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+.alert-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  margin-top: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(255,59,92,0.6);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(255,59,92,0.6); }
+  50% { transform: scale(1.3); box-shadow: 0 0 14px rgba(255,59,92,0.9); }
+}
+.alert-text { font-size: 15px; color: var(--color-text); line-height: 1.5; }
+.alert-name { font-weight: 600; color: var(--color-danger); }
+.no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  min-height: 100px;
+  text-align: center;
+}
+.no-alerts-icon { font-size: 2rem; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+  box-shadow: var(--shadow-glow);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+.modal-close:hover { border-color: var(--color-danger); color: var(--color-danger); }
+
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+.form-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+}
+.form-input:focus { border-color: var(--color-accent); background: rgba(0,212,255,0.05); }
+.form-input::placeholder { color: var(--color-text-muted); }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-select {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.form-select:focus { border-color: var(--color-accent); }
+.form-select option { background: var(--color-card-bg); }
+
+.color-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.color-option {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+.color-option.selected { border-color: var(--color-text); transform: scale(1.15); }
+.color-option:hover { transform: scale(1.1); }
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+.btn-modal-primary {
+  flex: 1;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt));
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-modal-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-modal-cancel {
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-modal-cancel:hover { border-color: var(--color-text-muted); color: var(--color-text); }
+
+/* ── History Month Navigation ── */
+.chart-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .bottom-section { grid-template-columns: 1fr; }
+  .summary-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  #app { padding: 16px; }
+  .summary-row { grid-template-columns: 1fr; }
+  .platforms-grid { grid-template-columns: 1fr; }
+  .header { flex-direction: column; align-items: flex-start; }
+  .header-right { width: 100%; }
+  .toggle-group { flex: 1; }
+  .toggle-btn { flex: 1; text-align: center; }
+  .summary-value { font-size: 1.8rem; }
+  .title-field { font-size: 1.1rem; }
+}
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+  .modal { padding: 24px 16px; }
+}
+
+/* ── Sparkle animation for accent elements ── */
+@keyframes sparkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; text-shadow: 0 0 10px var(--color-accent); }
+}
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-status);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--color-success);
+  text-transform: uppercase;
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── Colorway Switcher ── */
+#cw-fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 900;
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 10px;
+  background: var(--color-card-bg); border: 1px solid var(--color-accent);
+  color: var(--color-accent); cursor: pointer;
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  box-shadow: 0 0 20px rgba(0,212,255,0.15);
+  transition: all 0.2s ease;
+}
+#cw-fab:hover { background: var(--color-accent); color: #000; box-shadow: 0 0 28px rgba(0,212,255,0.3); }
+#cw-panel {
+  position: fixed; bottom: 76px; right: 24px; z-index: 899;
+  width: 296px;
+  background: var(--color-card-bg); border: 1px solid var(--color-border);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+  transform: translateY(10px) scale(0.97); opacity: 0; pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+#cw-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+.cw-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cw-title { font-family: var(--font-heading); font-size: 11px; font-weight: 700; color: var(--color-text); text-transform: uppercase; letter-spacing: 1px; }
+.cw-close { background: none; border: none; cursor: pointer; color: var(--color-text-muted); font-size: 18px; line-height: 1; padding: 0; }
+.cw-close:hover { color: var(--color-text); }
+#cw-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.cw-swatch {
+  border: 2px solid transparent; border-radius: 10px; padding: 8px 6px;
+  cursor: pointer; text-align: center; background: var(--color-bg);
+  transition: all 0.2s ease;
+}
+.cw-swatch:hover { border-color: var(--color-accent); transform: scale(1.04); }
+.cw-swatch.active { border-color: var(--color-accent); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+.cw-dots { display: flex; gap: 4px; justify-content: center; margin-bottom: 5px; }
+.cw-dot { width: 16px; height: 16px; border-radius: 50%; }
+.cw-label { font-size: 9px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-family: var(--font-body); }
+.cw-custom {
+  border-top: 1px solid var(--color-border); padding-top: 12px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.cw-custom label { font-size: 10px; color: var(--color-text-muted); font-family: var(--font-body); white-space: nowrap; }
+.cw-custom input[type="color"] { width: 30px; height: 26px; border: 1px solid var(--color-border); border-radius: 6px; background: none; cursor: pointer; padding: 1px; }
+.cw-apply { flex: 1; padding: 6px 10px; background: var(--color-accent); color: #000; border: none; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: var(--font-body); transition: opacity 0.2s; }
+.cw-apply:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loader-text">INITIALIZING AI OPS<span class="loader-dots"></span></div>
+</div>
+
+<!-- Matrix Background -->
+<div class="matrix-bg" id="matrix-bg"></div>
+
+<!-- Main App -->
+<div id="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-placeholder" id="logo-placeholder" title="Click to upload logo">
+        <span id="logo-text">AI</span>
+        <img id="logo-img" style="display:none;" alt="logo">
+        <input type="file" id="logo-upload" accept="image/*">
+      </div>
+      <div>
+        <input type="text" class="title-field" id="dashboard-title" value="AI Ops Dashboard" placeholder="Dashboard Title">
+        <div class="live-indicator" style="margin-top:4px;">
+          <span class="live-dot"></span>
+          <span>Live Tracking</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-mode="subscription">Subscription</button>
+        <button class="toggle-btn" data-mode="api">API Token</button>
+      </div>
+      <button class="btn-primary" id="add-platform-btn">+ Add Platform</button>
+    </div>
+  </header>
+
+  <!-- Summary Cards -->
+  <div class="summary-row" id="summary-row">
+    <div class="summary-card">
+      <div class="summary-icon">💰</div>
+      <div class="summary-label">Total Monthly Spend</div>
+      <div class="summary-value" id="total-spend">$0.00</div>
+      <div class="summary-sub" id="total-spend-sub">across 0 platforms</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">📈</div>
+      <div class="summary-label">Projected Month-End</div>
+      <div class="summary-value" id="projected-spend">$0.00</div>
+      <div class="summary-sub" id="projected-sub">based on current pace</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">⚡</div>
+      <div class="summary-label">Budget Remaining</div>
+      <div class="summary-value" id="budget-remaining">$0.00</div>
+      <div class="summary-sub" id="budget-remaining-sub">0% of total budget used</div>
+    </div>
+  </div>
+
+  <!-- Platforms Section -->
+  <div class="section-header">
+    <span class="section-title">Platform Overview</span>
+    <span class="section-title" id="platform-count">0 platforms</span>
+  </div>
+  <div class="platforms-grid" id="platforms-grid"></div>
+
+  <!-- Bottom Section -->
+  <div class="bottom-section">
+    <div class="chart-card">
+      <div class="chart-nav">
+        <div class="chart-title">Monthly Spend History</div>
+      </div>
+      <canvas id="spend-chart" height="200"></canvas>
+    </div>
+    <div class="alert-panel">
+      <div class="alert-panel-title">⚠ Active Alerts</div>
+      <div id="alerts-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Platform Modal -->
+<div class="modal-overlay" id="platform-modal">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-title" id="modal-title">Add New Platform</div>
+    <form id="platform-form">
+      <input type="hidden" id="edit-id">
+      <div class="form-group">
+        <label class="form-label">Platform Name</label>
+        <input type="text" class="form-input" id="form-name" placeholder="e.g. OpenAI GPT-4" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="form-category">
+            <option value="LLM">LLM</option>
+            <option value="Image">Image</option>
+            <option value="Audio">Audio</option>
+            <option value="Search">Search</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon (emoji or 2 chars)</label>
+          <input type="text" class="form-input" id="form-icon" placeholder="e.g. 🤖 or CL" maxlength="4">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Monthly Budget ($)</label>
+          <input type="number" class="form-input" id="form-budget" placeholder="100.00" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Usage ($)</label>
+          <input type="number" class="form-input" id="form-usage" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-group" id="token-fields" style="display:none;">
+        <label class="form-label">Token Cost (per 1K tokens, $)</label>
+        <div class="form-row">
+          <input type="number" class="form-input" id="form-input-cost" placeholder="Input: 0.003" min="0" step="0.0001">
+          <input type="number" class="form-input" id="form-output-cost" placeholder="Output: 0.015" min="0" step="0.0001">
+        </div>
+      </div>
+      <div class="form-group" id="token-count-fields" style="display:none;">
+        <label class="form-label">Tokens Used This Month</label>
+        <div class="form-row">
+          <input type="number" class="form-input" id="form-input-tokens" placeholder="Input tokens" min="0">
+          <input type="number" class="form-input" id="form-output-tokens" placeholder="Output tokens" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Card Color</label>
+        <div class="color-grid" id="color-grid"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn-modal-primary" id="modal-submit">Add Platform</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Colorway Switcher -->
+<button id="cw-fab" onclick="toggleColorwayPanel()">🎨 Themes</button>
+<div id="cw-panel">
+  <div class="cw-header">
+    <span class="cw-title">Color Theme</span>
+    <button class="cw-close" onclick="toggleColorwayPanel()">✕</button>
+  </div>
+  <div id="cw-grid"></div>
+  <div class="cw-custom">
+    <label>Custom accent:</label>
+    <input type="color" id="cw-accent-pick" value="#00d4ff">
+    <button class="cw-apply" onclick="applyCustomColorway()">SET</button>
+  </div>
+</div>
+
+<script>
+/* ── Constants & Config ── */
+const LS_KEY = 'aiops_dashboard_v1';
+const ALERT_THRESHOLD = 0.8;
+
+const PRESET_COLORS = [
+  '#00d4ff', '#7c3aed', '#10b981', '#f59e0b',
+  '#ef4444', '#ec4899', '#06b6d4', '#8b5cf6',
+  '#f97316', '#84cc16', '#14b8a6', '#a78bfa'
+];
+
+const DEFAULT_PLATFORMS = [
+  { id: 'p1', name: 'Claude', icon: '🤖', category: 'LLM', color: '#7c3aed', budget: 100, usage: 72, inputCostPer1k: 0.003, outputCostPer1k: 0.015, inputTokens: 850000, outputTokens: 320000 },
+  { id: 'p2', name: 'ChatGPT', icon: '💬', category: 'LLM', color: '#10b981', budget: 150, usage: 88, inputCostPer1k: 0.001, outputCostPer1k: 0.002, inputTokens: 1200000, outputTokens: 450000 },
+  { id: 'p3', name: 'Gemini', icon: '✨', category: 'LLM', color: '#00d4ff', budget: 80, usage: 23, inputCostPer1k: 0.00025, outputCostPer1k: 0.00075, inputTokens: 280000, outputTokens: 90000 },
+  { id: 'p4', name: 'Grok', icon: '⚡', category: 'LLM', color: '#f59e0b', budget: 60, usage: 51, inputCostPer1k: 0.005, outputCostPer1k: 0.015, inputTokens: 420000, outputTokens: 180000 },
+  { id: 'p5', name: 'Perplexity', icon: '🔍', category: 'Search', color: '#06b6d4', budget: 40, usage: 32, inputCostPer1k: 0.001, outputCostPer1k: 0.001, inputTokens: 310000, outputTokens: 310000 },
+  { id: 'p6', name: 'Midjourney', icon: '🎨', category: 'Image', color: '#ec4899', budget: 50, usage: 50, inputCostPer1k: 0, outputCostPer1k: 0, inputTokens: 0, outputTokens: 0 },
+  { id: 'p7', name: 'ElevenLabs', icon: '🎵', category: 'Audio', color: '#f97316', budget: 30, usage: 27.5, inputCostPer1k: 0, outputCostPer1k: 0, inputTokens: 0, outputTokens: 0 },
+];
+
+/* ── State ── */
+let state = {
+  title: 'AI Ops Dashboard',
+  mode: 'subscription',
+  platforms: [],
+  history: [],
+  logoData: null
+};
+
+/* ── localStorage ── */
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+    } catch(e) { initDefaults(); }
+  } else {
+    initDefaults();
+  }
+}
+
+function initDefaults() {
+  state.platforms = DEFAULT_PLATFORMS;
+  state.history = generateDefaultHistory();
+  saveState();
+}
+
+function generateDefaultHistory() {
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = d.toLocaleString('default', { month: 'short' });
+    const base = 280 + Math.random() * 120;
+    months.push({ label, amount: parseFloat(base.toFixed(2)) });
+  }
+  return months;
+}
+
+/* ── Utility ── */
+function formatCurrency(n) {
+  return '$' + parseFloat(n || 0).toFixed(2);
+}
+
+function getDaysInMonth() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+}
+
+function getDaysElapsed() {
+  return new Date().getDate();
+}
+
+function getUsagePercent(p) {
+  if (state.mode === 'api') {
+    const cost = calcTokenCost(p);
+    return p.budget > 0 ? cost / p.budget : 0;
+  }
+  return p.budget > 0 ? p.usage / p.budget : 0;
+}
+
+function getDisplayUsage(p) {
+  if (state.mode === 'api') return calcTokenCost(p);
+  return p.usage || 0;
+}
+
+function calcTokenCost(p) {
+  const inputCost = ((p.inputTokens || 0) / 1000) * (p.inputCostPer1k || 0);
+  const outputCost = ((p.outputTokens || 0) / 1000) * (p.outputCostPer1k || 0);
+  return inputCost + outputCost;
+}
+
+function getTotalSpend() {
+  return state.platforms.reduce((sum, p) => sum + getDisplayUsage(p), 0);
+}
+
+function getTotalBudget() {
+  return state.platforms.reduce((sum, p) => sum + (p.budget || 0), 0);
+}
+
+function getProjectedSpend() {
+  const elapsed = getDaysElapsed();
+  const total = getDaysInMonth();
+  if (elapsed === 0) return getTotalSpend();
+  const dailyRate = getTotalSpend() / elapsed;
+  return dailyRate * total;
+}
+
+function genId() {
+  return 'p' + Date.now() + Math.random().toString(36).slice(2, 6);
+}
+
+/* ── Matrix Background ── */
+function initMatrix() {
+  const container = document.getElementById('matrix-bg');
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+  const cols = Math.floor(window.innerWidth / 20);
+  for (let i = 0; i < Math.min(cols, 60); i++) {
+    const col = document.createElement('div');
+    col.className = 'matrix-col';
+    col.style.left = (i * 20 + Math.random() * 10) + 'px';
+    col.style.animationDuration = (8 + Math.random() * 15) + 's';
+    col.style.animationDelay = (-Math.random() * 20) + 's';
+    let text = '';
+    for (let j = 0; j < 30; j++) text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+    col.textContent = text;
+    container.appendChild(col);
+  }
+}
+
+/* ── Render Summary Cards ── */
+function renderSummary() {
+  const total = getTotalSpend();
+  const projected = getProjectedSpend();
+  const totalBudget = getTotalBudget();
+  const remaining = Math.max(0, totalBudget - total);
+  const pctUsed = totalBudget > 0 ? (total / totalBudget * 100) : 0;
+
+  document.getElementById('total-spend').textContent = formatCurrency(total);
+  document.getElementById('total-spend-sub').textContent = `across ${state.platforms.length} platform${state.platforms.length !== 1 ? 's' : ''}`;
+
+  const projectedEl = document.getElementById('projected-spend');
+  projectedEl.textContent = formatCurrency(projected);
+  projectedEl.style.color = projected > totalBudget ? 'var(--color-danger)' : 'var(--color-accent)';
+  const daysLeft = getDaysInMonth() - getDaysElapsed();
+  document.getElementById('projected-sub').textContent = `${daysLeft} days remaining in month`;
+
+  document.getElementById('budget-remaining').textContent = formatCurrency(remaining);
+  document.getElementById('budget-remaining-sub').textContent = `${pctUsed.toFixed(1)}% of total budget used`;
+
+  document.getElementById('platform-count').textContent = `${state.platforms.length} platform${state.platforms.length !== 1 ? 's' : ''}`;
+}
+
+/* ── Render Platform Cards ── */
+function renderPlatforms() {
+  const grid = document.getElementById('platforms-grid');
+  grid.innerHTML = '';
+
+  state.platforms.forEach((p, idx) => {
+    const pct = Math.min(getUsagePercent(p), 1);
+    const pctDisplay = (pct * 100).toFixed(1);
+    const isDanger = pct >= ALERT_THRESHOLD;
+    const displayUsage = getDisplayUsage(p);
+
+    const card = document.createElement('div');
+    card.className = `platform-card ${isDanger ? 'danger' : ''}`;
+    card.style.animationDelay = (idx * 0.05) + 's';
+
+    let barClass = 'safe';
+    if (pct >= ALERT_THRESHOLD) barClass = 'danger';
+    else if (pct >= 0.6) barClass = 'warning';
+
+    const tokenInfoHtml = state.mode === 'api' ? `
+      <div class="token-info">
+        <div class="token-stat">
+          <span class="token-label">Input Tokens</span>
+          <span class="token-value">${((p.inputTokens||0)/1000).toFixed(0)}K</span>
+        </div>
+        <div class="token-stat">
+          <span class="token-label">Output Tokens</span>
+          <span class="token-value">${((p.outputTokens||0)/1000).toFixed(0)}K</span>
+        </div>
+        <div class="token-stat">
+          <span class="token-label">Input Cost/1K</span>
+          <span class="token-value">$${(p.inputCostPer1k||0).toFixed(4)}</span>
+        </div>
+        <div class="token-stat">
+          <span class="token-label">Output Cost/1K</span>
+          <span class="token-value">$${(p.outputCostPer1k||0).toFixed(4)}</span>
+        </div>
+      </div>
+    ` : '';
+
+    const quickInputHtml = state.mode === 'subscription' ? `
+      <div class="quick-input-row">
+        <input type="number" class="quick-input" placeholder="Update usage ($)" data-pid="${p.id}" min="0" step="0.01">
+        <button class="btn-sm" data-update="${p.id}">SET</button>
+      </div>
+    ` : `
+      <div class="quick-input-row">
+        <input type="number" class="quick-input" placeholder="Input tokens (total)" data-pid-in="${p.id}" min="0" value="${p.inputTokens||''}">
+        <input type="number" class="quick-input" placeholder="Output tokens" data-pid-out="${p.id}" min="0" value="${p.outputTokens||''}">
+        <button class="btn-sm" data-update-tokens="${p.id}">SET</button>
+      </div>
+    `;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-platform-info">
+          <div class="platform-icon" style="background: linear-gradient(135deg, ${p.color}33, ${p.color}66); border: 1px solid ${p.color}44;">
+            <span style="position:relative;z-index:1;">${p.icon}</span>
+          </div>
+          <div>
+            <div class="platform-name">${escHtml(p.name)}</div>
+            <div class="platform-type-badge">${p.category}</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="action-btn" data-edit="${p.id}" title="Edit">✏</button>
+          <button class="action-btn delete" data-delete="${p.id}" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="usage-section">
+        <div class="usage-labels">
+          <span class="usage-amount">${formatCurrency(displayUsage)}</span>
+          <span class="usage-budget">of ${formatCurrency(p.budget)} budget</span>
+        </div>
+        <div class="usage-bar-track">
+          <div class="usage-bar-fill ${barClass}" style="width: 0%" data-target="${pct * 100}"></div>
+        </div>
+        <div class="usage-percentage">
+          <span class="pct-value">${pctDisplay}% used</span>
+          ${isDanger ? '<span class="pct-alert">⚠ BUDGET ALERT</span>' : ''}
+        </div>
+      </div>
+      ${tokenInfoHtml}
+      ${quickInputHtml}
+    `;
+
+    grid.appendChild(card);
+
+    // Animate bar fill
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const fill = card.querySelector('.usage-bar-fill');
+        if (fill) fill.style.width = (pct * 100) + '%';
+      });
+    });
+  });
+
+  // Event listeners for quick inputs
+  grid.querySelectorAll('[data-update]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid = btn.dataset.update;
+      const input = grid.querySelector(`[data-pid="${pid}"]`);
+      const val = parseFloat(input.value);
+      if (!isNaN(val) && val >= 0) {
+        const p = state.platforms.find(x => x.id === pid);
+        if (p) { p.usage = val; saveState(); renderAll(); input.value = ''; }
+      }
+    });
+  });
+
+  grid.querySelectorAll('[data-update-tokens]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid = btn.dataset.updateTokens;
+      const inInput = grid.querySelector(`[data-pid-in="${pid}"]`);
+      const outInput = grid.querySelector(`[data-pid-out="${pid}"]`);
+      const inVal = parseInt(inInput.value) || 0;
+      const outVal = parseInt(outInput.value) || 0;
+      const p = state.platforms.find(x => x.id === pid);
+      if (p) { p.inputTokens = inVal; p.outputTokens = outVal; saveState(); renderAll(); }
+    });
+  });
+
+  grid.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => openEditModal(btn.dataset.edit));
+  });
+
+  grid.querySelectorAll('[data-delete]').forEach(btn => {
+    btn.addEventListener('click', () => deletePlatform(btn.dataset.delete));
+  });
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(str));
+  return d.innerHTML;
+}
+
+/* ── Render Alerts ── */
+function renderAlerts() {
+  const container = document.getElementById('alerts-container');
+  container.innerHTML = '';
+  const alerts = state.platforms.filter(p => getUsagePercent(p) >= ALERT_THRESHOLD);
+
+  if (alerts.length === 0) {
+    container.innerHTML = `
+      <div class="no-alerts">
+        <span class="no-alerts-icon">✅</span>
+        <span>All platforms within budget</span>
+      </div>
+    `;
+    return;
+  }
+
+  alerts.forEach(p => {
+    const pct = (getUsagePercent(p) * 100).toFixed(1);
+    const item = document.createElement('div');
+    item.className = 'alert-item';
+    item.innerHTML = `
+      <div class="alert-dot"></div>
+      <div class="alert-text">
+        <span class="alert-name">${escHtml(p.name)}</span> is at ${pct}% of its 
+        ${formatCurrency(p.budget)} budget. ${pct >= 100 ? 'Budget exceeded!' : 'Approaching limit.'}
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+/* ── Render Chart ── */
+function renderChart() {
+  const canvas = document.getElementById('spend-chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  const parent = canvas.parentElement;
+  const W = parent.clientWidth - 48;
+  const H = 300;
+
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Update last month's value to current total
+  const history = [...state.history];
+  if (history.length > 0) {
+    const now = new Date();
+    const currentMonth = now.toLocaleString('default', { month: 'short' });
+    history[history.length - 1].label = currentMonth;
+    history[history.length - 1].amount = parseFloat(getTotalSpend().toFixed(2));
+  }
+
+  const maxVal = Math.max(...history.map(h => h.amount), 1);
+  const padding = { top: 28, right: 16, bottom: 50, left: 60 };
+  const chartW = W - padding.left - padding.right;
+  const chartH = H - padding.top - padding.bottom;
+  const barW = Math.min(chartW / history.length * 0.55, 48);
+  const gap = (chartW - barW * history.length) / (history.length + 1);
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(30,41,59,0.8)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding.top + (chartH * i / 4);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(W - padding.right, y);
+    ctx.stroke();
+
+    const val = maxVal * (1 - i / 4);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '14px Orbitron, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('$' + val.toFixed(0), padding.left - 8, y + 4);
+  }
+
+  // Bars
+  history.forEach((h, i) => {
+    const x = padding.left + gap + i * (barW + gap);
+    const barH = (h.amount / maxVal) * chartH;
+    const y = padding.top + chartH - barH;
+    const isLast = i === history.length - 1;
+
+    // Gradient
+    const grad = ctx.createLinearGradient(x, y, x, padding.top + chartH);
+    if (isLast) {
+      grad.addColorStop(0, '#00d4ff');
+      grad.addColorStop(1, 'rgba(0,212,255,0.2)');
+    } else {
+      grad.addColorStop(0, '#7c3aed');
+      grad.addColorStop(1, 'rgba(124,58,237,0.2)');
+    }
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Glow
+    ctx.shadowColor = isLast ? '#00d4ff' : '#7c3aed';
+    ctx.shadowBlur = isLast ? 12 : 6;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Label
+    ctx.fillStyle = '#64748b';
+    ctx.font = '14px Orbitron, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(h.label, x + barW / 2, H - padding.bottom + 18);
+
+    // Amount
+    ctx.fillStyle = isLast ? '#00d4ff' : '#a78bfa';
+    ctx.font = 'bold 16px Orbitron, sans-serif';
+    ctx.fillText('$' + h.amount.toFixed(0), x + barW / 2, y - 6);
+  });
+}
+
+/* ── Modal Logic ── */
+let selectedColor = PRESET_COLORS[0];
+
+function initColorGrid() {
+  const grid = document.getElementById('color-grid');
+  grid.innerHTML = '';
+  PRESET_COLORS.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'color-option' + (c === selectedColor ? ' selected' : '');
+    div.style.background = c;
+    div.dataset.color = c;
+    div.addEventListener('click', () => {
+      selectedColor = c;
+      grid.querySelectorAll('.color-option').forEach(d => d.classList.toggle('selected', d.dataset.color === c));
+    });
+    grid.appendChild(div);
+  });
+}
+
+function openAddModal() {
+  document.getElementById('modal-title').textContent = 'Add New Platform';
+  document.getElementById('modal-submit').textContent = 'Add Platform';
+  document.getElementById('platform-form').reset();
+  document.getElementById('edit-id').value = '';
+  selectedColor = PRESET_COLORS[0];
+  initColorGrid();
+  toggleTokenFields();
+  document.getElementById('platform-modal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = state.platforms.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modal-title').textContent = 'Edit Platform';
+  document.getElementById('modal-submit').textContent = 'Save Changes';
+  document.getElementById('edit-id').value = id;
+  document.getElementById('form-name').value = p.name;
+  document.getElementById('form-category').value = p.category;
+  document.getElementById('form-icon').value = p.icon;
+  document.getElementById('form-budget').value = p.budget;
+  document.getElementById('form-usage').value = p.usage;
+  document.getElementById('form-input-cost').value = p.inputCostPer1k || '';
+  document.getElementById('form-output-cost').value = p.outputCostPer1k || '';
+  document.getElementById('form-input-tokens').value = p.inputTokens || '';
+  document.getElementById('form-output-tokens').value = p.outputTokens || '';
+  selectedColor = p.color || PRESET_COLORS[0];
+  initColorGrid();
+  toggleTokenFields();
+  document.getElementById('platform-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('platform-modal').classList.remove('open');
+}
+
+function toggleTokenFields() {
+  const isApi = state.mode === 'api';
+  document.getElementById('token-fields').style.display = isApi ? 'block' : 'none';
+  document.getElementById('token-count-fields').style.display = isApi ? 'block' : 'none';
+}
+
+function deletePlatform(id) {
+  if (confirm('Delete this platform?')) {
+    state.platforms = state.platforms.filter(p => p.id !== id);
+    saveState();
+    renderAll();
+  }
+}
+
+/* ── Form Submit ── */
+document.getElementById('platform-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const id = document.getElementById('edit-id').value;
+  const platform = {
+    id: id || genId(),
+    name: document.getElementById('form-name').value.trim(),
+    category: document.getElementById('form-category').value,
+    icon: document.getElementById('form-icon').value.trim() || '🤖',
+    color: selectedColor,
+    budget: parseFloat(document.getElementById('form-budget').value) || 0,
+    usage: parseFloat(document.getElementById('form-usage').value) || 0,
+    inputCostPer1k: parseFloat(document.getElementById('form-input-cost').value) || 0,
+    outputCostPer1k: parseFloat(document.getElementById('form-output-cost').value) || 0,
+    inputTokens: parseInt(document.getElementById('form-input-tokens').value) || 0,
+    outputTokens: parseInt(document.getElementById('form-output-tokens').value) || 0,
+  };
+
+  if (id) {
+    const idx = state.platforms.findIndex(p => p.id === id);
+    if (idx !== -1) state.platforms[idx] = platform;
+  } else {
+    state.platforms.push(platform);
+  }
+
+  saveState();
+  closeModal();
+  renderAll();
+});
+
+/* ── Mode Toggle ── */
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.mode = btn.dataset.mode;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+    saveState();
+    renderAll();
+    toggleTokenFields();
+  });
+});
+
+/* ── Header Events ── */
+document.getElementById('add-platform-btn').addEventListener('click', openAddModal);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('platform-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('dashboard-title').addEventListener('input', function() {
+  state.title = this.value;
+  saveState();
+});
+
+/* ── Logo Upload ── */
+document.getElementById('logo-upload').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    state.logoData = ev.target.result;
+    saveState();
+    applyLogo();
+  };
+  reader.readAsDataURL(file);
+});
+
+function applyLogo() {
+  const img = document.getElementById('logo-img');
+  const text = document.getElementById('logo-text');
+  if (state.logoData) {
+    img.src = state.logoData;
+    img.style.display = 'block';
+    text.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    text.style.display = 'block';
+  }
+}
+
+/* ── History Auto-Update ── */
+function updateHistory() {
+  const now = new Date();
+  const currentMonth = now.toLocaleString('default', { month: 'short' });
+  if (state.history.length === 0) {
+    state.history = generateDefaultHistory();
+  }
+  // Always keep last entry as current month
+  const last = state.history[state.history.length - 1];
+  if (last) {
+    last.label = currentMonth;
+    last.amount = parseFloat(getTotalSpend().toFixed(2));
+  }
+  saveState();
+}
+
+/* ── Render All ── */
+function renderAll() {
+  updateHistory();
+  renderSummary();
+  renderPlatforms();
+  renderAlerts();
+  renderChart();
+}
+
+/* ── Resize Handler ── */
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => renderChart(), 150);
+});
+
+/* ── Apply Saved Mode ── */
+function applyMode() {
+  document.querySelectorAll('.toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === state.mode);
+  });
+}
+
+/* ── Init ── */
+function init() {
+  loadState();
+  initMatrix();
+
+  // Apply saved title
+  document.getElementById('dashboard-title').value = state.title || 'AI Ops Dashboard';
+
+  // Apply saved logo
+  applyLogo();
+
+  // Apply saved mode
+  applyMode();
+
+  // Hide loading screen
+  setTimeout(() => {
+    const loading = document.getElementById('loading-screen');
+    loading.style.opacity = '0';
+    setTimeout(() => {
+      loading.style.display = 'none';
+      document.getElementById('app').classList.add('loaded');
+      renderAll();
+    }, 500);
+  }, 1000);
+}
+
+// Canvas roundRect polyfill for older browsers
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
+    this.closePath();
+    return this;
+  };
+}
+
+/* ── Colorway Switcher ── */
+const COLORWAY_KEY = 'aiops_dark_v2';
+const COLORWAYS_DARK = [
+  { name: 'Neon Cyan',   bg: '#0a0a0f', card: '#12121a', accent: '#00d4ff', accentAlt: '#7c3aed', border: '#1e293b', text: '#e2e8f0', muted: '#64748b' },
+  { name: 'Neon Purple', bg: '#0f0a1a', card: '#17102a', accent: '#8b5cf6', accentAlt: '#6d28d9', border: '#2a1040', text: '#e2e8f0', muted: '#7c6a9a' },
+  { name: 'Neon Green',  bg: '#0a1a0f', card: '#0f2015', accent: '#22c55e', accentAlt: '#16a34a', border: '#1a3022', text: '#e2e8f0', muted: '#5a8c6a' },
+  { name: 'Amber',       bg: '#1a140a', card: '#241c10', accent: '#f59e0b', accentAlt: '#d97706', border: '#3a2c10', text: '#e8e0d0', muted: '#8c7a5a' },
+  { name: 'Neon Pink',   bg: '#1a0a14', card: '#24101e', accent: '#ec4899', accentAlt: '#db2777', border: '#3a1030', text: '#e2e8f0', muted: '#8c5a7a' },
+  { name: 'Ice Blue',    bg: '#0a1419', card: '#101e24', accent: '#67e8f9', accentAlt: '#06b6d4', border: '#1a3040', text: '#e2e8f0', muted: '#5a8a9a' },
+];
+
+function toggleColorwayPanel() {
+  document.getElementById('cw-panel').classList.toggle('open');
+}
+
+function applyColorway(cw, idx, save) {
+  const r = document.documentElement;
+  r.style.setProperty('--color-bg', cw.bg);
+  r.style.setProperty('--color-card-bg', cw.card);
+  r.style.setProperty('--color-accent', cw.accent);
+  r.style.setProperty('--color-accent-alt', cw.accentAlt);
+  r.style.setProperty('--color-border', cw.border);
+  r.style.setProperty('--color-text', cw.text);
+  r.style.setProperty('--color-text-muted', cw.muted);
+  document.querySelectorAll('.cw-swatch').forEach((s, i) => s.classList.toggle('active', i === idx));
+  if (save !== false) try { localStorage.setItem(COLORWAY_KEY, idx); } catch(e) {}
+  setTimeout(() => { try { renderChart(); } catch(e) {} }, 100);
+}
+
+function applyCustomColorway() {
+  const accent = document.getElementById('cw-accent-pick').value;
+  const rv = parseInt(accent.slice(1,3),16), gv = parseInt(accent.slice(3,5),16), bv = parseInt(accent.slice(5,7),16);
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
+  const h2 = v => v.toString(16).padStart(2,'0');
+  const bg = '#' + [clamp(rv*0.07,5,30), clamp(gv*0.07,5,30), clamp(bv*0.08+8,8,35)].map(h2).join('');
+  const card = '#' + [clamp(rv*0.12+3,10,50), clamp(gv*0.12+3,10,50), clamp(bv*0.14+5,12,55)].map(h2).join('');
+  const border = '#' + [clamp(rv*0.18+8,20,80), clamp(gv*0.18+8,20,80), clamp(bv*0.22+10,25,90)].map(h2).join('');
+  const muted = '#' + [clamp(60+rv*0.2,50,160), clamp(70+gv*0.2,55,160), clamp(80+bv*0.2,60,170)].map(h2).join('');
+  const r = document.documentElement;
+  r.style.setProperty('--color-bg', bg);
+  r.style.setProperty('--color-card-bg', card);
+  r.style.setProperty('--color-accent', accent);
+  r.style.setProperty('--color-border', border);
+  r.style.setProperty('--color-text-muted', muted);
+  document.querySelectorAll('.cw-swatch').forEach(s => s.classList.remove('active'));
+  try { localStorage.setItem(COLORWAY_KEY, 'custom:' + accent); } catch(e) {}
+  setTimeout(() => { try { renderChart(); } catch(e) {} }, 100);
+}
+
+(function initColorwaySwitcher() {
+  const grid = document.getElementById('cw-grid');
+  COLORWAYS_DARK.forEach((cw, i) => {
+    const s = document.createElement('div');
+    s.className = 'cw-swatch' + (i === 0 ? ' active' : '');
+    s.title = cw.name;
+    s.innerHTML = `<div class="cw-dots"><div class="cw-dot" style="background:${cw.bg};border:1px solid #ffffff22"></div><div class="cw-dot" style="background:${cw.accent}"></div></div><div class="cw-label">${cw.name}</div>`;
+    s.addEventListener('click', () => applyColorway(cw, i));
+    grid.appendChild(s);
+  });
+  try {
+    const saved = localStorage.getItem(COLORWAY_KEY);
+    if (saved !== null) {
+      if (saved.startsWith('custom:')) {
+        document.getElementById('cw-accent-pick').value = saved.split(':')[1];
+        applyCustomColorway();
+      } else {
+        const idx = parseInt(saved);
+        if (!isNaN(idx) && COLORWAYS_DARK[idx]) applyColorway(COLORWAYS_DARK[idx], idx, false);
+      }
+    }
+  } catch(e) {}
+  document.addEventListener('click', e => {
+    const panel = document.getElementById('cw-panel');
+    const fab = document.getElementById('cw-fab');
+    if (panel && panel.classList.contains('open') && !panel.contains(e.target) && fab && !fab.contains(e.target)) {
+      panel.classList.remove('open');
+    }
+  });
+})();
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+[
+  {
+    "name": "ai_ops_dashboard",
+    "display_name": "AI Ops Dashboard",
+    "type": "html",
+    "description": "Track API usage and costs across multiple AI platforms in one beautiful dashboard",
+    "features": [
+      "Platform cards for Claude, ChatGPT, Gemini, Grok, Perplexity, Midjourney, ElevenLabs with logo icons (SVG initials or emoji icons)",
+      "Animated usage bar per platform showing current usage vs monthly budget/limit — fills left to right",
+      "Toggle between subscription mode (manual usage entry) and API token mode (shows per-token cost calculation)",
+      "Total monthly spend summary card across all platforms with big number display",
+      "Monthly spend history bar chart for last 6 months built with Canvas API",
+      "Alert system — usage bar turns red and card glows red at 80% of budget",
+      "Projected end-of-month spend card based on current usage pace and days remaining",
+      "Add/edit/delete platforms and their budgets",
+      "'Your Brand Here' logo placeholder (40x40 rounded square, top-left) and editable custom title field",
+      "All data persists in localStorage — no data loss on refresh"
+    ],
+    "themes": ["dark_techy", "clean_minimal", "earthy_pastel"],
+    "include_custom_builder": true
+  },
+  {
+    "name": "sports_bankroll_manager",
+    "display_name": "Sports Bankroll Manager",
+    "type": "both",
+    "description": "Professional bankroll management for sports bettors — track every bet, analyze performance, and manage risk",
+    "features": [
+      "Current bankroll display with unit size calculator (1 unit = configurable % of bankroll)",
+      "Per-sport P&L tracking with visual bar chart breakdown (NFL, NBA, MLB, NHL, Soccer, etc.)",
+      "Per-sportsbook P&L tracking (DraftKings, FanDuel, BetMGM, Caesars, etc.)",
+      "Parlay vs straight bet performance comparison — separate ROI for each",
+      "Streak tracker showing current winning/losing streak with longest streak record",
+      "ROI % by bet type, sport, and rolling time period (7d/30d/all-time)",
+      "Kelly Criterion calculator — input win probability and odds, outputs optimal stake",
+      "Win rate display with 95% confidence interval shown as a range",
+      "Monthly/weekly/daily P&L toggle views",
+      "Bet log table with add/edit/delete — columns: date, sport, game, pick, odds, stake, result, P&L",
+      "Bankroll growth line chart over time built with Canvas API",
+      "'Your Brand Here' branding zone in header with editable title"
+    ],
+    "themes": ["dark_techy", "clean_minimal", "earthy_pastel"],
+    "include_custom_builder": true
+  },
+  {
+    "name": "dca_portfolio_tracker",
+    "display_name": "DCA Portfolio Tracker",
+    "type": "both",
+    "description": "Track your dollar-cost averaging strategy across stocks, crypto, and other investments",
+    "features": [
+      "Three tabbed sections: Stocks, Crypto, Other Investments — each independently managed",
+      "Per-asset row: ticker symbol, shares/units held, average cost basis, current price (manually updated), total value, return $ and return %",
+      "DCA schedule tracker per asset — contribution amount, frequency (weekly/bi-weekly/monthly), next buy date",
+      "Portfolio allocation donut chart showing % breakdown by asset, built with Canvas API",
+      "Total portfolio value card with $ change and % change from total cost basis",
+      "Net worth summary bar across all three sections",
+      "Price update instructions placeholder — text explaining how to use Yahoo Finance API or similar",
+      "Portfolio value over time line chart (manual entry of historical snapshots) built with Canvas API",
+      "Add/edit/delete holdings with full modal form",
+      "'Your Brand Here' branding in header with editable title",
+      "All holdings and history persist in localStorage"
+    ],
+    "themes": ["dark_techy", "clean_minimal", "earthy_pastel"],
+    "include_custom_builder": true
+  }
+]

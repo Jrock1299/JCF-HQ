@@ -1,0 +1,13 @@
+[Unit]
+Description=JCF HQ Storage API (port 8900)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /root/.openclaw/scripts/hq_storage_server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

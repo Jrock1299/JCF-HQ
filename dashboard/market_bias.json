@@ -1,0 +1,197 @@
+{
+  "last_updated": "2026-04-17T07:33:12.941985+00:00",
+  "summary": "Global markets are extending their geopolitical de-escalation rally into April 17, with US equities at or near all-time highs, BTC consolidating just below $75,500, and Gold holding structurally elevated near $4,800 for a fourth consecutive weekly gain. The dominant macro theme remains the fragile US-Iran ceasefire negotiation, with the Strait of Hormuz still effectively closed but optimism growing around a potential deal \u2014 easing oil-driven inflation fears and lifting risk sentiment broadly. The April 29 FOMC meeting is the next major catalyst, with the Fed firmly on hold at 3.50\u20133.75%.",
+  "morning_report": "Friday April 17 opens with a cautiously risk-on tone as President Trump expressed confidence the US-Iran war is 'close to over,' and both sides are reportedly weighing a two-week ceasefire extension to allow further negotiations. The S&P 500 edged to fresh record highs Thursday at 7,041 while the Nasdaq-100 hit an all-time high of 26,298, driven by earnings optimism and Middle East peace hopes. BTC is trading near $75,400, testing key resistance as institutional ETF inflows remain supportive \u2014 BlackRock's IBIT alone pulled in $269M in a single day earlier this month. Gold is consolidating between $4,760\u2013$4,836, technically neutral on the 4H but structurally bullish as long-end yields and safe-haven demand persist despite easing inflation fears. WTI crude at ~$93.52 remains in a volatile zone: a massive 9.13M barrel inventory draw supports prices, but peace-deal optimism is capping the topside \u2014 the EIA projects a Q2 peak near $115 Brent before a multi-quarter decline if the Strait reopens. The dollar index (DXY) is on a third consecutive weekly decline, hovering near 98, as geopolitical risk fades and Fed rate-cut expectations are gradually being repriced for late 2026.",
+  "priorities": "1. Monitor US-Iran ceasefire extension headline risk \u2014 a breakdown or breakthrough over the weekend will be the single biggest catalyst for Oil, Gold, and equities at Monday's open.<br>2. Watch BTC's reaction at the $75,000\u2013$75,500 resistance zone; a sustained daily close above opens a path toward $80K; failure risks a pullback to $71,500\u2013$70,500 support.<br>3. Manage open SPX500 longs carefully given mixed agent trade results today (3 losses, 1 BE, 2 wins) \u2014 the index is at all-time highs and vulnerable to headline-driven whipsaws ahead of the weekend.<br>4. KLAC earnings on April 23 (After Close) are the highest-impact event in the near-term earnings calendar for the Nasdaq \u2014 semiconductor process control guidance will set the tone for the broader chip sector.<br>5. Track the DXY for further weakness below 98; a sustained break would be an additional tailwind for BTC, Gold, and risk assets into next week.",
+  "pairs": [
+    {
+      "symbol": "BTC/USDT",
+      "bias": "bullish",
+      "confidence": 66,
+      "note": "BTC is trading near $75,400, up ~0.17% in the last 24 hours, consolidating just below key resistance at $75,000\u2013$75,500. RSI sits near 63 \u2014 building bullish momentum without being overbought \u2014 and the 4H trend remains constructive above short-term EMAs. Institutional ETF inflows remain a structural support pillar, with BlackRock's IBIT posting its best single-day inflow since early March. Confidence is capped at 66 due to the still-negative 30-day realized cap change and the proximity to a significant resistance cluster that has rejected BTC multiple times."
+    },
+    {
+      "symbol": "XAU/USD",
+      "bias": "neutral",
+      "confidence": 57,
+      "note": "Gold is trading at $4,798.44, on track for a fourth consecutive weekly gain but technically neutral on the 4H chart \u2014 trading below both the 20-period SMA ($4,797) and 200-period SMA ($4,819), with RSI hovering near 50. The fundamental backdrop remains supportive: persistent Fed hold, safe-haven demand, and central bank accumulation. However, easing geopolitical tensions and peace-deal optimism are eroding safe-haven premium, and a break below $4,665 support would open a deeper correction. Range trade between $4,760\u2013$4,836 is the dominant setup into the weekend."
+    },
+    {
+      "symbol": "US100",
+      "bias": "bullish",
+      "confidence": 68,
+      "note": "The Nasdaq-100 hit a fresh all-time high of 26,298 on April 16, supported by geopolitical optimism, strong Q1 corporate earnings, and tech sector earnings growth forecasts of 43% for 2026. Megacap performance was mixed on the day, and Nasdaq futures are muted pre-market (-0.08%), suggesting consolidation near the highs rather than a continuation push. The technical signal on daily/weekly timeframes is Strong Buy per multiple indicators. Key risk is a peace-deal breakdown or hawkish Fed surprise on April 29."
+    },
+    {
+      "symbol": "SPX500",
+      "bias": "bullish",
+      "confidence": 62,
+      "note": "The S&P 500 closed at a fresh record of 7,041.28 on April 16, rising modestly as investors balanced corporate earnings and Middle East peace optimism. Energy, materials, and real estate led sector gains while healthcare and consumer discretionary lagged. The index has gained 4.45% over the past month and is up 32.79% year-over-year. Confidence is tempered at 62 given the mixed agent trade results today (multiple losses on both sides), the all-time high resistance zone, and the potential for weekend headline risk to gap the open."
+    },
+    {
+      "symbol": "US OIL",
+      "bias": "bearish",
+      "confidence": 63,
+      "note": "WTI is trading at ~$93.52, down ~1.26% on the day as peace-deal optimism continues to weigh on geopolitical risk premiums. The futures curve is in steep contango (May at $93.52 vs Dec at $75.95), reflecting the market's expectation of supply normalization as the Strait of Hormuz potentially reopens. The EIA projects production shut-ins will peak at 9.1M bpd in April before declining. However, the massive 9.13M barrel inventory draw last week and ongoing dual blockade provide a floor \u2014 the bearish bias is tactical rather than structural, contingent on ceasefire holding."
+    }
+  ],
+  "forex_news": [
+    {
+      "headline": "DXY falls for third consecutive week as US-Iran peace optimism reduces safe-haven demand for dollar",
+      "source": "Trading Economics",
+      "time": "2026-04-17 morning",
+      "impact": "high"
+    },
+    {
+      "headline": "Fed's John Williams: Heightened uncertainty limits forward rate guidance; baseline still includes long-term cuts",
+      "source": "Trading Economics / Reuters",
+      "time": "2026-04-16",
+      "impact": "high"
+    },
+    {
+      "headline": "EUR/USD retreats from eight-week highs near 1.1780 ahead of US-Iran weekend talks",
+      "source": "FXStreet",
+      "time": "2026-04-17 early Asia",
+      "impact": "medium"
+    },
+    {
+      "headline": "Fed holds rates at 3.50\u20133.75%; CME shows 99.5% probability of no change at April meeting",
+      "source": "LiteFinance / CME Group",
+      "time": "2026-04-17",
+      "impact": "high"
+    },
+    {
+      "headline": "Trump says Iran agreed to abandon nuclear ambitions and reopen Strait of Hormuz \u2014 Iranian officials have not verified",
+      "source": "Trading Economics",
+      "time": "2026-04-17",
+      "impact": "high"
+    },
+    {
+      "headline": "GBP/USD slips below 1.3550 handle, settling near 1.3525 as traders position defensively ahead of weekend",
+      "source": "FXStreet",
+      "time": "2026-04-16",
+      "impact": "low"
+    }
+  ],
+  "market_impact": [
+    {
+      "asset": "BTC",
+      "direction": "BULLISH",
+      "reasoning": "Easing geopolitical tensions and renewed institutional ETF inflows are providing a structural bid near the $75K resistance zone, with macro risk-on sentiment supporting further upside if the level is cleared."
+    },
+    {
+      "asset": "XAU/USD",
+      "direction": "NEUTRAL",
+      "reasoning": "Gold is technically range-bound between $4,760\u2013$4,836 with RSI near 50 and momentum cooling \u2014 peace-deal optimism is reducing safe-haven demand while a Fed hold and persistent macro uncertainty prevent a decisive breakdown."
+    },
+    {
+      "asset": "SPX500",
+      "direction": "BULLISH",
+      "reasoning": "S&P 500 is at all-time highs driven by strong Q1 earnings, tech sector strength, and US-Iran de-escalation optimism, though weekend headline risk and mixed mega-cap performance cap near-term conviction."
+    },
+    {
+      "asset": "DE30",
+      "direction": "NEUTRAL",
+      "reasoning": "European equities face mixed drivers \u2014 ECB constrained by energy-driven inflation and weak economic momentum, while energy-sector tailwinds and improving global risk appetite partially offset domestic headwinds."
+    },
+    {
+      "asset": "USOIL",
+      "direction": "BEARISH",
+      "reasoning": "WTI is declining as peace-deal optimism erodes the geopolitical risk premium, the futures curve signals supply normalization expectations, and softer crude is directly tempering inflation fears and Fed rate-hike bets."
+    }
+  ],
+  "watchlist_calculations": {
+    "USAR": {
+      "significant": true,
+      "direction": "BULLISH",
+      "reasoning": "USAR carries the strongest buy signal in the watchlist with 4 buys and 0 sells, and holds the highest analyst bullish consensus at 91% (10 of 11 analysts). The signal aligns with the current macro theme of geopolitical de-escalation, which could directly benefit a defense or aerospace-adjacent name. The clean buy-side skew with zero sell signals makes this the highest-conviction long idea on the watchlist today."
+    },
+    "VST": {
+      "significant": true,
+      "direction": "BULLISH",
+      "reasoning": "VST shows a net buy signal (2 buys, 1 sell) in the context of elevated energy prices and power demand growth driven by AI/data center electricity consumption. The single sell does reduce conviction but the macro tailwinds \u2014 elevated power prices and the AI infrastructure buildout \u2014 remain strong structural drivers."
+    },
+    "RGTI": {
+      "significant": true,
+      "direction": "BULLISH",
+      "reasoning": "RGTI shows a STRONG_BUY signal (3 buys, 2 sells), reflecting interest in quantum computing names as an emerging technology play. The mixed sell activity tempers the signal somewhat, but the net buy skew in a sector that has attracted significant speculative interest warrants attention, especially given quantum computing's heightened geopolitical relevance."
+    },
+    "SOFI": {
+      "significant": false,
+      "direction": "NEUTRAL",
+      "reasoning": "SOFI shows a MIXED signal with more sells than buys (1 buy, 2 sells), flagging net insider/institutional distribution. In a high-rate environment where the Fed remains on hold, fintech lending models face continued margin pressure \u2014 the signal is consistent with cautious positioning and does not warrant a directional trade today."
+    },
+    "IONQ": {
+      "significant": true,
+      "direction": "BEARISH",
+      "reasoning": "IONQ posts a SELL signal with 0 buys and 1 sell despite holding a 79% bullish analyst consensus \u2014 this divergence between insider/flow activity and analyst opinion is a caution flag. The sell signal suggests distribution at current levels even as sell-side remains constructive, which may reflect valuation concerns at elevated quantum computing sector multiples."
+    },
+    "MSTR": {
+      "significant": true,
+      "direction": "BEARISH",
+      "reasoning": "MSTR shows a SELL signal (0 buys, 2 sells) despite a high 88% bullish analyst consensus \u2014 a significant divergence. With BTC testing $75K resistance and MSTR's leveraged BTC exposure, insiders may be using the rally to distribute into strength. The disconnect between flow signals and analyst opinion warrants caution despite the bullish BTC backdrop."
+    },
+    "UUUU": {
+      "significant": false,
+      "direction": "BEARISH",
+      "reasoning": "UUUU posts a SELL signal (0 buys, 3 sells) despite the highest analyst bullish consensus in the watchlist at 82%. The heavy sell flow against a bullish analyst backdrop suggests insiders are exiting positions in this uranium name \u2014 possibly reflecting near-term headwinds from energy price volatility. Not a priority trade today."
+    },
+    "OKLO": {
+      "significant": false,
+      "direction": "BEARISH",
+      "reasoning": "OKLO carries a SELL signal (0 buys, 3 sells), the most negative sentiment ratio in the watchlist. As a nuclear energy startup with no current revenue, the sell pressure likely reflects risk-off trimming of speculative positions. Not actionable on the long side today."
+    }
+  },
+  "discovery_calculations": {
+    "LW": {
+      "signal_type_explanation": "INSIDER_BUY with a high score of 85 and $2.2M in disclosed buying represents a meaningful accumulation signal \u2014 multiple insiders and institutional investors are purchasing shares near current lows, suggesting conviction that the stock is undervalued relative to its near-term fundamental trajectory.",
+      "company_context": "Lamb Weston Holdings (NYSE: LW) is one of the world's largest producers of frozen potato products, supplying major QSR chains globally. The stock has faced significant headwinds from international margin pressure, weak European restaurant traffic, and excess capacity \u2014 but recently raised its FY2026 net sales guidance to $6.45B\u2013$6.55B and reported Q3 EPS of $0.72 vs $0.61 expected. Activist hedge fund JANA Partners has been aggressively accumulating shares, purchasing over 286,000 shares between April 7\u201315 alone for more than $12M, and the company trades at a ~29% discount to analyst fair value estimates near $54.",
+      "worth_attention": true,
+      "reasoning": "The combination of a director open-market purchase at $41.40, JANA Partners buying 150,000 additional shares between April 13\u201315 near $42\u201343, raised FY2026 guidance, a Q3 earnings beat, and a $250M cost savings program creates a compelling contrarian recovery setup. The $37.62 52-week low provides a clear risk floor, and analyst price targets ranging from $40\u2013$55 suggest meaningful upside if international headwinds stabilize. Monitor for continued insider accumulation as the strongest confirmation signal."
+    }
+  },
+  "consensus_top3": [
+    {
+      "ticker": "AMD",
+      "action": "BUY",
+      "reasoning": "AMD holds a 76% bullish analyst consensus (45/59), supported by AI accelerator demand, data center GPU share gains versus NVIDIA, and the broader tech sector earnings tailwind (+43% forecast for 2026). With US100 at all-time highs and semiconductor cycle in expansion, AMD is a high-conviction long in the current regime."
+    },
+    {
+      "ticker": "PLTR",
+      "action": "HOLD",
+      "reasoning": "PLTR maintains a 67% bullish consensus but is one of the lower-conviction names on the list. At current elevated valuations, the stock is pricing in significant AI government contract growth. With geopolitical tensions providing a near-term defense/intelligence spending tailwind, the risk/reward favors holding existing positions rather than adding aggressively at current levels."
+    },
+    {
+      "ticker": "MSTR",
+      "action": "HOLD",
+      "reasoning": "Despite an 88% bullish analyst consensus, the SELL sentinel signal (0 buys, 2 sells) and BTC's proximity to stiff resistance at $75K\u2013$75,500 suggests insiders may be trimming into strength. Hold existing exposure but avoid adding until BTC clears $75,500 on a sustained daily close \u2014 a failed breakout in BTC would disproportionately impact MSTR's leveraged structure."
+    }
+  ],
+  "earnings_calculations": {
+    "KLAC": {
+      "direction": "UP",
+      "beat_scenario": "KLAC has beaten EPS estimates in every recent quarter by $0.05\u2013$0.84. If Q3 FY2026 results (reporting April 23 AC) beat the $9.3245 consensus \u2014 driven by continued WFE market share gains, strong foundry/logic demand, and advanced packaging growth \u2014 expect a 4\u20138% gap up and a renewed leadership signal for the semiconductor equipment sector. The stock is up ~36% YTD and a beat could catalyze further momentum.",
+      "miss_scenario": "A miss or disappointing guidance \u2014 particularly around DRAM cost headwinds (75\u2013100 bps gross margin pressure flagged) or export control concerns limiting China revenue (39% of sales) \u2014 could trigger a 6\u201310% selloff and weigh on the broader semiconductor equipment group including AMAT and LRCX."
+    },
+    "ENVA": {
+      "direction": "UP",
+      "beat_scenario": "Enova International is a high-growth online lending platform. With EPS consensus at $3.74, a beat driven by strong consumer credit demand and disciplined underwriting in a high-rate environment would signal resilience in the fintech lending space and could produce a 5\u201310% move higher.",
+      "miss_scenario": "A miss driven by deteriorating credit quality, rising charge-offs, or margin compression from sustained high rates would confirm bearish sentiment on consumer-facing fintech and could produce a sharp 8\u201315% decline given thin liquidity in the name."
+    },
+    "FBIN": {
+      "direction": "NEUTRAL",
+      "beat_scenario": "Fortune Brands Innovations (EPS est: $0.566) operates in home products \u2014 a beat driven by resilient renovation spending despite high mortgage rates would be modestly positive, potentially driving a 3\u20135% upside as a signal that housing-adjacent consumer spending holds up.",
+      "miss_scenario": "A miss reflecting weaker home renovation demand, cost inflation, or housing market slowdown would confirm sector-wide pressure on home improvement names and could push FBIN 5\u20138% lower."
+    },
+    "POWI": {
+      "direction": "UP",
+      "beat_scenario": "Power Integrations (EPS est: $0.2305) is a power semiconductor company levered to EV, industrial, and renewable energy demand. A beat would reinforce the ongoing semiconductor upcycle narrative and could drive 6\u201310% upside, particularly if AI data center power management demand is highlighted in guidance.",
+      "miss_scenario": "A miss reflecting softer-than-expected EV or industrial demand would weigh on the name ~8\u201312%, given its already compressed valuation and sensitivity to end-market cyclicality."
+    },
+    "WSFS": {
+      "direction": "NEUTRAL",
+      "beat_scenario": "WSFS Financial (EPS est: $1.4969) is a regional bank. A beat driven by strong net interest margin expansion and loan growth in the sustained high-rate environment would be modestly bullish \u2014 3\u20135% upside \u2014 and support the thesis that well-run regional banks benefit from the Fed hold.",
+      "miss_scenario": "A miss driven by credit quality deterioration, deposit pressure, or loan demand weakness would amplify fears across the regional banking sector and push WSFS 4\u20137% lower, with spillover risk to KRE."
+    }
+  }
+}

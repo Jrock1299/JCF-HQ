@@ -1,0 +1,332 @@
+{
+  "trades": [
+    {
+      "active": false,
+      "trade_id": "a98d3769",
+      "signal_id": "103618f3-8203-40de-96e4-0b55b298ee23",
+      "signal_type": "liquidity_sweep",
+      "direction": "long",
+      "entry_price": 70754.62,
+      "open_time": "2026-04-12T23:29:09.609899+00:00",
+      "open_ts": 1776036549.6099105,
+      "sl": 70754.62,
+      "sl_initial": 70585.88,
+      "tp_targets": [
+        70933.93,
+        70943.65,
+        71042.74
+      ],
+      "pos1": {
+        "btc_size": 0.296314,
+        "usd_value": 20965.57,
+        "tp": 70933.93,
+        "closed": true,
+        "exit_price": 70933.93,
+        "pnl": 53.13
+      },
+      "pos2": {
+        "btc_size": 0.296314,
+        "usd_value": 20965.57,
+        "tp": 70943.65,
+        "closed": true,
+        "exit_price": 70943.65,
+        "trailing_sl": null,
+        "be_triggered": true,
+        "pnl": 56.01
+      },
+      "be_triggered": false,
+      "tp1_hit": true,
+      "max_fav_exc": 272.25,
+      "max_adv_exc": 0.0,
+      "risk_usd": 100.0,
+      "total_btc": 0.592628,
+      "balance_at_open": 10000.0,
+      "score": 89,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 10,
+        "fvg_confluence": 12,
+        "trend_alignment": 4
+      },
+      "context": "Swept sell_stops at 70736 (pool size=4), closed back above. Trend: bullish. Sweep wick: 0.19%",
+      "close_time": "2026-04-13T00:29:09.481736+00:00",
+      "exit_price": 70943.65,
+      "result": "TP2_HIT",
+      "pnl_usd": 56.01,
+      "pnl_pct": 0.56
+    },
+    {
+      "active": false,
+      "trade_id": "50ec5ebf",
+      "signal_id": "76cfa478-b51c-4ea9-b864-6b28a57bbba3",
+      "signal_type": "liquidity_sweep",
+      "direction": "short",
+      "entry_price": 71171.64,
+      "open_time": "2026-04-13T01:04:09.721722+00:00",
+      "open_ts": 1776042249.7217329,
+      "sl": 71771.31,
+      "sl_initial": 71771.31,
+      "tp_targets": [
+        70251.74,
+        69997.29,
+        68934.88
+      ],
+      "pos1": {
+        "btc_size": 0.084289,
+        "usd_value": 5999.0,
+        "tp": 70251.74,
+        "closed": true,
+        "exit_price": 71771.31,
+        "pnl": -50.55
+      },
+      "pos2": {
+        "btc_size": 0.084289,
+        "usd_value": 5999.0,
+        "tp": 69997.29,
+        "closed": true,
+        "exit_price": 71771.31,
+        "trailing_sl": null,
+        "be_triggered": false,
+        "pnl": -50.55
+      },
+      "be_triggered": false,
+      "tp1_hit": false,
+      "max_fav_exc": 0.0,
+      "max_adv_exc": 685.9400000000023,
+      "risk_usd": 101.09,
+      "total_btc": 0.168578,
+      "balance_at_open": 10109.14,
+      "score": 100,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 10,
+        "fvg_confluence": 12
+      },
+      "context": "Swept buy_stops at 71202 (pool size=5), closed back below. Trend: bullish. Sweep wick: 0.78%",
+      "close_time": "2026-04-13T14:44:09.306694+00:00",
+      "exit_price": 71771.31,
+      "result": "SL_HIT",
+      "pnl_usd": -101.1,
+      "pnl_pct": -1.0
+    },
+    {
+      "active": false,
+      "trade_id": "e0b8c923",
+      "signal_id": "9cdef199-21f7-40ca-839e-7e7678eb1c3a",
+      "signal_type": "liquidity_sweep",
+      "direction": "short",
+      "entry_price": 72015.31,
+      "open_time": "2026-04-13T14:49:09.507061+00:00",
+      "open_ts": 1776091749.5070715,
+      "sl": 72015.31,
+      "sl_initial": 72790.19,
+      "tp_targets": [
+        71182.39,
+        71110.07,
+        71043.84
+      ],
+      "pos1": {
+        "btc_size": 0.064578,
+        "usd_value": 4650.6,
+        "tp": 71182.39,
+        "closed": true,
+        "exit_price": 71182.39,
+        "pnl": 53.79
+      },
+      "pos2": {
+        "btc_size": 0.064578,
+        "usd_value": 4650.6,
+        "tp": 71110.07,
+        "closed": true,
+        "exit_price": 71110.07,
+        "trailing_sl": null,
+        "be_triggered": true,
+        "pnl": 58.46
+      },
+      "be_triggered": false,
+      "tp1_hit": true,
+      "max_fav_exc": 3698.1199999999953,
+      "max_adv_exc": 0.0,
+      "risk_usd": 100.08,
+      "total_btc": 0.129156,
+      "balance_at_open": 10008.04,
+      "score": 100,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 10
+      },
+      "context": "Swept buy_stops at 72366 (pool size=5), closed back below. Trend: bullish. Sweep wick: 0.57%",
+      "close_time": "2026-04-13T15:49:09.452001+00:00",
+      "exit_price": 71110.07,
+      "result": "TP2_HIT",
+      "pnl_usd": 58.46,
+      "pnl_pct": 0.584
+    },
+    {
+      "active": false,
+      "trade_id": "c58ea9e4",
+      "signal_id": "fce76a58-b4bc-41ee-b515-78e0891a1533",
+      "signal_type": "liquidity_sweep",
+      "direction": "short",
+      "entry_price": 72314.54,
+      "open_time": "2026-04-13T16:34:09.906482+00:00",
+      "open_ts": 1776098049.906493,
+      "sl": 72790.19,
+      "sl_initial": 72790.19,
+      "tp_targets": [
+        71708.52,
+        71688.81,
+        71591.94
+      ],
+      "pos1": {
+        "btc_size": 0.106384,
+        "usd_value": 7693.09,
+        "tp": 71708.52,
+        "closed": true,
+        "exit_price": 72790.19,
+        "pnl": -50.6
+      },
+      "pos2": {
+        "btc_size": 0.106384,
+        "usd_value": 7693.09,
+        "tp": 71688.81,
+        "closed": true,
+        "exit_price": 72790.19,
+        "trailing_sl": null,
+        "be_triggered": false,
+        "pnl": -50.6
+      },
+      "be_triggered": false,
+      "tp1_hit": false,
+      "max_fav_exc": 0.0,
+      "max_adv_exc": 530.6800000000076,
+      "risk_usd": 101.2,
+      "total_btc": 0.212768,
+      "balance_at_open": 10120.29,
+      "score": 95,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 10,
+        "fvg_confluence": 12
+      },
+      "context": "Swept buy_stops at 72366 (pool size=5), closed back below. Trend: bullish. Sweep wick: 0.57%",
+      "close_time": "2026-04-13T19:29:09.279095+00:00",
+      "exit_price": 72790.19,
+      "result": "SL_HIT",
+      "pnl_usd": -101.2,
+      "pnl_pct": -1.0
+    },
+    {
+      "active": false,
+      "trade_id": "46070469",
+      "signal_id": "fd510e7d-af07-4d87-a44d-7ab58119682a",
+      "signal_type": "liquidity_sweep",
+      "direction": "short",
+      "entry_price": 73055.56,
+      "open_time": "2026-04-13T19:39:09.678106+00:00",
+      "open_ts": 1776109149.6781197,
+      "sl": 73993.82,
+      "sl_initial": 73993.82,
+      "tp_targets": [
+        72071.95,
+        71600.5,
+        71599.41
+      ],
+      "pos1": {
+        "btc_size": 0.053392,
+        "usd_value": 3900.57,
+        "tp": 72071.95,
+        "closed": true,
+        "exit_price": 73993.82,
+        "pnl": -50.1
+      },
+      "pos2": {
+        "btc_size": 0.053392,
+        "usd_value": 3900.57,
+        "tp": 71600.5,
+        "closed": true,
+        "exit_price": 73993.82,
+        "trailing_sl": null,
+        "be_triggered": false,
+        "pnl": -50.1
+      },
+      "be_triggered": false,
+      "tp1_hit": false,
+      "max_fav_exc": 0.0,
+      "max_adv_exc": 1176.7200000000012,
+      "risk_usd": 100.19,
+      "total_btc": 0.106784,
+      "balance_at_open": 10019.09,
+      "score": 100,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 9
+      },
+      "context": "Swept buy_stops at 73154 (pool size=3), closed back below. Trend: bullish. Sweep wick: 1.13%",
+      "close_time": "2026-04-13T22:19:09.826978+00:00",
+      "exit_price": 73993.82,
+      "result": "SL_HIT",
+      "pnl_usd": -100.2,
+      "pnl_pct": -1.0
+    },
+    {
+      "active": false,
+      "trade_id": "c631fe35",
+      "signal_id": "9b5c144c-d938-4e65-8e69-312447c6c063",
+      "signal_type": "liquidity_sweep",
+      "direction": "long",
+      "entry_price": 74252.64,
+      "open_time": "2026-04-13T22:34:09.623631+00:00",
+      "open_ts": 1776119649.6236432,
+      "sl": 72702.54,
+      "sl_initial": 72702.54,
+      "tp_targets": [
+        87259.78
+      ],
+      "pos1": {
+        "btc_size": 0.031994,
+        "usd_value": 2375.67,
+        "tp": 87259.78,
+        "closed": true,
+        "exit_price": 73970.05,
+        "pnl": -9.04
+      },
+      "pos2": {
+        "btc_size": 0.031994,
+        "usd_value": 2375.67,
+        "tp": 87259.78,
+        "closed": true,
+        "exit_price": 73970.05,
+        "trailing_sl": null,
+        "be_triggered": false,
+        "pnl": -9.04
+      },
+      "be_triggered": false,
+      "tp1_hit": false,
+      "max_fav_exc": 0.0,
+      "max_adv_exc": 282.5899999999965,
+      "risk_usd": 99.19,
+      "total_btc": 0.063989,
+      "balance_at_open": 9918.89,
+      "score": 100,
+      "factors": {
+        "sweep_into_pool": 20,
+        "sweep_size": 15,
+        "pool_size": 10,
+        "trend_alignment": 13
+      },
+      "context": "Swept sell_stops at 72803 (pool size=7), closed back above. Trend: bullish. Sweep wick: 0.12%",
+      "close_time": "2026-04-14T22:34:09.772855+00:00",
+      "exit_price": 73970.05,
+      "result": "TIME_STOP",
+      "pnl_usd": -18.08,
+      "pnl_pct": -0.182
+    }
+  ],
+  "paper_balance": 9900.81
+}

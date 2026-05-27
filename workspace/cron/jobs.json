@@ -1,0 +1,516 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "9bef7520-4d1a-49a9-a8e6-e5861f87fc86",
+      "name": "crisp-ny-session",
+      "description": "Auto-start Crisp for NY Morning session (Mon-Fri)",
+      "enabled": false,
+      "createdAtMs": 1772053480980,
+      "updatedAtMs": 1772203898757,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 14 * * 1-5",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: python3 /root/.openclaw/agents/crisp/bot/crisp_bot.py NY",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunAtMs": 1772202600004,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 30160,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "93af09ae-5834-4c3e-906f-c6216b800515",
+      "name": "crisp-asia-session",
+      "description": "Auto-start Crisp for Asia Open session (daily)",
+      "enabled": false,
+      "createdAtMs": 1772053489508,
+      "updatedAtMs": 1772203905474,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: python3 /root/.openclaw/agents/crisp/bot/crisp_bot.py ASIA",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunAtMs": 1772186137710,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 10194,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "7d10a576-b024-4e6a-9ced-6d97ce7d332c",
+      "agentId": "crisp",
+      "name": "crisp-asia",
+      "enabled": true,
+      "createdAtMs": 1772495702869,
+      "updatedAtMs": 1772611299600,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 23,0-7 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Asset | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772665200000,
+        "lastRunAtMs": 1772611277063,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 22537,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 23,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "fc8567cd-cdaf-4eec-be2f-5e83d77d85c2",
+      "agentId": "crisp",
+      "name": "crisp-ny-1330",
+      "enabled": true,
+      "createdAtMs": 1772495704510,
+      "updatedAtMs": 1772635542313,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30-59/10 13 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Asset | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772717400000,
+        "lastRunAtMs": 1772635528839,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 13474,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 6,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "643cb79f-a20d-45f9-9494-378b0bba8c68",
+      "agentId": "crisp",
+      "name": "crisp-ny-1415",
+      "enabled": true,
+      "createdAtMs": 1772495706117,
+      "updatedAtMs": 1772640071491,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 14-15 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Asset | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772719200000,
+        "lastRunAtMs": 1772640067073,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 4418,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 10,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "d6843065-a896-4db7-bcbe-e00603046e38",
+      "agentId": "crisp",
+      "name": "crisp-ny-1600",
+      "enabled": true,
+      "createdAtMs": 1772495707718,
+      "updatedAtMs": 1772640035626,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Asset | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772726400000,
+        "lastRunAtMs": 1772640000009,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 35617,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 2,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "166430e9-16da-4a00-91ae-c4f1d3873e48",
+      "agentId": "blade",
+      "name": "blade-asia",
+      "enabled": true,
+      "createdAtMs": 1772495709251,
+      "updatedAtMs": 1772611325292,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 0-3 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Pair | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | Pips | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772665200000,
+        "lastRunAtMs": 1772611309580,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 15712,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 23,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "2b8c6d2a-2b2e-4c31-9b8c-1a5f48b9b111",
+      "agentId": "blade",
+      "name": "blade-london",
+      "enabled": true,
+      "createdAtMs": 1772617680000,
+      "updatedAtMs": 1772628334089,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 8-11 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Pair | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | Pips | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunStatus": "error",
+        "nextRunAtMs": 1772697600000,
+        "lastRunAtMs": 1772628322888,
+        "lastStatus": "error",
+        "lastDurationMs": 11201,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 7,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "f17b59a7-e8eb-44d7-b275-995fe7fa5d69",
+      "agentId": "blade",
+      "name": "blade-ny-1330",
+      "enabled": true,
+      "createdAtMs": 1772495710900,
+      "updatedAtMs": 1772635578739,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30-59/10 13 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Pair | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | Pips | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772717400000,
+        "lastRunAtMs": 1772635564516,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 14223,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 6,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "463fdabb-66de-42a6-aa56-fe2463aa4f43",
+      "agentId": "blade",
+      "name": "blade-ny-1415",
+      "enabled": true,
+      "createdAtMs": 1772495712547,
+      "updatedAtMs": 1772640075445,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/10 14-15 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Pair | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | Pips | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772719200000,
+        "lastRunAtMs": 1772640071491,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 3954,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 10,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "9bbb2f62-749b-496d-99b0-18d3745ccb4c",
+      "agentId": "blade",
+      "name": "blade-ny-1600",
+      "enabled": true,
+      "createdAtMs": 1772495714167,
+      "updatedAtMs": 1772640065059,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Read STRATEGY.md before anything else. Execute the 15-minute ORB strategy for this session. Market data is in your memory file for today. Report: Pair | Direction | Entry | Stop | TP1 | TP2 | TP3 | Result | Pips | P&L"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "nextRunAtMs": 1772726400000,
+        "lastRunAtMs": 1772640035626,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 29433,
+        "lastDeliveryStatus": "unknown",
+        "consecutiveErrors": 2,
+        "lastError": "No delivery target resolved for channel \"telegram\". Set delivery.to."
+      }
+    },
+    {
+      "id": "b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01",
+      "name": "robinhood-sync-8am",
+      "description": "Sync Robinhood balances + trades to HQ",
+      "enabled": true,
+      "createdAtMs": 1772646180000,
+      "updatedAtMs": 1772646180000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/sync_robinhood.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunStatus": "never",
+        "nextRunAtMs": 1772697600000
+      }
+    },
+    {
+      "id": "c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01",
+      "name": "trustwallet-sync-8am",
+      "description": "Sync Trust Wallet balances to HQ",
+      "enabled": true,
+      "createdAtMs": 1772646185000,
+      "updatedAtMs": 1772646185000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/sync_trustwallet.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunStatus": "never",
+        "nextRunAtMs": 1772697600000
+      }
+    },
+    {
+      "id": "a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11",
+      "name": "bball-stats-sync-8am",
+      "description": "Scrape EuroBasket stats for Jase",
+      "enabled": true,
+      "createdAtMs": 1772646240000,
+      "updatedAtMs": 1772646240000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * 1",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/scripts/scrape_bball_stats.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunStatus": "never",
+        "nextRunAtMs": 1772697600000
+      }
+    },
+    {
+      "id": "e0713bee-0b47-41f5-8844-e87975a75f18",
+      "agentId": "main",
+      "name": "weekly-9am-ro-innovation",
+      "enabled": true,
+      "createdAtMs": 1772496113546,
+      "updatedAtMs": 1772607604643,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1",
+        "tz": "Europe/Bucharest"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Weekly 9AM Romania task: deliver one completed workflow improvement (or, if none, a new actionable idea). Use any available tools including web research (X/Reddit/web) when helpful. Keep it concise and high-signal."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "797062420"
+      },
+      "state": {
+        "nextRunAtMs": 1772694000000,
+        "lastRunAtMs": 1772607600007,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 4636,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d1b8e5e2-3f5a-4b47-9c21-crypto15min",
+      "name": "oracle-crypto-scan-15m",
+      "description": "Oracle crypto 15m scanner",
+      "enabled": true,
+      "createdAtMs": 1772652022001,
+      "updatedAtMs": 1772652022001,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/15 13-23,0-5 * * *",
+        "tz": "UTC"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the command: /root/.openclaw/agents/oracle/bot/oracle_crypto.py",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "last"
+      },
+      "state": {
+        "lastRunStatus": "never",
+        "nextRunAtMs": 1772652600000
+      }
+    }
+  ]
+}

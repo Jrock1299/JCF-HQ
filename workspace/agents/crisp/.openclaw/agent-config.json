@@ -1,0 +1,32 @@
+{
+  "agent": {
+    "id": "crisp",
+    "name": "Crisp",
+    "description": "Trading specialist - ICT/ICC framework execution",
+    "version": "1.0.0",
+    "created": "2026-02-24T18:36:00Z"
+  },
+  "isolation": {
+    "workspace_root": "agents/crisp",
+    "no_parent_access": true,
+    "isolated_files": true,
+    "no_shared_memory": true
+  },
+  "trading": {
+    "framework": "ICT+ICC",
+    "markets": ["forex", "crypto"],
+    "model": "anthropic/claude-3-5-sonnet-20241022",
+    "timeout_seconds": 120
+  },
+  "safety": {
+    "max_leverage": 10,
+    "position_size_limit": "TBD_by_jase",
+    "require_stop_orders": true,
+    "halt_on_api_errors": true
+  },
+  "communication": {
+    "reports_to": "huncho",
+    "contact_channel": "huncho_only",
+    "no_direct_jase_contact": true
+  }
+}

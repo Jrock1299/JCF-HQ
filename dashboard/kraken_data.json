@@ -1,0 +1,55 @@
+{
+  "last_updated": "2026-04-15T20:00:03+00:00",
+  "total_usd": 8772.55,
+  "holdings": [
+    {
+      "asset": "XRP",
+      "kraken_ticker": "XXRP",
+      "balance": 2651.016141,
+      "price_usd": 1.4004,
+      "value_usd": 3712.51
+    },
+    {
+      "asset": "ETH",
+      "kraken_ticker": "XETH",
+      "balance": 1.28801316,
+      "price_usd": 2376.71,
+      "value_usd": 3061.23
+    },
+    {
+      "asset": "LINK",
+      "kraken_ticker": "LINK",
+      "balance": 105.87215749,
+      "price_usd": 9.329,
+      "value_usd": 987.68
+    },
+    {
+      "asset": "ADA",
+      "kraken_ticker": "ADA",
+      "balance": 2613.07232226,
+      "price_usd": 0.249,
+      "value_usd": 650.67
+    },
+    {
+      "asset": "SUI",
+      "kraken_ticker": "SUI",
+      "balance": 284.01541,
+      "price_usd": 0.9679,
+      "value_usd": 274.9
+    },
+    {
+      "asset": "SOL",
+      "kraken_ticker": "SOL",
+      "balance": 1.00001023,
+      "price_usd": 85.55,
+      "value_usd": 85.55
+    },
+    {
+      "asset": "USD",
+      "kraken_ticker": "ZUSD",
+      "balance": 0.0068,
+      "price_usd": 1.0,
+      "value_usd": 0.01
+    }
+  ]
+}

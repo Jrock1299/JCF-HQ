@@ -1,0 +1,40 @@
+============================================================
+🔮 ORACLE SPORTS INTELLIGENCE v6 — Claude AI + Web Search
+Generated: 2026-05-08 06:30 UTC  |  Bankroll: $500.00
+============================================================
+
+📊 Record: 10W–20L (33.3% WR) | P&L: -100.62
+   NCAAB: 5W-6L (45.5% WR, -17.28)
+   NBA: 2W-4L (33.3% WR, -35.24)
+   NHL: 1W-5L (16.7% WR, -38.00)
+   MLB: 2W-5L (28.6% WR, -10.10)
+
+⚠️  FADING (bad historical edge):
+   ⛔ NHL — filtered from today's picks
+   ⛔ NBA — filtered from today's picks
+   ⛔ MLB — filtered from today's picks
+
+❌ No positive-EV picks found today. No bets.
+   (Market is correctly priced — sit on your hands.)
+
+🎯 LINEMATE — no qualifying straight picks today (-200 or better threshold)
+
+🎰 SOFT PARLAYS (mixed bet types — low-correlation legs)
+--------------------------------------------------
+Parlay 1 — 3 legs | Odds: +159 | Combined prob: 35.2% | Stake: $5.00 → Win: $7.99
+  Leg 1: Oklahoma City Thunder (ML) (-345) [75.5%] — ML | NBA | Oklahoma City Thunder @ Los Angeles Lakers
+  Leg 2: Anaheim Ducks +1.5 (SPREAD) (-260) [69.8%] — SPREAD | NHL | Vegas Golden Knights @ Anaheim Ducks
+  Leg 3: Minnesota Wild +1.5 (SPREAD) (-220) [66.7%] — SPREAD | NHL | Colorado Avalanche @ Minnesota Wild
+
+Parlay 2 — 3 legs | Odds: +224 | Combined prob: 28.0% | Stake: $5.00 → Win: $11.21
+  Leg 1: Montréal Canadiens +1.5 (SPREAD) (-220) [66.3%] — SPREAD | NHL | Montréal Canadiens @ Buffalo Sabres
+  Leg 2: Philadelphia Phillies (ML) (-210) [65.8%] — ML | MLB | Colorado Rockies @ Philadelphia Phillies
+  Leg 3: San Antonio Spurs (ML) (-196) [64.1%] — ML | NBA | San Antonio Spurs @ Minnesota Timberwolves
+
+🔒 LOCK PARLAY — no qualifying combination today (need 2+ EV+ legs combining to -180 or better)
+
+🔒 LINEMATE LOCK PARLAY — no cross-game 100% parlays today
+
+🎰 LINEMATE SGP — no qualifying same-game parlays today (need 75%+ hit rate)
+
+============================================================

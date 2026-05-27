@@ -1,0 +1,81 @@
+# Secrets and API keys
+.env
+*.env
+**/.env
+**/.env.*
+**/.env.example
+**/secrets*
+**/*_key.json
+**/.secrets*
+
+# Auth profiles (contain OAuth tokens)
+**/auth-profiles.json
+**/auth-profiles/
+credentials/
+
+# Plaid secrets
+**/plaid_tokens*
+**/plaid_link_token*
+
+# Private keys
+*.pem
+*.key
+kalshi_private*
+
+# Sensitive data files
+dashboard/plaid_data.json
+dashboard/plaid_transactions.json
+dashboard/hq_userdata.json
+
+# OpenClaw master config (contains API keys, bot tokens, auth)
+openclaw.json
+openclaw.json.bak*
+openclaw.json.last-good
+
+# Logs and build artifacts
+logs/
+*.log
+__pycache__/
+*.pyc
+node_modules/
+hq-app/dist/
+
+# Temp and backup files
+*.bak
+*.deleted.*
+/tmp/
+
+# Python venv
+venv/
+
+# Large generated/cached directories
+agents/main/agent/codex-home/
+agents/oracle/agent/codex-home/
+agents/crisp/agent/codex-home/
+agents/blade/agent/codex-home/
+
+# SQLite databases (session data, may contain tokens)
+*.sqlite
+
+# Memory files that may contain keys
+workspace/memory/tavily_api_key.md
+
+# Systemd env (contains secrets)
+gateway.systemd.env
+
+# Lock files
+locks/
+
+# QMD cache
+**/qmd/
+
+# Reference repo examples with dummy keys
+workspace/references/claude-cookbooks/.env.example
+workspace/references/claude-cookbooks/**/.env.example
+workspace/references/claude-cookbooks/scripts/detect-secrets/.secrets.baseline
+
+# Tavily search skill (contains API key in source)
+workspace/skills/tavily-search/
+
+# Old workspace scripts with hardcoded tokens
+workspace/scripts/send_dashboard.py

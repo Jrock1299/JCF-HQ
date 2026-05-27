@@ -1,0 +1,1582 @@
+{
+  "agent:main:main": {
+    "sessionId": "56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec",
+    "updatedAt": 1779897887075,
+    "systemSent": true,
+    "abortedLastRun": false,
+    "chatType": "direct",
+    "deliveryContext": {
+      "to": "telegram:797062420"
+    },
+    "lastTo": "telegram:797062420",
+    "origin": {
+      "label": "telegram:797062420",
+      "provider": "telegram",
+      "from": "telegram:797062420",
+      "to": "telegram:797062420",
+      "surface": "telegram",
+      "chatType": "direct"
+    },
+    "sessionFile": "/root/.openclaw/agents/main/sessions/56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec.jsonl",
+    "compactionCount": 0,
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>clawhub</name>\n    <description>Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>coding-agent</name>\n    <description>Delegate coding tasks to Codex, Claude Code, or Pi agents via background process. Use when: (1) building/creating new features or apps, (2) reviewing PRs (spawn in temp dir), (3) refactoring large codebases, (4) iterative coding that needs file exploration. NOT for: simple one-liner fixes (just edit), reading code (use read tool), thread-bound ACP harness requests in chat (for example spawn/run Codex or Claude Code in a Discord thread; use sessions_spawn with runtime:&quot;acp&quot;), or any work in ~/clawd workspace (never spawn agents here). Claude Code: use --print --permission-mode bypassPermissions (no PTY). Codex/Pi/OpenCode: pty:true required.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/coding-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like &quot;create a skill&quot;, &quot;author a skill&quot;, &quot;tidy up a skill&quot;, &quot;improve this skill&quot;, &quot;review the skill&quot;, &quot;clean up the skill&quot;, &quot;audit the skill&quot;.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather and forecasts via wttr.in or Open-Meteo. Use when: user asks about weather, temperature, or forecasts for any location. NOT for: historical weather data, severe weather alerts, or detailed meteorological analysis. No API key needed.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;\n</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "coding-agent",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "tavily"
+        },
+        {
+          "name": "typescript-pro"
+        }
+      ],
+      "version": 0
+    },
+    "fallbackNoticeSelectedModel": "openai-codex/gpt-5.5-codex",
+    "fallbackNoticeActiveModel": "openai/gpt-5.3-codex",
+    "fallbackNoticeReason": "selected model unavailable",
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "contextTokens": 400000,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779897860216,
+      "sessionId": "56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec",
+      "sessionKey": "agent:main:main",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 22666,
+        "projectContextChars": 11521,
+        "nonProjectContextChars": 11145
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        },
+        {
+          "name": "HEARTBEAT.md",
+          "path": "/root/.openclaw/workspace/HEARTBEAT.md",
+          "missing": false,
+          "rawChars": 626,
+          "injectedChars": 626,
+          "truncated": false
+        },
+        {
+          "name": "BOOTSTRAP.md",
+          "path": "/root/.openclaw/workspace/BOOTSTRAP.md",
+          "missing": true,
+          "rawChars": 0,
+          "injectedChars": 61,
+          "truncated": false
+        },
+        {
+          "name": "MEMORY.md",
+          "path": "/root/.openclaw/workspace/MEMORY.md",
+          "missing": false,
+          "rawChars": 1088,
+          "injectedChars": 1088,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 7658,
+        "entries": [
+          {
+            "name": "message",
+            "summaryChars": 395,
+            "schemaChars": 7598,
+            "propertiesCount": 113
+          },
+          {
+            "name": "heartbeat_respond",
+            "summaryChars": 185,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "inputTokens": 410,
+    "outputTokens": 9,
+    "cacheRead": 145920,
+    "cacheWrite": 0,
+    "totalTokensFresh": true,
+    "totalTokens": 146330,
+    "sessionStartedAt": 1779128059317,
+    "lastInteractionAt": 1779128089331,
+    "agentHarnessId": "codex",
+    "status": "done",
+    "startedAt": 1779897859589,
+    "providerOverride": "openai",
+    "modelOverride": "gpt-5.3-codex",
+    "modelOverrideSource": "auto",
+    "modelOverrideFallbackOriginProvider": "openai-codex",
+    "modelOverrideFallbackOriginModel": "gpt-5.5-codex",
+    "estimatedCostUsd": 0.0263795,
+    "compactionCheckpoints": [
+      {
+        "checkpointId": "051d498e-55c1-4cf4-997a-776876796c2c",
+        "sessionKey": "agent:main:main",
+        "sessionId": "56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec",
+        "createdAt": 1779350705466,
+        "reason": "overflow-retry",
+        "tokensBefore": 123647,
+        "tokensAfter": 22381,
+        "summary": "Context contained 713 messages (0 oversized). Summary unavailable due to size limits.\n\n**Turn Context (split turn):**\n\nContext contained 5 messages (0 oversized). Summary unavailable due to size limits.\n\n## Recent turns preserved verbatim\n- User: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. Use heartbeat_respond to report the wake outcome. Set notify=false when nothing needs the user's attention. Set notify=true with notificationText only when the user should be interrupted.\nWhen reading HEARTBEAT.md, use workspace file /root/.openclaw/workspace/HEARTBEAT.md (exact case). Do not read docs/heartbeat.md.\nCurrent time: Tuesday, May 19th, 2026 - 7:34 PM (UTC)\nReference UTC: 2026-05-19 19:34 UTC\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # HEARTBEAT.md — Huncho's Periodic Check-in\n\n## Every 8 Hours\n\nQuick scan. Stay lean. Don't interrupt Jase unless something needs attention.\n\n### Checklist\n\n1. **Sub-agents** — Any completed tasks that need relaying to Jase?\n2. **Scheduled tasks** — Anything due or overdue?\n3. **Trading cycle** — If active, is trader-cycle running as expected?\n4. **Alerts** — Any system issues, cost warnings, or security flags?\n\n### Rules\n\n- If all clear → reply `HEARTBEAT_OK`\n- If something needs attention → report it clearly, no fluff\n- Never wake Jase for minor stuff\n- Late night (23:00-08:00 Jase's local) ...\n- Assistant: [non-text content: toolCall]\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): 2560813 /bin/sh -c timeout 7200 bash /root/.openclaw/agents/blade/bot/run_session.sh NY_PM >> /root/.openclaw/agents/blade/bot/blade.log 2>&1\n2560816 timeout 7200 bash /root/.openclaw/agents/blade/bot/run_session.sh NY_PM\n2560817 bash /root/.openclaw/agents/blade/bot/run_session.sh NY_PM\n2563609 /bin/bash -c ps -eo pid,cmd | rg -i 'trader-cycle|run_session.sh|oracle_bot.py|sentinel' || true\n2563612 rg -i trader-cycle|run_session.sh|oracle_bot.py|sentinel\n[non-text content: toolResult]\n- Tool result (subagents): {\n  \"status\": \"ok\",\n  \"action\": \"list\",\n  \"requesterSessionKey\": \"agent:main:main\",\n  \"callerSessionKey\": \"agent:main:main\",\n  \"callerIsSubagent\": false,\n  \"total\": 0,\n  \"active\": [],\n  \"recent\": [],\n  \"text\": \"active subagents:\\n(none)\\n\\nrecent (last 600m):\\n(none)\"\n}\n[non-text content: toolResult]\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # BLADE sessions\n# CRISP sessions\n# JCF-SENTINEL\n# ORACLE resolver — auto-resolve pending picks every 2 hours\n# SESSION PREP (fires 2 min before each Blade session)\n# STRATEGIST — pre-session analysis (UTC times, before Blade/Crisp sessions)\n*/2 * * * * /root/.openclaw/scripts/sync_dashboard_public.sh >> /root/.openclaw/logs/sync_dashboard_public.log 2>&1\n*/30 * * * * TRADELOCKER_PASS=sdCbx>R9Dc python3 /root/.openclaw/scripts/sync_tradelocker.py >> /root/.openclaw/logs/tradelocker_sync.log 2>&1\n*/5 * * * * python3 /root/.openclaw/scripts/sync_agent_pnl.py >> /root/.openclaw/logs/agent_pnl.log...\n- Assistant: [non-text content: toolCall]\n- Tool result (heartbeat_respond): {\n  \"status\": \"recorded\",\n  \"outcome\": \"progress\",\n  \"notify\": false,\n  \"summary\": \"Heartbeat checklist completed with non-urgent activity; no user interruption sent.\"\n}\n[non-text content: toolResult]\n- Assistant: HEARTBEAT_OK\n- User: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. Use heartbeat_respond to report the wake outcome. Set notify=false when nothing needs the user's attention. Set notify=true with notificationText only when the user should be interrupted.\nWhen reading HEARTBEAT.md, use workspace file /root/.openclaw/workspace/HEARTBEAT.md (exact case). Do not read docs/heartbeat.md.\nCurrent time: Tuesday, May 19th, 2026 - 8:04 PM (UTC)\nReference UTC: 2026-05-19 20:04 UTC\n- Assistant: [non-text content: toolCall]\n- Tool result (subagents): {\n  \"status\": \"ok\",\n  \"action\": \"list\",\n  \"requesterSessionKey\": \"agent:main:main\",\n  \"callerSessionKey\": \"agent:main:main\",\n  \"callerIsSubagent\": false,\n  \"total\": 0,\n  \"active\": [],\n  \"recent\": [],\n  \"text\": \"active subagents:\\n(none)\\n\\nrecent (last 600m):\\n(none)\"\n}\n[non-text content: toolResult]\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # HEARTBEAT.md — Huncho's Periodic Check-in\n\n## Every 8 Hours\n\nQuick scan. Stay lean. Don't interrupt Jase unless something needs attention.\n\n### Checklist\n\n1. **Sub-agents** — Any completed tasks that need relaying to Jase?\n2. **Scheduled tasks** — Anything due or overdue?\n3. **Trading cycle** — If active, is trader-cycle running as expected?\n4. **Alerts** — Any system issues, cost warnings, or security flags?\n\n### Rules\n\n- If all clear → reply `HEARTBEAT_OK`\n- If something needs attention → report it clearly, no fluff\n- Never wake Jase for minor stuff\n- Late night (23:00-08:00 Jase's local) ...\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # BLADE sessions\n# CRISP sessions\n# JCF-SENTINEL\n# ORACLE resolver — auto-resolve pending picks every 2 hours\n# SESSION PREP (fires 2 min before each Blade session)\n# STRATEGIST — pre-session analysis (UTC times, before Blade/Crisp sessions)\n*/2 * * * * /root/.openclaw/scripts/sync_dashboard_public.sh >> /root/.openclaw/logs/sync_dashboard_public.log 2>&1\n*/30 * * * * TRADELOCKER_PASS=sdCbx>R9Dc python3 /root/.openclaw/scripts/sync_tradelocker.py >> /root/.openclaw/logs/tradelocker_sync.log 2>&1\n*/5 * * * * python3 /root/.openclaw/scripts/sync_agent_pnl.py >> /root/.openclaw/logs/agent_pnl.log...\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): 2564407 /bin/bash -c ps -eo pid,cmd | rg -i 'trader-cycle|run_session.sh|oracle_bot.py|sentinel' || true\n2564419 rg -i trader-cycle|run_session.sh|oracle_bot.py|sentinel\n[non-text content: toolResult]\n- Assistant: [non-text content: toolCall]\n- Tool result (heartbeat_respond): {\n  \"status\": \"recorded\",\n  \"outcome\": \"progress\",\n  \"notify\": false,\n  \"summary\": \"Heartbeat checklist completed with non-urgent activity; no user interruption sent.\"\n}\n[non-text content: toolResult]\n- Assistant: HEARTBEAT_OK\n- User: Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. Use heartbeat_respond to report the wake outcome. Set notify=false when nothing needs the user's attention. Set notify=true with notificationText only when the user should be interrupted.\nWhen reading HEARTBEAT.md, use workspace file /root/.openclaw/workspace/HEARTBEAT.md (exact case). Do not read docs/heartbeat.md.\nCurrent time: Tuesday, May 19th, 2026 - 8:34 PM (UTC)\nReference UTC: 2026-05-19 20:34 UTC\n- Assistant: [non-text content: toolCall]\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): 2565201 /bin/bash -c ps -eo pid,cmd | rg -i 'trader-cycle|run_session.sh|oracle_bot.py|sentinel' || true\n2565203 rg -i trader-cycle|run_session.sh|oracle_bot.py|sentinel\n[non-text content: toolResult]\n- Tool result (subagents): {\n  \"status\": \"ok\",\n  \"action\": \"list\",\n  \"requesterSessionKey\": \"agent:main:main\",\n  \"callerSessionKey\": \"agent:main:main\",\n  \"callerIsSubagent\": false,\n  \"total\": 0,\n  \"active\": [],\n  \"recent\": [],\n  \"text\": \"active subagents:\\n(none)\\n\\nrecent (last 600m):\\n(none)\"\n}\n[non-text content: toolResult]\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # BLADE sessions\n# CRISP sessions\n# JCF-SENTINEL\n# ORACLE resolver — auto-resolve pending picks every 2 hours\n# SESSION PREP (fires 2 min before each Blade session)\n# STRATEGIST — pre-session analysis (UTC times, before Blade/Crisp sessions)\n*/2 * * * * /root/.openclaw/scripts/sync_dashboard_public.sh >> /root/.openclaw/logs/sync_dashboard_public.log 2>&1\n*/30 * * * * TRADELOCKER_PASS=sdCbx>R9Dc python3 /root/.openclaw/scripts/sync_tradelocker.py >> /root/.openclaw/logs/tradelocker_sync.log 2>&1\n*/5 * * * * python3 /root/.openclaw/scripts/sync_agent_pnl.py >> /root/.openclaw/logs/agent_pnl.log...\n- Assistant: [non-text content: toolCall]\n- Tool result (bash): # HEARTBEAT.md — Huncho's Periodic Check-in\n\n## Every 8 Hours\n\nQuick scan. Stay lean. Don't interrupt Jase unless something needs attention.\n\n### Checklist\n\n1. **Sub-agents** — Any completed tasks that need relaying to Jase?\n2. **Scheduled tasks** — Anything due or overdue?\n3. **Trading cycle** — If active, is trader-cycle running as expected?\n4. **Alerts** — Any system issues, cost warnings, or security flags?\n\n### Rules\n\n- If all clear → reply `HEARTBEAT_OK`\n- If something needs attention → report it clearly, no fluff\n- Never wake Jase for minor stuff\n- Late night (23:00-08:00 Jase's local) ...\n- Assistant: [non-text content: toolCall]\n- Tool result (heartbeat_respond): {\n  \"status\": \"recorded\",\n  \"outcome\": \"progress\",\n  \"notify\": false,\n  \"summary\": \"Heartbeat checklist completed with non-urgent activity; no user interruption sent.\"\n}\n[non-text content: toolResult]\n- Assistant: HEARTBEAT_OK",
+        "firstKeptEntryId": "7e162b7a-4c27-4fd6-8bdd-32a59f3e0741",
+        "preCompaction": {
+          "sessionId": "56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec",
+          "sessionFile": "/root/.openclaw/agents/main/sessions/56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec.checkpoint.62264d83-dc60-4c8e-9bf8-36002f4a6091.jsonl",
+          "leafId": "34695114"
+        },
+        "postCompaction": {
+          "sessionId": "56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec",
+          "sessionFile": "/root/.openclaw/agents/main/sessions/56d21bdf-e36a-462f-8dd9-9e9ca4bb0dec.jsonl",
+          "leafId": "1396910f",
+          "entryId": "1396910f"
+        }
+      }
+    ],
+    "authProfileOverride": "openai-codex:default",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "endedAt": 1779897886711,
+    "runtimeMs": 27122
+  },
+  "agent:main:telegram:direct:797062420": {
+    "sessionId": "f44dcec8-73be-4c55-abed-4f7d54a91485",
+    "updatedAt": 1779451299719,
+    "sessionStartedAt": 1779451239206,
+    "lastInteractionAt": 1779451239206,
+    "systemSent": true,
+    "abortedLastRun": false,
+    "usageFamilyKey": "agent:main:telegram:direct:797062420",
+    "usageFamilySessionIds": [
+      "f436f0f0-596e-4ca1-9540-e9eb1c92e30a",
+      "f1a09b3c-d846-4ab6-aa4f-d262351a80db",
+      "f44dcec8-73be-4c55-abed-4f7d54a91485"
+    ],
+    "chatType": "direct",
+    "deliveryContext": {
+      "channel": "telegram",
+      "to": "telegram:797062420",
+      "accountId": "default"
+    },
+    "lastChannel": "telegram",
+    "lastTo": "telegram:797062420",
+    "lastAccountId": "default",
+    "origin": {
+      "label": "telegram:797062420",
+      "provider": "telegram",
+      "surface": "telegram",
+      "chatType": "direct",
+      "from": "telegram:797062420",
+      "to": "telegram:797062420",
+      "accountId": "default"
+    },
+    "sessionFile": "/root/.openclaw/agents/main/sessions/f44dcec8-73be-4c55-abed-4f7d54a91485.jsonl",
+    "compactionCount": 0,
+    "totalTokens": 55784,
+    "inputTokens": 488,
+    "outputTokens": 320,
+    "estimatedCostUsd": 0.0150108,
+    "contextTokens": 400000,
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0
+    },
+    "status": "done",
+    "startedAt": 1779451265050,
+    "endedAt": 1779451299207,
+    "runtimeMs": 34157,
+    "providerOverride": "openai",
+    "modelOverride": "gpt-5.3-codex",
+    "modelOverrideSource": "auto",
+    "modelOverrideFallbackOriginProvider": "openai-codex",
+    "modelOverrideFallbackOriginModel": "gpt-5.5-codex",
+    "fallbackNoticeSelectedModel": "openai-codex/gpt-5.5-codex",
+    "fallbackNoticeActiveModel": "openai/gpt-5.3-codex",
+    "fallbackNoticeReason": "model not found (+2 more attempts)",
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779451265571,
+      "sessionId": "f44dcec8-73be-4c55-abed-4f7d54a91485",
+      "sessionKey": "agent:main:telegram:direct:797062420",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 21827,
+        "projectContextChars": 11521,
+        "nonProjectContextChars": 10306
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        },
+        {
+          "name": "HEARTBEAT.md",
+          "path": "/root/.openclaw/workspace/HEARTBEAT.md",
+          "missing": false,
+          "rawChars": 626,
+          "injectedChars": 626,
+          "truncated": false
+        },
+        {
+          "name": "BOOTSTRAP.md",
+          "path": "/root/.openclaw/workspace/BOOTSTRAP.md",
+          "missing": true,
+          "rawChars": 0,
+          "injectedChars": 61,
+          "truncated": false
+        },
+        {
+          "name": "MEMORY.md",
+          "path": "/root/.openclaw/workspace/MEMORY.md",
+          "missing": false,
+          "rawChars": 1088,
+          "injectedChars": 1088,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 60,
+        "entries": [
+          {
+            "name": "cron",
+            "summaryChars": 4651,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "cacheRead": 55296,
+    "cacheWrite": 0,
+    "totalTokensFresh": true
+  },
+  "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18": {
+    "chatType": "direct",
+    "label": "Cron: daily-9am-ro-innovation",
+    "sessionId": "4fce26e9-898a-431f-ba12-b0351e2c7185",
+    "updatedAt": 1779688800480,
+    "sessionStartedAt": 1779688800052,
+    "lastInteractionAt": 1779688800052,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/4fce26e9-898a-431f-ba12-b0351e2c7185.jsonl",
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0
+    },
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "authProfileOverride": "openai-codex:default",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779688830124,
+      "sessionId": "4fce26e9-898a-431f-ba12-b0351e2c7185",
+      "sessionKey": "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18:run:4fce26e9-898a-431f-ba12-b0351e2c7185",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 19107,
+        "projectContextChars": 9614,
+        "nonProjectContextChars": 9493
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 60,
+        "entries": [
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "contextTokens": 200000,
+    "inputTokens": 519,
+    "outputTokens": 255,
+    "totalTokens": 47111,
+    "totalTokensFresh": true,
+    "cacheRead": 46592,
+    "cacheWrite": 0,
+    "estimatedCostUsd": 0.012631849999999998
+  },
+  "agent:main:cron:d1b8e5e2-3f5a-4b47-9c21-crypto15min": {
+    "sessionId": "bb66b059-01bc-4408-813f-6f583698b33a",
+    "updatedAt": 1779127528041,
+    "systemSent": true,
+    "label": "Cron: oracle-crypto-scan-15m",
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>clawhub</name>\n    <description>Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather and forecasts via wttr.in or Open-Meteo. Use when: user asks about weather, temperature, or forecasts for any location. NOT for: historical weather data, severe weather alerts, or detailed meteorological analysis. No API key needed.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;\n</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "tavily"
+        },
+        {
+          "name": "typescript-pro"
+        }
+      ],
+      "version": 0
+    },
+    "modelProvider": "openai",
+    "model": "gpt-5.2-codex",
+    "authProfileOverride": "openai-codex:default",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "contextTokens": 272000,
+    "inputTokens": 25528,
+    "outputTokens": 1826,
+    "totalTokens": 19509,
+    "totalTokensFresh": true,
+    "cacheRead": 49280,
+    "cacheWrite": 0
+  },
+  "agent:main:cron:b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01": {
+    "chatType": "direct",
+    "label": "Cron: robinhood-sync-8am",
+    "sessionId": "41c57d13-b4b2-4108-86a4-f2d724b1b8ab",
+    "updatedAt": 1779868800726,
+    "sessionStartedAt": 1779868800058,
+    "lastInteractionAt": 1779868800058,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/41c57d13-b4b2-4108-86a4-f2d724b1b8ab.jsonl",
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0
+    },
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "authProfileOverride": "openai-codex:default",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779868830780,
+      "sessionId": "41c57d13-b4b2-4108-86a4-f2d724b1b8ab",
+      "sessionKey": "agent:main:cron:b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01:run:41c57d13-b4b2-4108-86a4-f2d724b1b8ab",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 19107,
+        "projectContextChars": 9614,
+        "nonProjectContextChars": 9493
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 60,
+        "entries": [
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "contextTokens": 200000,
+    "inputTokens": 155,
+    "outputTokens": 61,
+    "totalTokens": 42139,
+    "totalTokensFresh": true,
+    "cacheRead": 41984,
+    "cacheWrite": 0,
+    "estimatedCostUsd": 0.008472450000000001
+  },
+  "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01": {
+    "label": "Cron: trustwallet-sync-8am",
+    "sessionId": "10d682f8-76e1-4166-938f-5ec8b04175f2",
+    "updatedAt": 1779868853448,
+    "sessionStartedAt": 1779868853083,
+    "lastInteractionAt": 1779868853083,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/10d682f8-76e1-4166-938f-5ec8b04175f2.jsonl",
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0
+    },
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779868878625,
+      "sessionId": "10d682f8-76e1-4166-938f-5ec8b04175f2",
+      "sessionKey": "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01:run:10d682f8-76e1-4166-938f-5ec8b04175f2",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 19107,
+        "projectContextChars": 9614,
+        "nonProjectContextChars": 9493
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 60,
+        "entries": [
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "contextTokens": 200000,
+    "inputTokens": 591,
+    "outputTokens": 61,
+    "totalTokens": 42063,
+    "totalTokensFresh": true,
+    "cacheRead": 41472,
+    "cacheWrite": 0,
+    "estimatedCostUsd": 0.009145849999999999
+  },
+  "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11": {
+    "label": "Cron: bball-stats-sync-8am",
+    "sessionId": "20ab54f8-b7cf-4aa5-8290-a43ff066177c",
+    "updatedAt": 1779696085499,
+    "sessionStartedAt": 1779696085225,
+    "lastInteractionAt": 1779696085225,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/20ab54f8-b7cf-4aa5-8290-a43ff066177c.jsonl",
+    "skillsSnapshot": {
+      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0
+    },
+    "modelProvider": "openai",
+    "model": "gpt-5.3-codex",
+    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1779696109953,
+      "sessionId": "20ab54f8-b7cf-4aa5-8290-a43ff066177c",
+      "sessionKey": "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11:run:20ab54f8-b7cf-4aa5-8290-a43ff066177c",
+      "provider": "openai",
+      "model": "gpt-5.3-codex",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "systemPrompt": {
+        "chars": 19107,
+        "projectContextChars": 9614,
+        "nonProjectContextChars": 9493
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 3673,
+          "injectedChars": 3673,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 0,
+        "entries": []
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 60,
+        "entries": [
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 0,
+            "propertiesCount": null
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 0,
+            "propertiesCount": null
+          }
+        ]
+      }
+    },
+    "contextTokens": 200000,
+    "inputTokens": 610,
+    "outputTokens": 47,
+    "totalTokens": 42082,
+    "totalTokensFresh": true,
+    "cacheRead": 41472,
+    "cacheWrite": 0,
+    "estimatedCostUsd": 0.008983099999999999
+  }
+}

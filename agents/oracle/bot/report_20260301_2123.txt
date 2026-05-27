@@ -1,0 +1,1077 @@
+
+============================================================
+ORACLE INTELLIGENCE REPORT
+Generated: 2026-03-01 21:23:48 UTC
+============================================================
+
+🎯 HIGH VALUE OPPORTUNITIES (127 found)
+----------------------------------------
+
+📌 KXU3MAX
+   Title: How high will unemployment get before 2027?
+   Market: KXU3MAX-27-5
+   Yes: 35% | No: 66%
+   Volume: 155,019
+   ⚡ High volume: 155,019
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXAPPLEUS
+   Title: DOJ wins their anti-trust case against Apple?
+   Market: APPLEUS-29DEC31
+   Yes: 35% | No: 67%
+   Volume: 46,045
+   ⚡ High volume: 46,045
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 20, 2029?
+   Market: KXFEDEND-29-JAN20
+   Yes: 9% | No: 93%
+   Volume: 103,904
+   ⚡ High volume: 103,904
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXFEDEND
+   Title: Will Trump end the Federal Reserve before Jan 1, 2027?
+   Market: KXFEDEND-27-JAN01
+   Yes: 4% | No: 99%
+   Volume: 8,420
+   ⚡ High volume: 8,420
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Janet Yellen as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JYEL
+   Yes: 1% | No: 100%
+   Volume: 34,118
+   ⚡ High volume: 34,118
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Rick Rieder as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-RREI
+   Yes: 1% | No: 100%
+   Volume: 14,393,318
+   ⚡ High volume: 14,393,318
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Larry Lindsey as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-LLIN
+   Yes: 1% | No: 100%
+   Volume: 46,506
+   ⚡ High volume: 46,506
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Lorie Logan as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-LLOG
+   Yes: 1% | No: 100%
+   Volume: 185,753
+   ⚡ High volume: 185,753
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Philip Jefferson as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-PJEF
+   Yes: 1% | No: 100%
+   Volume: 62,683
+   ⚡ High volume: 62,683
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Michelle Bowman as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-MBOW
+   Yes: 1% | No: 100%
+   Volume: 9,699,493
+   ⚡ High volume: 9,699,493
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Stephen Miran as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-SMIR
+   Yes: 1% | No: 100%
+   Volume: 5,153,554
+   ⚡ High volume: 5,153,554
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate Marc Sumerlin as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-MSUM
+   Yes: 1% | No: 100%
+   Volume: 103,208
+   ⚡ High volume: 103,208
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate James Bullard as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-JBUL
+   Yes: 1% | No: 100%
+   Volume: 113,374
+   ⚡ High volume: 113,374
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXFEDCHAIRNOM
+   Title: Will Trump next nominate David Zervos as Fed Chair?
+   Market: KXFEDCHAIRNOM-29-DZER
+   Yes: 1% | No: 100%
+   Volume: 506,797
+   ⚡ High volume: 506,797
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXDEBTGROWTH
+   Title: Will the national debt hit $50 trillion during the Trump Administration?
+   Market: KXDEBTGROWTH-28DEC31-50
+   Yes: 56% | No: 49%
+   Volume: 11,432
+   ⚡ High volume: 11,432
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXDEBTGROWTH
+   Title: Will the national debt hit $40 trillion during the Trump Administration?
+   Market: KXDEBTGROWTH-28DEC31-40
+   Yes: 99% | No: 4%
+   Volume: 42,905
+   ⚡ High volume: 42,905
+   ⚡ Near certainty (99%) — low risk yes?
+
+📌 KXGDPUSMAX
+   Title: Will quarterly GDP be above 5% in any quarter in Q1 2025 to Q4 2028?
+   Market: KXGDPUSMAX-28-5
+   Yes: 58% | No: 44%
+   Volume: 142,812
+   ⚡ High volume: 142,812
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXGDPSHAREMANU
+   Title: Will Trump bring back manufacturing?
+   Market: KXGDPSHAREMANU-29
+   Yes: 15% | No: 89%
+   Volume: 16,373
+   ⚡ High volume: 16,373
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 500 before 2028?
+   Market: KXGOVTCUTS-28-500
+   Yes: 25% | No: 79%
+   Volume: 6,836
+   ⚡ High volume: 6,836
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 250 before 2028?
+   Market: KXGOVTCUTS-28-250
+   Yes: 30% | No: 74%
+   Volume: 28,174
+   ⚡ High volume: 28,174
+   ⚡ Underdog territory (30%) — worth watching
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 750 before 2026?
+   Market: KXGOVTCUTS-26-750
+   Yes: 5% | No: 97%
+   Volume: 16,382
+   ⚡ High volume: 16,382
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 500 before 2026?
+   Market: KXGOVTCUTS-26-500
+   Yes: 8% | No: 95%
+   Volume: 30,766
+   ⚡ High volume: 30,766
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 2000 before 2026?
+   Market: KXGOVTCUTS-26-2000
+   Yes: 3% | No: 99%
+   Volume: 12,921
+   ⚡ High volume: 12,921
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 1000 before 2026?
+   Market: KXGOVTCUTS-26-1000
+   Yes: 4% | No: 98%
+   Volume: 12,841
+   ⚡ High volume: 12,841
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXGOVTCUTS
+   Title: Will government spending decrease by 250 before 2026?
+   Market: KXGOVTCUTS-26-250
+   Yes: 9% | No: 93%
+   Volume: 72,226
+   ⚡ High volume: 72,226
+   ⚡ Very low odds (9%) — contrarian long?
+
+📌 KXU3MAX
+   Title: How high will unemployment get before 2027?
+   Market: KXU3MAX-27-9
+   Yes: 7% | No: 97%
+   Volume: 6,969
+   ⚡ High volume: 6,969
+   ⚡ Very low odds (7%) — contrarian long?
+
+📌 KXU3MAX
+   Title: How high will unemployment get before 2027?
+   Market: KXU3MAX-27-8
+   Yes: 8% | No: 97%
+   Volume: 6,776
+   ⚡ High volume: 6,776
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXU3MAX
+   Title: How high will unemployment get before 2027?
+   Market: KXU3MAX-27-6
+   Yes: 17% | No: 84%
+   Volume: 99,295
+   ⚡ High volume: 99,295
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXDOED
+   Title: Will the Department of Education be eliminated before Jan 20, 2029?
+   Market: KXDOED-29-JAN20
+   Yes: 24% | No: 82%
+   Volume: 142,332
+   ⚡ High volume: 142,332
+   ⚡ Underdog territory (24%) — worth watching
+
+📌 KXACAREPEAL
+   Title: Will Obamacare be repealed before Jan 20, 2029?
+   Market: KXACAREPEAL-29-29JAN20
+   Yes: 24% | No: 79%
+   Volume: 7,974
+   ⚡ High volume: 7,974
+   ⚡ Underdog territory (24%) — worth watching
+
+📌 KXFTA
+   Title: Will Trump make a new free trade agreement with any country before Jan 20, 2029?
+   Market: KXFTA-29
+   Yes: 59% | No: 46%
+   Volume: 21,529
+   ⚡ High volume: 21,529
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXFTAPRC
+   Title: Will Trump make a new free trade agreement with China before Jan 20, 2029?
+   Market: KXFTAPRC-29
+   Yes: 29% | No: 72%
+   Volume: 42,596
+   ⚡ High volume: 42,596
+   ⚡ Underdog territory (29%) — worth watching
+
+📌 KXWITHDRAW
+   Title: Will the U.S. withdraw from World Trade Organization before Jan 20, 2029?
+   Market: KXWITHDRAW-29-WTO
+   Yes: 35% | No: 67%
+   Volume: 2,864
+   ⚡ Near 50/50 — potential mispricing opportunity
+   ⚡ Underdog territory (35%) — worth watching
+
+📌 KXTERMLIMITS
+   Title: Will a constitutional amendment requiring term limits for Congress happen during Trump's term?
+   Market: KXTERMLIMITS-29
+   Yes: 8% | No: 94%
+   Volume: 6,831
+   ⚡ High volume: 6,831
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXSTATE
+   Title: Will the United States add another state before date?
+   Market: KXSTATE-29
+   Yes: 15% | No: 88%
+   Volume: 49,865
+   ⚡ High volume: 49,865
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGREENTERRITORY
+   Title: Will the United States acquire any part of Greenland before Jan 1, 2027?
+   Market: KXGREENTERRITORY-29-27
+   Yes: 15% | No: 86%
+   Volume: 241,351
+   ⚡ High volume: 241,351
+   ⚡ Underdog territory (15%) — worth watching
+
+📌 KXGREENTERRITORY
+   Title: Will the United States acquire any part of Greenland before Apr 1, 2026?
+   Market: KXGREENTERRITORY-29-26APR
+   Yes: 2% | No: 99%
+   Volume: 573,522
+   ⚡ High volume: 573,522
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXGREENTERRITORY
+   Title: Will the United States acquire any part of Greenland before 2029?
+   Market: KXGREENTERRITORY-29
+   Yes: 40% | No: 61%
+   Volume: 2,374,600
+   ⚡ High volume: 2,374,600
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXCANTERRITORY
+   Title: Will the United States acquire any part of Canada before 2029?
+   Market: KXCANTERRITORY-29
+   Yes: 17% | No: 86%
+   Volume: 99,819
+   ⚡ High volume: 99,819
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXCANAL
+   Title: Will Trump take back the Panama Canal?
+   Market: KXCANAL-29
+   Yes: 31% | No: 71%
+   Volume: 486,480
+   ⚡ High volume: 486,480
+   ⚡ Underdog territory (31%) — worth watching
+
+📌 KXGREENLAND
+   Title: Will Trump buy Greenland?
+   Market: KXGREENLAND-29-26MAY
+   Yes: 3% | No: 98%
+   Volume: 1,869,156
+   ⚡ High volume: 1,869,156
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXGREENLAND
+   Title: Will Trump buy Greenland?
+   Market: KXGREENLAND-29
+   Yes: 27% | No: 74%
+   Volume: 3,199,599
+   ⚡ High volume: 3,199,599
+   ⚡ Underdog territory (27%) — worth watching
+
+📌 KXTRUMPRESIGN
+   Title: Will President Trump resign before his term is up?
+   Market: KXTRUMPRESIGN
+   Yes: 18% | No: 84%
+   Volume: 151,646
+   ⚡ High volume: 151,646
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXIMPEACH
+   Title: Will the President be impeached before Jun 1, 2026?
+   Market: KXIMPEACH-26-JUN01
+   Yes: 4% | No: 97%
+   Volume: 742,841
+   ⚡ High volume: 742,841
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXTRUMPREMOVE
+   Title: Will Trump be impeached and removed from office?
+   Market: KXTRUMPREMOVE
+   Yes: 23% | No: 79%
+   Volume: 266,210
+   ⚡ High volume: 266,210
+   ⚡ Underdog territory (23%) — worth watching
+
+📌 KXAMEND25
+   Title: Will the 25th Amendment be used during Trump's Presidency?
+   Market: KXAMEND25-29
+   Yes: 33% | No: 71%
+   Volume: 30,471
+   ⚡ High volume: 30,471
+   ⚡ Underdog territory (33%) — worth watching
+
+📌 KXSCOURT
+   Title: Will Mike Lee become the next Justice on the Supreme Court?
+   Market: KXSCOURT-29-ML
+   Yes: 1% | No: 100%
+   Volume: 5,830
+   ⚡ High volume: 5,830
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXSCOTUSRESIGN
+   Title: Will Clarence Thomas resign during Trump's term?
+   Market: KXSCOTUSRESIGN-29-CT
+   Yes: 52% | No: 51%
+   Volume: 23,238
+   ⚡ High volume: 23,238
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXSCOTUSRESIGN
+   Title: Will Sonia Sotomayor resign during Trump's term?
+   Market: KXSCOTUSRESIGN-29-SS
+   Yes: 8% | No: 95%
+   Volume: 6,840
+   ⚡ High volume: 6,840
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXSCOTUSPOWER
+   Title: What will the Supreme Court look like at the end of Trump's term?
+   Market: KXSCOTUSPOWER-29-29JAN20-R0-0
+   Yes: 8% | No: 93%
+   Volume: 5,026
+   ⚡ High volume: 5,026
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXVETOOVERRIDE
+   Title: Will Congress override Trump's veto before 2027?
+   Market: KXVETOOVERRIDE-29JAN20-27
+   Yes: 18% | No: 87%
+   Volume: 8,782
+   ⚡ High volume: 8,782
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXVETOOVERRIDE
+   Title: Will Congress ever override Trump's veto?
+   Market: KXVETOOVERRIDE-29JAN20
+   Yes: 41% | No: 65%
+   Volume: 13,198
+   ⚡ High volume: 13,198
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-MKEL
+   Yes: 2% | No: 99%
+   Volume: 244,543
+   ⚡ High volume: 244,543
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-JOSS
+   Yes: 3% | No: 98%
+   Volume: 687,470
+   ⚡ High volume: 687,470
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-JDIM
+   Yes: 1% | No: 100%
+   Volume: 289,740
+   ⚡ High volume: 289,740
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-TWAL
+   Yes: 1% | No: 100%
+   Volume: 57,566
+   ⚡ High volume: 57,566
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-WMOO
+   Yes: 2% | No: 99%
+   Volume: 342,228
+   ⚡ High volume: 342,228
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-VRAM
+   Yes: 1% | No: 100%
+   Volume: 174,228
+   ⚡ High volume: 174,228
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-TGAB
+   Yes: 1% | No: 100%
+   Volume: 378,092
+   ⚡ High volume: 378,092
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-SSMI
+   Yes: 2% | No: 99%
+   Volume: 878,290
+   ⚡ High volume: 878,290
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-RDES
+   Yes: 3% | No: 98%
+   Volume: 692,233
+   ⚡ High volume: 692,233
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXPRESPERSON
+   Title: Who will win the next presidential election?
+   Market: KXPRESPERSON-28-NHAL
+   Yes: 1% | No: 100%
+   Volume: 86,684
+   ⚡ High volume: 86,684
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXPRESPARTY
+   Title: Will Republican win the Presidency in 2028?
+   Market: KXPRESPARTY-2028-R
+   Yes: 46% | No: 55%
+   Volume: 142,504
+   ⚡ High volume: 142,504
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXPRESPARTY
+   Title: Will Democratic win the Presidency in 2028?
+   Market: KXPRESPARTY-2028-D
+   Yes: 55% | No: 46%
+   Volume: 102,952
+   ⚡ High volume: 102,952
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 POWER
+   Title: Will the Republican party win the House, the Republican party win the Senate, and the Republican party win the Presidency?
+   Market: POWER-28-RH-RS-RP
+   Yes: 22% | No: 82%
+   Volume: 30,826
+   ⚡ High volume: 30,826
+   ⚡ Underdog territory (22%) — worth watching
+
+📌 POWER
+   Title: Will the Republican party win the House, the Republican party win the Senate, and the Democratic party win the Presidency?
+   Market: POWER-28-RH-RS-DP
+   Yes: 5% | No: 96%
+   Volume: 11,174
+   ⚡ High volume: 11,174
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 POWER
+   Title: Will the Republican party win the House, the Democratic party win the Senate, and the Republican party win the Presidency?
+   Market: POWER-28-RH-DS-RP
+   Yes: 4% | No: 98%
+   Volume: 6,565
+   ⚡ High volume: 6,565
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 POWER
+   Title: Will the Republican party win the House, the Democratic party win the Senate, and the Democratic party win the Presidency?
+   Market: POWER-28-RH-DS-DP
+   Yes: 3% | No: 98%
+   Volume: 8,091
+   ⚡ High volume: 8,091
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 POWER
+   Title: Will the Democratic party win the House, the Republican party win the Senate, and the Democratic party win the Presidency?
+   Market: POWER-28-DH-RS-DP
+   Yes: 21% | No: 84%
+   Volume: 15,529
+   ⚡ High volume: 15,529
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 POWER
+   Title: Will the Democratic party win the House, the Democratic party win the Senate, and the Republican party win the Presidency?
+   Market: POWER-28-DH-DS-RP
+   Yes: 5% | No: 97%
+   Volume: 5,935
+   ⚡ High volume: 5,935
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 POWER
+   Title: Will the Democratic party win the House, the Democratic party win the Senate, and the Democratic party win the Presidency?
+   Market: POWER-28-DH-DS-DP
+   Yes: 38% | No: 64%
+   Volume: 43,291
+   ⚡ High volume: 43,291
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 SENATEOH
+   Title: Will Democratics win the Senate race in Ohio?
+   Market: SENATEOH-28-D
+   Yes: 36% | No: 68%
+   Volume: 5,465
+   ⚡ High volume: 5,465
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 SENATENC
+   Title: Will Republicans win the Senate race in North Carolina?
+   Market: SENATENC-26-R
+   Yes: 21% | No: 80%
+   Volume: 62,100
+   ⚡ High volume: 62,100
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 SENATEGA
+   Title: Will Republicans win the Senate race in Georgia?
+   Market: SENATEGA-26-R
+   Yes: 21% | No: 80%
+   Volume: 64,280
+   ⚡ High volume: 64,280
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 KXOAIANTH
+   Title: Will Open AI or Anthropic IPO first?
+   Market: KXOAIANTH-40-ANTH
+   Yes: 53% | No: 52%
+   Volume: 33,799
+   ⚡ High volume: 33,799
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXOAIANTH
+   Title: Will OpenAI or Anthropic IPO first?
+   Market: KXOAIANTH-40-OAI
+   Yes: 54% | No: 49%
+   Volume: 31,365
+   ⚡ High volume: 31,365
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXLIVENATIONUS
+   Title: Will the DOJ win their antitrust lawsuit against Live Nation before Jan 1, 2030?
+   Market: KXLIVENATIONUS-30-JAN01
+   Yes: 54% | No: 51%
+   Volume: 11,677
+   ⚡ High volume: 11,677
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXAMAZONFTC
+   Title: Will a court find that Amazon has illegally maintained a monopoly?
+   Market: AMAZONFTC-29DEC31
+   Yes: 60% | No: 42%
+   Volume: 18,630
+   ⚡ High volume: 18,630
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXJPMCEONEW
+   Title: Will Marianne Lake succeed Jamie Dimon as CEO of JPMorgan?
+   Market: KXJPMCEONEW-30-ML
+   Yes: 49% | No: 55%
+   Volume: 5,951
+   ⚡ High volume: 5,951
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXZELENSKYPUTIN
+   Title: Volodymyr Zelenskyy and Vladimir Putin meet before Jan 1, 2027?
+   Market: KXZELENSKYPUTIN-29-27
+   Yes: 33% | No: 69%
+   Volume: 24,670
+   ⚡ High volume: 24,670
+   ⚡ Underdog territory (33%) — worth watching
+
+📌 KXZELENSKYPUTIN
+   Title: Volodymyr Zelenskyy and Vladimir Putin meet before Jul 1, 2026?
+   Market: KXZELENSKYPUTIN-29-26JUL
+   Yes: 19% | No: 84%
+   Volume: 42,586
+   ⚡ High volume: 42,586
+   ⚡ Underdog territory (19%) — worth watching
+
+📌 KXZELENSKYPUTIN
+   Title: Volodymyr Zelenskyy and Vladimir Putin meet before Jan 20, 2029?
+   Market: KXZELENSKYPUTIN-29-VPUT
+   Yes: 59% | No: 43%
+   Volume: 47,798
+   ⚡ High volume: 47,798
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Title: Will the U.S. State Department issue a Level 4 warning for Taiwan before Jan 1, 2030?
+   Market: KXTAIWANLVL4-30JAN01
+   Yes: 54% | No: 51%
+   Volume: 8,797
+   ⚡ High volume: 8,797
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Title: Will the U.S. State Department issue a Level 4 warning for Taiwan before Jan 1, 2029?
+   Market: KXTAIWANLVL4-29JAN01
+   Yes: 47% | No: 58%
+   Volume: 9,465
+   ⚡ High volume: 9,465
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Title: Will the U.S. State Department issue a Level 4 warning for Taiwan before Jan 1, 2028?
+   Market: KXTAIWANLVL4-28JAN01
+   Yes: 38% | No: 67%
+   Volume: 6,079
+   ⚡ High volume: 6,079
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXTAIWANLVL4
+   Title: Will the U.S. State Department issue a Level 4 warning for Taiwan before Jan 1, 2027?
+   Market: KXTAIWANLVL4-27JAN01
+   Yes: 26% | No: 76%
+   Volume: 77,791
+   ⚡ High volume: 77,791
+   ⚡ Underdog territory (26%) — worth watching
+
+📌 KXRECOGROC
+   Title: Will Trump recognize Somaliland?
+   Market: KXRECOGROC-29
+   Yes: 16% | No: 88%
+   Volume: 12,244
+   ⚡ High volume: 12,244
+   ⚡ Underdog territory (16%) — worth watching
+
+📌 KXUSAKIM
+   Title: Will Kim Jong-Un visit the United States during Trump's term?
+   Market: KXUSAKIM-29
+   Yes: 21% | No: 83%
+   Volume: 5,455
+   ⚡ High volume: 5,455
+   ⚡ Underdog territory (21%) — worth watching
+
+📌 KXABRAHAMSA
+   Title: Will Israel and Syria normalize relations before Jan 1, 2027?
+   Market: KXABRAHAMSA-27-JAN01-SYR
+   Yes: 23% | No: 82%
+   Volume: 21,637
+   ⚡ High volume: 21,637
+   ⚡ Underdog territory (23%) — worth watching
+
+📌 KXABRAHAMSA
+   Title: Will Israel and Indonesia normalize relations before Jan 1, 2027?
+   Market: KXABRAHAMSA-27-JAN01-INDO
+   Yes: 18% | No: 83%
+   Volume: 12,006
+   ⚡ High volume: 12,006
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXABRAHAMSA
+   Title: Will Israel and Oman normalize relations before Jan 1, 2027?
+   Market: KXABRAHAMSA-27-JAN01-OMAN
+   Yes: 18% | No: 83%
+   Volume: 9,538
+   ⚡ High volume: 9,538
+   ⚡ Underdog territory (18%) — worth watching
+
+📌 KXABRAHAMSY
+   Title: Will Israel and Syria normalize relations before Jan 20, 2029?
+   Market: KXABRAHAMSY-29-JAN20
+   Yes: 34% | No: 67%
+   Volume: 29,638
+   ⚡ High volume: 29,638
+   ⚡ Underdog territory (34%) — worth watching
+
+📌 KXNBA
+   Title: Will the Washington win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-WAS
+   Yes: 1% | No: 100%
+   Volume: 6,131
+   ⚡ High volume: 6,131
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Utah win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-UTA
+   Yes: 1% | No: 100%
+   Volume: 22,188
+   ⚡ High volume: 22,188
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Toronto win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-TOR
+   Yes: 1% | No: 100%
+   Volume: 589,721
+   ⚡ High volume: 589,721
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Sacramento win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-SAC
+   Yes: 1% | No: 100%
+   Volume: 35,717
+   ⚡ High volume: 35,717
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Portland win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-POR
+   Yes: 1% | No: 100%
+   Volume: 71,450
+   ⚡ High volume: 71,450
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Phoenix win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-PHX
+   Yes: 1% | No: 100%
+   Volume: 495,377
+   ⚡ High volume: 495,377
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Philadelphia win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-PHI
+   Yes: 2% | No: 99%
+   Volume: 1,348,435
+   ⚡ High volume: 1,348,435
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Orlando win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-ORL
+   Yes: 1% | No: 100%
+   Volume: 412,911
+   ⚡ High volume: 412,911
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNBA
+   Title: Will the Oklahoma City win the 2026 Pro Basketball Finals?
+   Market: KXNBA-26-OKC
+   Yes: 40% | No: 61%
+   Volume: 2,502,291
+   ⚡ High volume: 2,502,291
+   ⚡ Near 50/50 — potential mispricing opportunity
+
+📌 KXNFLMVP
+   Title: Will Tyler Shough win the MVP?
+   Market: KXNFLMVP-27-TSHO
+   Yes: 2% | No: 100%
+   Volume: 27,740
+   ⚡ High volume: 27,740
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNFLMVP
+   Title: Will Trevor Lawrence win the MVP?
+   Market: KXNFLMVP-27-TLAR
+   Yes: 4% | No: 97%
+   Volume: 6,615
+   ⚡ High volume: 6,615
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXNFLMVP
+   Title: Will Sam Darnold win the MVP?
+   Market: KXNFLMVP-27-SDAR
+   Yes: 4% | No: 97%
+   Volume: 35,466
+   ⚡ High volume: 35,466
+   ⚡ Very low odds (4%) — contrarian long?
+
+📌 KXNFLMVP
+   Title: Will Patrick Mahomes win the MVP?
+   Market: KXNFLMVP-27-PMAH
+   Yes: 7% | No: 94%
+   Volume: 7,936
+   ⚡ High volume: 7,936
+   ⚡ Very low odds (7%) — contrarian long?
+
+📌 KXNFLMVP
+   Title: Will Matthew Stafford win the MVP?
+   Market: KXNFLMVP-27-MSTA
+   Yes: 5% | No: 96%
+   Volume: 27,952
+   ⚡ High volume: 27,952
+   ⚡ Very low odds (5%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Washington Capitals win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-WSH
+   Yes: 2% | No: 99%
+   Volume: 231,865
+   ⚡ High volume: 231,865
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Winnipeg Jets win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-WPG
+   Yes: 1% | No: 100%
+   Volume: 55,145
+   ⚡ High volume: 55,145
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Vegas Golden Knights win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-VGK
+   Yes: 8% | No: 93%
+   Volume: 278,578
+   ⚡ High volume: 278,578
+   ⚡ Very low odds (8%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Vancouver Canucks win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-VAN
+   Yes: 1% | No: 100%
+   Volume: 38,246
+   ⚡ High volume: 38,246
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Utah Mammoth win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-UTA
+   Yes: 3% | No: 98%
+   Volume: 567,580
+   ⚡ High volume: 567,580
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Toronto Maple Leafs win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-TOR
+   Yes: 1% | No: 100%
+   Volume: 182,790
+   ⚡ High volume: 182,790
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Tampa Bay Lightning win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-TB
+   Yes: 17% | No: 84%
+   Volume: 521,765
+   ⚡ High volume: 521,765
+   ⚡ Underdog territory (17%) — worth watching
+
+📌 KXNHL
+   Title: Will St. Louis Blues win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-STL
+   Yes: 1% | No: 100%
+   Volume: 72,935
+   ⚡ High volume: 72,935
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Title: Will San Jose Sharks win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-SJ
+   Yes: 1% | No: 100%
+   Volume: 476,940
+   ⚡ High volume: 476,940
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXNHL
+   Title: Will Seattle Kraken win the 2025-26 Stanley Cup Finals?
+   Market: KXNHL-26-SEA
+   Yes: 2% | No: 99%
+   Volume: 400,819
+   ⚡ High volume: 400,819
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Washington win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-WSH
+   Yes: 1% | No: 100%
+   Volume: 7,156
+   ⚡ High volume: 7,156
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Toronto win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-TOR
+   Yes: 6% | No: 95%
+   Volume: 70,885
+   ⚡ High volume: 70,885
+   ⚡ Very low odds (6%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Texas win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-TEX
+   Yes: 3% | No: 98%
+   Volume: 69,539
+   ⚡ High volume: 69,539
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Tampa Bay win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-TB
+   Yes: 1% | No: 100%
+   Volume: 18,409
+   ⚡ High volume: 18,409
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Title: Will St. Louis win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-STL
+   Yes: 1% | No: 100%
+   Volume: 37,485
+   ⚡ High volume: 37,485
+   ⚡ Very low odds (1%) — contrarian long?
+
+📌 KXMLB
+   Title: Will San Francisco win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-SF
+   Yes: 2% | No: 99%
+   Volume: 150,311
+   ⚡ High volume: 150,311
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Title: Will San Diego win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-SD
+   Yes: 3% | No: 98%
+   Volume: 199,588
+   ⚡ High volume: 199,588
+   ⚡ Very low odds (3%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Pittsburgh win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-PIT
+   Yes: 2% | No: 99%
+   Volume: 184,107
+   ⚡ High volume: 184,107
+   ⚡ Very low odds (2%) — contrarian long?
+
+📌 KXMLB
+   Title: Will Philadelphia win the 2026 Pro Baseball Championship?
+   Market: KXMLB-26-PHI
+   Yes: 6% | No: 95%
+   Volume: 58,098
+   ⚡ High volume: 58,098
+   ⚡ Very low odds (6%) — contrarian long?
+
+📌 KXBOXING
+   Title: Tyson Fury vs Arslanbek Makhmudov Winner?
+   Market: KXBOXING-26APR11TFURAMAK-AMAK
+   Yes: 25% | No: 79%
+   Volume: 6,726
+   ⚡ High volume: 6,726
+   ⚡ Underdog territory (25%) — worth watching
+
+📌 KXBOXING
+   Title: Mike Tyson vs Floyd Mayweather Winner?
+   Market: KXBOXING-26APR25MTYSFMAY-MTYS
+   Yes: 22% | No: 80%
+   Volume: 50,780
+   ⚡ High volume: 50,780
+   ⚡ Underdog territory (22%) — worth watching
+
+👁 WATCH LIST (82 markets)
+----------------------------------------
+  • KXBALANCE — Will Trump balance the budget?
+    Yes: 11% | Vol: 38,591
+  • KXDEBTGROWTH — Will the national debt hit $45 trillion during the Trump Administration?
+    Yes: 88% | Vol: 6,993
+  • KXGOVTCUTS — Will government spending decrease by 750 before 2028?
+    Yes: 20% | Vol: 4,908
+  • KXGOVTCUTS — Will government spending decrease by 2000 before 2028?
+    Yes: 10% | Vol: 8,316
+  • KXGOVTCUTS — Will government spending decrease by 1000 before 2028?
+    Yes: 13% | Vol: 13,145
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 11% | Vol: 33,262
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 3% | Vol: 2,439
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 4% | Vol: 3,024
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 5% | Vol: 965
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 5% | Vol: 561
+  • KXU3MAX — How high will unemployment get before 2027?
+    Yes: 6% | Vol: 3,005
+  • KXCAPCONTROL — Will Trump impose capital controls before 2029?
+    Yes: 22% | Vol: 4,743
+  • KXWITHDRAW — Will the U.S. withdraw from United Nations before Jan 20, 2029?
+    Yes: 16% | Vol: 4,496
+  • KXWITHDRAW — Will the U.S. withdraw from OECD before Jan 20, 2029?
+    Yes: 21% | Vol: 1,014
+  • KXWITHDRAW — Will the U.S. withdraw from Inter-American Development Bank before Jan 20, 2029?
+    Yes: 19% | Vol: 132
+
+📋 MONITORING (14 markets — no clear edge)
+----------------------------------------
+  • KXWITHDRAW | Yes: 12%
+  • KXWITHDRAW | Yes: 14%
+  • KXSCOURT | Yes: 10%
+  • KXSCOTUSPOWER | Yes: 74%
+  • SENATEPA | Yes: 72%
+  • SENATEOH | Yes: 66%
+  • SENATEGA | Yes: 70%
+  • SENATEFL | Yes: 85%
+  • KXABRAHAMSA | Yes: 14%
+  • KXABRAHAMSA | Yes: 68%
+
+============================================================
+Total markets analyzed: 223
+High value: 127 | Watch list: 82
+============================================================

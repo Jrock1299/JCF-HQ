@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(ls -lt /root/.openclaw/agents/crisp/*.log /root/.openclaw/agents/crisp/*.csv)",
+      "Bash(ls -lt /root/.openclaw/agents/blade/*.log /root/.openclaw/agents/blade/*.csv)",
+      "Read(//var/spool/cron/crontabs/**)",
+      "Bash(crontab -l)",
+      "Bash(grep -rn \"target\\\\|telegram\\\\|\\\\-t \" /root/.openclaw/agents/blade/ --include=*.sh --include=*.py)",
+      "Bash(echo \"SPX500 refs in crisp: $?\")",
+      "Bash(crontab -)"
+    ]
+  }
+}

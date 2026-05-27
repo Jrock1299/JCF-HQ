@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "updated_at": "2026-04-05T12:27:07.637627+00:00",
+  "weights": {
+    "liquidity_sweep": {
+      "base_weight": 25,
+      "max_contribution": 35,
+      "min_score_alone": 70
+    },
+    "poc_reaction": {
+      "base_weight": 20,
+      "max_contribution": 30,
+      "min_score_alone": 75
+    },
+    "fvg_fill": {
+      "base_weight": 20,
+      "max_contribution": 30,
+      "min_score_alone": 75
+    },
+    "sr_reaction": {
+      "base_weight": 18,
+      "max_contribution": 28,
+      "min_score_alone": 80
+    },
+    "trend_alignment": {
+      "base_weight": 15,
+      "max_contribution": 20,
+      "min_score_alone": null
+    },
+    "orb_breakout": {
+      "base_weight": 10,
+      "max_contribution": 15,
+      "min_score_alone": null
+    },
+    "volume_confirmation": {
+      "base_weight": 8,
+      "max_contribution": 12,
+      "min_score_alone": null
+    },
+    "multi_timeframe": {
+      "base_weight": 10,
+      "max_contribution": 15,
+      "min_score_alone": null
+    }
+  },
+  "threshold": 65,
+  "history": [
+    {
+      "version": 1,
+      "date": "2026-04-05",
+      "changes": "Initial weights"
+    }
+  ]
+}
