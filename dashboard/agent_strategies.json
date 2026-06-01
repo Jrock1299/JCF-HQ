@@ -1,6 +1,14 @@
 {
   "_note": "Central config for tunable agent thresholds. Agents read this at startup and fall back to their hardcoded defaults if a key or this file is missing.",
   "_updated": "2026-06-01",
+  "tao": {
+    "TOTAL_DCA_ENTRIES":     5,
+    "ROOT_STAKE_PCT":        50,
+    "SUBNET_STAKE_PCT":      50,
+    "DCA_COOLDOWN_HOURS":    48,
+    "DCA_DIP_THRESHOLD_PCT": 2.0,
+    "MIN_SUBNET_SCORE":      50
+  },
   "blade": {
     "_note_design": "D3 redesign: R-multiple TPs, weighted sizing, compounding, daily DD circuit breaker. Old keys retained as fallbacks.",
 

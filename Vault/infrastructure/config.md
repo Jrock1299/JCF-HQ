@@ -43,9 +43,22 @@ you actively change the JSON.
   },
   "sentinel": {
     "WATCHLIST_PATH":            "/root/.openclaw/dashboard/watchlist.json"
+  },
+  "tao": {
+    "TOTAL_DCA_ENTRIES":     5,
+    "ROOT_STAKE_PCT":        50,
+    "SUBNET_STAKE_PCT":      50,
+    "DCA_COOLDOWN_HOURS":    48,
+    "DCA_DIP_THRESHOLD_PCT": 2.0,
+    "MIN_SUBNET_SCORE":      50
   }
 }
 ```
+
+Tao migrated from `.env` to the central file on 2026-06-01. Secrets (wallet
+mnemonics, CoinGecko key, Telegram tokens) remain in `agents/tao/.env`.
+`.env` overrides for the strategy knobs are still honored if a value is set
+there — `os.getenv()` runs before the central JSON fallback.
 
 See:
 - [[../strategies/blade-d3-sizing]] for the D3 knob meanings

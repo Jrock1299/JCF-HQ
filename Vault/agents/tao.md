@@ -20,8 +20,11 @@ A 5-phase pipeline running on cron:
 - Entries 2-5: require price 2%+ below 7-day MA AND 48h cooldown since last entry
 - Knobs: `TOTAL_DCA_ENTRIES`, `ROOT_STAKE_PCT`, `SUBNET_STAKE_PCT`,
   `DCA_COOLDOWN_HOURS`, `DCA_DIP_THRESHOLD_PCT`, `MIN_SUBNET_SCORE`
-- Currently env-gated. Should migrate to
-  [[../infrastructure/config|agent_strategies.json]] for tunability.
+- **Sourced from [[../infrastructure/config|agent_strategies.json]]**
+  under the `"tao"` block as of 2026-06-01. Tao reads via
+  `load_strategy('tao', defaults)`; `.env` overrides are still honored if set
+  (none currently); hardcoded defaults are the final fallback. Secrets
+  (wallet mnemonics, CoinGecko key, Telegram tokens) remain in `agents/tao/.env`.
 
 ## Schedule (UTC)
 | Job | Cron |
@@ -38,7 +41,7 @@ A 5-phase pipeline running on cron:
 - `agents/tao/tao_dca_engine.py`
 - `agents/tao/tao_profit_monitor.py`
 - `agents/tao/tao_compounder.py`
-- `agents/tao/tao_config.py` (knobs — env-gated for now)
+- `agents/tao/tao_config.py` (knobs — sourced from `agent_strategies.json`)
 - `dashboard/tao_portfolio.json`
 
 ## Cross-agent connections

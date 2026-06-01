@@ -148,10 +148,41 @@ SESSION_INSTRUMENTS = {
     'LONDON': ['SPX500_USD', 'DE30_EUR', 'CHF_JPY'],
     'NY_PM':  ['SPX500_USD'],
 }
-# TODO: PIP_VALUE currently stores price increment per pip, not USD per unit per pip.
-# CHF_JPY and DE30_EUR P&L will be slightly mis-stated in paper accounting.
-# Fix before going live: split into pip_size and usd_per_unit_per_pip with FX conversion.
+# PIP_VALUE is the price-increment per "point" used for stop-placement math
+# (SL = ORB ± SL_BUFFER_POINTS × PIP_VALUE) and for the sizing divisor. It is
+# NOT the USD value of a pip — see usd_per_pt_per_unit() below for that.
 PIP_VALUE = {'SPX500_USD': 1.0, 'DE30_EUR': 1.0, 'CHF_JPY': 0.01}
+
+# Quote currency per instrument. Paper P&L is realized in this currency and
+# converted to USD via live OANDA mid prices (locked in at entry time so FX
+# noise doesn't smear strategy attribution after the position is open).
+QUOTE_CURRENCY = {'SPX500_USD': 'USD', 'DE30_EUR': 'EUR', 'CHF_JPY': 'JPY'}
+_fx_cache = {}
+
+def _fx_to_usd(currency: str) -> float:
+    """USD value of one unit of `currency`. EUR via EUR_USD mid; JPY via 1/USD_JPY mid.
+    Cached per-process; refreshed only when blade_bot restarts (new session)."""
+    if currency == 'USD':
+        return 1.0
+    if currency in _fx_cache:
+        return _fx_cache[currency]
+    try:
+        if currency == 'EUR':
+            rate = float(get_price('EUR_USD'))            # 1 EUR in USD
+        elif currency == 'JPY':
+            rate = 1.0 / float(get_price('USD_JPY'))      # 1 JPY in USD
+        else:
+            rate = 1.0
+    except Exception as e:
+        logging.warning(f"_fx_to_usd: rate fetch failed for {currency}: {e}; assuming 1.0")
+        rate = 1.0
+    _fx_cache[currency] = rate
+    return rate
+
+def usd_per_pt_per_unit(instrument: str) -> float:
+    """USD value of 1 unit × 1 price-point of move. Used for P&L accounting only.
+    SPX500_USD → 1.0 (USD-quoted). DE30_EUR → EUR/USD mid. CHF_JPY → 1/USD_JPY mid."""
+    return _fx_to_usd(QUOTE_CURRENCY.get(instrument, 'USD'))
 
 SESSION_TIMES = {
     'ASIA':   {'open': (0,  0), 'close': (6,  0)},
@@ -389,7 +420,8 @@ def place_orb_trade(instrument, direction, orb_high, orb_low, session_name):
         logging.error(f"place_orb_trade price {instrument}: {e}")
         return False
 
-    pip_val = PIP_VALUE[instrument]
+    pip_val   = PIP_VALUE[instrument]
+    usd_per_pt = usd_per_pt_per_unit(instrument)   # locked-in FX for this position's lifetime
 
     # ── Stop placement: structural (ORB level ± buffer) ──────────────────────
     if direction == 'long':
@@ -439,7 +471,7 @@ def place_orb_trade(instrument, direction, orb_high, orb_low, session_name):
 
     base = {
         'direction': direction, 'entry': entry, 'stop_loss': stop_loss,
-        'pip_value': pip_val, 'stop_pts': round(stop_pts, 4),
+        'pip_value': pip_val, 'usd_per_pt': usd_per_pt, 'stop_pts': round(stop_pts, 4),
         'breakeven_moved': False, 'open_time': now_iso,
         'orb_high': orb_high, 'orb_low': orb_low,
         'regime_at_entry':           ctx.get('regime', 'unknown'),
@@ -563,12 +595,13 @@ def manage_positions():
     for pos_key, pos in list(open_positions.items()):
         instrument, pos_num = pos_key.rsplit(':', 1)
         try:
-            price     = get_price(instrument)
-            direction = pos['direction']
-            entry     = pos['entry']
-            units     = pos['units']
-            pip_val   = pos['pip_value']
-            tp        = pos.get('tp')
+            price      = get_price(instrument)
+            direction  = pos['direction']
+            entry      = pos['entry']
+            units      = pos['units']
+            pip_val    = pos['pip_value']                              # for stop-distance math
+            usd_per_pt = pos.get('usd_per_pt', pos['pip_value'])       # for P&L; fallback = legacy behavior
+            tp         = pos.get('tp')
 
             # ── Trailing pos3: advance stop while in profit ─────────────────
             if pos_num == '3' and pos.get('trailing_active') and POS3_TRAIL:
@@ -592,8 +625,8 @@ def manage_positions():
             if tp is not None:
                 tp_hit = (price >= tp) if direction == 'long' else (price <= tp)
                 if tp_hit:
-                    pnl = (tp - entry) * units * pip_val if direction == 'long' \
-                          else (entry - tp) * units * pip_val
+                    pnl = (tp - entry) * units * usd_per_pt if direction == 'long' \
+                          else (entry - tp) * units * usd_per_pt
                     to_close.append((pos_key, f"TP{pos_num}", pnl, tp))
                     if pos_num == '1':
                         # pos1 fires → pos2 SL to BE; pos3 SL to BE + activate trail
@@ -616,14 +649,14 @@ def manage_positions():
             if hit_stop:
                 if pos.get('trailing_active') and pos_num == '3':
                     # Trail-out: close at trailed stop; R-mult = realized profit
-                    pnl = (stop - entry) * units * pip_val if direction == 'long' \
-                          else (entry - stop) * units * pip_val
+                    pnl = (stop - entry) * units * usd_per_pt if direction == 'long' \
+                          else (entry - stop) * units * usd_per_pt
                     result = 'TRAIL' if pnl > 0 else ('BE' if abs(pnl) < 0.01 else 'SL')
                 elif pos.get('breakeven_moved'):
                     pnl, result = 0.0, 'BE'
                 else:
-                    pnl = (price - entry) * units * pip_val if direction == 'long' \
-                          else (entry - price) * units * pip_val
+                    pnl = (price - entry) * units * usd_per_pt if direction == 'long' \
+                          else (entry - price) * units * usd_per_pt
                     result = 'SL'
                 close_price = stop if pos.get('trailing_active') else (entry if result == 'BE' else price)
                 to_close.append((pos_key, result, pnl, close_price))
@@ -655,8 +688,9 @@ def close_all_positions(reason="Session end"):
             price = get_price(instrument)
         except Exception:
             price = pos['entry']
-        pnl = (price - pos['entry']) * pos['units'] * pos['pip_value'] if pos['direction'] == 'long' \
-              else (pos['entry'] - price) * pos['units'] * pos['pip_value']
+        usd_per_pt = pos.get('usd_per_pt', pos['pip_value'])
+        pnl = (price - pos['entry']) * pos['units'] * usd_per_pt if pos['direction'] == 'long' \
+              else (pos['entry'] - price) * pos['units'] * usd_per_pt
         paper_balance += pnl
         _record_daily_pnl(pnl)
         update_trade_log(pos['trade_id'], "Time Stop", pnl, reason)
@@ -672,9 +706,11 @@ def _record_learning(pos, instrument, pos_num, outcome, pnl, close_price):
     Norman can validate the D3 design's thinnest assumption (n=3, all XAU,
     zero SPX500 in the priors) at the 100-cluster review.
 
-    R-multiple denominator = actual unit-risk (units × stop_pts × pip_value),
-    not the budgeted dollar risk — so unit-rounding doesn't distort R."""
-    actual_unit_risk = (pos.get('units', 0) or 0) * (pos.get('stop_pts', 0) or 0) * (pos.get('pip_value', 0) or 0)
+    R-multiple denominator = actual unit-risk in USD (units × stop_pts × usd_per_pt),
+    not the budgeted dollar risk — so unit-rounding doesn't distort R, and the
+    ratio stays dimensionless (USD/USD) on the non-USD-quoted pairs too."""
+    usd_per_pt = pos.get('usd_per_pt', pos.get('pip_value', 0)) or 0
+    actual_unit_risk = (pos.get('units', 0) or 0) * (pos.get('stop_pts', 0) or 0) * usd_per_pt
     r_mult = round(pnl / actual_unit_risk, 2) if actual_unit_risk else 0.0
 
     # Dedicated pos3-trail R-multiple field. Populated only when pos3 actually

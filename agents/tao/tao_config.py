@@ -10,6 +10,7 @@ import requests
 import sys
 sys.path.insert(0, "/root/.openclaw/scripts")
 from telegram_personalities import wrap_message as _wrap_tg
+from agent_config import load_strategy
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -32,13 +33,23 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "797062420")
 COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY", "")
 
-# Strategy config
-TOTAL_DCA_ENTRIES = int(os.getenv("TOTAL_DCA_ENTRIES", "5"))
-ROOT_STAKE_PCT = int(os.getenv("ROOT_STAKE_PCT", "50"))
-SUBNET_STAKE_PCT = int(os.getenv("SUBNET_STAKE_PCT", "50"))
-DCA_COOLDOWN_HOURS = int(os.getenv("DCA_COOLDOWN_HOURS", "48"))
-DCA_DIP_THRESHOLD_PCT = float(os.getenv("DCA_DIP_THRESHOLD_PCT", "2.0"))
-MIN_SUBNET_SCORE = int(os.getenv("MIN_SUBNET_SCORE", "50"))
+# Strategy config — central file (agent_strategies.json) wins; .env still
+# honored as override-of-override for ops convenience; hardcoded defaults are
+# the final fallback so the agent never crashes on a missing knob.
+_TAO_CFG = load_strategy('tao', {
+    'TOTAL_DCA_ENTRIES':     5,
+    'ROOT_STAKE_PCT':        50,
+    'SUBNET_STAKE_PCT':      50,
+    'DCA_COOLDOWN_HOURS':    48,
+    'DCA_DIP_THRESHOLD_PCT': 2.0,
+    'MIN_SUBNET_SCORE':      50,
+})
+TOTAL_DCA_ENTRIES     = int(os.getenv("TOTAL_DCA_ENTRIES",     _TAO_CFG['TOTAL_DCA_ENTRIES']))
+ROOT_STAKE_PCT        = int(os.getenv("ROOT_STAKE_PCT",        _TAO_CFG['ROOT_STAKE_PCT']))
+SUBNET_STAKE_PCT      = int(os.getenv("SUBNET_STAKE_PCT",      _TAO_CFG['SUBNET_STAKE_PCT']))
+DCA_COOLDOWN_HOURS    = int(os.getenv("DCA_COOLDOWN_HOURS",    _TAO_CFG['DCA_COOLDOWN_HOURS']))
+DCA_DIP_THRESHOLD_PCT = float(os.getenv("DCA_DIP_THRESHOLD_PCT", _TAO_CFG['DCA_DIP_THRESHOLD_PCT']))
+MIN_SUBNET_SCORE      = int(os.getenv("MIN_SUBNET_SCORE",      _TAO_CFG['MIN_SUBNET_SCORE']))
 
 
 class TaoConfig:

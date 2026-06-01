@@ -124,6 +124,41 @@ All in `dashboard/agent_strategies.json` `"blade"` block. See
 }
 ```
 
+## USD P&L conversion
+
+Adopted 2026-06-01 (accounting-only fix; no behavior change).
+
+`PIP_VALUE` historically stored two unrelated quantities in one dict — the
+price-increment-per-pip (used for stop placement) *and* the dollar value of
+that pip (used for P&L). For SPX500_USD they happen to be equal (1.0), so
+SPX500 P&L was correct. For DE30_EUR the price-point is denominated in EUR;
+for CHF_JPY in JPY. Paper P&L for those two was off.
+
+Now split:
+
+| Concept | Where | SPX500_USD | DE30_EUR | CHF_JPY |
+|---|---|---|---|---|
+| `PIP_VALUE[inst]` (pip-size) — stop placement only | `blade_bot.py:154` | `1.0` | `1.0` | `0.01` |
+| `usd_per_pt_per_unit(inst)` — P&L only | `blade_bot.py` | `1.0` | live `EUR_USD` mid | `1.0 / USD_JPY` mid |
+
+Each opened position stamps `usd_per_pt` at entry. All P&L computations
+(TP fills, SL fills, trail-outs, time-stop closes, and the R-multiple
+denominator in `_record_learning`) use the stamped value. Entry-time
+locking keeps strategy attribution clean — FX drift during the position's
+lifetime doesn't smear realized P&L.
+
+Sizing math (`int(per_pos_risk_$ / (stop_pts × pip_value))`) is **untouched**
+per scope. That preserves the design's stop-distance-based unit count and
+keeps backtest comparisons coherent.
+
+Sample 10-pt favorable move on 1000 units (live OANDA mid prices, 2026-06-01):
+
+| Instrument | OLD P&L (pip_value) | NEW P&L (usd_per_pt) | Δ |
+|---|---|---|---|
+| SPX500_USD | $10,000.00 | $10,000.00 | 0.00% |
+| DE30_EUR   | $10,000.00 | $11,633.60 (EUR_USD ≈ 1.163) | +16.34% |
+| CHF_JPY    | $1.00 (10 pips × 1000u × 0.01) | $0.6264 (10 pips × 1000u / 159.6) | -37.36% |
+
 ## Phase 2 gate — what Norman will validate
 Once `blade_learning_log.json` accumulates 100+ closed records:
 - Bucket trades by regime × strategist_aligned × Norman-verdict × ORB-quality

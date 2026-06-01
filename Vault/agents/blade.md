@@ -72,6 +72,12 @@ prep pings 10 min before each.
   [[../sessions/2026-06-01]].
 
 ## Known issues
-- `blade_bot.py:76-78` TODO: `PIP_VALUE` stores price-increment-per-pip, not
-  USD-per-unit-per-pip. CHF_JPY and DE30_EUR P&L slightly mis-stated in paper
-  accounting. Fix before live trading.
+- *(resolved 2026-06-01)* CHF_JPY and DE30_EUR P&L conflated price-increment
+  with USD-per-unit-per-pip. Now split: `PIP_VALUE` keeps its pip-size role
+  for stop placement, and a new `usd_per_pt_per_unit(instrument)` helper
+  resolves USD value via live OANDA mid (EUR_USD for DE30_EUR;
+  `1/USD_JPY` for CHF_JPY). FX rate is locked in at entry time per position
+  so attribution isn't smeared by intraday FX drift. **Accounting only** —
+  entry/exit/sizing logic untouched.
+  See [[../strategies/blade-d3-sizing#usd-pl-conversion]] and
+  [[../sessions/2026-06-01]] for the change record.
