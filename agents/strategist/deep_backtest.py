@@ -32,7 +32,7 @@ from hub_post import add_hub_message as hub_post
 sys.path.insert(0, "/root/.openclaw/agents/strategist")
 from strategy_engine import (
     fetch_candles, calc_indicators, ema_alignment, ema_slope_direction,
-    detect_fvg, detect_liquidity_levels, bb_squeeze_ratio, calc_adr,
+    bb_squeeze_ratio, calc_adr,
     detect_regime, monte_carlo, read_lens_bias, build_edge_map,
     OANDA_INSTRUMENTS, ALL_INSTRUMENTS, ADR_NORMAL,
 )

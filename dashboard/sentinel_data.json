@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-27T14:01:28.455130Z",
+  "last_updated": "2026-06-01T14:01:30.236772Z",
   "sources": {
     "finnhub": true,
     "fmp": true
@@ -61,12 +61,18 @@
     {
       "symbol": "VST",
       "category": "holdings",
-      "score": 115,
-      "buy_count": 5,
-      "sell_count": 0,
+      "score": 102,
+      "buy_count": 4,
+      "sell_count": 1,
       "total_buy_value": 0.0,
-      "total_sell_value": 0,
+      "total_sell_value": 824800.0,
       "insiders": [
+        {
+          "name": "Montemayor Margaret",
+          "type": "SELL",
+          "value": 824800.0,
+          "date": "2026-05-27"
+        },
         {
           "name": "Walters Robert Charles",
           "type": "BUY",
@@ -90,71 +96,39 @@
           "type": "BUY",
           "value": 0.0,
           "date": "2026-05-15"
-        },
-        {
-          "name": "Acosta Arcilia",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-15"
         }
       ],
-      "latest_date": "2026-05-15",
-      "on_watchlist": true,
-      "signal_type": "STRONG_BUY"
-    },
-    {
-      "symbol": "TEM",
-      "category": "holdings",
-      "score": 115,
-      "buy_count": 5,
-      "sell_count": 0,
-      "total_buy_value": 0.0,
-      "total_sell_value": 0,
-      "insiders": [
-        {
-          "name": "Frederick Wayne A.I.",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "West Nadja",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Doudna Jennifer A",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Leonsis Theodore",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Epstein David R",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        }
-      ],
-      "latest_date": "2026-05-21",
+      "latest_date": "2026-05-27",
       "on_watchlist": true,
       "signal_type": "STRONG_BUY"
     },
     {
       "symbol": "MSTR",
       "category": "holdings",
-      "score": 64,
+      "score": 67,
       "buy_count": 2,
-      "sell_count": 2,
+      "sell_count": 1,
       "total_buy_value": 5467.35,
-      "total_sell_value": 374337.5,
+      "total_sell_value": 206625.0,
       "insiders": [
+        {
+          "name": "Patten Jarrod M",
+          "type": "OTHER",
+          "value": 0.0,
+          "date": "2026-05-26"
+        },
+        {
+          "name": "Patten Jarrod M",
+          "type": "SELL",
+          "value": 206625.0,
+          "date": "2026-05-26"
+        },
+        {
+          "name": "Patten Jarrod M",
+          "type": "OTHER",
+          "value": 23317.5,
+          "date": "2026-05-26"
+        },
         {
           "name": "Le Phong",
           "type": "BUY",
@@ -166,27 +140,9 @@
           "type": "BUY",
           "value": 4970.5,
           "date": "2026-05-22"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "SELL",
-          "value": 167000.0,
-          "date": "2026-05-20"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "OTHER",
-          "value": 18654.0,
-          "date": "2026-05-20"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "SELL",
-          "value": 207337.5,
-          "date": "2026-05-20"
         }
       ],
-      "latest_date": "2026-05-22",
+      "latest_date": "2026-05-26",
       "on_watchlist": true,
       "signal_type": "BUY"
     },
@@ -231,6 +187,50 @@
         }
       ],
       "latest_date": "2026-05-21",
+      "on_watchlist": true,
+      "signal_type": "MIXED"
+    },
+    {
+      "symbol": "TEM",
+      "category": "holdings",
+      "score": 38,
+      "buy_count": 1,
+      "sell_count": 4,
+      "total_buy_value": 0.0,
+      "total_sell_value": 7763312.340000001,
+      "insiders": [
+        {
+          "name": "LEFKOFSKY ERIC P",
+          "type": "SELL",
+          "value": 4561412.31,
+          "date": "2026-05-27"
+        },
+        {
+          "name": "LEFKOFSKY ERIC P",
+          "type": "SELL",
+          "value": 1649238.57,
+          "date": "2026-05-27"
+        },
+        {
+          "name": "LEFKOFSKY ERIC P",
+          "type": "SELL",
+          "value": 1140271.02,
+          "date": "2026-05-27"
+        },
+        {
+          "name": "LEFKOFSKY ERIC P",
+          "type": "SELL",
+          "value": 412390.44,
+          "date": "2026-05-27"
+        },
+        {
+          "name": "Frederick Wayne A.I.",
+          "type": "BUY",
+          "value": 0.0,
+          "date": "2026-05-21"
+        }
+      ],
+      "latest_date": "2026-05-27",
       "on_watchlist": true,
       "signal_type": "MIXED"
     },
@@ -417,8 +417,14 @@
       "buy_count": 0,
       "sell_count": 5,
       "total_buy_value": 0,
-      "total_sell_value": 39450470.3672,
+      "total_sell_value": 38902723.4424,
       "insiders": [
+        {
+          "name": "Dabiri John",
+          "type": "SELL",
+          "value": 133750.0,
+          "date": "2026-05-27"
+        },
         {
           "name": "STEVENS MARK A",
           "type": "SELL",
@@ -442,15 +448,9 @@
           "type": "SELL",
           "value": 182840.98,
           "date": "2026-03-20"
-        },
-        {
-          "name": "Kress Colette",
-          "type": "SELL",
-          "value": 681496.92,
-          "date": "2026-03-20"
         }
       ],
-      "latest_date": "2026-03-20",
+      "latest_date": "2026-05-27",
       "on_watchlist": true,
       "signal_type": "SELL"
     },
@@ -547,12 +547,18 @@
     {
       "symbol": "VST",
       "category": "holdings",
-      "score": 115,
-      "buy_count": 5,
-      "sell_count": 0,
+      "score": 102,
+      "buy_count": 4,
+      "sell_count": 1,
       "total_buy_value": 0.0,
-      "total_sell_value": 0,
+      "total_sell_value": 824800.0,
       "insiders": [
+        {
+          "name": "Montemayor Margaret",
+          "type": "SELL",
+          "value": 824800.0,
+          "date": "2026-05-27"
+        },
         {
           "name": "Walters Robert Charles",
           "type": "BUY",
@@ -576,71 +582,39 @@
           "type": "BUY",
           "value": 0.0,
           "date": "2026-05-15"
-        },
-        {
-          "name": "Acosta Arcilia",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-15"
         }
       ],
-      "latest_date": "2026-05-15",
-      "on_watchlist": true,
-      "signal_type": "STRONG_BUY"
-    },
-    {
-      "symbol": "TEM",
-      "category": "holdings",
-      "score": 115,
-      "buy_count": 5,
-      "sell_count": 0,
-      "total_buy_value": 0.0,
-      "total_sell_value": 0,
-      "insiders": [
-        {
-          "name": "Frederick Wayne A.I.",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "West Nadja",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Doudna Jennifer A",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Leonsis Theodore",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        },
-        {
-          "name": "Epstein David R",
-          "type": "BUY",
-          "value": 0.0,
-          "date": "2026-05-21"
-        }
-      ],
-      "latest_date": "2026-05-21",
+      "latest_date": "2026-05-27",
       "on_watchlist": true,
       "signal_type": "STRONG_BUY"
     },
     {
       "symbol": "MSTR",
       "category": "holdings",
-      "score": 64,
+      "score": 67,
       "buy_count": 2,
-      "sell_count": 2,
+      "sell_count": 1,
       "total_buy_value": 5467.35,
-      "total_sell_value": 374337.5,
+      "total_sell_value": 206625.0,
       "insiders": [
+        {
+          "name": "Patten Jarrod M",
+          "type": "OTHER",
+          "value": 0.0,
+          "date": "2026-05-26"
+        },
+        {
+          "name": "Patten Jarrod M",
+          "type": "SELL",
+          "value": 206625.0,
+          "date": "2026-05-26"
+        },
+        {
+          "name": "Patten Jarrod M",
+          "type": "OTHER",
+          "value": 23317.5,
+          "date": "2026-05-26"
+        },
         {
           "name": "Le Phong",
           "type": "BUY",
@@ -652,27 +626,9 @@
           "type": "BUY",
           "value": 4970.5,
           "date": "2026-05-22"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "SELL",
-          "value": 167000.0,
-          "date": "2026-05-20"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "OTHER",
-          "value": 18654.0,
-          "date": "2026-05-20"
-        },
-        {
-          "name": "Patten Jarrod M",
-          "type": "SELL",
-          "value": 207337.5,
-          "date": "2026-05-20"
         }
       ],
-      "latest_date": "2026-05-22",
+      "latest_date": "2026-05-26",
       "on_watchlist": true,
       "signal_type": "BUY"
     }
@@ -861,8 +817,14 @@
       "buy_count": 0,
       "sell_count": 5,
       "total_buy_value": 0,
-      "total_sell_value": 39450470.3672,
+      "total_sell_value": 38902723.4424,
       "insiders": [
+        {
+          "name": "Dabiri John",
+          "type": "SELL",
+          "value": 133750.0,
+          "date": "2026-05-27"
+        },
         {
           "name": "STEVENS MARK A",
           "type": "SELL",
@@ -886,15 +848,9 @@
           "type": "SELL",
           "value": 182840.98,
           "date": "2026-03-20"
-        },
-        {
-          "name": "Kress Colette",
-          "type": "SELL",
-          "value": 681496.92,
-          "date": "2026-03-20"
         }
       ],
-      "latest_date": "2026-03-20",
+      "latest_date": "2026-05-27",
       "on_watchlist": true,
       "signal_type": "SELL"
     },
@@ -987,229 +943,45 @@
       "signal_type": "SELL"
     }
   ],
-  "discoveries": [
-    {
-      "symbol": "HIMS",
-      "score": 85,
-      "buy_count": 1,
-      "total_value": 1172974.0,
-      "insiders": [
-        {
-          "name": "WELLS DAVID B",
-          "value": 1172974.0,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "ENPH",
-      "score": 60,
-      "buy_count": 2,
-      "total_value": 337481.58,
-      "insiders": [
-        {
-          "name": "Kothandaraman Badrinarayanan",
-          "value": 41032.02,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        },
-        {
-          "name": "Kothandaraman Badrinarayanan",
-          "value": 296449.56,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "MULTI_BUY"
-    },
-    {
-      "symbol": "ULBI",
-      "score": 35,
-      "buy_count": 1,
-      "total_value": 458575.6374,
-      "insiders": [
-        {
-          "name": "WHITMORE BRADFORD T",
-          "value": 458575.64,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "GLP",
-      "score": 35,
-      "buy_count": 1,
-      "total_value": 244600.0,
-      "insiders": [
-        {
-          "name": "Global GP LLC",
-          "value": 244600.0,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "NMM",
-      "score": 20,
-      "buy_count": 1,
-      "total_value": 82316.43939999999,
-      "insiders": [
-        {
-          "name": "Frangou Angeliki",
-          "value": 82316.44,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    }
-  ],
-  "top_discoveries": [
-    {
-      "symbol": "HIMS",
-      "score": 85,
-      "buy_count": 1,
-      "total_value": 1172974.0,
-      "insiders": [
-        {
-          "name": "WELLS DAVID B",
-          "value": 1172974.0,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "ENPH",
-      "score": 60,
-      "buy_count": 2,
-      "total_value": 337481.58,
-      "insiders": [
-        {
-          "name": "Kothandaraman Badrinarayanan",
-          "value": 41032.02,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        },
-        {
-          "name": "Kothandaraman Badrinarayanan",
-          "value": 296449.56,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "MULTI_BUY"
-    },
-    {
-      "symbol": "ULBI",
-      "score": 35,
-      "buy_count": 1,
-      "total_value": 458575.6374,
-      "insiders": [
-        {
-          "name": "WHITMORE BRADFORD T",
-          "value": 458575.64,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "GLP",
-      "score": 35,
-      "buy_count": 1,
-      "total_value": 244600.0,
-      "insiders": [
-        {
-          "name": "Global GP LLC",
-          "value": 244600.0,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    },
-    {
-      "symbol": "NMM",
-      "score": 20,
-      "buy_count": 1,
-      "total_value": 82316.43939999999,
-      "insiders": [
-        {
-          "name": "Frangou Angeliki",
-          "value": 82316.44,
-          "date": "2026-05-26",
-          "source": "finnhub"
-        }
-      ],
-      "latest_date": "2026-05-26",
-      "discovery": true,
-      "signal_type": "INSIDER_BUY"
-    }
-  ],
+  "discoveries": [],
+  "top_discoveries": [],
   "insider_sentiment": [],
   "analyst_recommendations": [
     {
-      "symbol": "UUUU",
-      "buy": 7,
-      "hold": 1,
-      "sell": 1,
-      "strongBuy": 2,
-      "strongSell": 0,
-      "period": "2026-05-01"
-    },
-    {
       "symbol": "PLTR",
-      "buy": 15,
+      "buy": 14,
       "hold": 10,
       "sell": 1,
-      "strongBuy": 11,
+      "strongBuy": 12,
       "strongSell": 1,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
-      "symbol": "IREN",
-      "buy": 11,
-      "hold": 5,
+      "symbol": "OKLO",
+      "buy": 15,
+      "hold": 8,
       "sell": 1,
+      "strongBuy": 5,
+      "strongSell": 0,
+      "period": "2026-06-01"
+    },
+    {
+      "symbol": "VST",
+      "buy": 15,
+      "hold": 2,
+      "sell": 0,
       "strongBuy": 6,
       "strongSell": 0,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
       "symbol": "TEM",
       "buy": 9,
-      "hold": 8,
-      "sell": 0,
-      "strongBuy": 6,
+      "hold": 7,
+      "sell": 1,
+      "strongBuy": 5,
       "strongSell": 1,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
       "symbol": "SOFI",
@@ -1218,43 +990,16 @@
       "sell": 3,
       "strongBuy": 6,
       "strongSell": 1,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
-      "symbol": "USAR",
-      "buy": 8,
-      "hold": 1,
+      "symbol": "IONQ",
+      "buy": 12,
+      "hold": 3,
       "sell": 0,
       "strongBuy": 4,
       "strongSell": 0,
-      "period": "2026-05-01"
-    },
-    {
-      "symbol": "OKLO",
-      "buy": 16,
-      "hold": 6,
-      "sell": 1,
-      "strongBuy": 5,
-      "strongSell": 0,
-      "period": "2026-05-01"
-    },
-    {
-      "symbol": "AMD",
-      "buy": 30,
-      "hold": 13,
-      "sell": 0,
-      "strongBuy": 15,
-      "strongSell": 1,
-      "period": "2026-05-01"
-    },
-    {
-      "symbol": "VST",
-      "buy": 16,
-      "hold": 2,
-      "sell": 0,
-      "strongBuy": 6,
-      "strongSell": 0,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
       "symbol": "MSTR",
@@ -1263,164 +1008,268 @@
       "sell": 0,
       "strongBuy": 6,
       "strongSell": 0,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
+    },
+    {
+      "symbol": "NVDA",
+      "buy": 39,
+      "hold": 4,
+      "sell": 1,
+      "strongBuy": 24,
+      "strongSell": 0,
+      "period": "2026-06-01"
+    },
+    {
+      "symbol": "AMD",
+      "buy": 32,
+      "hold": 11,
+      "sell": 0,
+      "strongBuy": 14,
+      "strongSell": 0,
+      "period": "2026-06-01"
+    },
+    {
+      "symbol": "IREN",
+      "buy": 9,
+      "hold": 5,
+      "sell": 1,
+      "strongBuy": 6,
+      "strongSell": 0,
+      "period": "2026-06-01"
     },
     {
       "symbol": "ARM",
       "buy": 23,
       "hold": 14,
       "sell": 1,
-      "strongBuy": 6,
+      "strongBuy": 5,
       "strongSell": 1,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     },
     {
-      "symbol": "NVDA",
-      "buy": 42,
-      "hold": 4,
+      "symbol": "UUUU",
+      "buy": 7,
+      "hold": 1,
       "sell": 1,
-      "strongBuy": 24,
+      "strongBuy": 2,
       "strongSell": 0,
-      "period": "2026-05-01"
+      "period": "2026-06-01"
     }
   ],
   "earnings_calendar": [
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
       "epsEstimate": null,
       "hour": "",
       "quarter": 1,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "NTSK",
+      "symbol": "CELU",
       "year": 2026
     },
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
       "epsEstimate": null,
       "hour": "",
-      "quarter": 1,
+      "quarter": 3,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "RENT",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "YB",
+      "symbol": "GMHS",
       "year": 2026
     },
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
       "epsEstimate": null,
       "hour": "",
       "quarter": 1,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "BWTL",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "IGPK",
+      "symbol": "WDH",
       "year": 2026
     },
     {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.0714,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 202145323,
-      "symbol": "NTSK",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "HMBL",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "ALOT",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "FTII",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "KEN",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.2112,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 276009100,
-      "symbol": "LE",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
       "epsEstimate": null,
       "hour": "",
       "quarter": 2,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "DSL",
+      "symbol": "ASGI",
       "year": 2026
     },
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": 0.0606,
+      "epsEstimate": -0.2244,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 36744990,
+      "symbol": "GLOO",
+      "year": 2027
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 3,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "FTRS",
+      "year": 2025
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "BESS",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 3,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "ODC",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SBOX",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 4,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "KOAN",
+      "year": 2025
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": 0,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 9639000,
+      "symbol": "MIND",
+      "year": 2027
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "ZEPP",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "YQ",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "KAVL",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SRKE",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SRKE",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "COE",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": 0.0306,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 52667873,
+      "symbol": "MAMA",
+      "year": 2027
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": -0.3131,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 1035363625,
+      "symbol": "VFS",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": 0.0556,
       "hour": "",
       "quarter": 2,
       "revenueActual": null,
@@ -1429,520 +1278,443 @@
       "year": 2026
     },
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": -0.3978,
+      "epsEstimate": 0.306,
       "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 95563800,
-      "symbol": "DLTH",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.8425,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 193797450,
-      "symbol": "ZUMZ",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 0.0864,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 107256825,
-      "symbol": "CGNT",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.4646,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 691839900,
-      "symbol": "GES",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 0.0157,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1518446347,
-      "symbol": "WOOF",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 0.096,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 218089936,
-      "symbol": "CXM",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.0085,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 246393413,
-      "symbol": "CURV",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -1.0353,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 98350062,
-      "symbol": "CHPT",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 1.0886,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1389977919,
-      "symbol": "CRWD",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 2.4645,
-      "hour": "amc",
       "quarter": 2,
       "revenueActual": null,
-      "revenueEstimate": 22905839375,
-      "symbol": "AVGO",
+      "revenueEstimate": 11383200,
+      "symbol": "OCCI",
       "year": 2026
     },
     {
-      "date": "2026-06-03",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": 2.1709,
-      "hour": "amc",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 870719430,
-      "symbol": "VEEV",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.1938,
-      "hour": "bmo",
-      "quarter": 4,
-      "revenueActual": null,
-      "revenueEstimate": 46920,
-      "symbol": "VIVS",
-      "year": 2025
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": -0.0663,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 107922120,
-      "symbol": "DXLG",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 1.7155,
-      "hour": "amc",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 2482883377,
-      "symbol": "LULU",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-03",
-      "epsActual": null,
-      "epsEstimate": 1.5568,
-      "hour": "amc",
-      "quarter": 4,
-      "revenueActual": null,
-      "revenueEstimate": 9732408520,
-      "symbol": "MDT",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.1881,
-      "hour": "amc",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 3240213600,
-      "symbol": "PICS",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 0,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "RMCO",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": null,
+      "epsEstimate": 0.1779,
       "hour": "",
       "quarter": 2,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "HQL",
+      "symbol": "LVRO",
       "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": null,
+      "epsEstimate": -0.2754,
+      "hour": "",
+      "quarter": 3,
+      "revenueActual": null,
+      "revenueEstimate": 112409100,
+      "symbol": "CMTL",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": 0.1616,
       "hour": "",
       "quarter": 1,
       "revenueActual": null,
       "revenueEstimate": null,
-      "symbol": "JFIN",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": -0.0408,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1642240800,
-      "symbol": "GOTU",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "KITL",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": null,
-      "hour": "",
-      "quarter": 4,
-      "revenueActual": null,
-      "revenueEstimate": null,
-      "symbol": "GDST",
-      "year": 2025
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.5912,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 2398999710,
-      "symbol": "MOMO",
-      "year": 2026
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.8888,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 2020128270,
-      "symbol": "PVH",
+      "symbol": "GME",
       "year": 2027
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": 0.0058,
-      "hour": "bmo",
+      "epsEstimate": 0.6335,
+      "hour": "",
       "quarter": 1,
       "revenueActual": null,
-      "revenueEstimate": 189818895,
-      "symbol": "ODD",
+      "revenueEstimate": 593294118,
+      "symbol": "PLAY",
+      "year": 2027
+    },
+    {
+      "date": "2026-06-08",
+      "epsActual": null,
+      "epsEstimate": 0.357,
+      "hour": "",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": 136680000,
+      "symbol": "CVGW",
       "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": -0.5508,
+      "epsEstimate": 9.1062,
       "hour": "amc",
-      "quarter": 1,
+      "quarter": 3,
       "revenueActual": null,
-      "revenueEstimate": 257348040,
-      "symbol": "SPWH",
-      "year": 2027
+      "revenueEstimate": 1239579363,
+      "symbol": "MTN",
+      "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": -0.3366,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 123726000,
-      "symbol": "TLYS",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.9472,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 11147249932,
-      "symbol": "DG",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.7392,
-      "hour": "",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1235088185,
-      "symbol": "FIVE",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 0.305,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1551660383,
-      "symbol": "VSCO",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 0.3213,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 221699040,
-      "symbol": "CTRN",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.3646,
-      "hour": "bmo",
-      "quarter": 1,
-      "revenueActual": null,
-      "revenueEstimate": 1566438290,
-      "symbol": "SIG",
-      "year": 2027
-    },
-    {
-      "date": "2026-06-02",
-      "epsActual": null,
-      "epsEstimate": 1.0576,
+      "epsEstimate": -0.4624,
       "hour": "bmo",
       "quarter": 3,
       "revenueActual": null,
-      "revenueEstimate": 983384480,
-      "symbol": "DCI",
+      "revenueEstimate": 792518967,
+      "symbol": "CBRL",
       "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": 7.0063,
-      "hour": "amc",
-      "quarter": 1,
+      "epsEstimate": 0.4895,
+      "hour": "bmo",
+      "quarter": 3,
       "revenueActual": null,
-      "revenueEstimate": 3165802927,
-      "symbol": "ULTA",
-      "year": 2027
+      "revenueEstimate": 2409909237,
+      "symbol": "CPB",
+      "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-08",
       "epsActual": null,
-      "epsEstimate": 0.4663,
+      "epsEstimate": 0.3198,
+      "hour": "bmo",
+      "quarter": 4,
+      "revenueActual": null,
+      "revenueEstimate": 60551520,
+      "symbol": "GHM",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 3,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "FGPR",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 4,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SENEA",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 3,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "HERE",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "bmo",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "TOUR",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": -0.4284,
       "hour": "",
       "quarter": 1,
       "revenueActual": null,
-      "revenueEstimate": 226482636,
-      "symbol": "VRNT",
+      "revenueEstimate": 58989996,
+      "symbol": "DAWN",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": -0.3063,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 540516360,
+      "symbol": "GIII",
       "year": 2027
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-05",
       "epsActual": null,
-      "epsEstimate": 0.2115,
+      "epsEstimate": 0.0107,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 33263475,
+      "symbol": "ONTF",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": 0.883,
+      "hour": "bmo",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": 2235990085,
+      "symbol": "ABM",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-05",
+      "epsActual": null,
+      "epsEstimate": 0.1042,
       "hour": "amc",
       "quarter": 1,
       "revenueActual": null,
-      "revenueEstimate": 259649965,
-      "symbol": "GTLB",
-      "year": 2027
+      "revenueEstimate": 324292302,
+      "symbol": "CFLT",
+      "year": 2026
     },
     {
-      "date": "2026-06-02",
+      "date": "2026-06-04",
       "epsActual": null,
-      "epsEstimate": 0.9807,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 4,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "NBB",
+      "year": 2025
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
       "hour": "",
       "quarter": 2,
       "revenueActual": null,
-      "revenueEstimate": 686800170,
-      "symbol": "REVG",
+      "revenueEstimate": null,
+      "symbol": "ECF",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": 0.1209,
+      "hour": "amc",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": 93375022,
+      "symbol": "WLTH",
+      "year": 2027
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "CETY",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "MFON",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "BRST",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 4,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SENR",
+      "year": 2025
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "HURC",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 2,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "BCV",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "ILAL",
+      "year": 2026
+    },
+    {
+      "date": "2026-06-04",
+      "epsActual": null,
+      "epsEstimate": null,
+      "hour": "",
+      "quarter": 1,
+      "revenueActual": null,
+      "revenueEstimate": null,
+      "symbol": "SJ",
       "year": 2026
     }
   ],
   "economic_calendar": [],
   "market_news": [
     {
-      "headline": "Amazon starts selling its AI shopping technology to other retailers",
+      "headline": "Jim Cramer's top 10 things to watch in the stock market Monday",
       "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/05/27/amazon-ai-shopping-alexa-kate-spade.html",
-      "summary": "Amazon said it's already signed up Kate Spade as a customer for its AI shopping technology.",
-      "datetime": 1779887401,
+      "url": "https://www.cnbc.com/2026/06/01/jim-cramers-top-10-things-to-watch-in-the-stock-market-monday.html",
+      "summary": "Nvidia is going after the PC market, and the software stock comeback continues.",
+      "datetime": 1780318827,
       "related": "",
       "api": "finnhub"
     },
     {
-      "headline": "U.S. oil falls below $89 on report Iran agreement would restore Hormuz traffic in one month",
+      "headline": "Barry Diller's People to put in $18 billion bid for casino giant MGM Resorts",
       "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/05/27/oil-price-today-iran-war-strait-hormuz.html",
-      "summary": "U.S. crude oil prices fell about 6% Wednesday on a report Iran would restore traffic through the Strait of Hormuz as part of a framework deal with the U.S.",
-      "datetime": 1779885673,
+      "url": "https://www.cnbc.com/2026/06/01/mgm-resorts-barry-diller-people-bid.html",
+      "summary": "Barry Diller's People Inc. is preparing a bid for MGM Resorts at $48.30 per share.",
+      "datetime": 1780318140,
       "related": "",
       "api": "finnhub"
     },
     {
-      "headline": "Iran says draft U.S. deal would reopen Hormuz shipping, end naval blockade - Reuters",
+      "headline": "Wall St set for record highs as AI push eclipses US-Iran war worries - Reuters",
       "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPVHB3ZTljSEdNUGlta055MjFRSDNTZGg2WkZmWjdFOUZfRC1Xd2Q2V2FSWmRxd0xPSTBGel91Um5yN3BHRVhhTURxcUFZTHBJckZDU2hvenpkbWg3aGY3cjB1VERORDR6Z00zTEdEbzB4SlBhUG11UkpkcDRTT2lpZmZxNVoxaXNDbHJWUHdkT0Q3d2VqZHFraUY5alIwcGY2WWEtVV9lblgtMy1GOWRIVlU4eVpzU2s2dzVPZFltZC00UXM?oc=5",
-      "summary": "Iran says draft U.S. deal would reopen Hormuz shipping, end naval blockade\u00a0\u00a0Reuters",
-      "datetime": 1779885418,
+      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQcUNQekF0VTVYU1pWSkxuYnE4cklIRTliQzVsN2NLUlItQ0Jvd1Q5My1lQlZJTUZMQmZpaWxDN1YtY3RGY1h0R1BIeHlrbm1qcFhpU1dxZjhfTmFwVERDd0VsOUFxTHRBZzNfNFdCYkFqVDE1ODVXVGNxaEpTdTd3SjlGZGMwRDdtUFBWQ3RtOVZoOGtGZmZWRGtnOUotbmxYejNobloxaGFqV1dSUWJRek5VYw?oc=5",
+      "summary": "Wall St set for record highs as AI push eclipses US-Iran war worries\u00a0\u00a0Reuters",
+      "datetime": 1780317520,
       "related": "",
       "api": "finnhub"
     },
     {
-      "headline": "Oil prices drop as traders look for US-Iran talks progress - Reuters",
-      "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOdktTeHl4ZHpzZm0waURXVWVISGZtQzZhMDQxQzEwRkYxVnpzSV9HQzM5ZmVhSkxMSEg3SzdvV0xsMWNMSVBPVG5TbmhDMllLWVM0S2lISzhIZ2ZWU2dST2UwdEtETWZhcGF0VHM3RGxLcXllbG5GN0JtRkpubTRkRzNqbGxqN3pTRTc3ODdqdTFBdnB1WTBYM2MwOHp0VWdBRU16LQ?oc=5",
-      "summary": "Oil prices drop as traders look for US-Iran talks progress\u00a0\u00a0Reuters",
-      "datetime": 1779882929,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Lululemon settles proxy battle with founder Chip Wilson, agrees to two board nominees",
+      "headline": "The stock market just did something eerily similar to the dotcom bubble top in 2000",
       "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/05/27/lululemon-settles-proxy-battle-with-founder-chip-wilson.html",
-      "summary": "Lululemon has been battling with founder Chip Wilson since December, as he says the company has lost its strategic vision and needs a new board of directors.",
-      "datetime": 1779882757,
+      "url": "https://www.cnbc.com/2026/06/01/the-stock-market-just-did-something-eerily-similar-to-the-dotcom-bubble-top-in-2000.html",
+      "summary": "Surging stock performance in May was concentrated in the AI adjacent.",
+      "datetime": 1780314318,
       "related": "",
       "api": "finnhub"
     },
     {
-      "headline": "Iranian missile likely involved in attack on ship in Strait of Hormuz, South Korea says - Reuters",
-      "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQU0FvelZ2cHpUUW5qS3FpQ1NJMUVha1YtR2owWnJ1OEROem1MekVoQkVtWEMtTmxuOGFUQ3Q3QW9XVHd6bENOVjVsMVZ3Y2FFT0RYYkJpWHBfbG9meWxwM2tOck1GaTF1djA2Tnd6alNncGVmclhGNkZQX21YRmkzTWFpWU9QeV93OFk5eUhCMTRnc1Bwc0ZGbmJmckp2Q3BWZ2lDR1pGM1F6cHZFU2NkNnlfd05oZUJSd2VlcHVQMWdIZmhCZWhRT0NmS1c?oc=5",
-      "summary": "Iranian missile likely involved in attack on ship in Strait of Hormuz, South Korea says\u00a0\u00a0Reuters",
-      "datetime": 1779882269,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Gold falls as Mideast uncertainty clouds rate outlook - Reuters",
-      "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPNVZfYzNvRXo1cFItQS1KWHIxUHZ0eC1Cck8wZklZcGtFVC1Fal9GSjR2VnBYN1NxdTBsYWpwQ0Y4cjNtMkJKSkM1NnhvaURtdUFPTGg3Ym9nX0YwRHJXZnU4ODBObjhFQll0c3kwWEJYcUlTWWxwMGVjVk9MdUstNC1GSWZkYV9XUWJoNTQyUzktZTJibDdnMDFMOTVwZzJ3U1pYVGNDWVBPSXppSDZqVA?oc=5",
-      "summary": "Gold falls as Mideast uncertainty clouds rate outlook\u00a0\u00a0Reuters",
-      "datetime": 1779881890,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Shares rise, oil falls as markets weigh shaky US-Iran truce - Reuters",
-      "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQdV9qQk1melo5ZHFLUTQwdUptamlUWFQyVzRzZHNMVTkwVDdWcDgzaVhiYUMwSHZwU0VyTVJZT3lCMTRlTVozVnNEek1aNkNTdW1Ha1JmUXlweHhrbUZCX2dQb1ZZb052bFktd0ROSmhtNDVTblc0RjFpamdUeFFKX2NlRQ?oc=5",
-      "summary": "Shares rise, oil falls as markets weigh shaky US-Iran truce\u00a0\u00a0Reuters",
-      "datetime": 1779881856,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Energy bills in Britain to jump 13% on impact of Iran war - Reuters",
-      "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPU09xbER6aTRzTVV0MW16TkZIQUxzQWY3ZGtaSmNHdkNKanlOQ2FmT1FkOE5oeTNjelZqMVBsbmxuQTVkQUMwUEpEcElFTzM0MHNjVjNFcGZ5bkptU0hMNVdySkNVMm9zdHd0Mnlxa0JacFBEYzd6WkdaYmc0QVhlOFU5M2ExY1B1dDU5VC0zU29aMXpEWGVOdm8yNm9HcUhnOGpVdC1B?oc=5",
-      "summary": "Energy bills in Britain to jump 13% on impact of Iran war\u00a0\u00a0Reuters",
-      "datetime": 1779876232,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Taiwan chip stocks climb after Nvidia announces $150 billion spending plans",
+      "headline": "Nvidia, Meta and Schlumberger rank among top companies adopting AI, new study says",
       "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/05/27/nvidia-taiwan-investment-150-billion-spending.html",
-      "summary": "Mainland China-based chip giants such as Cambricon saw their shares tumble on Wednesday.",
-      "datetime": 1779874874,
+      "url": "https://www.cnbc.com/2026/06/01/nvidia-meta-walmart-among-top-companies-adopting-ai.html",
+      "summary": "The AI-Driven Enterprise Institute released new research that breaks down how well S&P 500 companies are adopting AI compared to their peers.",
+      "datetime": 1780311309,
       "related": "",
       "api": "finnhub"
     },
     {
-      "headline": "Treasury yields fall as investors remain optimistic on Iran peace deal prospects despite U.S. strikes",
-      "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/05/27/treasury-yields-investor-optimism-ceasefire-prospects-rise.html",
-      "summary": "The yield on the 10-year U.S. Treasury note \u2014 the key benchmark for U.S. government borrowing \u2014 fell more than 2 basis points to 4.465%.",
-      "datetime": 1779874287,
-      "related": "",
-      "api": "finnhub"
-    },
-    {
-      "headline": "Iran war splits global markets into clear winners and losers - Reuters",
+      "headline": "Morning Bid: AI and 1984 - Reuters",
       "source": "Reuters",
-      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPU3JBNm9iSW1POHNTQjJuVUFsOWFMSEU2T1ZLSEpQRHhPNkc3WWV5WEM2Z1ZBd1BTeTl3ZzVITEg4VjFsd0hGb1pzRG94N1E0STQwUTRVZnh6cDRYUGVuRUxJODAwelh4V0FJVmdBbFd1SWF4RnNSb1JaR3VvQW5JQl96bVBHLVpD?oc=5",
-      "summary": "Iran war splits global markets into clear winners and losers\u00a0\u00a0Reuters",
-      "datetime": 1779872281,
+      "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNQVZqWUVCWTB1UWNfZkR6Yk5GVjctaERlbm1tSFZwN0dBUzBTTUxQODhMdEQ4REdRQWt4Snh0TXd2SG91aU5UZVVqWmFUSWh0Q1JxX2pmWlZVNGkxelZkblRuMTBrcDViTTlncUxXTDUzU0FkekItRnpNcE9UcDhuTFQ3YVhxdlpLS0lidEtvYXZsRVh4NC1j?oc=5",
+      "summary": "Morning Bid: AI and 1984\u00a0\u00a0Reuters",
+      "datetime": 1780310703,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Treasury yields edge higher as U.S. and Iran exchange strikes",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/06/01/treasury-yields-us-iran-war-oil.html",
+      "summary": "Treasury yields rose Monday after the U.S. and Iran exchanged fire near the Strait of Hormuz.",
+      "datetime": 1780306498,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Iran says contradictory US positions, Israeli attacks on Lebanon delaying diplomacy - Reuters",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZnIxQXZjN2g5eGVDdkhRLXdlZENwOGFQQk8tamg4eW9sWU1IOVFaV3dFMk9TOGRtUDBRSzBUN1JYY2t2bVFXVDJJb1MtNnJoLU1sSVdWbUs1RkFlTzdWd3ViakVLbnRZb3V4c2pLWmFXX3J0NWctWXhtSUZqZ28yY1g4VlhmSW5pYm5QYkdDS3MyU3d0N3ZRTDdvcWJNT3IzeFhDQnVHUHNzRERlQXNwUDM5SDJRLVJOZVNaUTJnSE1KR1FJY2lSRDJ3N1Rqdw?oc=5",
+      "summary": "Iran says contradictory US positions, Israeli attacks on Lebanon delaying diplomacy\u00a0\u00a0Reuters",
+      "datetime": 1780305343,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Israel's Netanyahu orders attacks in Beirut's southern suburbs - Reuters",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOTGVNZ0JwVmtPajlZNnZFWU96LVZ4WlpjdjdlSGtsTzhta0JoTXR3WE9zQjFqV0tFalJ6dWNWVGVtQzRXRExaUlZGUURjVEpDdFVSaUdZb2k4WFNsblBVX0phMFNhN1N2dS0taVNOOFdORnlBQm0wQ1U5aUpUQV9COThOaThpWVBGY3RSWVZ5RjMwRkJCdVNQOHc3S0xSaWNZQ1Q1a19CQUlvejV1YlhYMk5TUEtRa3pSSGJkd0wtRGpYY1hBNVE?oc=5",
+      "summary": "Israel's Netanyahu orders attacks in Beirut's southern suburbs\u00a0\u00a0Reuters",
+      "datetime": 1780296900,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Trump says Iran really wants to make a deal with the US - Reuters",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQOWlIZXNlZGs2OUx6T1lmZW9qTDBFWTZYTWlGVThNNzB6WmtJTnNXX1puQUl5aDc0cnF1azFpdDhMem45T0dKQlQ5anctNm5sbG5KdGFJMWZ4azJqWkVQVHI1QVB5U0pqR2dHTWJMc0tSeU0zbjRtaS1sMnNVdWxDQWxORmQtRkxnTU1QNmVicmlCQmVWS25qSlNPTnVOWHl2dVE?oc=5",
+      "summary": "Trump says Iran really wants to make a deal with the US\u00a0\u00a0Reuters",
+      "datetime": 1780292040,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Morning Bid: Who needs oil when there's AI to buy? - Reuters",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1fcmIyR0F6Z2Q4VU9ZeTZBQVFqWkVJNUFXZ1Awa2lwb2FnbGhXckU5YTFSRXI1eGpBdERlS3huWWMxVWg3R041NzlnZHFsc2MxZU1XRHZENlB6aUFRWEd6TEFLV3NHMDNMeVZfRGNwNnhvbVQ2blYyYWkzbUVMLTQ?oc=5",
+      "summary": "Morning Bid: Who needs oil when there's AI to buy?\u00a0\u00a0Reuters",
+      "datetime": 1780288440,
+      "related": "",
+      "api": "finnhub"
+    },
+    {
+      "headline": "Kuwait comes under fire as US and Iran trade blows - Reuters",
+      "source": "Reuters",
+      "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOYmZseGFNR05tMVJiV2tLRjdhdUFTUkwyT3pSdVFYdTJYWDdCZ0tRR2JNU002UEtMVHA1TXhabGhlUlMxUkIyOEh5dTNMR0dIQk1FQmxqUDRhcFZaREtrQkMyci1NS2lycENBOWtqbEpQVV9lX3FGOEJXU19ROEtaS0o0bTg0TGV5NGhtcGhORy12aUo4dzVxUlY2UElhZDFUalVqeWZmbUotQ21jQWxPeE5LZFM3WkNSZjE4bTR6MVhsTWFvRGpIMlpzeGpwTXZVby1Za2k5TQ?oc=5",
+      "summary": "Kuwait comes under fire as US and Iran trade blows\u00a0\u00a0Reuters",
+      "datetime": 1780287420,
       "related": "",
       "api": "finnhub"
     }
@@ -1951,13 +1723,13 @@
     "total_market_txs": 100,
     "watchlist_txs": 55,
     "watchlist_signals": 11,
-    "watchlist_buys": 3,
-    "watchlist_strong_buys": 2,
-    "discoveries_found": 5,
+    "watchlist_buys": 2,
+    "watchlist_strong_buys": 1,
+    "discoveries_found": 0,
     "cluster_discoveries": 0,
     "upcoming_earnings": 50,
     "watchlist_tickers": 37
   },
   "watchlist_earnings": [],
-  "daily_digest": "VST [holdings]: STRONG_BUY | 5 insider(s) | $0 | TEM [holdings]: STRONG_BUY | 5 insider(s) | $0 | MSTR [holdings]: BUY | 2 insider(s) | $5k"
+  "daily_digest": "VST [holdings]: STRONG_BUY | 4 insider(s) | $0 | MSTR [holdings]: BUY | 2 insider(s) | $5k"
 }

@@ -6,6 +6,7 @@ market data fetching, and trade history logging.
 Paper trading only — uses paper-api.alpaca.markets.
 """
 
+import json
 import sys
 import requests
 import os
@@ -17,6 +18,11 @@ from jerry_config import (
     api, TRADE_HISTORY_PATH, DASHBOARD_PATH,
     get_logger, load_json, save_json, send_telegram,
 )
+from jerry_context import load_context, snapshot_for_trade
+
+# Phase 1: observation only — Jerry stamps team context onto every trade
+# and writes closed trades to a learning log, but does NOT gate any trade.
+LEARNING_LOG_PATH = '/root/.openclaw/dashboard/jerry_learning_log.json'
 
 log = get_logger('trader')
 
@@ -412,6 +418,14 @@ class JerryTrader:
                    thesis: str = '', notional: float = 0,
                    stop_loss: float = None, take_profit: float = None,
                    order_id: str = '', asset_type: str = 'stock') -> dict:
+        # Phase 1: stamp team-context onto the trade. Observation only — no gating.
+        try:
+            ctx = load_context()
+            ctx_fields = snapshot_for_trade(ctx, symbol, action)
+        except Exception as e:
+            log.warning('team-context snapshot failed: %s', e)
+            ctx_fields = {}
+
         trade = {
             'id':             order_id,
             'symbol':         symbol,
@@ -429,6 +443,7 @@ class JerryTrader:
             'opened_at':      datetime.now(timezone.utc).isoformat(),
             'closed_at':      None,
             'close_reason':   None,
+            **ctx_fields,
         }
         history = load_json(TRADE_HISTORY_PATH, [])
         if not isinstance(history, list):
@@ -473,6 +488,50 @@ class JerryTrader:
                 self._notify_exit(closed_trade, exit_price)
             except Exception as e:
                 log.error('exit notify error: %s', e)
+            try:
+                self._append_learning_log(closed_trade, exit_price, reason)
+            except Exception as e:
+                log.warning('learning-log append failed: %s', e)
+
+    @staticmethod
+    def _append_learning_log(trade: dict, exit_price: float, reason: str) -> None:
+        """Phase 1: append a context-tagged closed trade to the learning dataset.
+        Not read by any trading logic — pure observation for later analysis."""
+        record = {
+            'trade_id':                  trade.get('id'),
+            'symbol':                    trade.get('symbol'),
+            'action':                    trade.get('action'),
+            'asset_type':                trade.get('asset_type'),
+            'qty':                       trade.get('qty'),
+            'entry_price':               trade.get('price'),
+            'exit_price':                exit_price,
+            'opened_at':                 trade.get('opened_at'),
+            'closed_at':                 trade.get('closed_at'),
+            'close_reason':              reason,
+            'pnl':                       trade.get('pnl'),
+            'strategy_name':             trade.get('strategy_name'),
+            'regime_at_entry':           trade.get('regime_at_entry', 'unknown'),
+            'strategist_bias_at_entry':  trade.get('strategist_bias_at_entry', 'neutral'),
+            'lens_bias_at_entry':        trade.get('lens_bias_at_entry', 'neutral'),
+            'lens_confidence_at_entry':  trade.get('lens_confidence_at_entry'),
+            'lens_overall_at_entry':     trade.get('lens_overall_at_entry'),
+            'strategist_aligned':        trade.get('strategist_aligned', False),
+            'norman_verdict_at_entry':   trade.get('norman_verdict_at_entry', 'UNKNOWN'),
+            'norman_ruin_prob_at_entry': trade.get('norman_ruin_prob_at_entry'),
+            'norman_dated':              trade.get('norman_dated'),
+        }
+        try:
+            try:
+                with open(LEARNING_LOG_PATH) as f:
+                    store = json.load(f)
+            except Exception:
+                store = {'records': [], 'phase': 1,
+                         'note': 'observation-only; no trading logic reads this file'}
+            store.setdefault('records', []).append(record)
+            with open(LEARNING_LOG_PATH, 'w') as f:
+                json.dump(store, f, indent=2)
+        except Exception as e:
+            log.warning('learning-log write failed: %s', e)
 
     # ── Notifications ─────────────────────────────────────────────────────────
 

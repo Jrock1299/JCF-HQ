@@ -1,11 +1,11 @@
 /**
  * Portfolio — 2037 Wealth Goal hero, net worth snapshot, monthly cash flow, P&L summary
  * Data: robinhood_data.json, trustwallet_data.json, tradelocker_trades.json,
- *       oracle_picks.json, GET /hq/data (stored). HYSA + cash flow: localStorage.
+ *       GET /hq/data (stored). HYSA + cash flow: localStorage.
  */
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
-  getStoredData, getTradesFile, getOracleFile,
+  getStoredData, getTradesFile,
   getRobinhoodData, getTrustWalletData, getTaoPortfolio, getKrakenHoldings,
   setAccount,
 } from '../api/client.js'
@@ -20,7 +20,7 @@ const HYSA_KEY     = 'portfolio.hysa_balance'
 const INCOME_KEY   = 'portfolio.cashflow.income'
 const EXPENSE_KEY  = 'portfolio.cashflow.expense'
 
-const INCOME_CATEGORIES  = ['Trading Payout', 'Etsy Sale', 'GOAT Payout', 'Kalshi Withdrawal', 'Other']
+const INCOME_CATEGORIES  = ['Trading Payout', 'Etsy Sale', 'GOAT Payout', 'Other']
 const EXPENSE_CATEGORIES = ['Rent', 'Subscriptions', 'Food', 'Travel', 'Entertainment', 'Other']
 
 function fmtDol(v, dec = 2) {
@@ -63,11 +63,6 @@ function tradePeriodPnl(trades = [], since) {
     return new Date(ds) >= since ? s + (parseFloat(t.pnl) || 0) : s
   }, 0)
 }
-function betPeriodPnl(bets = [], since) {
-  return bets.reduce((s, b) => {
-    return new Date(b.date || '') >= since ? s + (parseFloat(b.pnl) || 0) : s
-  }, 0)
-}
 
 function loadLS(key, fallback) {
   try {
@@ -85,7 +80,6 @@ export default function Portfolio({ demoMode, isActive = true }) {
 
   const [stored,  setStored]  = useState(null)
   const [trades,  setTrades]  = useState(null)
-  const [oracle,  setOracle]  = useState(null)
   const [rh,      setRh]      = useState(null)
   const [tw,      setTw]      = useState(null)
   const [tao,     setTao]     = useState(null)
@@ -98,14 +92,13 @@ export default function Portfolio({ demoMode, isActive = true }) {
 
   const load = useCallback(async () => {
     try {
-      const [st, tr, or_, rh_, tw_, taoD, kr_] = await Promise.allSettled([
-        getStoredData(), getTradesFile(), getOracleFile(),
+      const [st, tr, rh_, tw_, taoD, kr_] = await Promise.allSettled([
+        getStoredData(), getTradesFile(),
         getRobinhoodData(), getTrustWalletData(), getTaoPortfolio(),
         getKrakenHoldings(),
       ])
       if (st.status   === 'fulfilled') setStored(st.value)
       if (tr.status   === 'fulfilled') setTrades(tr.value)
-      if (or_.status  === 'fulfilled') setOracle(or_.value)
       if (rh_.status  === 'fulfilled') setRh(rh_.value)
       if (tw_.status  === 'fulfilled') setTw(tw_.value)
       if (taoD.status === 'fulfilled') setTao(taoD.value)
@@ -153,18 +146,9 @@ export default function Portfolio({ demoMode, isActive = true }) {
   const tradeMo    = tradePeriodPnl(tradeList, monthStart())
   const tradeYtd   = tradePeriodPnl(tradeList, yearStart())
 
-  // ── Bets P&L ────────────────────────────────────────────────────────────
-  const oraclePnl  = parseFloat(oracle?.total_pnl || 0)
-  const myBets     = stored?.my_bets ?? stored?.bets ?? []
-  const myPnl      = myBets.reduce((s, b) => s + (parseFloat(b.pnl) || 0), 0)
-  const myWins     = myBets.filter(b => (b.result||'').toLowerCase()==='w'||(b.result||'').toLowerCase()==='win').length
-  const betsToday  = betPeriodPnl(myBets, todayStart())
-  const betsMo     = betPeriodPnl(myBets, monthStart())
-  const betsYtd    = betPeriodPnl(myBets, yearStart())
-
-  const pnlToday = tradeToday + betsToday
-  const pnlMo    = tradeMo    + betsMo
-  const pnlYtd   = tradeYtd   + betsYtd
+  const pnlToday = tradeToday
+  const pnlMo    = tradeMo
+  const pnlYtd   = tradeYtd
 
   // ── Demo fakes ──────────────────────────────────────────────────────────
   const D = demoMode
@@ -310,15 +294,6 @@ export default function Portfolio({ demoMode, isActive = true }) {
           <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dPnlMo : tradeMo) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dPnlMo) : fmtSign(tradeMo)}</div>
           <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dPnlYtd : tradeYtd) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dPnlYtd) : fmtSign(tradeYtd)}</div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '80px 1fr 1fr 1fr' : '140px 1fr 1fr 1fr', padding: '12px 18px', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 12, color: 'var(--text-dim)', fontWeight: 600 }}>Sports Betting</div>
-            <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>You + Oracle</div>
-          </div>
-          <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dPnlToday * 0.3 : betsToday) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dPnlToday * 0.3) : fmtSign(betsToday)}</div>
-          <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dPnlMo * 0.3 : betsMo) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dPnlMo * 0.3) : fmtSign(betsMo)}</div>
-          <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dPnlYtd * 0.3 : betsYtd) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dPnlYtd * 0.3) : fmtSign(betsYtd)}</div>
-        </div>
       </div>
 
       {/* ── Income Streams (Trading + Sports) ──────────────────── */}
@@ -342,44 +317,6 @@ export default function Portfolio({ demoMode, isActive = true }) {
           </div>
         </div>
 
-        <div className="glass" style={{ padding: '22px 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18 }}>Sports Betting</div>
-            <span className="pill pill-purple">You + Oracle</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 14 }}>
-            {[['This Week', 0], ['This Month', myPnl], ['YTD', myPnl + oraclePnl]].map(([lbl, val], ki) => {
-              const dv = [fakeAmt('port.bt.wk', 20, 180), fakeAmt('port.bt.mo', 80, 500), fakeAmt('port.bt.ytd', 300, 1800)][ki]
-              return (
-                <div key={lbl} style={{ paddingRight: 14, borderRight: '1px solid rgba(255,255,255,0.04)', marginRight: 14 }}>
-                  <div style={{ fontSize: 8, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>{lbl}</div>
-                  <div style={{ fontFamily: '"Playfair Display",serif', fontSize: 18, color: (D ? dv : val) >= 0 ? 'var(--green)' : 'var(--red)' }}>{D ? fmtSign(dv) : fmtSign(val)}</div>
-                </div>
-              )
-            })}
-          </div>
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', marginBottom: 10 }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>You</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: '"IBM Plex Mono",monospace' }}>{myWins}W - {myBets.length - myWins}L</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: '"IBM Plex Mono",monospace', fontSize: 12, color: 'var(--text-muted)' }}>{D ? fmtSign(fakeAmt('port.mypnl', 50, 600)) : fmtSign(myPnl)}</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Bankroll: {D ? fmtDol(dBr) : fmtDol(myBankroll)}</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-            <div>
-              <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>Oracle</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: '"IBM Plex Mono",monospace' }}>{oracle?.record ?? '—'}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: '"IBM Plex Mono",monospace', fontSize: 12, color: 'var(--text-muted)' }}>{D ? fmtSign(fakeAmt('port.oraclepnl', 100, 900)) : fmtSign(oraclePnl)}</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>Bankroll: {D ? fmtDol(fakeAmt('port.obr', 600, 1800)) : fmtDol(oracle?.bankroll || 0)}</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── Monthly Cash Flow ─────────────────────────────────────── */}

@@ -104,62 +104,6 @@ def set_basketball():
     save_data(data)
     return (jsonify({'ok': True}), 200, CORS_HEADERS)
 
-@app.route('/hq/bets', methods=['POST', 'OPTIONS'])
-def add_bet():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    data = request.get_json()
-    d = load_data()
-    if 'my_bets' not in d: d['my_bets'] = []
-    d['my_bets'].append(data)
-    save_data(d)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-@app.route('/hq/bets/<int:bet_id>', methods=['PATCH', 'OPTIONS'])
-def patch_bet(bet_id):
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    data = request.json
-    d = load_data()
-    for b in d.get('my_bets', []):
-        if b.get('id') == bet_id:
-            b['result'] = data.get('result', b.get('result'))
-            b['pnl'] = data.get('pnl', b.get('pnl', 0))
-            break
-    save_data(d)
-    return (jsonify({'status': 'ok'}), 200, CORS_HEADERS)
-
-@app.route('/hq/bets/<int:bet_id>', methods=['DELETE', 'OPTIONS'])
-def delete_bet(bet_id):
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    d = load_data()
-    d['my_bets'] = [b for b in d.get('my_bets', []) if b.get('id') != bet_id]
-    save_data(d)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-ORACLE_PICKS_PATH = '/root/.openclaw/dashboard/oracle_picks.json'
-ORACLE_RESOLVED_PATH = '/root/.openclaw/dashboard/oracle_resolved.json'
-
-@app.route('/hq/oracle/picks', methods=['POST', 'OPTIONS'])
-def save_oracle_picks():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    data = request.get_json(force=True) or {}
-    with open(ORACLE_PICKS_PATH, 'w') as f:
-        json.dump(data, f, indent=2)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-@app.route('/hq/oracle/resolved', methods=['POST', 'OPTIONS'])
-def save_oracle_resolved():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    data = request.get_json(force=True) or {}
-    with open(ORACLE_RESOLVED_PATH, 'w') as f:
-        json.dump(data, f, indent=2)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-
 HUB_PATH = "/root/.openclaw/dashboard/agent_hub.json"
 
 def load_hub_data():
@@ -260,40 +204,6 @@ def get_hub_stats():
         'max_messages': data.get('max_messages', 500)
     }), 200, CORS_HEADERS)
 
-@app.route('/hq/bankroll', methods=['POST', 'OPTIONS'])
-def set_bankroll():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    data = request.get_json()
-    d = load_data()
-    existing = d.get('my_bankroll', {})
-    d['my_bankroll'] = {
-        'starting':   float(data.get('starting',   existing.get('starting',   500.00))),
-        'current':    float(data.get('current',    existing.get('current',    500.00))),
-        'updated_at': data.get('updated_at', existing.get('updated_at')),
-    }
-    save_data(d)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-@app.route('/hq/bankroll/transactions', methods=['POST', 'OPTIONS'])
-def add_bankroll_transaction():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    body = request.get_json(force=True) or {}
-    d = load_data()
-    if 'bankroll_transactions' not in d:
-        d['bankroll_transactions'] = []
-    tx = {
-        'id': int(datetime.now(timezone.utc).timestamp() * 1000),
-        'type': body.get('type', 'deposit'),
-        'amount': float(body.get('amount', 0)),
-        'date': body.get('date', datetime.now().strftime('%Y-%m-%d')),
-        'note': body.get('note', ''),
-    }
-    d['bankroll_transactions'].insert(0, tx)
-    save_data(d)
-    return (jsonify({'ok': True, 'transaction': tx}), 200, CORS_HEADERS)
-
 # TradeLocker manual edits
 TL_FILE = '/root/.openclaw/dashboard/tradelocker_trades.json'
 
@@ -328,33 +238,6 @@ def patch_tradelocker_trade(idx):
     with open(TL_FILE, 'w') as f:
         json.dump(data, f, indent=2)
     return (jsonify({'ok': True}), 200, CORS_HEADERS)
-
-
-@app.route('/hq/kalshi-daily-pnl', methods=['GET', 'OPTIONS'])
-def get_kalshi_daily_pnl():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    import csv
-    from datetime import datetime, timezone
-    kalshi_path = '/root/kalshi-bot/trades_log.csv'
-    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-    pnl = 0.0
-    trade_count = 0
-    try:
-        if os.path.exists(kalshi_path):
-            with open(kalshi_path, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    row_date = str(row.get('date', row.get('timestamp', row.get('created_at', '')))).split('T')[0][:10]
-                    if row_date == today:
-                        try:
-                            pnl += float(row.get('pnl', row.get('net_pnl', row.get('profit_loss', 0))) or 0)
-                            trade_count += 1
-                        except (ValueError, TypeError):
-                            pass
-    except Exception as e:
-        print(f'[kalshi-daily-pnl] error: {e}')
-    return (jsonify({'date': today, 'pnl': round(pnl, 2), 'trade_count': trade_count}), 200, CORS_HEADERS)
 
 
 @app.route('/hq/robinhood-holdings', methods=['GET', 'OPTIONS'])
@@ -408,7 +291,6 @@ def get_agent_status():
     from datetime import datetime, timezone
 
     AGENT_SERVICES = {
-        'kalshi':  'kalshi-bot.service',
         'huncho':  'openclaw-gateway.service',
         'jerry':   'jerry.service',
         'phantom': 'phantom.service',
@@ -447,7 +329,7 @@ def get_agent_status():
         print(f'[agent-status] hub error: {e}')
 
     # Default all known agents to idle if not already set
-    all_agents = ['huncho', 'blade', 'crisp', 'lens', 'oracle', 'kalshi', 'advisor', 'strategist', 'tao',
+    all_agents = ['huncho', 'blade', 'crisp', 'lens', 'advisor', 'strategist', 'tao',
                   'jerry', 'phantom', 'norman', 'forge', 'lucy', 'victoria']
     for a in all_agents:
         if a not in status:
@@ -456,226 +338,6 @@ def get_agent_status():
     return (jsonify(status), 200, CORS_HEADERS)
 
 
-FLIFF_SYSTEM_PROMPT = """You are parsing a Fliff sports betting app screenshot.
-
-TICKET IDENTIFICATION RULES:
-- GREEN background ticket = WIN
-- WHITE background ticket = LOSS
-- 'Active' tab tickets = PENDING (not yet settled)
-- Each ticket shows either a single pick or a parlay
-
-BALANCE:
-- Top right of screen shows 'X.XX Fliff Cash'
-- Extract this balance if visible
-
-FOR EACH TICKET extract:
-
-1. Result: WIN (green), LOSS (white), PENDING (active)
-
-2. Bet type:
-   - STRAIGHT if single pick
-   - PARLAY if shows '2 Leg Parlay', '3 Leg Parlay' etc
-
-3. For STRAIGHT bets:
-   - Sport (NBA, NHL, MLB etc)
-   - Teams playing
-   - Pick (e.g. 'PHX Suns +4.5')
-   - Bet type (POINT SPREAD, MONEYLINE, TOTAL etc)
-   - Odds (e.g. -160)
-   - Date of game
-   - Risk amount
-   - Payout amount
-   - Profit = Payout - Risk (0 if loss)
-
-4. For PARLAY bets:
-   - Number of legs
-   - Combined odds
-   - Risk amount
-   - Payout amount
-   - Profit = Payout - Risk (0 if loss)
-   - Each leg:
-     * Teams playing
-     * Pick description
-     * Bet type (MONEYLINE, PUCK LINE, SPREAD etc)
-     * Odds
-     * Result: CHECKMARK ICON = hit, X ICON = miss, no icon = pending
-   - Note: parlay is WIN only if entire ticket is green.
-     Individual legs can hit but if ticket is white = LOSS
-
-5. Date: extract from 'X days ago' or explicit date shown.
-   Convert relative dates using today's date.
-   Pick ID and timestamp visible on settled tickets.
-
-Return ONLY valid JSON with no markdown, no code blocks, just raw JSON:
-{
-  "fliff_balance": 0.00,
-  "bets": [
-    {
-      "type": "straight or parlay",
-      "result": "win or loss or pending",
-      "sport": "NBA or NHL or MLB or NFL etc",
-      "stake": 0.00,
-      "payout": 0.00,
-      "profit": 0.00,
-      "odds": "+000 or -000",
-      "date": "YYYY-MM-DD",
-      "pick_id": "if visible",
-      "legs": [
-        {
-          "teams": "Team A vs Team B",
-          "pick": "exact pick description",
-          "bet_type": "MONEYLINE or SPREAD or TOTAL or PUCK LINE etc",
-          "odds": "-000",
-          "result": "hit or miss or pending"
-        }
-      ]
-    }
-  ],
-  "tickets_found": 0,
-  "parse_notes": "any issues or ambiguities"
-}"""
-
-
-FLIFF_LOG = '/root/.openclaw/logs/fliff_parse.log'
-
-def _fliff_log(msg):
-    from datetime import datetime
-    ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    try:
-        with open(FLIFF_LOG, 'a') as f:
-            f.write(f'[{ts}] {msg}\n')
-    except Exception:
-        pass
-    print(f'[fliff] {msg}')
-
-
-@app.route('/hq/parse-fliff-screenshot', methods=['POST', 'OPTIONS'])
-def parse_fliff_screenshot():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-
-    import base64, subprocess, re, io
-    from datetime import datetime
-
-    if 'image' not in request.files:
-        return (jsonify({'ok': False, 'error': 'No image file provided'}), 400, CORS_HEADERS)
-
-    f = request.files['image']
-    img_bytes = f.read()
-    media_type = 'image/jpeg'
-    filename = (f.filename or '').lower()
-
-    _fliff_log(f'Received image: {f.filename!r} ({len(img_bytes)} bytes)')
-
-    if filename.endswith('.png'):
-        media_type = 'image/png'
-    elif filename.endswith('.heic') or filename.endswith('.heif'):
-        try:
-            from PIL import Image
-            img = Image.open(io.BytesIO(img_bytes))
-            buf = io.BytesIO()
-            img.save(buf, format='JPEG')
-            img_bytes = buf.getvalue()
-            media_type = 'image/jpeg'
-            _fliff_log(f'Converted HEIC → JPEG ({len(img_bytes)} bytes)')
-        except Exception as e:
-            _fliff_log(f'HEIC conversion failed: {e}')
-            return (jsonify({'ok': False, 'error': f'HEIC conversion failed: {e}'}), 500, CORS_HEADERS)
-
-    img_b64 = base64.b64encode(img_bytes).decode()
-
-    msg = json.dumps({
-        'type': 'user',
-        'message': {
-            'role': 'user',
-            'content': [
-                {
-                    'type': 'image',
-                    'source': {'type': 'base64', 'media_type': media_type, 'data': img_b64}
-                },
-                {
-                    'type': 'text',
-                    'text': f"Today's date is {datetime.now().strftime('%Y-%m-%d')}. Parse all bet tickets visible in this Fliff screenshot. Return only valid JSON."
-                }
-            ]
-        }
-    })
-
-    _fliff_log('Calling Claude vision (claude-sonnet-4-20250514)...')
-    response_text = ''
-    try:
-        result = subprocess.run(
-            [
-                'claude', '--print',
-                '--model', 'claude-sonnet-4-20250514',
-                '--append-system-prompt', FLIFF_SYSTEM_PROMPT,
-                '--input-format', 'stream-json',
-                '--output-format', 'stream-json',
-                '--verbose',
-            ],
-            input=msg,
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
-
-        _fliff_log(f'Claude exited rc={result.returncode}, stdout={len(result.stdout)}b, stderr={len(result.stderr)}b')
-
-        for line in result.stdout.splitlines():
-            try:
-                d = json.loads(line)
-                if d.get('type') == 'assistant':
-                    for block in d.get('message', {}).get('content', []):
-                        if block.get('type') == 'text':
-                            response_text += block['text']
-            except Exception:
-                pass
-
-        if not response_text:
-            err = (result.stderr or 'no output')[:400]
-            _fliff_log(f'ERROR: empty response. stderr={err}')
-            return (jsonify({'ok': False, 'error': f'Claude returned no output. stderr: {err}'}), 500, CORS_HEADERS)
-
-    except subprocess.TimeoutExpired:
-        _fliff_log('ERROR: Claude subprocess timed out after 120s')
-        return (jsonify({'ok': False, 'error': 'Claude vision timed out (120s). Try a smaller screenshot.'}), 504, CORS_HEADERS)
-    except Exception as e:
-        _fliff_log(f'ERROR: subprocess failed: {e}')
-        return (jsonify({'ok': False, 'error': f'Claude call failed: {e}'}), 500, CORS_HEADERS)
-
-    try:
-        # Strip markdown code blocks if present
-        clean = re.sub(r'^```[a-z]*\n?', '', response_text.strip(), flags=re.MULTILINE)
-        clean = re.sub(r'```\s*$', '', clean.strip(), flags=re.MULTILINE).strip()
-
-        # Extract outermost JSON object
-        json_match = re.search(r'\{.*\}', clean, re.DOTALL)
-        if json_match:
-            parsed = json.loads(json_match.group())
-        else:
-            parsed = json.loads(clean)
-
-        tickets = len(parsed.get('bets', []))
-        _fliff_log(f'Parsed OK: {tickets} ticket(s) found')
-        return (jsonify({'ok': True, 'data': parsed}), 200, CORS_HEADERS)
-
-    except json.JSONDecodeError as e:
-        _fliff_log(f'ERROR: JSON decode failed: {e} | raw={response_text[:300]}')
-        return (jsonify({'ok': False, 'error': f'Failed to parse Claude response as JSON: {e}', 'raw': response_text[:500]}), 500, CORS_HEADERS)
-    except Exception as e:
-        _fliff_log(f'ERROR: unexpected: {e}')
-        return (jsonify({'ok': False, 'error': str(e)}), 500, CORS_HEADERS)
-
-
-@app.route('/hq/fliff-balance', methods=['POST', 'OPTIONS'])
-def set_fliff_balance():
-    if request.method == 'OPTIONS':
-        return ('', 204, CORS_HEADERS)
-    body = request.get_json(force=True) or {}
-    d = load_data()
-    d['fliff_cash'] = float(body.get('balance', 0))
-    save_data(d)
-    return (jsonify({'ok': True}), 200, CORS_HEADERS)
 
 
 KRAKEN_DATA_FILE = '/root/.openclaw/dashboard/kraken_data.json'

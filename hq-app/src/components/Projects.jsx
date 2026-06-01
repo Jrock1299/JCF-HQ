@@ -238,7 +238,6 @@ export default function Projects({ demoMode, isActive = true }) {
           {[
             { name: 'JCF Capital Fund',    desc: 'External capital structure once paper P&L trades reach sustained PASS.',      tag: 'H2 2026' },
             { name: 'Creator Subscription Suite', desc: 'Bundle Forge + Lucy pipeline into a recurring SaaS for creators.',    tag: 'Exploratory' },
-            { name: 'Sports Picks Service', desc: 'Productize Oracle picks into a subscription edge service.',                 tag: 'Exploratory' },
             { name: 'Open-source Gateway',  desc: 'Publish the Huncho orchestrator as an open OSS multi-agent framework.',     tag: 'Long-term' },
           ].map(p => (
             <div key={p.name} style={{ borderLeft: '2px solid rgba(201,168,76,0.3)', paddingLeft: 12 }}>

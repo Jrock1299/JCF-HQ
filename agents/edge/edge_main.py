@@ -36,6 +36,78 @@ sys.path.insert(0, '/root/.openclaw/scripts')
 from hub_post import add_hub_message as hub_post
 import session_notify   # legacy import retained for module compatibility
 
+try:
+    from h4_read import generate_h4_read, summarize_h4_for_log
+except Exception:
+    generate_h4_read = None
+    summarize_h4_for_log = lambda r: {}
+
+# ── Team context (Phase 1: observation only — NEVER gates trades) ────────────
+EDGE_LEARNING_LOG     = '/root/.openclaw/dashboard/edge_learning_log.json'
+LENS_BIAS_PATH        = '/root/.openclaw/dashboard/market_bias.json'
+STRATEGIST_REC_PATH   = '/root/.openclaw/dashboard/strategy_recommendation.json'
+NORMAN_REPORT_PATH    = '/root/.openclaw/dashboard/norman_report.json'
+
+def _load_team_context():
+    """Snapshot regime + Lens bias + Norman verdict at the moment of trade."""
+    ctx = {
+        'regime_at_entry':           'unknown',
+        'strategist_bias_at_entry':  'neutral',
+        'lens_bias_at_entry':        'neutral',
+        'lens_confidence_at_entry':  50.0,
+        'norman_verdict_at_entry':   'UNKNOWN',
+        'norman_ruin_prob_at_entry': None,
+        'norman_dated':              None,
+    }
+    try:
+        with open(STRATEGIST_REC_PATH) as f:
+            sd = json.load(f)
+        inst = (sd.get('instruments', {}) or {}).get('SPX500_USD', {}) or {}
+        ctx['regime_at_entry']          = inst.get('regime', sd.get('regime', 'unknown'))
+        ctx['strategist_bias_at_entry'] = (inst.get('bias', 'neutral') or 'neutral').lower()
+    except Exception as e:
+        logging.warning(f"team-context: strategist unavailable: {e}")
+    try:
+        with open(LENS_BIAS_PATH) as f:
+            ld = json.load(f)
+        assets = ld.get('assets', ld) if isinstance(ld, dict) else {}
+        for key in ('SPX500_USD', 'US100', 'SPX500'):
+            entry = assets.get(key) if isinstance(assets, dict) else None
+            if isinstance(entry, dict):
+                ctx['lens_bias_at_entry']       = (entry.get('direction', 'neutral') or 'neutral').lower()
+                try:
+                    ctx['lens_confidence_at_entry'] = float(entry.get('confidence', 50))
+                except Exception:
+                    pass
+                break
+    except Exception as e:
+        logging.warning(f"team-context: lens unavailable: {e}")
+    try:
+        with open(NORMAN_REPORT_PATH) as f:
+            nr = json.load(f)
+        edge_report = (nr.get('agent_reports', {}) or {}).get('edge', {}) or {}
+        ctx['norman_verdict_at_entry']   = edge_report.get('verdict', 'UNKNOWN')
+        ctx['norman_ruin_prob_at_entry'] = (edge_report.get('monte_carlo', {}) or {}).get('ruin_probability')
+        ctx['norman_dated']              = nr.get('date')
+    except Exception as e:
+        logging.warning(f"team-context: norman unavailable: {e}")
+    return ctx
+
+
+def _append_edge_learning_log(record):
+    try:
+        try:
+            with open(EDGE_LEARNING_LOG) as f:
+                store = json.load(f)
+        except Exception:
+            store = {'records': [], 'phase': 1,
+                     'note': 'observation-only; no trading logic reads this file'}
+        store.setdefault('records', []).append(record)
+        with open(EDGE_LEARNING_LOG, 'w') as f:
+            json.dump(store, f, indent=2)
+    except Exception as e:
+        logging.warning(f"edge-learning-log write failed: {e}")
+
 from edge_config import (
     AGENT_NAME, INSTRUMENT,
     GRANULARITY_H1, GRANULARITY_H4, SMA_FAST, SMA_SLOW,
@@ -347,16 +419,43 @@ def open_cluster(direction, signal_price, sma21, h4_trend):
         'pos3': {'units': UNITS, 'tp': None, 'sl': sma21, 'status': 'open', 'trailing': False},
     }
 
+    # Phase 1: stamp team context onto the cluster at entry. Observation only — no gating.
+    team_ctx = _load_team_context()
+
+    # H4 technical read (cached per instrument; ≤30 min staleness)
+    h4_read_at_entry = {}
+    if generate_h4_read is not None:
+        try:
+            r = generate_h4_read(INSTRUMENT)
+            h4_read_at_entry = summarize_h4_for_log(r)
+        except Exception as e:
+            logging.warning(f"h4_read({INSTRUMENT}) failed: {e}")
+
     cluster = {
-        'direction':   direction,
-        'entry_price': entry,
-        'entry_time':  datetime.now(timezone.utc).isoformat(),
-        'entry_sma21': sma21,
-        'h4_trend':    h4_trend,
-        'be_moved':    False,
-        'session':     'ALL_HRS',
-        'positions':   positions,
+        'direction':        direction,
+        'entry_price':      entry,
+        'entry_time':       datetime.now(timezone.utc).isoformat(),
+        'entry_sma21':      sma21,
+        'h4_trend':         h4_trend,
+        'be_moved':         False,
+        'session':          'ALL_HRS',
+        'positions':        positions,
+        **team_ctx,
+        'h4_read_at_entry': h4_read_at_entry,
+        'strategist_aligned': (
+            (team_ctx['strategist_bias_at_entry'] == 'bullish' and direction == 'long') or
+            (team_ctx['strategist_bias_at_entry'] == 'bearish' and direction == 'short') or
+            (team_ctx['lens_bias_at_entry']       == 'bullish' and direction == 'long') or
+            (team_ctx['lens_bias_at_entry']       == 'bearish' and direction == 'short')
+        ),
     }
+    logging.info(
+        f"TEAM CONTEXT @ entry: regime={team_ctx['regime_at_entry']} "
+        f"| strat_bias={team_ctx['strategist_bias_at_entry']} "
+        f"| lens={team_ctx['lens_bias_at_entry']} {team_ctx['lens_confidence_at_entry']:.0f}% "
+        f"| norman={team_ctx['norman_verdict_at_entry']} "
+        f"| aligned={cluster['strategist_aligned']}"
+    )
 
     dir_word = 'LONG' if direction == 'long' else 'SHORT'
     sym      = INSTRUMENT.split('_')[0]
@@ -413,6 +512,16 @@ def _record_close(pos_key, sub, exit_price_hint, exit_reason):
         'pos_key':      pos_key,
         'setup':        '1H SMA 8/21 crossover',
         'h4_trend':     cluster.get('h4_trend', ''),
+        # Phase 1: observation context (not read by trading logic)
+        'regime_at_entry':           cluster.get('regime_at_entry', 'unknown'),
+        'strategist_bias_at_entry':  cluster.get('strategist_bias_at_entry', 'neutral'),
+        'lens_bias_at_entry':        cluster.get('lens_bias_at_entry', 'neutral'),
+        'lens_confidence_at_entry':  cluster.get('lens_confidence_at_entry'),
+        'strategist_aligned':        cluster.get('strategist_aligned', False),
+        'norman_verdict_at_entry':   cluster.get('norman_verdict_at_entry', 'UNKNOWN'),
+        'norman_ruin_prob_at_entry': cluster.get('norman_ruin_prob_at_entry'),
+        'norman_dated':              cluster.get('norman_dated'),
+        'h4_read_at_entry':          cluster.get('h4_read_at_entry', {}),
     }
 
     daily_stats['trades']    += 1
@@ -425,6 +534,7 @@ def _record_close(pos_key, sub, exit_price_hint, exit_reason):
     save_daily_stats()
 
     save_trade(trade)
+    _append_edge_learning_log(trade)
     update_agent_pnl()
 
     sub['status']   = 'closed'

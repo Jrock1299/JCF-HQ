@@ -16,7 +16,7 @@
       "errorCount": 0
     },
     "openai-codex:default": {
-      "lastUsed": 1779897886715,
+      "lastUsed": 1780300931287,
       "errorCount": 0
     },
     "anthropic:default": {
@@ -30,7 +30,7 @@
     },
     "openai-codex:8jfrg55bnx@privaterelay.appleid.com": {
       "errorCount": 0,
-      "lastUsed": 1779896085209,
+      "lastUsed": 1780300891367,
       "lastFailureAt": 1779350677905
     },
     "moonshot:default": {
@@ -38,8 +38,8 @@
       "failureCounts": {
         "rate_limit": 1
       },
-      "lastFailureAt": 1779868877581,
-      "cooldownUntil": 1779868907581,
+      "lastFailureAt": 1780300922627,
+      "cooldownUntil": 1780300952627,
       "cooldownReason": "rate_limit",
       "cooldownModel": "kimi-k2.5"
     }

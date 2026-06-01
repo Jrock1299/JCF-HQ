@@ -14,7 +14,6 @@ const NAV_SECTIONS = [
     label: 'Markets',
     items: [
       { id: 'trading',      label: 'Trading',        icon: '↗' },
-      { id: 'sports',       label: 'Sports Betting', icon: '◉' },
     ],
   },
   {

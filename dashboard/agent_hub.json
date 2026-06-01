@@ -1,720 +1,6 @@
 {
   "messages": [
     {
-      "timestamp": "2026-05-14T03:02:02.842250+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$4.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T03:06:02.611010+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7464.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T03:20:02.759758+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$9.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T03:23:02.587125+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7463.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T03:29:02.699266+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$5.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T04:12:02.580961+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7458.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T04:50:02.769572+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 LONG SPX500 @ 7464.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T04:52:02.676405+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$20.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T04:55:01.808654+00:00",
-      "agent": "lens",
-      "type": "status",
-      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
-      "tags": [
-        "macro",
-        "analysis"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T04:55:03.150055+00:00",
-      "agent": "lens",
-      "type": "status",
-      "message": "Lens Brain complete. market_bias.json updated.",
-      "tags": [
-        "macro",
-        "analysis"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:15:03.279216+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$23.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:30:02.474961+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7460.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:42:02.726985+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$0.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:45:02.519576+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 SHORT SPX500 @ 7460.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:50:02.699180+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$19.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T05:55:01.614368+00:00",
-      "agent": "blade",
-      "type": "status",
-      "message": "LONDON starting. Balance: $2000.00",
-      "tags": [
-        "session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:00:02.569991+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 LONG SPX500 @ 7466.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:00:03.255451+00:00",
-      "agent": "strategist",
-      "type": "status",
-      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:00:20.610635+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "Strategy analysis complete | Regime: COMPRESSED\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:00:20.789199+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 62/100 \u2192 SWEEP_FADE bullish\n  \u26d4 DE30_EUR: 32/100 \u2192 BREAKOUT_EXPANSION bearish\n  \u26d4 XAU_USD: 38/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 BTC_USD: 38/100 \u2192 SWEEP_FADE bullish",
-      "tags": [
-        "strategy",
-        "analysis",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:00:47.115247+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 14\n\n\ud83d\udfe1 REGIME: COMPRESSED \u2014 Caution Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 62/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bullish (H4/Daily aligned, above 50EMA 7352.3)\nADR: 81.5\nStrategy: sweep_fade\nKey Level: 7426.20 (prior day high)\nFVG: present (counter-trend bearish)\n\ud83c\udfaf Alert: Watch for liquidity sweep + fade above 7426.20\n\n\u2501\u2501\u2501 DE30 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 32/100 | \u26d4 HARD AVOID\nBias: Bearish (below 50EMA 24286.0)\nADR: 445.8 \u26a0\ufe0f Abnormal\nStrategy: breakout_expansion\nKey Level: 24277.60 (prior day high)\nFVG: present (counter-trend bullish)\n\u26a0\ufe0f Compressed regime \u2014 wait for BB expansion breakout\n\n\u2501\u2501\u2501 XAU (Gold) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 38/100 | \u26d4 HARD AVOID\nBias: Bullish (above 50EMA 4682.8, EMAs diverged)\nADR: 102.7 \u26a0\ufe0f Abnormal\nStrategy: breakout_expansion\nKey Level: 4668.71 (H4 low)\nFVG: 4689.86 (bullish)\n\u26a0\ufe0f Compressed regime \u2014 wait for BB expansion breakout\n\n\u2501\u2501\u2501 BTC \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 38/100 | \u26d4 HARD AVOID\nBias: Bullish (EMAs diverged, wrong side of 50EMA)\nADR: 1828.6\nStrategy: sweep_fade\nKey Level: 80000.00 (round number)\nFVG: 79661.06 (bullish)\n\u26a0\ufe0f Price on wrong side of 50EMA \u2014 bias unreliable\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Neutral across the board \u2014 mixed bullish tilt on SPX/XAU/BTC, bearish DE30, no cross-asset conviction.\n\ud83d\udccb BOTTOM LINE: SPX500 is the only instrument worth screen time today \u2014 wait for a clean liquidity sweep + fade at 7426.20 prior day high, skip everything else.",
-      "tags": [
-        "strategy",
-        "narrative",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:27:02.462171+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7471.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:30:02.889283+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$3.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:30:04.714681+00:00",
-      "agent": "oracle",
-      "type": "status",
-      "message": "No qualifying picks today.",
-      "tags": [
-        "betting"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:31:22.124599+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG DE30 @ 24296.00 | SL:24241.60 | TPs:24299.00/24301.00/24306.00 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "london"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:43:04.485855+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG XAU @ 4695.35 | SL:4683.31 | TPs:4698.35/4700.35/4705.35 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "london"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:49:03.189505+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7470.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T06:53:02.744053+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$3.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:10:02.737854+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$2.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:10:09.917821+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7466.00 | SL:7475.80 | TPs:7463.00/7461.00/7456.00 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "london"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:22:02.465927+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7468.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:25:02.706975+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$5.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:30:02.593598+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 SHORT SPX500 @ 7468.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:35:03.377932+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$12.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T07:53:02.616429+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7470.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:09:03.325573+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$16.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:14:02.565517+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7469.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:38:02.712903+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$12.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:42:02.517497+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7468.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:45:02.494598+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 LONG SPX500 @ 7467.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:50:02.842470+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 +$0.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:54:02.727470+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$6.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T08:58:02.619230+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7471.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:11:02.681558+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$12.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:12:02.509864+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7468.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:40:02.513599+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 SHORT SPX500 @ 7461.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:47:04.517434+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$14.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:50:02.717205+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7468.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T09:55:02.737646+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$43.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:20:03.119401+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 LONG SPX500 @ 7475.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:22:02.708282+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$20.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:25:02.565454+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7471.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:26:03.296771+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$11.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:26:03.815708+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7474.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:27:02.773681+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$5.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:27:03.013544+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7475.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:28:02.975621+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$6.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T10:45:02.792730+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$34.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T11:55:01.617039+00:00",
-      "agent": "blade",
-      "type": "status",
-      "message": "NY_EARLY starting. Balance: $2000.00",
-      "tags": [
-        "session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:00:02.790430+00:00",
-      "agent": "strategist",
-      "type": "status",
-      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:00:22.589977+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "Strategy analysis complete | Regime: COMPRESSED\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:00:22.776793+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 0/100 \u2192 ORB \n  \u26d4 DE30_EUR: 18/100 \u2192 BREAKOUT_EXPANSION bearish\n  \u26d4 XAU_USD: 38/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 BTC_USD: 57/100 \u2192 SWEEP_FADE bearish",
-      "tags": [
-        "strategy",
-        "analysis",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:00:44.979880+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 14\n\n\ud83d\udfe1 REGIME: COMPRESSED \u2014 Preservation Mode\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 57/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bearish (H1/M15 all aligned bearish, below 50EMA)\nADR: 1828.6\nStrategy: sweep_fade\nKey Level: 78754.65 (prior day low)\nFVG: present (counter-trend bullish)\n\u26a0\ufe0f Ranging regime \u2014 only fade clean liquidity sweeps, no chasing\n\ud83c\udfaf Alert: Sweep of 78,754.65 prior day low \u2192 bullish FVG reaction for fade entry\n\n\u2501\u2501\u2501 XAU/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 38/100 | \u26d4 HARD AVOID\nBias: Bullish (above 50EMA at 4683.3)\nADR: 102.7 \u26a0\ufe0f Abnormal\nStrategy: breakout_expansion\nKey Level: 4718.88 (H4 high)\nFVG: 4692.04 (bullish)\n\u26a0\ufe0f Compressed regime + abnormal ADR \u2014 wait for BB expansion breakout, no entries\n\n\u2501\u2501\u2501 DE30/EUR \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 18/100 | \u26d4 HARD AVOID\nBias: Bearish (EMAs diverged, wrong side of 50EMA)\nADR: 445.8 \u26a0\ufe0f Abnormal\nStrategy: breakout_expansion\nKey Level: 24433.50 (H4 high)\n\u26a0\ufe0f Compressed regime, no FVG, no structure \u2014 full skip\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Macro neutral across the board \u2014 BTC the only instrument with clean multi-TF alignment, indices/gold stuck in compression with abnormal ADRs.\n\ud83d\udccb BOTTOM LINE: Stand aside on DE30, XAU, SPX \u2014 only engage BTC if 78,754.65 sweeps and rejects into the bullish FVG.",
-      "tags": [
-        "strategy",
-        "narrative",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:18:07.898674+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udd34 BLADE SHORT DE30 @ 24453.50 | SL:24488.00 | TPs:24450.50/24448.50/24443.50 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny_early"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:20:02.496712+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7478.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-14T12:21:02.802094+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$7.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
       "timestamp": "2026-05-14T12:21:18.788043+00:00",
       "agent": "blade",
       "type": "trade",
@@ -5339,6 +4625,677 @@
       "tags": [
         "strategy",
         "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-27T17:18:34.092539+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-27T17:21:20.606501+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-27T17:55:02.140379+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "NY_PM starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-27T18:17:04.719021+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udfe2 BLADE LONG SPX500 @ 7525.10 | SL:7514.10 | TPs:7528.10/7530.10/7535.10 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "ny_pm"
+      ]
+    },
+    {
+      "timestamp": "2026-05-27T23:50:02.298923+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "ASIA starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T00:22:06.645643+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udfe2 BLADE LONG SPX500 @ 7532.00 | SL:7519.80 | TPs:7535.00/7537.00/7542.00 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "asia"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T04:55:01.826877+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T04:57:28.669210+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T06:00:03.763865+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T06:00:27.606410+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: COMPRESSED\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T06:00:27.791215+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 60/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 DE30_EUR: 44/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 XAU_USD: 65/100 \u2192 ORB bearish\n  \u26d4 BTC_USD: 63/100 \u2192 SWEEP_FADE bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T06:00:47.367658+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 28\n\n\ud83d\udfe1 REGIME: COMPRESSED \u2014 Preservation Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 60/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily aligned)\nADR: 72.8\nStrategy: Breakout Expansion\nKey Level: 7546.60 (prior day high)\nFVG: 7533.35 (bullish)\n\u26a0\ufe0f Compressed \u2014 wait for BB expansion\n\ud83c\udfaf Alert: Clean break above 7546.60 with expansion\n\n\u2501\u2501\u2501 DE30 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 44/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily) but H1/M15 diverged\nADR: 445.6 \u26a0\ufe0f Abnormal\nStrategy: Breakout Expansion\nKey Level: 25100.00 (round number)\nFVG: counter-trend bearish present\n\u26a0\ufe0f Compressed + abnormal ADR \u2014 chop risk elevated\n\n\u2501\u2501\u2501 XAU/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 65/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bearish (full alignment H4/D/H1/M15)\nADR: 94.8 \u26a0\ufe0f Abnormal\nStrategy: ORB\nKey Level: 4366.23 (H4 low)\nFVG: 4399.36 (bearish)\n\ud83c\udfaf Alert: 13:30\u201314:00 window, short ORB break toward 4366\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 63/100 | \u26d4 WATCH ONLY\nBias: Bearish (H1/M15 aligned, H4 partial)\nADR: 1836.3\nStrategy: Sweep Fade\nKey Level: 72728.85 (H4 low)\nFVG: 73067.93 (bearish)\n\ud83c\udfaf Alert: Liquidity sweep above range \u2192 fade short\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Equities compressed and waiting, while metals and crypto carry a clean bearish lean.\n\ud83d\udccb BOTTOM LINE: Focus on XAU/USD bearish ORB in the 13:30\u201314:00 window \u2014 everything else is wait-only.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T06:57:46.513617+00:00",
+      "agent": "edge",
+      "type": "status",
+      "message": "EDGE H1 8/21 bot started (H4 filter: True)",
+      "tags": [
+        "startup"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T07:55:02.012685+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "LONDON starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T08:17:11.424728+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT CHF @ 202.19 | SL:202.37 | TPs:202.16/202.14/202.09 | units:222",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T08:28:27.774695+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7519.60 | SL:7527.80 | TPs:7516.60/7514.60/7509.60 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T08:36:11.163328+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT DE30 @ 25137.10 | SL:25191.10 | TPs:25134.10/25132.10/25127.10 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T09:00:02.876564+00:00",
+      "agent": "oracle",
+      "type": "status",
+      "message": "No candidate met edge \u2265 3.0%. Scanned 0 (game,market,side) tuples.",
+      "tags": [
+        "betting"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T12:00:03.195212+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T12:00:20.413028+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: COMPRESSED\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T12:00:20.581107+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 54/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 DE30_EUR: 44/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 XAU_USD: 65/100 \u2192 ORB bearish\n  \u26d4 BTC_USD: 56/100 \u2192 SWEEP_FADE bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T12:00:41.119010+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 28\n\n\ud83d\udfe1 REGIME: COMPRESSED \u2014 Preservation Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 54/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily EMA aligned)\nADR: 72.8\nStrategy: Breakout Expansion\nKey Level: 7546.60 (prior day high)\nFVG: present (counter-trend bearish)\n\u26a0\ufe0f Compressed \u2014 wait for BB expansion breakout\n\n\u2501\u2501\u2501 DAX (DE30) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 44/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily EMA aligned)\nADR: 445.6 \u26a0\ufe0f Abnormal\nStrategy: Breakout Expansion\nKey Level: 25000.00 (round number)\nFVG: present (counter-trend bearish)\n\u26a0\ufe0f Compressed + abnormal ADR \u2014 skip until clean expansion\n\n\u2501\u2501\u2501 GOLD (XAU) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 65/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bearish (full EMA stack aligned H4\u2192M15)\nADR: 94.8 \u26a0\ufe0f Abnormal\nStrategy: ORB (bearish direction)\nKey Level: 4366.23 (H4 low)\nFVG: 4399.36 (bearish, overhead resistance)\n\ud83c\udfaf Alert: Watch 13:30-14:00 window for ORB short toward 4366\n\n\u2501\u2501\u2501 BTC \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 56/100 | \u26d4 WATCH ONLY\nBias: Bearish (H1 aligned, H4 partial)\nADR: 1836.3\nStrategy: Sweep Fade\nKey Level: 74243.99 (prior day low)\nFVG: 73310.18 (bearish, overhead)\n\ud83c\udfaf Alert: Ranging + FVG \u2014 watch for liquidity sweep fade below PDL\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Indices compressed-bullish but stuck; Gold + BTC carry the bearish lean with cleaner structure.\n\ud83d\udccb BOTTOM LINE: Stand down on indices and only engage GOLD ORB short in the 13:30-14:00 window if price rejects the 4399 FVG.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T17:55:01.512626+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "NY_PM starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T18:36:11.828138+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7569.30 | SL:7577.10 | TPs:7566.30/7564.30/7559.30 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "ny_pm"
+      ]
+    },
+    {
+      "timestamp": "2026-05-28T23:50:02.127935+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "ASIA starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T00:32:09.064115+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7571.00 | SL:7579.00 | TPs:7568.00/7566.00/7561.00 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "asia"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T04:55:01.434118+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T04:57:14.602934+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T06:00:03.711024+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T06:00:21.458309+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: RANGING\nTRADE: SPX500_USD(75/100 SWEEP_FADE)\nSKIP:  DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T06:00:21.644961+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: RANGING\n  \u2705 SPX500_USD: 75/100 \u2192 SWEEP_FADE bullish\n  \u26d4 DE30_EUR: 50/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 XAU_USD: 44/100 \u2192 SWEEP_FADE bearish\n  \u26d4 BTC_USD: 50/100 \u2192 SWEEP_FADE bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T06:00:36.137257+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 29\n\n\ud83d\udfe1 REGIME: RANGING \u2014 Preservation Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 75/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bullish (H4/Daily + H1/M15 aligned)\nADR: 74.4\nStrategy: Sweep Fade\nKey Level: 7560.40 (prior day high)\nFVG: 7571.70 (bullish)\n\ud83c\udfaf Alert: Watch for liquidity sweep above 7560.40 \u2192 fade back into range\n\n\u2501\u2501\u2501 DE30 (DAX) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 50/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily aligned, H1/M15 diverged)\nADR: 449.6 \u26a0\ufe0f Abnormal\nStrategy: Breakout Expansion\nKey Level: 25115.10 (prior day low)\nFVG: 25119.40 (bullish)\n\u26a0\ufe0f Compressed regime \u2014 wait for BB expansion before engaging\n\n\u2501\u2501\u2501 XAU/USD (Gold) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 44/100 | \u26d4 HARD AVOID\nBias: Bearish (H4/Daily aligned, H1/M15 diverged)\nADR: 102.4 \u26a0\ufe0f Abnormal\nStrategy: Sweep Fade\nKey Level: 4528.05 (prior day high)\nFVG: counter-trend bullish (conflict with bearish bias)\n\u26a0\ufe0f Bias/FVG conflict + abnormal ADR \u2014 skip\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 50/100 | \u26d4 WATCH ONLY\nBias: Bearish (H1 aligned, H4/Daily partial)\nADR: 1791.8\nStrategy: Sweep Fade\nKey Level: 74590.77 (prior day high)\nFVG: counter-trend bullish (conflict with bearish bias)\n\u26a0\ufe0f Mixed EMA alignment + FVG/bias conflict \u2014 no clean edge\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Neutral macro (50%) across the board \u2014 indices lean bullish, Gold/BTC lean bearish, no instrument has lens confirmation.\n\ud83d\udccb BOTTOM LINE: SPX500 is the only tradeable setup \u2014 wait for a sweep of 7560.40 to fade long back into the range; skip everything else.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T07:55:01.784251+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "LONDON starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T08:47:34.075088+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7574.60 | SL:7583.00 | TPs:7571.60/7569.60/7564.60 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T08:48:05.419660+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT DE30 @ 25144.60 | SL:25195.60 | TPs:25141.60/25139.60/25134.60 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T09:00:03.049309+00:00",
+      "agent": "oracle",
+      "type": "status",
+      "message": "No candidate met edge \u2265 3.0%. Scanned 0 (game,market,side) tuples.",
+      "tags": [
+        "betting"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T09:07:32.938143+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udfe2 BLADE LONG CHF @ 203.22 | SL:202.94 | TPs:203.25/203.27/203.32 | units:226",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T12:00:02.268290+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T12:00:20.413982+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: RANGING\nTRADE: SPX500_USD(75/100 SWEEP_FADE)\nSKIP:  DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T12:00:20.598721+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: RANGING\n  \u2705 SPX500_USD: 75/100 \u2192 SWEEP_FADE bullish\n  \u26d4 DE30_EUR: 50/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 XAU_USD: 34/100 \u2192 SWEEP_FADE bearish\n  \u26d4 BTC_USD: 56/100 \u2192 SWEEP_FADE bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T12:00:35.011185+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 29\n\n\ud83d\udfe1 REGIME: RANGING \u2014 Sweep Fade Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 75/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bullish (H4/Daily + H1/M15 aligned)\nADR: 74.4\nStrategy: Sweep Fade\nKey Level: 7560.40 (prior day high)\nFVG: 7569.40 (bullish)\n\ud83c\udfaf Alert: Watch for liquidity sweep above 7560.40 \u2192 fade back into range\n\n\u2501\u2501\u2501 DE30 (DAX) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 50/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily aligned, H1/M15 diverged)\nADR: 449.6 \u26a0\ufe0f Abnormal\nStrategy: Breakout Expansion\nKey Level: 25115.10 (prior day low)\nFVG: 25132.60 (bullish)\n\u26a0\ufe0f Compressed regime \u2014 wait for BB expansion confirmation\n\n\u2501\u2501\u2501 XAU/USD (Gold) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 34/100 | \u26d4 HARD AVOID\nBias: Bearish (H4/Daily), H1/M15 diverged\nADR: 102.4 \u26a0\ufe0f Abnormal\nStrategy: Sweep Fade\nKey Level: 4528.05 (prior day high)\nFVG: present (counter-trend bullish)\n\u26a0\ufe0f Price wrong side of 50EMA + counter-trend FVG \u2014 no edge\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 56/100 | \u26d4 WATCH ONLY\nBias: Bearish (H1 aligned, H4 partial)\nADR: 1798.9\nStrategy: Sweep Fade\nKey Level: 72582.82 (prior day low)\nFVG: 73376.17 (bearish)\n\ud83c\udfaf Alert: Watch for sweep below 72582.82 \u2192 fade rejection back up\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Mixed bias \u2014 indices bullish (SPX/DAX), commodities & crypto bearish (Gold/BTC); broad ranging regime favors fades over breakouts.\n\ud83d\udccb BOTTOM LINE: Focus exclusively on SPX500 sweep-fade above 7560.40 \u2014 it's the only clean A+ setup; skip everything else.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T17:55:01.989538+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "NY_PM starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T18:23:07.068224+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udfe2 BLADE LONG SPX500 @ 7583.40 | SL:7570.60 | TPs:7586.40/7588.40/7593.40 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "ny_pm"
+      ]
+    },
+    {
+      "timestamp": "2026-05-29T23:50:01.761381+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "ASIA starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-05-30T09:00:03.558119+00:00",
+      "agent": "oracle",
+      "type": "status",
+      "message": "No candidate met edge \u2265 3.0%. Scanned 0 (game,market,side) tuples.",
+      "tags": [
+        "betting"
+      ]
+    },
+    {
+      "timestamp": "2026-05-31T09:00:13.652140+00:00",
+      "agent": "oracle",
+      "type": "status",
+      "message": "No candidate met edge \u2265 3.0%. Scanned 0 (game,market,side) tuples.",
+      "tags": [
+        "betting"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T04:55:01.655306+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T04:57:52.044483+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T06:00:04.523484+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T06:00:34.259966+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: COMPRESSED\nTRADE: BTC_USD(75/100 BREAKOUT_EXPANSION)\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T06:00:34.444480+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 0/100 \u2192 ORB \n  \u26d4 DE30_EUR: 0/100 \u2192 ORB \n  \u26d4 XAU_USD: 38/100 \u2192 SWEEP_FADE bearish\n  \u2705 BTC_USD: 75/100 \u2192 BREAKOUT_EXPANSION bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T06:00:48.056595+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | June 1\n\n\ud83e\uddca REGIME: COMPRESSED \u2014 Caution / Selective Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 0/100 | \u26d4 HARD AVOID\n\u26a0\ufe0f Data unavailable for H4\n\n\u2501\u2501\u2501 DE30 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 0/100 | \u26d4 HARD AVOID\n\u26a0\ufe0f Data unavailable for H4\n\n\u2501\u2501\u2501 XAU/USD (GOLD) \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 38/100 | \u26d4 HARD AVOID\nBias: Bearish (H4/Daily neutral-bearish, H1/M15 diverged)\nADR: 97.6\nStrategy: Sweep Fade\nKey Level: 4516.63 (prior day high) | 50EMA 4521.3\nFVG: 4527.33 (bearish)\n\u26a0\ufe0f Ranging regime + lens neutral 50% \u2014 no edge alignment\n\ud83c\udfaf Alert: Watch for liquidity sweep above 4516.63 then fade rejection\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 75/100 | \ud83d\udc40 BEST SETUP TODAY \u2705 TRADE\nBias: Bearish (H4/Daily/H1/M15 all aligned bearish)\nADR: 1655.6 (normal)\nStrategy: Breakout Expansion\nKey Level: 74275.66 (prior day high) | 50EMA 74733.1\nFVG: 73572.50 (bearish)\n\u26a0\ufe0f Compressed regime \u2014 wait for BB expansion, no premature entries\n\ud83c\udfaf Alert: Bearish breakout on BB expansion below compression range\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Bearish structural alignment on BTC; Gold ranging with no edge; indices offline \u2014 risk-off lean with patience required.\n\ud83d\udccb BOTTOM LINE: Wait for BTC/USD bearish BB expansion breakout \u2014 it's the only clean setup; skip everything else.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T07:55:01.305180+00:00",
+      "agent": "blade",
+      "type": "status",
+      "message": "LONDON starting. Balance: $2000.00",
+      "tags": [
+        "session"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T08:17:21.180245+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT SPX500 @ 7599.80 | SL:7606.60 | TPs:7596.80/7594.80/7589.80 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T08:19:24.796553+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT DE30 @ 25132.70 | SL:25193.20 | TPs:25129.70/25127.70/25122.70 | units:2",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T08:21:29.916527+00:00",
+      "agent": "blade",
+      "type": "trade",
+      "message": "\ud83d\udd34 BLADE SHORT CHF @ 203.53 | SL:203.72 | TPs:203.50/203.48/203.43 | units:222",
+      "tags": [
+        "trading",
+        "entry",
+        "london"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T09:00:03.497389+00:00",
+      "agent": "oracle",
+      "type": "status",
+      "message": "No candidate met edge \u2265 3.0%. Scanned 68 (game,market,side) tuples.",
+      "tags": [
+        "betting"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T12:00:01.838908+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T12:00:24.499092+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "Strategy analysis complete | Regime: COMPRESSED\nTRADE: BTC_USD(75/100 BREAKOUT_EXPANSION)\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD",
+      "tags": [
+        "analysis",
+        "strategy"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T12:00:24.667578+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "STRATEGY UPDATE | Regime: COMPRESSED\n  \u26d4 SPX500_USD: 69/100 \u2192 SWEEP_FADE bullish\n  \u26d4 DE30_EUR: 53/100 \u2192 BREAKOUT_EXPANSION bullish\n  \u26d4 XAU_USD: 32/100 \u2192 SWEEP_FADE bearish\n  \u2705 BTC_USD: 75/100 \u2192 BREAKOUT_EXPANSION bearish",
+      "tags": [
+        "strategy",
+        "analysis",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T12:00:42.671047+00:00",
+      "agent": "strategist",
+      "type": "strategy",
+      "message": "\ud83d\udcca PRE-SESSION BRIEFING | June 1\n\n\ud83d\udfe1 REGIME: COMPRESSED \u2014 Caution / Wait for Expansion\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 75/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bearish (H4 + Daily aligned)\nADR: 1748.8\nStrategy: breakout_expansion\nKey Level: prior_day_low @ 73,400.00\nFVG: 72,610.08 (bearish, with-trend)\n\ud83c\udfaf Alert: BB expansion break below 73,400 \u2014 clean short trigger\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 69/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4 + Daily aligned, ranging)\nADR: 66.5\nStrategy: sweep_fade\nKey Level: prior_day_high @ 7,581.80\nFVG: present (counter-trend bearish)\n\ud83c\udfaf Alert: Liquidity sweep above 7,581.80 then fade back inside range\n\n\u2501\u2501\u2501 DE30/EUR \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 53/100 | \u26d4 WATCH ONLY\nBias: Bullish (partial H4/D, M15 aligned)\nADR: 419.1 \u26a0\ufe0f Abnormal\nStrategy: breakout_expansion\nKey Level: prior_day_high @ 25,262.60\nFVG: 25,169.45 (bullish, with-trend)\n\u26a0\ufe0f Abnormal ADR \u2014 size down, wait for clean BB expansion\n\n\u2501\u2501\u2501 XAU/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 32/100 | \u26d4 HARD AVOID\nBias: Bearish (H1/M15 diverged)\nADR: 97.6 \u26a0\ufe0f Abnormal\nStrategy: sweep_fade\nKey Level: prior_day_high @ 4,516.63\nFVG: present (counter-trend bullish)\n\u26a0\ufe0f EMA divergence + abnormal ADR \u2014 no edge, stand aside\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Mixed \u2014 equities lean bullish into ranges, crypto cleanly bearish, gold incoherent.\n\ud83d\udccb BOTTOM LINE: Stalk BTC short on a confirmed break of 73,400 with bearish FVG (72,610) as trigger \u2014 everything else is watch-only.",
+      "tags": [
+        "strategy",
+        "narrative",
+        "pre-session"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T16:06:57.617591+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T16:06:58.750487+00:00",
+      "agent": "strategist",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: RANGING | bias=bullish | lens=neutral 50%",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T16:07:42.542891+00:00",
+      "agent": "strategist",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T16:07:43.456773+00:00",
+      "agent": "strategist",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: RANGING | bias=bullish | lens=neutral 50%",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-06-01T16:08:31.012116+00:00",
+      "agent": "strategist",
+      "type": "briefing",
+      "message": "\u265f\ufe0f STRATEGIST\n\ud83d\udcc5 June 1\n\nREGIME: RANGING \u2014 Market is rotating without clear trend follow-through.\n\nSPX500_USD: RANGING | bias BULLISH | Lens NEUTRAL 50% | ADR 66.5\n  Bullish bias exists inside a ranging regime, so favor selective longs near support rather than chasing.\n\n\ud83e\udde0 LENS SUMMARY: Macro lens is neutral, offering no strong confirmation for the bullish SPX bias.\n\ud83d\udccb BOTTOM LINE: Treat SPX as range-bound today and only engage bullish setups at favorable levels.\n\u2014 via H",
+      "tags": [
+        "briefing",
         "pre-session"
       ]
     }

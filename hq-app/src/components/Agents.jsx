@@ -35,13 +35,6 @@ const CATEGORIES = [
         statsType: 'trading',
       },
       {
-        id: 'kalshi', name: 'Kalshi', title: 'Prediction Markets', color: '#60a5fa',
-        border: 'rgba(96,165,250,0.2)', img: '/agents/kalshi.png',
-        model: 'Codex + Claude', brain: 'claude-sonnet-4-6', status: 'ACTIVE',
-        desc: 'Trades event contracts on Kalshi. Claude brain evaluates probability mispricings in political and economic markets.',
-        statsType: 'trading',
-      },
-      {
         id: 'jerry', name: 'Jerry', title: 'Stocks & Options', color: '#fb923c',
         border: 'rgba(251,146,60,0.25)', img: '/agents/jerry.png',
         model: 'Codex + Claude', brain: 'claude-sonnet-4-6', status: 'PAPER',
@@ -73,13 +66,6 @@ const CATEGORIES = [
         border: 'rgba(201,168,76,0.2)', img: '/agents/strategist.png',
         model: 'Codex', brain: null, status: 'IDLE',
         desc: 'Identifies market regime and session context. Provides directional bias and trade framework.',
-        statsType: 'intelligence',
-      },
-      {
-        id: 'oracle', name: 'Oracle', title: 'Sports Analyst', color: '#a78bfa',
-        border: 'rgba(167,139,250,0.25)', img: '/agents/oracle.png',
-        model: 'Codex', brain: null, status: 'ACTIVE',
-        desc: 'Generates sports picks using rest, travel, and matchup data. Manages bankroll model.',
         statsType: 'intelligence',
       },
       {
@@ -546,7 +532,7 @@ function AgentCard({ agent, messages, isMobile, extra = {}, isHero = false }) {
       <div className="glass" style={{ border: `1px solid ${agent.border}`, padding: '14px 16px', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
           <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', background: '#080e1e', border: `1px solid ${agent.border}`, flexShrink: 0 }}>
-            <img src={agent.img} alt={agent.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: agent.id === 'oracle' ? 'top 5%' : 'top' }} onError={e => e.target.style.display = 'none'} />
+            <img src={agent.img} alt={agent.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} onError={e => e.target.style.display = 'none'} />
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ display: 'flex', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
@@ -569,7 +555,7 @@ function AgentCard({ agent, messages, isMobile, extra = {}, isHero = false }) {
     )
   }
 
-  const imgObjPos = agent.id === 'oracle' ? 'top 5%' : agent.id === 'strategist' ? 'center top' : 'top'
+  const imgObjPos = agent.id === 'strategist' ? 'center top' : 'top'
 
   return (
     <div className="glass" style={{ border: `1px solid ${agent.border}`, display: 'grid', gridTemplateColumns: `${imgW}px 1fr`, overflow: 'hidden', marginBottom: 12, minHeight: CARD_MIN_H }}>

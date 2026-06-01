@@ -1,7 +1,0 @@
-.env
-*.pem
-kalshi_private*
-*.log
-__pycache__/
-*.pyc
-trades_log.csv

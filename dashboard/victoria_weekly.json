@@ -1,0 +1,46 @@
+{
+  "week_start": "2026-05-26",
+  "week_end": "2026-06-01",
+  "net_worth_change": 543.0,
+  "total_pnl_week": -120.5,
+  "best_agent": "TradeLocker Manual (176W/139L, $680.57 all-time)",
+  "worst_agent": "Blade ($-88.68 P&L, 288.5% MaxDD)",
+  "api_costs_week": 0.55,
+  "top_wounds": [
+    {
+      "issue": "Blade max drawdown of 288.5% with Sharpe of 0.057 \u2014 edge exists but position sizing is destroying it. Net P&L -$88.68 this week alone.",
+      "action": "Immediate position sizing audit and redesign. Implement hard circuit breakers at defined drawdown thresholds. Do not run Blade at current sizing until resolved."
+    },
+    {
+      "issue": "Kalshi has 408 recorded orders but zero settlement outcome data \u2014 P&L analysis is structurally impossible. This is an infrastructure failure, not a strategy failure.",
+      "action": "Engineering must treat settlement outcome tracking as a blocking issue this week. No new Kalshi capital allocation until pipeline is fixed and data is flowing."
+    },
+    {
+      "issue": "Net worth dropped $1,000 on 2026-05-30 (from $47,687 to $46,687) with zero reported P&L across all agents \u2014 the drawdown is unattributed and unexplained.",
+      "action": "Audit all account balances around May 30. Identify the source \u2014 crypto market movement, withdrawal, or fee \u2014 and ensure it is captured in reporting correctly."
+    },
+    {
+      "issue": "Oracle Sports Betting shows $500 bankroll but zero resolved picks since brain reset on 2026-04-15. Nearly 7 weeks of inactivity.",
+      "action": "Either activate Oracle with a documented pick cadence this week or formally pause the allocation. Dead capital with active API overhead is a liability."
+    },
+    {
+      "issue": "Edge Trading Bot shows 0 trades, $0 P&L, and $5,000 sitting idle. 5-trade recent window shows promise but aggregate history is negative.",
+      "action": "Establish mandatory trade logging infrastructure before resuming. Investigate the discrepancy between aggregate (-$19) and recent window data before scaling."
+    }
+  ],
+  "matters_of_note": [
+    "Net worth appears to have increased approximately $543 week-over-week (from ~$47,144 to ~$47,687) despite -$120.50 recorded P&L, suggesting crypto holdings or Robinhood positions appreciated during the period.",
+    "Crisp remains at 0 trades and $0 P&L after 3 sessions \u2014 with a 6-trade history showing -$34.35 expectancy and 468% max drawdown, this agent should be on minimum allocation watch only.",
+    "Portfolio concentration risk is severe: Blade is the only active automated trading agent with meaningful volume (226 trades), making the entire operation dependent on a single strategy with known structural flaws.",
+    "API costs are negligible at $0.5548 MTD \u2014 this is one area of the operation running efficiently.",
+    "TradeLocker manual trading shows 176W/139L all-time with $680.57 total P&L, but win rate is reporting as 0.0% in the data feed \u2014 this appears to be a data pipeline error that needs correction.",
+    "TAO staking position ($944.44 invested, 0.6690 TAO) is illiquid with no remaining DCA entries \u2014 this position should be monitored for exit opportunity or additional entry if thesis remains intact.",
+    "Robinhood at $16,725.21 and Truist MMA at $14,850 represent the most stable capital in the portfolio and are not currently being leveraged by any agent strategy."
+  ],
+  "verdict": "This was a flat-to-slightly-positive week in net worth terms, but the underlying operation remains structurally compromised. Blade is the only agent doing real work, and it is doing it recklessly \u2014 a 288.5% max drawdown on a legitimate edge is a management failure, not a strategy failure. The immediate priority is threefold: fix Blade's position sizing before it ruins the account, get Kalshi settlement data flowing or pause it entirely, and make a decision on Oracle and Edge \u2014 activate them properly or stand them down. We are paying to run six agents and getting meaningful output from roughly one.",
+  "_meta": {
+    "timestamp": "2026-06-01T07:00:29.248214+00:00",
+    "cost_usd": 0.022668,
+    "model": "claude-sonnet-4-6"
+  }
+}

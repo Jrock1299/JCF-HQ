@@ -1,0 +1,254 @@
+import oandapyV20
+from oandapyV20 import API
+from oandapyV20.endpoints.accounts import AccountDetails
+from oandapyV20.endpoints.instruments import InstrumentsCandles
+import json
+import time
+import logging
+import uuid
+import os
+from datetime import datetime, timezone
+from collections import defaultdict
+
+# --- Setup ---
+logging.basicConfig(
+    filename='/root/.openclaw/agents/blade/bot/blade.log',
+    level=logging.INFO,
+    format='%(asctime)s %(message)s'
+)
+
+with open('/root/.openclaw/agents/main/agent/auth-profiles.json') as f:
+    auth = json.load(f)
+
+creds = auth['profiles']['oanda:default']
+client = API(access_token=creds['key'], environment='practice')
+ACCOUNT_ID = creds['account_id']
+
+# --- Config ---
+INSTRUMENTS = ['GBP_JPY', 'AUD_CAD', 'XAU_USD', 'NAS100_USD', 'SPX500_USD']
+RISK_PERCENT = 0.02
+MIN_STOP_DISTANCE = 0.001
+AGENT_NAME = "blade"
+TRADES_JSON_PATH = '/root/.openclaw/dashboard/agent_trades.json'
+
+paper_balance = 2000.0
+open_positions = {}
+session_trades = [] # NEW: Store trades
+
+SESSIONS = {
+    'ASIA':   {'start_hour': 0, 'end_hour': 3, 'minute': 0},
+    'LONDON': {'hour': 8,  'minute': 0},
+    'NY':     {'hour': 13, 'minute': 30},
+}
+
+# --- Core Functions (no changes) ---
+def get_candles(instrument, granularity, count):
+    r = InstrumentsCandles(instrument, params={'granularity': granularity, 'count': count})
+    client.request(r)
+    return r.response['candles']
+
+def get_price(instrument):
+    candles = get_candles(instrument, 'M1', 2)
+    return float(candles[-1]['mid']['c'])
+
+# ... other core functions without changes ...
+
+# --- Trade & Position Management (MODIFIED) ---
+
+def place_paper_order(instrument, direction, orb_high, orb_low, session_name):
+    global paper_balance
+    price = get_price(instrument)
+    
+    tp_multipliers = [1, 2, 3]
+    if direction == 'long':
+        stop_loss = orb_low
+        risk_per_unit = price - stop_loss
+        take_profits = [price + (risk_per_unit * m) for m in tp_multipliers]
+    else:
+        stop_loss = orb_high
+        risk_per_unit = stop_loss - price
+        take_profits = [price - (risk_per_unit * m) for m in tp_multipliers]
+
+    stop_distance = abs(price - stop_loss) / price
+    stop_distance = max(stop_distance, MIN_STOP_DISTANCE)
+    risk_amount = paper_balance * RISK_PERCENT
+    position_value = min(risk_amount / stop_distance, paper_balance / 3)
+    units = round(position_value / price, 2)
+    
+    trade_id = str(uuid.uuid4())
+    open_positions[instrument] = {
+        'trade_id': trade_id, 'direction': direction, 'entry': price, 'stop_loss': stop_loss,
+        'take_profits': take_profits, 'units': units, 'position_value': position_value,
+        'open_time': datetime.now(timezone.utc).strftime('%H:%M:%S'), 'breakeven_moved': False, 'highest_tp_hit': 0
+    }
+
+    session_trades.append({
+        "id": trade_id, "agent": AGENT_NAME, "date": datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "session": session_name, "pair": instrument, "symbol": instrument, "direction": direction,
+        "setup": "15m ORB", "entry": price, "stop": stop_loss,
+        "tp1": take_profits[0], "tp2": take_profits[1], "tp3": take_profits[2],
+        "result": "Pending", "pnl_usd": 0, "r_multiple": 0, "notes": f"Trade opened {direction}."
+    })
+
+    msg = f"PAPER TRADE: {instrument} {direction.upper()} | Entry:{price} | SL:{stop_loss:.5f} | TP1:{take_profits[0]:.5f}"
+    print(f"✅ {msg}"); logging.info(msg)
+    return True
+
+def manage_positions():
+    global paper_balance
+    to_close = []
+    for instrument, pos in open_positions.items():
+        try:
+            price = get_price(instrument)
+            direction, entry, stop, tps, units, trade_id = pos['direction'], pos['entry'], pos['stop_loss'], pos['take_profits'], pos['units'], pos['trade_id']
+
+            pnl = (price - entry) * units if direction == 'long' else (entry - price) * units
+            
+            for i in range(len(tps) - 1, -1, -1):
+                tp_level = i + 1
+                if tp_level > pos['highest_tp_hit']:
+                    if (price >= tps[i] if direction == 'long' else price <= tps[i]):
+                        pos['highest_tp_hit'] = tp_level
+                        print(f"🎯 TP{tp_level} HIT: {instrument} at {price:.5f}")
+                        if tp_level == 1 and not pos['breakeven_moved']:
+                            pos['stop_loss'] = entry
+                            pos['breakeven_moved'] = True
+                            print(f"🔒 {instrument} stop moved to breakeven {entry}")
+                        break
+
+            hit_stop = (price <= stop if direction == 'long' else price >= stop)
+            
+            print(f"{'🟢' if pnl > 0 else '🔴'} {instrument} | PnL:${pnl:.2f} | SL:{stop:.5f} TP3:{tps[2]:.5f}")
+
+            if hit_stop:
+                to_close.append(instrument)
+                update_trade_log(trade_id, "SL", pnl, "Stop loss hit.")
+                paper_balance += pnl
+                print(f"🛑 STOP HIT: {instrument} | PnL:${pnl:.2f}"); logging.info(f"STOP HIT: {instrument} | PnL:${pnl:.2f}")
+            elif pos['highest_tp_hit'] == 3:
+                to_close.append(instrument)
+                update_trade_log(trade_id, "TP3", pnl, "Final take profit hit.")
+                paper_balance += pnl
+                print(f"🏆 TP3 HIT: {instrument} | PnL:${pnl:.2f}"); logging.info(f"TP3 HIT: {instrument} | PnL:${pnl:.2f}")
+
+        except Exception as e:
+            print(f"Position check error {instrument}: {e}")
+
+    for instrument in to_close:
+        del open_positions[instrument]
+
+def update_trade_log(trade_id, result, pnl, notes):
+    for trade in session_trades:
+        if trade['id'] == trade_id:
+            trade['result'] = result
+            trade['pnl_usd'] = round(pnl, 2)
+            risk = abs(trade['entry'] - trade['stop'])
+            trade['r_multiple'] = round(pnl / (risk * open_positions[trade['pair']]['units']), 1) if risk > 0 and trade['pair'] in open_positions else 0
+            trade['notes'] = notes
+            break
+
+# --- Reporting (NEW) ---
+def write_session_trades_to_json():
+    def normalize_trade(t):
+        symbol = t.get('symbol') or t.get('pair') or ''
+        direction = t.get('direction')
+        if not direction:
+            entry = t.get('entry')
+            stop = t.get('stop')
+            if entry is not None and stop is not None:
+                direction = 'long' if entry > stop else 'short'
+            else:
+                direction = 'none'
+        return {
+            "agent": t.get('agent', AGENT_NAME),
+            "symbol": symbol,
+            "direction": direction,
+            "pnl": t.get('pnl_usd', 0) if t.get('pnl_usd', None) is not None else 0,
+            "date": t.get('date', datetime.now(timezone.utc).strftime('%Y-%m-%d')),
+            "timestamp": t.get('timestamp', datetime.now(timezone.utc).isoformat())
+        }
+
+    try:
+        with open(TRADES_JSON_PATH, 'r') as f:
+            data = json.load(f)
+    except Exception:
+        data = {"trades": []}
+
+    if not session_trades:
+        session_trades.append({
+            "agent": AGENT_NAME,
+            "date": datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+            "direction": "none",
+            "pnl_usd": 0,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+
+    existing_trades = data.get('trades', []) if isinstance(data.get('trades', []), list) else []
+    normalized_existing = [normalize_trade(t) for t in existing_trades]
+    normalized_new = [normalize_trade(t) for t in session_trades]
+
+    data['trades'] = normalized_existing + normalized_new
+    with open(TRADES_JSON_PATH, 'w') as f:
+        json.dump(data, f, indent=2)
+    print(f"📝 {len(normalized_new)} trades written to {TRADES_JSON_PATH}")
+
+def send_telegram_report(session_name):
+    trades_count = sum(1 for t in session_trades if t.get('result') != 'no_trade')
+    date_str = datetime.now(timezone.utc).strftime('%b %d')
+    header = f"⚔️ BLADE — {session_name} SESSION\n📅 {date_str} | {trades_count} trades\n"
+
+    lines = []
+    if not session_trades:
+        lines.append("➡️ NO TRADE → no_trade | +$0.00 | 0R")
+    else:
+        for trade in session_trades:
+            result = trade.get('result', '')
+            pnl = trade.get('pnl_usd', 0)
+            r_mult = trade.get('r_multiple', 0)
+            if result == 'no_trade':
+                lines.append("➡️ NO TRADE → no_trade | +$0.00 | 0R")
+                continue
+
+            pair = trade.get('pair', 'UNKNOWN')
+            setup = trade.get('setup', 'ORB')
+            entry = trade.get('entry')
+            stop = trade.get('stop')
+            direction = 'long' if entry is not None and stop is not None and entry > stop else 'short'
+
+            icon = '✅' if result.startswith('TP') or pnl > 0 else '❌' if pnl < 0 or result in ['SL', 'BE', 'Time Stop'] else '➡️'
+            sign = '+' if pnl >= 0 else '-'
+            pnl_str = f"{sign}${abs(pnl):.2f}"
+            lines.append(f"{icon} {pair} {setup} {direction} → {result} | {pnl_str} | {r_mult}R")
+
+    session_pnl = sum(t.get('pnl_usd', 0) for t in session_trades)
+
+    total_pnl = 0
+    try:
+        with open('/root/.openclaw/dashboard/agent_pnl.json', 'r') as f:
+            total_pnl = json.load(f).get('blade', {}).get('pnl', 0)
+    except:
+        pass
+
+    session_sign = '+' if session_pnl >= 0 else '-'
+    total_sign = '+' if total_pnl >= 0 else '-'
+    footer = f"\n📊 Session P&L: {session_sign}${abs(session_pnl):.2f}\n💰 Total P&L: {total_sign}${abs(total_pnl):.2f}"
+    message = header + "\n".join(lines) + footer
+    import subprocess; subprocess.run(["openclaw", "message", "send", "--channel", "telegram", "--to", "797062420", "--message", message])
+    print("📨 Telegram report sent.")
+
+# --- Main Session Logic ---
+def run_orb_session(session_name):
+    # ... setup and waiting logic ...
+    
+    # NEW: Final reporting steps at the end
+    write_session_trades_to_json()
+    os.system("python3 /root/.openclaw/scripts/sync_agent_pnl.py") # Update totals
+    send_telegram_report(session_name)
+    
+    # ... rest of the function ...
+
+# --- Main entry point (no changes) ---
+if __name__ == '__main__':
+    # ...
+    pass

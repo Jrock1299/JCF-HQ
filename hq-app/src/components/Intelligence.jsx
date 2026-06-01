@@ -1,18 +1,12 @@
 /**
- * Intelligence — Daily brief, macro desk, forex/sports intel, insider intelligence
- * Data: market_bias.json, sports_intel.json, sentinel_data.json
+ * Intelligence — Daily brief, macro desk, forex/markets intel, insider intelligence
+ * Data: market_bias.json, sentinel_data.json
  */
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { getMarketBias } from '../api/client.js'
 import { useIsMobile } from '../hooks/useIsMobile.js'
 
 const POLL_MS = 60_000
-
-async function getSportsIntel() {
-  const r = await fetch('/sports_intel.json')
-  if (!r.ok) return []
-  return r.json()
-}
 
 async function getSentinelData() {
   const r = await fetch(`/sentinel_data.json?t=${Date.now()}`)
@@ -316,7 +310,6 @@ function EarningsRow({ e, i, total, onWatchlist, lensCalc }) {
 export default function Intelligence({ demoMode, isActive = true }) {
   const isMobile = useIsMobile()
   const [bias,     setBias]     = useState(null)
-  const [sports,   setSports]   = useState([])
   const [sentinel, setSentinel] = useState(null)
   const [loading,  setLoading]  = useState(true)
   const [tab,      setTab]      = useState('forex')
@@ -324,9 +317,8 @@ export default function Intelligence({ demoMode, isActive = true }) {
 
   const load = useCallback(async () => {
     try {
-      const [mb, sp, sn] = await Promise.allSettled([getMarketBias(), getSportsIntel(), getSentinelData()])
+      const [mb, sn] = await Promise.allSettled([getMarketBias(), getSentinelData()])
       if (mb.status === 'fulfilled') setBias(mb.value)
-      if (sp.status === 'fulfilled') setSports(Array.isArray(sp.value) ? sp.value : [])
       if (sn.status === 'fulfilled') setSentinel(sn.value)
     } catch (e) { console.error('[Intelligence]', e) } finally { setLoading(false) }
   }, [])
@@ -338,7 +330,7 @@ export default function Intelligence({ demoMode, isActive = true }) {
     return () => clearInterval(timer.current)
   }, [isActive, load])
 
-  const TABS = ['Forex', 'Sports', 'Markets', 'Crypto']
+  const TABS = ['Forex', 'Markets', 'Crypto']
 
   const watchlistSignals = sentinel?.watchlist_signals || []
   const discoveries      = sentinel?.top_discoveries   || []
@@ -478,19 +470,6 @@ export default function Intelligence({ demoMode, isActive = true }) {
                     <div style={{ fontSize: 12, color: 'var(--text-primary)', marginBottom: 3 }}>{n.headline || n.title || ''}</div>
                     <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: '"IBM Plex Mono",monospace' }}>{n.time || n.date || ''}{n.source ? ` · ${n.source}` : ''}</div>
                   </div>
-                </div>
-              ))
-              : <EmptyPanel loading={loading} />
-          )}
-          {tab === 'sports' && (
-            sports.length
-              ? sports.map((g, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, color: 'var(--text-primary)' }}>{g.game || '-'}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text-muted)', fontFamily: '"IBM Plex Mono",monospace' }}>{g.time || ''}{g.sport ? ` · ${g.sport}` : ''}</div>
-                  </div>
-                  <div style={{ textAlign: 'right', fontFamily: '"IBM Plex Mono",monospace', fontSize: 10, color: 'var(--text-muted)' }}>{g.spread || ''}</div>
                 </div>
               ))
               : <EmptyPanel loading={loading} />

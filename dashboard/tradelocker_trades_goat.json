@@ -3,9 +3,28 @@
     {
       "id": "1894778",
       "name": "GOAT Funded \u2014 Eval 100K (1)",
-      "balance": 102270.9,
+      "balance": 101887.8,
       "type": "EVAL",
       "trades": [
+        {
+          "positionId": 504403158265802814,
+          "symbol": "SPX500.X",
+          "side": "short",
+          "lots": 1.0,
+          "qty": 1.0,
+          "entry_price": 7507.5,
+          "exit_price": 7545.5,
+          "open_price": 7507.5,
+          "close_price": 7545.5,
+          "open_date": "2026-05-27T15:10:25.088000+00:00",
+          "close_date": "2026-05-28T02:14:16.777000+00:00",
+          "open_time": "2026-05-27T15:10:25.088000+00:00",
+          "close_time": "2026-05-28T02:14:16.777000+00:00",
+          "pnl": -380.0,
+          "source": "GOAT",
+          "account_id": "1894778",
+          "manual_edit": false
+        },
         {
           "positionId": 504403158265711445,
           "symbol": "BTCUSD.X",
@@ -217,9 +236,9 @@
         }
       ],
       "wins": 9,
-      "losses": 2,
-      "win_rate": "81.8%",
-      "pnl": 1196.4
+      "losses": 3,
+      "win_rate": "75.0%",
+      "pnl": 816.4
     },
     {
       "id": "1894779",
@@ -492,50 +511,12 @@
           "source": "GOAT",
           "account_id": "1894779",
           "manual_edit": false
-        },
-        {
-          "positionId": 7566047373987235780,
-          "symbol": "NAS100.X",
-          "side": "long",
-          "lots": 0.05,
-          "qty": 0.05,
-          "entry_price": 27724.12,
-          "exit_price": 27755.99,
-          "open_price": 27724.12,
-          "close_price": 27755.99,
-          "open_date": "2026-05-01T13:55:29.672000+00:00",
-          "close_date": "2026-05-01T14:07:12.019000+00:00",
-          "open_time": "2026-05-01T13:55:29.672000+00:00",
-          "close_time": "2026-05-01T14:07:12.019000+00:00",
-          "pnl": 15.94,
-          "source": "GOAT",
-          "account_id": "1894779",
-          "manual_edit": false
-        },
-        {
-          "positionId": 7566047373987235757,
-          "symbol": "NAS100.X",
-          "side": "long",
-          "lots": 0.05,
-          "qty": 0.05,
-          "entry_price": 27707.75,
-          "exit_price": 27755.92,
-          "open_price": 27707.75,
-          "close_price": 27755.92,
-          "open_date": "2026-05-01T13:55:26.776000+00:00",
-          "close_date": "2026-05-01T14:07:08.748000+00:00",
-          "open_time": "2026-05-01T13:55:26.776000+00:00",
-          "close_time": "2026-05-01T14:07:08.748000+00:00",
-          "pnl": 24.08,
-          "source": "GOAT",
-          "account_id": "1894779",
-          "manual_edit": false
         }
       ],
-      "wins": 14,
+      "wins": 12,
       "losses": 2,
-      "win_rate": "87.5%",
-      "pnl": 1357.69
+      "win_rate": "85.7%",
+      "pnl": 1317.67
     },
     {
       "id": "1894780",
@@ -588,5 +569,5 @@
       "pnl": 705.3
     }
   ],
-  "last_synced": "2026-05-27T16:30:25.549334+00:00"
+  "last_synced": "2026-06-01T17:00:25.699689+00:00"
 }

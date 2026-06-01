@@ -6,7 +6,6 @@ import { DemoProvider } from './context/DemoContext.jsx'
 const Dashboard     = lazy(() => import('./components/Dashboard.jsx'))
 const Portfolio     = lazy(() => import('./components/Portfolio.jsx'))
 const Trading       = lazy(() => import('./components/Trading.jsx'))
-const SportsBetting = lazy(() => import('./components/SportsBetting.jsx'))
 const Investing     = lazy(() => import('./components/Investing.jsx'))
 const Agents        = lazy(() => import('./components/Agents.jsx'))
 const Projects      = lazy(() => import('./components/Projects.jsx'))
@@ -20,7 +19,6 @@ export const TABS = [
   { id: 'portfolio',     label: 'Portfolio',       icon: '◈',  component: Portfolio     },
   { id: 'intelligence',  label: 'Intelligence',    icon: '◎',  component: Intelligence  },
   { id: 'trading',       label: 'Trading',         icon: '↗',  component: Trading       },
-  { id: 'sports',        label: 'Sports Betting',  icon: '◉',  component: SportsBetting },
   { id: 'agents',        label: 'Agents',          icon: '◆',  component: Agents        },
   { id: 'projects',      label: 'Projects',        icon: '▣',  component: Projects      },
   { id: 'investing',     label: 'Investing',       icon: '◇',  component: Investing     },

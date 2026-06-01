@@ -1,6 +1,6 @@
 {
   "updated": "2026-04-15T09:03:17.181313+00:00",
-  "tao_price_usd": 276.5,
+  "tao_price_usd": 251.09,
   "root_staked_tao": 0.668994,
   "subnet_positions": [
     {
@@ -96,6 +96,6 @@
   "total_invested_usd": 944.44,
   "dca_entries_used": 5,
   "dca_entries_remaining": 0,
-  "last_profit_check": "2026-05-27T12:00:04.115120+00:00",
-  "last_weekly_report": "2026-05-23T08:00:03.641082+00:00"
+  "last_profit_check": "2026-06-01T12:00:03.342223+00:00",
+  "last_weekly_report": "2026-05-30T08:00:14.938947+00:00"
 }

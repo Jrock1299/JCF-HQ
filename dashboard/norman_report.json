@@ -1,25 +1,25 @@
 {
-  "date": "2026-04-15",
+  "date": "2026-06-01",
   "agent_reports": {
     "blade": {
-      "total_trades": 301,
-      "win_rate": 56.8,
-      "profit_factor": 1.862,
-      "sharpe": 0.057,
-      "max_drawdown_pct": 288.5,
+      "total_trades": 330,
+      "win_rate": 53.3,
+      "profit_factor": 1.114,
+      "sharpe": 0.012,
+      "max_drawdown_pct": 72.9,
       "monte_carlo": {
-        "median_outcome": 12817.61,
-        "worst_case_5pct": 9193.73,
-        "best_case_95pct": 19189.23,
-        "ruin_probability": 0.0,
-        "double_probability": 3.29,
+        "median_outcome": 10319.72,
+        "worst_case_5pct": 6534.37,
+        "best_case_95pct": 16818.05,
+        "ruin_probability": 0.2,
+        "double_probability": 1.53,
         "starting_balance": 10000
       },
       "verdict": "FAIL",
-      "recommendation": "Blade is a paradox that demands serious structural investigation. The edge is statistically real \u2014 301 trades, 56.8% win rate, profit factor of 1.862, zero ruin probability, and no recent divergence. That is a legitimate edge. But a Sharpe of 0.057 is catastrophically low, and a max drawdown of 288.5% is not a risk metric \u2014 it is a confession that position sizing is broken or leverage is being deployed in a way that is severing the relationship between alpha and risk-adjusted return. The MC median outcome of $12,817 on a $10K base looks attractive until you understand the path to get there involves drawdowns that would destroy most capital bases in practice. Do not increase allocation. Do not shut it down. Fix the position sizing immediately \u2014 implement fractional Kelly or hard drawdown circuit breakers. The strategy has an engine. The chassis is on fire.",
-      "sortino": 0.255,
-      "total_pnl": 3158.72,
-      "expectancy": 8.91,
+      "recommendation": "330 trades is a statistically meaningful sample. The data is not lying to you \u2014 this strategy is broken. Profit factor of 1.114 is below the 1.2 marginal threshold. Sharpe of 0.012 is effectively zero \u2014 there is no risk-adjusted return here, this is random noise with transaction costs subtracted. The 72.9% max drawdown is catastrophic and disqualifying on its own. Average loss ($43.05) exceeds average win ($37.87), meaning the strategy needs to win more than 53% just to break even, and it is barely clearing that bar with $0.11 expectancy per trade. One bad streak \u2014 already demonstrated with 10 consecutive losses \u2014 and the account bleeds severely. The ruin probability of 0.2% sounds safe but is almost certainly understated given the drawdown profile. Positive: no recent divergence (z=0.24), Mon/6UTC edge worth isolating. Action: suspend live trading immediately. Audit the avg win/loss asymmetry \u2014 either tighten stops, extend targets, or both. Do not resume until profit factor exceeds 1.3 in backtesting with realistic slippage.",
+      "sortino": 0.039,
+      "total_pnl": 680.57,
+      "expectancy": 0.11,
       "max_consec_losses": 10
     },
     "crisp": {
@@ -37,34 +37,13 @@
         "starting_balance": 10000
       },
       "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "Six trades. Every metric is either meaningless or alarming. Win rate of 33.3%, profit factor of 0.357, negative Sharpe, negative Sortino, max drawdown of 468%, and a negative expectancy of $34.35 per trade. The MC output is essentially flat noise \u2014 the simulation has nothing real to work with. I will not condemn this strategy on 6 trades, but I will say this: nothing here suggests promise. The avg loss of $80.14 dwarfs the avg win of $57.23. That loss-to-win asymmetry needs to reverse or this strategy is structurally unprofitable by design. Minimum threshold before re-evaluation is 20 trades. Until then, keep allocation at minimum viable levels and monitor loss size discipline closely.",
+      "recommendation": "6 trades. I will not pretend this is an analysis \u2014 it is not. What I can tell you is that every single number visible here is alarming. Profit factor of 0.357 means for every dollar made, $2.80 is lost. Sharpe of -0.441 is negative. A 468% max drawdown figure is either a data pipeline error or evidence of catastrophic position sizing on the few trades that have occurred. The Monte Carlo output is compressed into a tiny band ($9550-$10108) with 0% ruin and 0% 2x probability \u2014 this tells me the MC engine has insufficient data to model anything meaningful and is defaulting to near-flat projections. Do not draw any conclusions from CRISP's numbers yet. Place this strategy in observation-only mode. Require minimum 20 trades before any capital allocation. Investigate the 468% drawdown figure immediately \u2014 if that is real and not a calculation artifact, this strategy must be halted.",
       "sortino": -0.83,
       "total_pnl": -206.11,
       "expectancy": -34.35,
       "max_consec_losses": 3
     },
     "edge": {
-      "total_trades": 5,
-      "win_rate": 20.0,
-      "profit_factor": 2.0,
-      "sharpe": 0.192,
-      "max_drawdown_pct": 40.0,
-      "monte_carlo": {
-        "median_outcome": 5009.0,
-        "worst_case_5pct": 4982.0,
-        "best_case_95pct": 5045.0,
-        "ruin_probability": 0.0,
-        "double_probability": 0.0,
-        "starting_balance": 5000
-      },
-      "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "Edge is the most analytically frustrating agent in this review. The aggregate data \u2014 32 trades, 25% win rate, total PnL of negative $19 \u2014 tells one story. The recent 5-trade window tells another: profit factor of 2.0, Sharpe of 0.192, positive $9 PnL, avg win of $18 vs avg loss of $4.50. That win-to-loss ratio of 4:1 is exceptional if real \u2014 but it is based on 5 trades with P&L data against 32 aggregate trades with a losing record. The MC simulation is essentially useless here \u2014 a $27 spread between P5 and P95 on a $5K base means the model has almost no variance to simulate. This discrepancy between aggregate history and recent performance must be explained before any conclusions are drawn. Has strategy logic changed? Is recent data cherry-picked? The 25% aggregate win rate with negative cumulative PnL is the ground truth until proven otherwise. Hold at minimum allocation. Requires 20 fully-tracked trades with individual P&L before re-rating.",
-      "sortino": 0.849,
-      "total_pnl": 9.0,
-      "expectancy": 0.0,
-      "max_consec_losses": 1
-    },
-    "oracle": {
       "total_trades": 0,
       "win_rate": 0,
       "profit_factor": 0,
@@ -79,48 +58,35 @@
         "starting_balance": 10000
       },
       "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "Bankroll reset to $500 on 2026-04-15 with a new Claude brain. Zero resolved picks. Zero analysis possible. Clock starts now. Minimum 20 resolved picks before any evaluation. Track every pick with timestamp, odds, stake, and settlement outcome from day one \u2014 no exceptions. Data hygiene at launch determines analytical quality for months.",
+      "recommendation": "Zero trades executed. No analysis is possible. Determine whether EDGE failed to deploy due to a technical fault, unfavorable market conditions, or a strategy logic error. If this agent has been live for more than one week with zero executions, something is wrong with the signal generation or order routing. Investigate before next review cycle.",
       "sortino": 0,
       "total_pnl": 0,
       "expectancy": 0,
-      "max_consec_losses": 0,
-      "note": "Bankroll reset 2026-04-15 \u2014 no resolved picks yet"
-    },
-    "kalshi": {
-      "total_trades": 408,
-      "win_rate": 0.0,
-      "profit_factor": 0.0,
-      "sharpe": 0.0,
-      "max_drawdown_pct": 0.0,
-      "monte_carlo": {
-        "median_outcome": 0.0,
-        "worst_case_5pct": 0.0,
-        "best_case_95pct": 0.0,
-        "ruin_probability": 0.0
-      },
-      "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "Brain upgraded 2026-04-15. Settlement outcome tracking is non-existent \u2014 this is a systemic infrastructure failure, not a strategy failure. Order placement data without settlement data is worthless for performance analysis. Fix the data pipeline before anything else. Until settlement outcomes are captured and matched to orders, Kalshi cannot be evaluated, cannot be optimized, and cannot be trusted with meaningful allocation. This is priority one for engineering.",
-      "note": "Settlement outcomes not recorded in CSV \u2014 P&L unknown"
+      "max_consec_losses": 0
     }
   },
   "portfolio_summary": {
-    "total_pnl": 2961.61,
+    "total_pnl": 474.46,
     "correlation_risk": "low",
-    "overall_assessment": "The portfolio is generating positive PnL but is structurally immature. One agent \u2014 Blade \u2014 is producing the overwhelming majority of realized returns, and even Blade's risk profile is deeply compromised by a 288.5% max drawdown and a near-zero Sharpe ratio. The remaining agents are either too new to evaluate, missing critical data infrastructure, or showing early negative signals. Portfolio-level correlation risk is low by default because only one agent has meaningful activity, but that concentration is itself a risk. The portfolio is not diversified \u2014 it is a single strategy with four agents in waiting rooms. Total PnL of roughly $2,961 is real but fragile. One bad drawdown sequence from Blade \u2014 which its own history shows is entirely possible \u2014 could erase it. The portfolio needs Blade's position sizing fixed, Kalshi's data pipeline operational, and at least two more agents reaching the 20-trade evaluation threshold before this can be called a functioning multi-strategy system."
+    "overall_assessment": "The portfolio is effectively running on one agent \u2014 BLADE \u2014 and BLADE is failing by every metric that matters. Total portfolio PnL of $474.46 across what is likely weeks of live trading is not a business. The Sharpe of 0.012 on the only active strategy means the portfolio-level risk-adjusted return is functionally zero. Correlation risk is low because CRISP has no meaningful activity and EDGE has none at all, but that is not a positive \u2014 it means there is no diversification providing any benefit. The portfolio is overexposed to a single broken strategy. This is a critical state."
   },
   "recommendations": [
-    "BLADE: Immediately audit and redesign position sizing logic. A max drawdown of 288.5% is incompatible with long-term capital survival regardless of edge quality. Implement hard drawdown circuit breakers and consider fractional Kelly sizing. The alpha is real \u2014 protect it.",
-    "KALSHI: Engineering must prioritize settlement outcome tracking as a blocking issue. No trading system can be managed without P&L data. This is not optional.",
-    "EDGE: Establish mandatory individual trade P&L logging for all trades going forward. The gap between aggregate history and recent window data cannot be resolved without complete records. Do not draw conclusions from the recent 5-trade window.",
-    "CRISP: Monitor loss size discipline over next 14 trades. If avg loss continues to exceed avg win, escalate to strategy review. Maintain minimum allocation only.",
-    "ORACLE: Implement structured pick tracking from first trade \u2014 timestamp, market, odds, stake, settlement, outcome. Build the database correctly from day one.",
-    "PORTFOLIO: Do not increase aggregate capital allocation until at least two agents pass the 20-trade minimum threshold with positive expectancy. Current portfolio resilience is insufficient."
+    "Suspend BLADE from live trading immediately. The profit factor, Sharpe, and max drawdown figures are all disqualifying. $0.11 expectancy per trade is not scalable and will not survive increased position sizing.",
+    "Investigate BLADE's avg loss to avg win ratio as the primary fix target. The strategy wins more than it loses but still barely profits \u2014 this is a reward/risk structure problem, not a signal problem. Adjust stop placement or take-profit targets.",
+    "Backtest BLADE filtered to Monday entries at 6:00 UTC only. A time-of-day and day-of-week edge exists in the data \u2014 isolate it and determine if the strategy is viable in that window specifically.",
+    "Audit CRISP's 468% max drawdown figure immediately. If real, halt all capital allocation. If a calculation error, fix the data pipeline before next review.",
+    "Do not allocate any capital to CRISP until minimum 20 trades are recorded. Current sample is statistically worthless.",
+    "Diagnose EDGE's failure to execute any trades. Determine root cause: signal logic, order routing, or market condition mismatch.",
+    "Until at least one strategy achieves PASS status, keep total portfolio risk at minimum allocation levels. Do not scale into broken systems."
   ],
   "alerts": [
-    "CRITICAL \u2014 BLADE: Max drawdown of 288.5% indicates severe position sizing dysfunction. Sharpe of 0.057 means returns are not compensating for volatility. Immediate remediation required.",
-    "CRITICAL \u2014 KALSHI: Zero settlement outcome data recorded. P&L analysis is completely impossible. Data infrastructure failure must be resolved this week.",
-    "WARNING \u2014 EDGE: Aggregate win rate of 25% with cumulative negative PnL contradicts recent 5-trade window metrics. Discrepancy must be investigated and explained before re-evaluation.",
-    "WARNING \u2014 PORTFOLIO CONCENTRATION: Approximately 100% of meaningful portfolio activity and PnL is attributable to a single agent (Blade). This is not a portfolio \u2014 it is a single strategy with dependencies."
+    "CRITICAL \u2014 BLADE: Max drawdown of 72.9% is catastrophically high and disqualifying. This strategy has demonstrated the ability to destroy 73% of capital in a single drawdown event.",
+    "CRITICAL \u2014 BLADE: Sharpe of 0.012 over 330 trades confirms there is no risk-adjusted edge. This is not a small sample noise issue \u2014 330 trades is definitive.",
+    "CRITICAL \u2014 BLADE: Profit factor of 1.114 is below the 1.2 marginal threshold. Strategy is FAIL status.",
+    "WARNING \u2014 CRISP: 468% max drawdown figure recorded on only 6 trades. This number must be investigated immediately \u2014 it suggests either a data error or a position sizing catastrophe.",
+    "WARNING \u2014 CRISP: All performance metrics are negative or near-zero. Negative Sharpe, profit factor below 0.4, negative total PnL. No capital should be allocated.",
+    "WARNING \u2014 EDGE: Zero trades executed. Agent is non-functional or non-deploying. Root cause investigation required.",
+    "INFO \u2014 PORTFOLIO: No active strategy currently meets minimum PASS criteria. The entire portfolio is in a failing state as of 2026-06-01."
   ],
   "_regime": {
     "blade": {
@@ -128,9 +94,9 @@
       "worst_hour_utc": 14,
       "best_day_of_week": "Mon",
       "worst_day_of_week": "Fri",
-      "overall_mean_pnl": 10.49,
-      "recent_mean_pnl": 31.93,
-      "divergence_z": 0.12,
+      "overall_mean_pnl": 2.06,
+      "recent_mean_pnl": -40.6,
+      "divergence_z": 0.24,
       "recent_divergence": false
     },
     "crisp": {
@@ -143,22 +109,13 @@
       "divergence_z": 0.0,
       "recent_divergence": false
     },
-    "edge": {
-      "best_hour_utc": 4,
-      "worst_hour_utc": 3,
-      "best_day_of_week": "Wed",
-      "worst_day_of_week": "Wed",
-      "overall_mean_pnl": 1.8,
-      "recent_mean_pnl": 1.8,
-      "divergence_z": 0.0,
-      "recent_divergence": false
-    }
+    "edge": {}
   },
   "_meta": {
-    "input_tokens": 1372,
-    "output_tokens": 2318,
-    "cost_usd": 0.038886,
+    "input_tokens": 1009,
+    "output_tokens": 1827,
+    "cost_usd": 0.030432,
     "model": "claude-sonnet-4-6",
-    "generated_at": "2026-04-15T12:26:39.792543+00:00"
+    "generated_at": "2026-06-01T15:49:52.399379+00:00"
   }
 }

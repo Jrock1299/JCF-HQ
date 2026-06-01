@@ -24,18 +24,29 @@ FINNHUB_BASE = "https://finnhub.io/api/v1"
 FMP_BASE = "https://site.financialmodelingprep.com/api/v3"
 
 # ─── JASE'S WATCHLIST ─────────────────────────────────────────────────────────
-# Personal holdings + watchlist tickers organized by theme.
-# Edit this to add/remove tickers.
+# Read from /root/.openclaw/dashboard/watchlist.json (tunable without code edits).
+# Falls back to the hardcoded defaults below if the file or a key is missing.
 
-WATCHLIST = {
-    "holdings": ["NVDA", "IREN", "UUUU", "IONQ", "VST", "TEM", "SOFI", "MSTR", "USAR", "OKLO"],
+_WATCHLIST_DEFAULTS = {
+    "holdings":        ["NVDA", "IREN", "UUUU", "IONQ", "VST", "TEM", "SOFI", "MSTR", "USAR", "OKLO"],
     "quantum_nuclear": ["RGTI", "CCJ", "QBTS", "NLR", "SMR"],
-    "energy": ["REMX", "XLE", "XOM", "CVX"],
-    "metals": ["SCCO", "IAU", "URA", "SLV", "FCX", "GLD"],
-    "robotics_ai": ["JOBY", "NRSN", "SYM", "RR", "ARBE"],
-    "saudi": ["FLSA", "KSA"],
-    "tech_semis": ["AMD", "ARM", "PLTR", "COIN", "MARA"],
+    "energy":          ["REMX", "XLE", "XOM", "CVX"],
+    "metals":          ["SCCO", "IAU", "URA", "SLV", "FCX", "GLD"],
+    "robotics_ai":     ["JOBY", "NRSN", "SYM", "RR", "ARBE"],
+    "saudi":           ["FLSA", "KSA"],
+    "tech_semis":      ["AMD", "ARM", "PLTR", "COIN", "MARA"],
 }
+
+def _load_watchlist():
+    path = '/root/.openclaw/dashboard/watchlist.json'
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        return {k: v for k, v in data.items() if not k.startswith('_') and isinstance(v, list) and v}
+    except Exception:
+        return dict(_WATCHLIST_DEFAULTS)
+
+WATCHLIST = _load_watchlist() or _WATCHLIST_DEFAULTS
 
 # Flatten for lookups
 ALL_WATCHLIST = []

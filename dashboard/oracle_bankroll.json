@@ -1,8 +1,0 @@
-{
-  "balance": 500.0,
-  "starting": 500.0,
-  "reset_at": "2026-05-18T19:27:15.645503+00:00",
-  "reset_reason": "Strategy rebuild \u2014 historical P&L preserved in oracle_resolved.json",
-  "previous_balance": -632.16,
-  "updated": "2026-05-18T19:27:15.645525+00:00"
-}

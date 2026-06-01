@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   getTradesFile, getMarketBias, getPlaidData,
-  getStoredData, getRobinhoodData, getTrustWalletData, getOracleResolved,
+  getStoredData, getRobinhoodData, getTrustWalletData,
 } from '../api/client.js'
 import { fakeAmt } from '../context/DemoContext.jsx'
 import { useIsMobile } from '../hooks/useIsMobile.js'
@@ -48,8 +48,6 @@ const ALL_AGENTS = [
   { id: 'jerry',      name: 'Jerry',      color: '#fb923c' },
   { id: 'phantom',    name: 'Phantom',    color: '#818cf8' },
   { id: 'lens',       name: 'Lens',       color: '#22d3ee' },
-  { id: 'oracle',     name: 'Oracle',     color: '#a78bfa' },
-  { id: 'kalshi',     name: 'Kalshi',     color: '#60a5fa' },
   { id: 'norman',     name: 'Norman',     color: '#34d399' },
   { id: 'victoria',   name: 'Victoria',   color: '#f9a8d4' },
   { id: 'forge',      name: 'Forge',      color: '#fbbf24' },
@@ -66,8 +64,6 @@ export default function Dashboard({ demoMode, isActive = true }) {
   const [stored,       setStored]       = useState(null)
   const [rh,           setRh]           = useState(null)
   const [tw,           setTw]           = useState(null)
-  const [oracleRes,    setOracleRes]    = useState(null)
-  const [kalshiPnl,    setKalshiPnl]    = useState(null)
   const [jerryPf,      setJerryPf]      = useState(null)
   const [phantomPf,    setPhantomPf]    = useState(null)
   const [agentStatus,  setAgentStatus]  = useState({})
@@ -78,9 +74,9 @@ export default function Dashboard({ demoMode, isActive = true }) {
 
   const loadStats = useCallback(async () => {
     try {
-      const [tl, mb, pd, st, rh_, tw_, or_] = await Promise.allSettled([
+      const [tl, mb, pd, st, rh_, tw_] = await Promise.allSettled([
         getTradesFile(), getMarketBias(), getPlaidData(),
-        getStoredData(), getRobinhoodData(), getTrustWalletData(), getOracleResolved(),
+        getStoredData(), getRobinhoodData(), getTrustWalletData(),
       ])
       if (tl.status  === 'fulfilled') setTrades(tl.value)
       if (mb.status  === 'fulfilled') setBias(mb.value)
@@ -88,12 +84,7 @@ export default function Dashboard({ demoMode, isActive = true }) {
       if (st.status  === 'fulfilled') setStored(st.value)
       if (rh_.status === 'fulfilled') setRh(rh_.value)
       if (tw_.status === 'fulfilled') setTw(tw_.value)
-      if (or_.status === 'fulfilled') setOracleRes(or_.value)
 
-      try {
-        const kResp = await fetch('/hq/kalshi-daily-pnl')
-        if (kResp.ok) setKalshiPnl(await kResp.json())
-      } catch {}
       try {
         const jResp = await fetch('/hq/jerry-portfolio')
         if (jResp.ok) setJerryPf(await jResp.json())
@@ -153,8 +144,6 @@ export default function Dashboard({ demoMode, isActive = true }) {
   const reqMo    = netWorth < GOAL_2037 ? (GOAL_2037 - netWorth) / (daysLeft / 30) : 0
 
   const tradingPnlToday = trades ? calcTodayPnl(trades.trades || []) : 0
-  const oracleDailyPnl  = parseFloat(oracleRes?.daily_change ?? 0)
-  const kalshiDailyPnl  = parseFloat(kalshiPnl?.pnl ?? 0)
   const jerryDailyPnl   = parseFloat(jerryPf?.daily_pnl ?? jerryPf?.total_pnl ?? 0)
   const phantomDailyPnl = parseFloat(phantomPf?.daily_pnl ?? phantomPf?.total_pnl ?? 0)
   const ytdPnl          = (trades?.trades || []).reduce((s, t) => s + (parseFloat(t.pnl) || 0), 0)
@@ -164,8 +153,6 @@ export default function Dashboard({ demoMode, isActive = true }) {
     { id: 'crisp',   name: 'Crisp',   type: 'Crypto',     pnl: 0,               color: '#4ade80' },
     { id: 'jerry',   name: 'Jerry',   type: 'Stocks',     pnl: jerryDailyPnl,   color: '#fb923c' },
     { id: 'phantom', name: 'Phantom', type: 'Futures',    pnl: phantomDailyPnl, color: '#818cf8' },
-    { id: 'oracle',  name: 'Oracle',  type: 'Sports',     pnl: oracleDailyPnl,  color: '#a78bfa' },
-    { id: 'kalshi',  name: 'Kalshi',  type: 'Prediction', pnl: kalshiDailyPnl,  color: '#60a5fa' },
     { id: 'tao',     name: 'Tao',     type: 'Staking',    pnl: 0,               color: '#c9a84c' },
   ]
   const agentPnlTotal = agentRows.reduce((s, r) => s + r.pnl, 0)
@@ -342,8 +329,8 @@ export default function Dashboard({ demoMode, isActive = true }) {
 }
 
 const AGENT_COLORS = {
-  oracle:   '#a78bfa', lens:    '#22d3ee', victoria: '#f9a8d4',
-  kalshi:   '#60a5fa', jerry:   '#fb923c', phantom:  '#818cf8',
+  lens:    '#22d3ee', victoria: '#f9a8d4',
+  jerry:   '#fb923c', phantom:  '#818cf8',
   norman:   '#34d399', forge:   '#fbbf24', naomi:    '#f472b6',
   lucy:     '#c9a84c', blade:   '#f87171', crisp:    '#4ade80',
   edge:     '#38bdf8', huncho:  '#c9a84c',

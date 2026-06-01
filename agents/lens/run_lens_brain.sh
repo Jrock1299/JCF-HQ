@@ -1,5 +1,7 @@
 #!/bin/bash
+set -a
 source /root/.openclaw/.env
+set +a
 cd /root/.openclaw/agents/lens
 
 # Post to hub: Lens starting

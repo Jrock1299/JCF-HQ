@@ -1,7 +1,7 @@
 {
-  "date": "2026-05-27T09:00:03.836967+00:00",
-  "generated_at": "2026-05-27T09:00:03.836967+00:00",
+  "date": "2026-06-01T09:00:03.286645+00:00",
+  "generated_at": "2026-06-01T09:00:03.286645+00:00",
   "pick_count": 0,
   "picks": [],
-  "no_bet_reason": "No candidate met edge \u2265 3.0%. Scanned 0 (game,market,side) tuples."
+  "no_bet_reason": "No candidate met edge \u2265 3.0%. Scanned 68 (game,market,side) tuples."
 }

@@ -44,9 +44,6 @@ COSTS_PATH   = LOGS / 'norman_api_costs.json'
 BLADE_TRADES_PATH  = DASHBOARD / 'tradelocker_trades.json'
 CRISP_TRADES_PATH  = AGENTS / 'crisp' / 'data' / 'trade_history.json'
 EDGE_PORTFOLIO_PATH = DASHBOARD / 'edge_portfolio.json'
-KALSHI_CSV_PATH    = Path('/root/kalshi-bot/trades_log.csv')
-ORACLE_RESOLVED_PATH = DASHBOARD / 'oracle_resolved.json'
-ORACLE_PICKS_PATH    = DASHBOARD / 'oracle_picks.json'
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -58,9 +55,16 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CH
 TG_MAX           = 4000
 
 # Norman's thresholds
-MIN_TRADES_FOR_VERDICT = 20
-RUIN_DRAWDOWN_PCT      = 0.50   # 50% drawdown = "ruin"
-DOUBLE_TARGET_PCT      = 1.00   # 100% gain = "doubled"
+sys.path.insert(0, '/root/.openclaw/scripts')
+from agent_config import load_strategy as _load_strategy
+_NORMAN_CFG = _load_strategy('norman', {
+    'MIN_TRADES_FOR_VERDICT': 20,
+    'RUIN_DRAWDOWN_PCT':      0.50,   # 50% drawdown = "ruin"
+    'DOUBLE_TARGET_PCT':      1.00,   # 100% gain = "doubled"
+})
+MIN_TRADES_FOR_VERDICT = _NORMAN_CFG['MIN_TRADES_FOR_VERDICT']
+RUIN_DRAWDOWN_PCT      = _NORMAN_CFG['RUIN_DRAWDOWN_PCT']
+DOUBLE_TARGET_PCT      = _NORMAN_CFG['DOUBLE_TARGET_PCT']
 
 SYSTEM_PROMPT = """\
 You are Norman, the strategy validation specialist for JCF HQ. Named after \
@@ -85,6 +89,27 @@ FRAMEWORK:
 - Profit factor < 1.2 = MARGINAL
 - Profit factor > 1.5 = STRONG
 - If recent 10 trades diverge >2 std from overall = FLAG
+
+BACKTEST-EXPERT METHODOLOGY (apply silently to every agent under review):
+A strategy passes only when it survives all six phases:
+  1. Hypothesis stated and rule-codified.
+  2. Initial backtest spans ≥5 years AND ≥2 distinct regimes.
+  3. Parameter sensitivity: vary key knobs ±15–30%. PnL must stay positive across the sweep;
+     a narrow peak (small adjustments crater performance) = OVERFIT — call it out.
+  4. Execution friction: assume 1.5–2× the slippage and commissions the agent claims.
+  5. Out-of-sample / walk-forward validation must replicate in-sample edge.
+  6. Score five dimensions 0–100: Sample Size, Expectancy, Risk Management, Robustness,
+     Execution Realism. A plateau of stable performance = real edge; a spike = mirage.
+  Verdict: DEPLOY (survives all), REFINE (sound logic, needs tuning), ABANDON (fails stress
+  tests or depends on fragile assumptions).
+
+POSITION-SIZER LENS (apply when evaluating each agent's sizing):
+  • Fixed Fractional: risk ≤ 1% per trade unless explicitly justified.
+  • ATR-Based: stop distance scaled to volatility — preferred when volatility regime varies.
+  • Kelly: use HALF KELLY, never full. Full Kelly is for unlimited bankrolls and zero ruin tolerance.
+  • Portfolio heat: total open risk across all agents ≤ 6–8% — flag any combination above 6%.
+  • If an agent's sizing exceeds these guardrails, flag it in the recommendation even if PnL
+    looks fine — survivorship bias is the silent killer.
 
 OUTPUT FORMAT (valid JSON only, no markdown):
 {
@@ -203,55 +228,6 @@ def _load_edge_trades() -> list[dict]:
     except Exception as e:
         print(f'[norman] edge load error: {e}')
         return [], {}
-
-
-def _load_kalshi_trades() -> list[dict]:
-    """
-    Load Kalshi trades from trades_log.csv.
-    NOTE: CSV tracks order placement only; settlement outcome not recorded.
-    Returns placed trades count only — P&L is unavailable.
-    """
-    result = []
-    try:
-        with open(KALSHI_CSV_PATH, newline='') as f:
-            for row in csv.DictReader(f):
-                status = row.get('status', '')
-                if status in ('executed', 'resting', 'filled', 'partially_filled'):
-                    result.append({
-                        'pnl':        None,   # settlement outcome not tracked
-                        'ticker':     row.get('ticker', ''),
-                        'direction':  row.get('direction', ''),
-                        'size':       float(row.get('size', 0)),
-                        'timestamp':  row.get('timestamp', ''),
-                        'status':     status,
-                    })
-    except Exception as e:
-        print(f'[norman] kalshi load error: {e}')
-    return result
-
-
-def _load_oracle_trades() -> list[dict]:
-    """Load Oracle resolved picks."""
-    try:
-        with open(ORACLE_RESOLVED_PATH) as f:
-            data = json.load(f)
-        picks = data.get('picks', [])
-        result = []
-        for p in picks:
-            pnl = p.get('pnl') or p.get('profit_loss')
-            if pnl is None:
-                continue
-            result.append({
-                'pnl':       float(pnl),
-                'direction': p.get('pick', ''),
-                'sport':     p.get('sport', ''),
-                'timestamp': p.get('date') or p.get('timestamp', ''),
-                'result':    p.get('result', 'W' if float(pnl) > 0 else 'L'),
-            })
-        return result
-    except Exception as e:
-        print(f'[norman] oracle load error: {e}')
-        return []
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -623,21 +599,6 @@ def _build_analysis_prompt(agent_validations: dict, today: str) -> str:
 
         lines.append("")
 
-    # Special notes for data-limited agents
-    lines.append("═══ KALSHI ══════════════════")
-    lines.append(
-        "  Note: Kalshi CSV tracks order placement only — settlement outcomes not "
-        "recorded. P&L analysis unavailable. Brain upgraded 2026-04-15. "
-        "Verdict: INSUFFICIENT_DATA"
-    )
-    lines.append("")
-    lines.append("═══ ORACLE ══════════════════")
-    lines.append(
-        "  Note: Oracle bankroll reset to $500 on 2026-04-15 with new Claude brain. "
-        "No resolved picks yet. Verdict: INSUFFICIENT_DATA"
-    )
-    lines.append("")
-
     lines.append(
         "Based on the above data, provide your analysis following the JSON format. "
         "Be brutally honest. Respond with ONLY the JSON object."
@@ -715,8 +676,6 @@ def weekly_analysis() -> dict:
     blade_trades  = _load_blade_trades()
     crisp_trades  = _load_crisp_trades()
     edge_result   = _load_edge_trades()
-    oracle_trades = _load_oracle_trades()
-    kalshi_trades = _load_kalshi_trades()
 
     # _load_edge_trades returns (list, context_dict)
     if isinstance(edge_result, tuple):
@@ -725,8 +684,7 @@ def weekly_analysis() -> dict:
         edge_trades, edge_context = edge_result, {}
 
     print(f'[norman] Data loaded: Blade={len(blade_trades)}, '
-          f'Crisp={len(crisp_trades)}, Edge={len(edge_trades)}, '
-          f'Oracle={len(oracle_trades)}, Kalshi={len(kalshi_trades)}')
+          f'Crisp={len(crisp_trades)}, Edge={len(edge_trades)}')
 
     # Blade: real account, tradelocker balance at start unknown — use 10000 notional
     blade_val  = validate_strategy(blade_trades,  'Blade',  starting_balance=10_000)
@@ -736,14 +694,11 @@ def weekly_analysis() -> dict:
     edge_val   = validate_strategy(
         edge_trades, 'Edge', starting_balance=5_000, extra_context=edge_context
     )
-    # Oracle: reset to $500
-    oracle_val = validate_strategy(oracle_trades, 'Oracle', starting_balance=500)
 
     agent_validations = {
         'blade':  blade_val,
         'crisp':  crisp_val,
         'edge':   edge_val,
-        'oracle': oracle_val,
     }
 
     # ── Claude synthesis ──────────────────────────────────────────────────────
@@ -786,7 +741,7 @@ def weekly_analysis() -> dict:
     # Ensure agent_reports has entries for all agents, augmented with our stats
     for agent_key, val in [
         ('blade', blade_val), ('crisp', crisp_val),
-        ('edge', edge_val),   ('oracle', oracle_val),
+        ('edge', edge_val),
     ]:
         if agent_key not in claude_report.get('agent_reports', {}):
             claude_report.setdefault('agent_reports', {})[agent_key] = {}
@@ -816,20 +771,6 @@ def weekly_analysis() -> dict:
             },
             'verdict': ar.get('verdict') or val.get('verdict', 'INSUFFICIENT_DATA'),
         })
-
-    # Kalshi and Oracle — INSUFFICIENT_DATA
-    for agent_key in ('kalshi', 'oracle'):
-        if agent_key not in claude_report.get('agent_reports', {}):
-            claude_report.setdefault('agent_reports', {})[agent_key] = {}
-        ar = claude_report['agent_reports'][agent_key]
-        if not ar.get('verdict'):
-            ar['verdict'] = 'INSUFFICIENT_DATA'
-        if agent_key == 'kalshi':
-            ar['total_trades'] = len(kalshi_trades)
-            ar['note'] = 'Settlement outcomes not recorded in CSV — P&L unknown'
-        if agent_key == 'oracle':
-            ar['total_trades'] = len(oracle_trades)
-            ar['note'] = 'Bankroll reset 2026-04-15 — no resolved picks yet'
 
     # Attach regime analysis and meta
     claude_report['_regime'] = {
@@ -877,7 +818,7 @@ def _format_telegram(report: dict, agent_validations: dict) -> str:
     lines.append("━━ AGENT VERDICTS ━━")
     ar_map = report.get('agent_reports', {})
 
-    agent_display_order = ['blade', 'crisp', 'edge', 'oracle', 'kalshi']
+    agent_display_order = ['blade', 'crisp', 'edge']
     for agent in agent_display_order:
         ar = ar_map.get(agent, {})
         verdict = ar.get('verdict', 'INSUFFICIENT_DATA')
@@ -1045,7 +986,6 @@ def _run_validate_mode(target: str) -> None:
         'blade':  lambda: (_load_blade_trades(), 10_000, {}),
         'crisp':  lambda: (_load_crisp_trades(), 10_000, {}),
         'edge':   lambda: (lambda r: (r[0], 5_000, r[1]))(_load_edge_trades()),
-        'oracle': lambda: (_load_oracle_trades(), 500, {}),
     }
 
     targets = list(AGENT_MAP.keys()) if target == 'all' else [target.lower()]

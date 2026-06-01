@@ -21,33 +21,32 @@ AGENT_EMOJIS = {
     'lucy':     '\U0001f50d',   # 🔍
     'blade':    '\U0001f52a',   # 🔪
     'edge':     '\U0001f4e1',   # 📡
-    'oracle':   '\U0001f52e',   # 🔮
+    'strategist': '♟️',  # legacy key — display as JARVIS
+    'jarvis':   '♟️',  # ♟️ — Jarvis (the Strategist; right-hand-man)
     'jerry':    '\U0001f4ca',   # 📊
     'lens':     '\U0001f310',   # 🌐
     'norman':   '⚠️', # ⚠️
     'tao':      '☯️', # ☯️
 }
 
-SEP = '━' * 22  # ━━━━━━━━━━━━━━━━━━━━━━
-
+# Aliases — agent IDs that should display as a different NAME header.
+AGENT_DISPLAY = {
+    'strategist': 'JARVIS',     # internal id 'strategist' renders as JARVIS
+}
 
 def wrap_message(agent: str, body: str) -> str:
     """Wrap an agent message in the standard JCF HQ Telegram format.
 
-    Args:
-        agent: Agent name (lowercase). Use 'huncho' for system messages.
-        body:  The message content (already written in the agent's voice).
-
-    Returns:
-        Formatted string ready to send via Telegram.
+    Format:
+        {emoji} {NAME}
+        {body}
+        — via H        (omitted for Huncho — his messages already sign off with — H)
     """
     agent_lower = agent.lower().strip()
     emoji = AGENT_EMOJIS.get(agent_lower, '')
-    name = agent_lower.upper()
+    name = AGENT_DISPLAY.get(agent_lower, agent_lower.upper())
 
     if agent_lower == 'huncho':
-        return f'{SEP}\n{emoji} HUNCHO\n{SEP}\n{body}\n{SEP}'
+        return f'{emoji} HUNCHO\n{body}'
 
-    header = f'{SEP}\n{emoji} {name}\n{SEP}'
-    footer = f'\n— reported to H\n{SEP}'
-    return f'{header}\n{body}{footer}'
+    return f'{emoji} {name}\n{body}\n— via H'

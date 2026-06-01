@@ -57,26 +57,6 @@ export const setBasketball = (data) => post('/basketball', data)
 
 // ── Bets ──────────────────────────────────────────────────────────────
 
-export const addBet    = (bet)        => post('/bets', bet)
-export const patchBet  = (id, body)   => patch(`/bets/${id}`, body)
-export const deleteBet = (id)         => del(`/bets/${id}`)
-
-export const parseFliffScreenshot = (formData) =>
-  fetch(`${STORAGE_BASE}/parse-fliff-screenshot`, { method: 'POST', body: formData })
-    .then(res => { if (!res.ok) throw new Error(`[HQ API] ${res.status} ${res.statusText}`); return res.json() })
-
-export const setFliffBalance = (balance) => post('/fliff-balance', { balance })
-
-// ── Oracle picks ──────────────────────────────────────────────────────
-
-export const saveOraclePicks    = (data) => post('/oracle/picks', data)
-export const saveOracleResolved = (data) => post('/oracle/resolved', data)
-
-// ── Bankroll ──────────────────────────────────────────────────────────
-
-export const setBankroll = (data) => post('/bankroll', data)
-export const addBankrollTransaction = (tx) => post('/bankroll/transactions', tx)
-
 // ── Agent Hub ─────────────────────────────────────────────────────────
 
 /**
@@ -101,8 +81,6 @@ export const patchTradelockerTrade = (idx, body) => patch(`/tradelocker/trades/$
 
 export const getTradesFile      = () => req(`/tradelocker_trades.json?t=${Date.now()}`)
 export const getGoatFile        = () => req(`/tradelocker_trades_goat.json?t=${Date.now()}`)
-export const getOracleFile      = () => req(`/oracle_picks.json?t=${Date.now()}`)
-export const getOracleResolved  = () => req(`/oracle_resolved.json?t=${Date.now()}`)
 export const getHubFile         = () => file('agent_hub.json')
 export const getMarketBias      = () => file('market_bias.json')
 export const getPlaidData         = () => file('plaid_data.json')
@@ -118,7 +96,6 @@ export const getTaoPortfolio    = () => req(`/tao_portfolio.json?t=${Date.now()}
 
 export const getRobinhoodHoldings = () => get('/robinhood-holdings')
 export const getKrakenHoldings   = () => get('/kraken-holdings')
-export const getKalshiDailyPnl  = () => get('/kalshi-daily-pnl')
 export const getTaoDailyChange   = () => get('/tao-daily-change')
 export const getAgentStatus      = () => get('/agent-status')
 

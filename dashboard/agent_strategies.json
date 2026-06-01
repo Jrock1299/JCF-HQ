@@ -1,0 +1,37 @@
+{
+  "_note": "Central config for tunable agent thresholds. Agents read this at startup and fall back to their hardcoded defaults if a key or this file is missing.",
+  "_updated": "2026-06-01",
+  "blade": {
+    "_note_design": "D3 redesign: R-multiple TPs, weighted sizing, compounding, daily DD circuit breaker. Old keys retained as fallbacks.",
+
+    "RISK_PCT_PER_CLUSTER":      0.02,
+    "POSITION_WEIGHTS":          {"pos1": 0.20, "pos2": 0.30, "pos3": 0.50},
+    "TP_R_MULTIPLES":            {"pos1": 1.0,  "pos2": 2.0,  "pos3": null},
+    "POS3_TRAIL":                true,
+    "POS3_TRAIL_DISTANCE_R":     1.0,
+    "DAILY_DD_HALT_PCT":         0.04,
+    "STARTING_BALANCE_DEFAULT":  5000.0,
+
+    "SL_BUFFER_POINTS":          3,
+    "MIN_BALANCE":               100.0,
+
+    "RISK_PCT":                  0.01,
+    "TP_PIPS":                   {"pos1": 3, "pos2": 5, "pos3": 10}
+  },
+  "edge": {
+    "MAX_DAILY_LOSSES":          5,
+    "MAX_DAILY_LOSS_PCT":        2.0,
+    "TP1_PTS":                   15,
+    "TP2_PTS":                   25,
+    "UNITS":                     2,
+    "MARKET_OPEN_BLACKOUT_MIN":  15
+  },
+  "norman": {
+    "MIN_TRADES_FOR_VERDICT":    20,
+    "RUIN_DRAWDOWN_PCT":         0.50,
+    "DOUBLE_TARGET_PCT":         1.00
+  },
+  "sentinel": {
+    "WATCHLIST_PATH":            "/root/.openclaw/dashboard/watchlist.json"
+  }
+}

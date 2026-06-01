@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-import os, json, datetime, sys
+import os, json, datetime, sys, time, random
 from datetime import timezone
 import robin_stocks.robinhood as rh
+
+MAX_RETRIES   = 3
+BASE_BACKOFF  = 4.0   # seconds; doubles per attempt with jitter
+
+
 def load_env():
     try:
         with open('/etc/environment') as f:
@@ -13,6 +18,40 @@ def load_env():
     except FileNotFoundError:
         pass
 
+
+def log(msg):
+    print(f'[sync_robinhood] {msg}', file=sys.stderr)
+
+
+def silent_exit(reason):
+    """Log-only exit. Never send Telegram. Always exit 0 so cron stays quiet."""
+    log(f'giving up silently: {reason}')
+    sys.exit(0)
+
+
+def is_rate_limited(exc):
+    s = str(exc).lower()
+    return '429' in s or 'too many requests' in s or 'rate limit' in s
+
+
+def with_backoff(label, fn, *args, **kwargs):
+    """Call fn with exponential backoff. Returns result or None on total failure."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            if attempt == MAX_RETRIES:
+                log(f'{label}: failed after {MAX_RETRIES} attempts: {e}')
+                return None
+            delay = BASE_BACKOFF * (2 ** (attempt - 1)) + random.uniform(0, 1)
+            if is_rate_limited(e):
+                log(f'{label}: 429 attempt {attempt}/{MAX_RETRIES}, sleeping {delay:.1f}s')
+            else:
+                log(f'{label}: error attempt {attempt}/{MAX_RETRIES}: {e}; sleeping {delay:.1f}s')
+            time.sleep(delay)
+    return None
+
+
 load_env()
 
 OUT_PATH = "/root/.openclaw/dashboard/robinhood_data.json"
@@ -21,19 +60,16 @@ HOLDINGS_PATH = "/root/.openclaw/dashboard/robinhood_holdings.json"
 USER = os.getenv("ROBINHOOD_USERNAME")
 PWD = os.getenv("ROBINHOOD_PASSWORD")
 if not USER or not PWD:
-    print("Missing ROBINHOOD_USERNAME or ROBINHOOD_PASSWORD in /etc/environment", file=sys.stderr)
-    sys.exit(1)
+    silent_exit("missing ROBINHOOD_USERNAME or ROBINHOOD_PASSWORD")
 
-# login - device token stored by robin_stocks in ~/.config/robin_stocks
-try:
-    rh.login(USER, PWD, expiresIn=86400, store_session=True)
-except Exception as e:
-    try:
-        code = input("Enter Robinhood 2FA code: ").strip()
-        rh.login(USER, PWD, expiresIn=86400, store_session=True, mfa_code=code)
-    except Exception as e2:
-        print(f"Login error: {e2}", file=sys.stderr)
-        raise
+# login - device token stored by robin_stocks in ~/.config/robin_stocks.
+# No 2FA prompting under cron — if login fails after retries, exit silently.
+login_ok = with_backoff(
+    'login',
+    rh.login, USER, PWD, expiresIn=86400, store_session=True,
+)
+if login_ok is None:
+    silent_exit("login failed")
 
 # helper
 now = datetime.datetime.now(timezone.utc).replace(microsecond=0).isoformat()
@@ -45,11 +81,11 @@ def safe_float(x, default=0.0):
         return default
 
 # portfolio profile (for total_equity reference)
-portfolio = rh.account.load_portfolio_profile() or {}
+portfolio = with_backoff('load_portfolio_profile', rh.account.load_portfolio_profile) or {}
 last_core_equity = safe_float(portfolio.get('last_core_equity'))
 
 # holdings
-holdings = rh.account.build_holdings() or {}
+holdings = with_backoff('build_holdings', rh.account.build_holdings) or {}
 
 # stocks value = sum equity for stock positions
 stocks_val = 0.0
@@ -78,7 +114,7 @@ for sym, h in holdings.items():
 # options value = sum (qty * avg_open_price * 100) where qty>0
 options_val = 0.0
 try:
-    ops = rh.options.get_open_option_positions() or []
+    ops = with_backoff('get_open_option_positions', rh.options.get_open_option_positions) or []
     if isinstance(ops, list):
         for p in ops:
             q = safe_float(p.get('quantity'))
@@ -111,7 +147,7 @@ def parse_date(s):
 
 # stock orders (filled)
 try:
-    orders = rh.orders.get_all_stock_orders() or []
+    orders = with_backoff('get_all_stock_orders', rh.orders.get_all_stock_orders) or []
     for o in orders:
         if o.get('state') != 'filled':
             continue

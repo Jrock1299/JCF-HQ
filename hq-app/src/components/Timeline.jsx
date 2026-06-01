@@ -236,7 +236,6 @@ function agentColor(n) {
   n = (n || '').toLowerCase()
   if (n.includes('crisp'))  return '#4ade80'
   if (n.includes('blade'))  return '#f87171'
-  if (n.includes('oracle')) return '#a78bfa'
   if (n.includes('lens'))   return '#22d3ee'
   if (n.includes('huncho')) return '#c9a84c'
   return 'rgba(255,255,255,0.3)'

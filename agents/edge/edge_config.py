@@ -18,12 +18,33 @@ SMA_SLOW        = 21
 CANDLE_COUNT_H1 = 50         # 50 H1 candles covers ~2 days of trend context
 CANDLE_COUNT_H4 = 50
 
-UNITS              = 2       # OANDA units per position; cluster = 3 × UNITS = 6 total
 POLL_INTERVAL_SECS = 300     # 5 minutes between ticks
 
-# Cluster TPs (points from entry)
-TP1_PTS = 15
-TP2_PTS = 25
+# ─────────────────────────────────────────────────────────────────────────────
+# Tunable knobs — read from dashboard/agent_strategies.json with fallback here
+# ─────────────────────────────────────────────────────────────────────────────
+import sys as _sys
+_sys.path.insert(0, '/root/.openclaw/scripts')
+try:
+    from agent_config import load_strategy as _load_strategy
+    _EDGE_CFG = _load_strategy('edge', {
+        'UNITS':                    2,
+        'TP1_PTS':                  15,
+        'TP2_PTS':                  25,
+        'MAX_DAILY_LOSSES':         5,
+        'MAX_DAILY_LOSS_PCT':       2.0,
+        'MARKET_OPEN_BLACKOUT_MIN': 15,
+    })
+except Exception:
+    _EDGE_CFG = {
+        'UNITS': 2, 'TP1_PTS': 15, 'TP2_PTS': 25,
+        'MAX_DAILY_LOSSES': 5, 'MAX_DAILY_LOSS_PCT': 2.0,
+        'MARKET_OPEN_BLACKOUT_MIN': 15,
+    }
+
+UNITS    = _EDGE_CFG['UNITS']       # OANDA units per position; cluster = 3 × UNITS = 6 total
+TP1_PTS  = _EDGE_CFG['TP1_PTS']     # Cluster TPs (points from entry)
+TP2_PTS  = _EDGE_CFG['TP2_PTS']
 
 # 4H trend filter — only take longs if H4 SMA8 > SMA21, shorts if <.
 USE_H4_FILTER = True
@@ -31,7 +52,7 @@ USE_H4_FILTER = True
 # Don't trade during the first N minutes after the US cash open.
 # 13:30 UTC = 9:30 ET during DST (matches current strategy window).
 MARKET_OPEN_UTC          = (13, 30)
-MARKET_OPEN_BLACKOUT_MIN = 15
+MARKET_OPEN_BLACKOUT_MIN = _EDGE_CFG['MARKET_OPEN_BLACKOUT_MIN']
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PATHS
@@ -63,6 +84,6 @@ TELEGRAM_UID = "797062420"
 # RISK MANAGEMENT (preserved from prior strategy)
 # ─────────────────────────────────────────────────────────────────────────────
 
-MAX_DAILY_LOSSES   = 5       # Halt new entries after N losing clusters
-MAX_DAILY_LOSS_PCT = 2.0     # Halt if intraday drawdown >= N% of balance
+MAX_DAILY_LOSSES   = _EDGE_CFG['MAX_DAILY_LOSSES']     # Halt new entries after N losing clusters
+MAX_DAILY_LOSS_PCT = _EDGE_CFG['MAX_DAILY_LOSS_PCT']   # Halt if intraday drawdown >= N% of balance
 MAX_HOLD_MINUTES   = 1440    # Force-close any cluster held > 24h (safety net)

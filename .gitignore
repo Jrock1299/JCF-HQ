@@ -79,3 +79,10 @@ workspace/skills/tavily-search/
 
 # Old workspace scripts with hardcoded tokens
 workspace/scripts/send_dashboard.py
+
+# Device + exchange credentials (added 2026-06-01 — files remain in past commits;
+# user opted not to rotate now; this just stops future republishing).
+identity/device-auth.json
+**/device-auth.json
+**/.aster-keys
+**/*-keys

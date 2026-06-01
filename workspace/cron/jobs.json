@@ -466,7 +466,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Weekly 9AM Romania task: deliver one completed workflow improvement (or, if none, a new actionable idea). Use any available tools including web research (X/Reddit/web) when helpful. Keep it concise and high-signal."
+        "message": "Weekly 9AM Romania task: deliver one completed workflow improvement (or, if none, a new actionable idea). Then log it with: python3 /root/.openclaw/workspace/scripts/weekly_innovation.py --status <completed|idea> --title \"<short title>\" --action \"<change or next step>\" --impact \"<measured or expected impact>\" --source <web|reddit|x|local>. Keep it concise and high-signal."
       },
       "delivery": {
         "mode": "announce",

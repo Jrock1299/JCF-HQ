@@ -1,0 +1,1632 @@
+#!/usr/bin/env python3
+"""
+BLADE v4 — Multi-Instrument 15m ORB + Multi-Strategy Framework
+2026-03-24
+
+Instruments:
+  SPX500_USD — ASIA (00:00 UTC) + NY (13:30 UTC) + NY PM (18:00 UTC)
+  DE30_EUR   — London (08:00 UTC)
+  XAU_USD    — Any session, ONLY when Lens confidence >= 65%
+
+TWO TRADING MODES (can be active simultaneously on different instruments):
+
+MODE A — Daily ORB (runs every session, always):
+  Standard 1 unit | TP1=15 / TP2=20 / TP3=30 pips | SL=opposite ORB level
+  1m confirmation candle | ADR not extreme | No score gate
+
+MODE B — Swing Trade (score >= 70 only):
+  risk-based sizing | TP1=30 / TP2=50 / TP3=100 pips | SL=H4 structure level
+  Uses Strategist bias direction
+
+FOUR STRATEGIES PER SESSION (max 1 trade each, sequential):
+  1. ORB breakout    — first 30 min
+  2. Sweep fade      — post-ORB (30-60 min) — score >= 50
+  3. EMA pullback    — mid-session, trend continuation — score >= 50
+  4. Momentum entry  — any time, prior-session-range breakout — score >= 50
+  + Swing            — any time — score >= 70
+
+SCORE AS MODE SELECTOR (not trade gate):
+  < 50  : ORB only, standard lots
+  50-69 : ORB + additional strategies, standard lots
+  >= 70 : all above + Swing mode (risk-based sizing, wider TPs)
+
+Paper trade only.
+"""
+
+import oandapyV20
+from oandapyV20 import API
+from oandapyV20.endpoints.instruments import InstrumentsCandles
+import json
+import time
+import logging
+import uuid
+import os
+import subprocess
+from datetime import datetime, timezone, timedelta
+from statistics import mean
+import sys
+
+sys.path.insert(0, "/root/.openclaw/scripts")
+from hub_post import add_hub_message as hub_post
+import session_notify
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SETUP
+# ─────────────────────────────────────────────────────────────────────────────
+
+logging.basicConfig(
+    filename='/root/.openclaw/agents/blade/bot/blade.log',
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s'
+)
+
+with open('/root/.openclaw/agents/main/agent/auth-profiles.json') as f:
+    auth = json.load(f)
+
+creds = auth['profiles']['oanda:default']
+client = API(access_token=creds['key'], environment='practice')
+ACCOUNT_ID = creds['account_id']
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
+
+AGENT_NAME        = "blade"
+PAPER_MODE        = True
+MARKET_BIAS_PATH  = '/root/.openclaw/dashboard/market_bias.json'
+TRADES_JSON_PATH  = '/root/.openclaw/dashboard/agent_trades.json'
+STRATEGY_REC_PATH = '/root/.openclaw/dashboard/strategy_recommendation.json'
+TELEGRAM_UID      = "797062420"
+
+RISK_PER_TRADE_PCT = 0.01  # 1% of account per trade (total across 3 positions)
+
+paper_balance  = 2000.0
+open_positions = {}   # instrument → position dict
+session_trades = []   # trade records for current session
+
+# pip_value: 1 pip = N price units for this instrument
+# For SPX500/DE30: 1 pip = 1 index point; 1 OANDA unit = $1/pt (or €1/pt)
+# For XAU_USD:     1 pip = $1.00; 1 OANDA unit = 1 oz = $1 per $1 move
+#
+# Position sizing is risk-based: 1% of paper_balance / (ORB range * pip_value)
+# = total units, split evenly across 3 positions (floor division, min 1 each)
+
+INSTRUMENT_CONFIG = {
+    'SPX500_USD': {
+        'pip_value':        1.0,
+        'tp1_pips':         3,      # Position 1 TP (+3 pts quick scalp)
+        'tp2_pips':         5,      # Position 2 TP (+5 pts)
+        'trail_pips':       10,     # Position 3: trailing stop distance (no fixed TP)
+        'swing_tp1_pips':   3,      # Mode B TP1
+        'swing_tp2_pips':   5,      # Mode B TP2
+        'swing_trail_pips': 10,     # Mode B Position 3 trail distance
+        'orb_max_pips':     60,
+        'adr_threshold':    120,
+        'adr_min':          15,
+        'sessions':         ['ASIA', 'LONDON', 'NY_EARLY', 'NY', 'NY_PM'],
+        'lens_keys':        ['SPX500_USD', 'US100'],
+        'lens_threshold':   60,
+        'require_lens':     False,
+        'description':      'S&P 500',
+    },
+    'DE30_EUR': {
+        'pip_value':        1.0,
+        'tp1_pips':         3,
+        'tp2_pips':         5,
+        'trail_pips':       10,
+        'swing_tp1_pips':   3,
+        'swing_tp2_pips':   5,
+        'swing_trail_pips': 10,
+        'orb_max_pips':     150,
+        'adr_threshold':    400,
+        'adr_min':          50,
+        'sessions':         ['ASIA', 'LONDON', 'NY_EARLY', 'NY', 'NY_PM'],
+        'lens_keys':        ['DE30_EUR', 'DE40_EUR', 'DE40'],
+        'lens_threshold':   60,
+        'require_lens':     False,
+        'description':      'German DAX 40 (OANDA: DE30_EUR)',
+    },
+    'XAU_USD': {
+        'pip_value':        1.0,
+        'tp1_pips':         3,
+        'tp2_pips':         5,
+        'trail_pips':       10,
+        'swing_tp1_pips':   3,
+        'swing_tp2_pips':   5,
+        'swing_trail_pips': 10,
+        'orb_max_pips':     45,
+        'adr_threshold':    80,
+        'adr_min':          8,
+        'sessions':         ['ASIA', 'LONDON', 'NY_EARLY', 'NY', 'NY_PM'],
+        'lens_keys':        ['XAU/USD', 'XAU_USD'],
+        'lens_threshold':   65,
+        'require_lens':     False,  # XAU trades in all sessions — no Lens gate
+        'description':      'Gold vs USD',
+    },
+}
+
+SESSION_INSTRUMENTS = {
+    'ASIA':     ['SPX500_USD', 'XAU_USD', 'DE30_EUR'],
+    'LONDON':   ['SPX500_USD', 'DE30_EUR', 'XAU_USD'],
+    'NY_EARLY': ['SPX500_USD', 'XAU_USD', 'DE30_EUR'],
+    'NY':       ['SPX500_USD', 'XAU_USD', 'DE30_EUR'],
+    'NY_PM':    ['SPX500_USD', 'XAU_USD', 'DE30_EUR'],
+}
+
+SESSION_TIMES = {
+    # open/close in UTC. Cron fires 5 min early; wait_for_session_open sleeps to open time.
+    # EDT (UTC-4): ASIA=8pm, LONDON=2am, NY_EARLY=8am, NY=9:30am, NY_PM=1:30pm
+    # NOTE: ASIA crosses midnight — cron fires 23:55 UTC, session opens 00:00 UTC next day
+    'ASIA':     {'open_hour': 0,  'open_min': 0,  'close_hour': 2,  'close_min': 0},
+    'LONDON':   {'open_hour': 6,  'open_min': 0,  'close_hour': 8,  'close_min': 0},
+    'NY_EARLY': {'open_hour': 12, 'open_min': 0,  'close_hour': 13, 'close_min': 25},
+    'NY':       {'open_hour': 13, 'open_min': 30, 'close_hour': 15, 'close_min': 30},
+    'NY_PM':    {'open_hour': 17, 'open_min': 30, 'close_hour': 19, 'close_min': 30},
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OANDA HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_candles(instrument, granularity, count):
+    try:
+        r = InstrumentsCandles(instrument, params={
+            'granularity': granularity,
+            'count': count,
+            'price': 'M'
+        })
+        client.request(r)
+        candles = r.response.get('candles', [])
+        if not candles:
+            logging.warning(f"get_candles({instrument},{granularity},{count}): empty response — raw: {r.response}")
+        return candles
+    except Exception as e:
+        logging.error(f"get_candles({instrument},{granularity},{count}): {type(e).__name__}: {e}")
+        return []
+
+def get_price(instrument):
+    candles = get_candles(instrument, 'M1', 2)
+    if candles:
+        return float(candles[-1]['mid']['c'])
+    raise ValueError(f"Cannot fetch price for {instrument}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STRATEGIST INTEGRATION
+# ─────────────────────────────────────────────────────────────────────────────
+
+def read_strategist_recommendation(instrument):
+    """
+    Read the Strategist's recommendation for an instrument.
+    Returns: (score, strategy, bias, recommendation, notes)
+    Score is used as mode selector — NOT as a trade gate.
+    """
+    try:
+        with open(STRATEGY_REC_PATH) as f:
+            rec = json.load(f)
+
+        instruments = rec.get('instruments', {})
+        entry = instruments.get(instrument)
+        if not entry:
+            return 50, 'orb', 'neutral', 'TRADE', 'No strategist data — defaulting to 50'
+
+        score          = entry.get('score',          50)
+        strategy       = entry.get('strategy',       'orb')
+        bias           = entry.get('bias',           'neutral')
+        recommendation = entry.get('recommendation', 'TRADE')
+        notes          = entry.get('notes',          '')
+
+        updated_str = rec.get('updated', '')
+        if updated_str:
+            try:
+                updated   = datetime.fromisoformat(updated_str.replace('Z', '+00:00'))
+                age_hours = (datetime.now(timezone.utc) - updated).total_seconds() / 3600
+                if age_hours > 8:
+                    logging.warning(f"Strategist data is {age_hours:.1f}h old — using with caution")
+                    notes += f' [data {age_hours:.0f}h old]'
+            except Exception:
+                pass
+
+        return score, strategy, bias, recommendation, notes
+
+    except FileNotFoundError:
+        logging.info("strategy_recommendation.json not found — defaulting to score=50")
+        return 50, 'orb', 'neutral', 'TRADE', 'Strategist not run — score=50'
+    except Exception as e:
+        logging.warning(f"read_strategist_recommendation({instrument}): {e}")
+        return 50, 'orb', 'neutral', 'TRADE', f'Strategist read error: {e}'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FILTERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_5day_adr(instrument):
+    """Returns 5-day Average Daily Range or None on failure."""
+    try:
+        candles = get_candles(instrument, 'D', 8)
+        completed = [c for c in candles if c.get('complete', True)]
+        if len(completed) < 5:
+            return None
+        last5 = completed[-5:]
+        ranges = [float(c['mid']['h']) - float(c['mid']['l']) for c in last5]
+        return mean(ranges)
+    except Exception as e:
+        logging.error(f"get_5day_adr({instrument}): {e}")
+        return None
+
+def read_lens_bias(instrument):
+    """
+    Returns (direction, confidence) for the instrument from market_bias.json.
+    direction: 'bullish' | 'bearish' | 'neutral'
+    confidence: float 0–100
+    """
+    cfg = INSTRUMENT_CONFIG.get(instrument, {})
+    lens_keys = cfg.get('lens_keys', [])
+    try:
+        with open(MARKET_BIAS_PATH) as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        logging.warning("market_bias.json not found")
+        return 'neutral', 0.0
+    except Exception as e:
+        logging.error(f"Lens read error: {e}")
+        return 'neutral', 0.0
+
+    bias_entry = None
+    for key in lens_keys:
+        entry = data.get(key)
+        if entry and isinstance(entry, dict):
+            bias_entry = entry
+            break
+    if not bias_entry:
+        for p in data.get('pairs', []):
+            if p.get('symbol') in lens_keys:
+                bias_entry = p
+                break
+
+    if not bias_entry:
+        return 'neutral', 0.0
+
+    direction  = bias_entry.get('bias', 'neutral').lower()
+    confidence = float(bias_entry.get('confidence', 0))
+    if confidence <= 1.0:
+        confidence *= 100
+    return direction, confidence
+
+def check_orb_quality(instrument, orb_high, orb_low):
+    """Returns (is_ok, reason_string)."""
+    cfg = INSTRUMENT_CONFIG[instrument]
+    pips = (orb_high - orb_low) / cfg['pip_value']
+    if pips > cfg['orb_max_pips']:
+        return False, f"ORB too wide: {pips:.1f}p > {cfg['orb_max_pips']}p max"
+    return True, f"ORB OK: {pips:.1f}p"
+
+def run_adr_gate(instrument):
+    """Returns (should_skip, reason). True = skip session."""
+    cfg = INSTRUMENT_CONFIG[instrument]
+    adr = get_5day_adr(instrument)
+    if adr is None:
+        return False, "ADR unavailable — proceeding"
+    if adr > cfg['adr_threshold']:
+        return True, f"ADR gate: {adr:.1f} > {cfg['adr_threshold']} max"
+    if adr < cfg['adr_min']:
+        return True, f"ADR gate: {adr:.1f} < {cfg['adr_min']} min (too flat)"
+    return False, f"ADR OK: {adr:.1f}"
+
+def get_prior_day_bias(instrument):
+    """Returns 'bullish', 'bearish', or 'neutral' from yesterday's daily candle."""
+    try:
+        candles = get_candles(instrument, 'D', 3)
+        completed = [c for c in candles if c.get('complete', True)]
+        if not completed:
+            return 'neutral'
+        prev = completed[-1]['mid']
+        move = (float(prev['c']) - float(prev['o'])) / float(prev['o'])
+        if move > 0.003:
+            return 'bullish'
+        elif move < -0.003:
+            return 'bearish'
+        return 'neutral'
+    except Exception as e:
+        logging.error(f"get_prior_day_bias({instrument}): {e}")
+        return 'neutral'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STRATEGY SELECTOR (Mode A config only — Mode B uses fixed swing config)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def select_orb_mode(instrument, orb_high, orb_low, lens_direction, lens_confidence, adr):
+    """
+    Selects Mode A config: standard orb or momentum_orb with dynamic TPs.
+    Returns (mode, mode_config, reason).
+    """
+    cfg = INSTRUMENT_CONFIG[instrument]
+    prior_bias  = get_prior_day_bias(instrument)
+    lens_strong = lens_confidence >= cfg['lens_threshold']
+
+    # Momentum ORB: Lens + prior day both aligned
+    if lens_strong and lens_direction in ('bullish', 'bearish'):
+        if (lens_direction == 'bullish' and prior_bias == 'bullish') or \
+           (lens_direction == 'bearish' and prior_bias == 'bearish'):
+            mode_config = {
+                'tp1_pips':         cfg['tp1_pips'],
+                'tp2_pips':         cfg['tp2_pips'],
+                'trail_pips':       cfg['trail_pips'],
+                'direction_filter': lens_direction,
+            }
+            reason = f"MOMENTUM ORB | Lens {lens_direction} {lens_confidence:.0f}% + prior {prior_bias}"
+            return 'momentum_orb', mode_config, reason
+
+    # Standard ORB — TPs: TP1=3, TP2=5, Pos3 trail
+    mode_config = {
+        'tp1_pips':         cfg['tp1_pips'],
+        'tp2_pips':         cfg['tp2_pips'],
+        'trail_pips':       cfg['trail_pips'],
+        'direction_filter': lens_direction if lens_strong else None,
+    }
+    reason = f"ORB standard | Lens={lens_direction} {lens_confidence:.0f}% | prior={prior_bias} | TPs={cfg['tp1_pips']}/{cfg['tp2_pips']}/trail({cfg['trail_pips']}pts)"
+    return 'orb', mode_config, reason
+
+def build_swing_config(instrument):
+    """Returns Mode B swing config: wider TPs, 15-pt trail for pos3. Sizing via calculate_position_size()."""
+    cfg = INSTRUMENT_CONFIG[instrument]
+    return {
+        'tp1_pips':   cfg['swing_tp1_pips'],
+        'tp2_pips':   cfg['swing_tp2_pips'],
+        'trail_pips': cfg['swing_trail_pips'],
+    }
+
+def build_additional_config(instrument, tp_scale=1.0):
+    """Returns config for additional strategies (sweep fade, ema pullback, momentum)."""
+    cfg = INSTRUMENT_CONFIG[instrument]
+    return {
+        'tp1_pips':   cfg['tp1_pips'],
+        'tp2_pips':   int(cfg['tp2_pips'] * tp_scale),
+        'trail_pips': cfg['trail_pips'],
+    }
+
+def calculate_position_size(instrument, orb_high, orb_low):
+    """
+    Risk-based position sizing: 1% of paper_balance per trade, split across 3 positions.
+    per_pos = floor(risk_amount / (sl_distance * pip_value))
+    Returns units per position (min 1), or None if ORB too wide (per_pos rounds to 0).
+    """
+    cfg = INSTRUMENT_CONFIG[instrument]
+    sl_distance = orb_high - orb_low
+    if sl_distance <= 0:
+        return None
+    risk_amount = paper_balance * RISK_PER_TRADE_PCT
+    per_pos     = int(risk_amount / (sl_distance * cfg['pip_value']))
+    return per_pos if per_pos >= 1 else None
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ORB DETECTION
+# ─────────────────────────────────────────────────────────────────────────────
+
+def wait_for_session_open(session_name):
+    """
+    Sleep until the session's scheduled open time (UTC).
+
+    Handles midnight crossing correctly: when the ASIA cron fires at 23:55 UTC
+    and the session opens at 00:00 UTC, a naive hour comparison (23 > 0) would
+    incorrectly treat the session as already open.  Instead we build a proper
+    datetime target and detect the midnight case by checking whether the
+    computed target is more than 30 minutes in the past — if so, the session
+    opens after midnight and we advance the target by one day.
+    """
+    sess   = SESSION_TIMES[session_name]
+    open_h = sess['open_hour']
+    open_m = sess['open_min']
+
+    while True:
+        now    = datetime.now(timezone.utc)
+        target = now.replace(hour=open_h, minute=open_m, second=0, microsecond=0)
+
+        past_secs = (now - target).total_seconds()
+
+        if past_secs > 1800:
+            # Target time has already passed today by more than 30 minutes.
+            # This is the midnight-crossing case (e.g. 23:55 waiting for 00:00).
+            # The real open is tomorrow — advance by one day.
+            target += timedelta(days=1)
+
+        wait_secs = (target - now).total_seconds()
+        if wait_secs <= 0:
+            break
+
+        wait_m = int(wait_secs / 60) + 1
+        print(f"Waiting for {session_name} ({open_h:02d}:{open_m:02d} UTC)... {wait_m}m")
+        time.sleep(min(wait_secs, 60))
+
+    now = datetime.now(timezone.utc)
+    msg = f"{session_name} session open — {now.strftime('%H:%M:%S UTC')}"
+    print(f"\n{'='*60}\n{msg}")
+    logging.info(msg)
+    hub_post(AGENT_NAME, "status", msg, tags=["session"])
+
+def wait_for_15m_candle_close(session_open_time: datetime):
+    """
+    Wait until the first M15 candle after session_open_time has fully closed.
+
+    All Blade session opens land on exact 15-minute UTC boundaries (00:00,
+    06:00, 13:30, 16:00, 17:30), so the ORB candle always starts at the
+    session open.  We floor session_open_time to its 15-minute mark, add
+    15 minutes to get the candle close, then sleep until close + 3 seconds.
+
+    This replaces the old modulo approach that contained a >= 900 shortcut:
+    when the bot woke at exactly a :00/:15/:30/:45 boundary that shortcut
+    zeroed wait_secs and returned immediately, causing get_orb_15m() to
+    grab the pre-session candle instead of the true opening-range candle.
+    """
+    # Floor to the 15-minute boundary that contains the session open
+    snap_min     = (session_open_time.minute // 15) * 15
+    candle_start = session_open_time.replace(minute=snap_min, second=0, microsecond=0)
+    candle_close = candle_start + timedelta(minutes=15)
+    target       = candle_close + timedelta(seconds=3)   # OANDA finalization buffer
+
+    now       = datetime.now(timezone.utc)
+    wait_secs = (target - now).total_seconds()
+
+    print(
+        f"ORB candle: {candle_start.strftime('%H:%M')}→{candle_close.strftime('%H:%M')} UTC "
+        f"| closes in {max(0, wait_secs):.0f}s"
+    )
+    logging.info(
+        "ORB wait: candle %s→%s UTC | sleeping %.0fs",
+        candle_start.strftime('%H:%M'), candle_close.strftime('%H:%M'),
+        max(0, wait_secs),
+    )
+
+    if wait_secs > 0:
+        time.sleep(wait_secs)
+
+    print(f"ORB candle closed ({candle_close.strftime('%H:%M')} UTC) — fetching levels")
+
+def get_orb_15m(instrument, session_name=None, session_open_time=None):
+    """Returns (orb_high, orb_low) of most recently completed 15m candle.
+
+    If session_open_time is provided, verifies the returned candle actually
+    started at or after the session open.  If OANDA returns a pre-session
+    candle (slow finalization), waits 15 seconds and retries up to 3 times.
+    """
+    MAX_RETRIES = 3
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            candles = get_candles(instrument, 'M15', 5)
+            completed = [c for c in candles if c.get('complete') is not False]
+            if not completed:
+                logging.error(
+                    f"get_orb_15m({instrument}): no completed M15 candles in response "
+                    f"(got {len(candles)} candles, complete flags: "
+                    f"{[c.get('complete') for c in candles]})"
+                )
+                return None, None
+            orb = completed[-1]
+
+            # ── Pre-session candle guard ──────────────────────────────────────
+            candle_open_time = orb.get('time', '?')
+            open_dt = None
+            if session_open_time and candle_open_time != '?':
+                try:
+                    open_dt = datetime.fromisoformat(candle_open_time.replace('Z', '+00:00'))
+                    if open_dt < session_open_time:
+                        logging.warning(
+                            "get_orb_15m(%s) attempt %d/%d: candle %s is before session open %s "
+                            "— OANDA may be slow to finalize. Waiting 15s and retrying.",
+                            instrument, attempt, MAX_RETRIES,
+                            candle_open_time,
+                            session_open_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                        )
+                        print(
+                            f"  [ORB] WARNING: pre-session candle detected "
+                            f"({candle_open_time} < session open). "
+                            f"Retry {attempt}/{MAX_RETRIES} in 15s…"
+                        )
+                        if attempt < MAX_RETRIES:
+                            time.sleep(15)
+                            continue
+                        else:
+                            logging.error(
+                                "get_orb_15m(%s): still getting pre-session candle after "
+                                "%d attempts — using it anyway to avoid blocking session.",
+                                instrument, MAX_RETRIES,
+                            )
+                except Exception:
+                    pass  # If timestamp parse fails, proceed without guard
+
+            orb_h = float(orb['mid']['h'])
+            orb_l = float(orb['mid']['l'])
+            orb_o = float(orb['mid']['o'])
+            orb_c = float(orb['mid']['c'])
+            try:
+                if open_dt is None:
+                    open_dt = datetime.fromisoformat(candle_open_time.replace('Z', '+00:00'))
+                close_dt  = open_dt + timedelta(minutes=15)
+                close_str = close_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+            except Exception:
+                close_str = '?'
+            sess_info = ''
+            if session_name and session_open_time:
+                sess_info = (f"\n  Session:   {session_name} opened "
+                             f"{session_open_time.strftime('%Y-%m-%dT%H:%M:%SZ')}")
+            logging.info(
+                f"ORB CANDLE [{instrument}]:{sess_info}\n"
+                f"  Candle:    {candle_open_time} → {close_str}\n"
+                f"  Open:{orb_o:.2f}  High:{orb_h:.2f}  Low:{orb_l:.2f}  Close:{orb_c:.2f}\n"
+                f"  ORB Range: High={orb_h:.2f}, Low={orb_l:.2f} ({orb_h-orb_l:.2f} pts)\n"
+                f"  API:       instrument={instrument} granularity=M15 count=5"
+            )
+            return orb_h, orb_l
+        except Exception as e:
+            logging.error(f"get_orb_15m({instrument}): {type(e).__name__}: {e}")
+            return None, None
+    return None, None  # unreachable but satisfies linters
+
+def check_5m_breakout(instrument, orb_high, orb_low):
+    """
+    Last completed 5m candle must CLOSE beyond the ORB level (close only — wicks don't count).
+    Returns 'long', 'short', or None.
+    """
+    try:
+        candles = get_candles(instrument, 'M5', 3)
+        completed = [c for c in candles if c.get('complete') is not False]
+        if not completed:
+            return None
+        last = completed[-1]['mid']
+        c = float(last['c'])
+        if c > orb_high:
+            return 'long'
+        elif c < orb_low:
+            return 'short'
+        return None
+    except Exception as e:
+        logging.error(f"check_5m_breakout({instrument}): {e}")
+        return None
+
+def detect_liquidity_sweep(instrument, orb_high, orb_low, state):
+    """
+    Detect a stop-hunt / false breakout that reverses back into the ORB range.
+    Sweep fade long:  price breaks below ORB low then closes back above it → go long
+    Sweep fade short: price breaks above ORB high then closes back below it → go short
+    """
+    try:
+        candles = get_candles(instrument, 'M1', 3)
+        completed = [c for c in candles if c.get('complete', True)]
+        if not completed:
+            return None, state
+
+        last = completed[-1]['mid']
+        close_p = float(last['c'])
+        low_p   = float(last['l'])
+        high_p  = float(last['h'])
+        orb_range = orb_high - orb_low
+
+        if low_p < orb_low:
+            state['swept_low']         = True
+            state['sweep_low_extreme'] = min(low_p, state.get('sweep_low_extreme', low_p))
+
+        if high_p > orb_high:
+            state['swept_high']         = True
+            state['sweep_high_extreme'] = max(high_p, state.get('sweep_high_extreme', high_p))
+
+        if state.get('fade_triggered'):
+            return None, state
+
+        if state.get('swept_low') and close_p > orb_low:
+            reversal = close_p - state.get('sweep_low_extreme', orb_low)
+            if reversal > orb_range * 0.3:
+                state['fade_triggered'] = True
+                return 'long', state
+
+        if state.get('swept_high') and close_p < orb_high:
+            reversal = state.get('sweep_high_extreme', orb_high) - close_p
+            if reversal > orb_range * 0.3:
+                state['fade_triggered'] = True
+                return 'short', state
+
+        return None, state
+    except Exception as e:
+        logging.error(f"detect_liquidity_sweep({instrument}): {e}")
+        return None, state
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADDITIONAL STRATEGY HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_m15_ema20(instrument):
+    """Returns the 20-period EMA on M15, or None on failure."""
+    try:
+        candles = get_candles(instrument, 'M15', 25)
+        completed = [c for c in candles if c.get('complete', True)]
+        closes = [float(c['mid']['c']) for c in completed]
+        if len(closes) < 20:
+            return None
+        k   = 2.0 / (20 + 1)
+        ema = closes[0]
+        for close in closes[1:]:
+            ema = close * k + ema * (1 - k)
+        return ema
+    except Exception as e:
+        logging.error(f"get_m15_ema20({instrument}): {e}")
+        return None
+
+def check_ema_pullback(instrument, trend_direction, ema20):
+    """
+    Detects a pullback to 20 EMA on M15 followed by a continuation candle.
+    trend_direction: 'long' | 'short' (direction of the established ORB trend)
+    Returns 'long', 'short', or None.
+    """
+    if ema20 is None:
+        return None
+    try:
+        candles = get_candles(instrument, 'M1', 3)
+        completed = [c for c in candles if c.get('complete', True)]
+        if not completed:
+            return None
+        last    = completed[-1]['mid']
+        low_p   = float(last['l'])
+        high_p  = float(last['h'])
+        close_p = float(last['c'])
+        open_p  = float(last['o'])
+
+        # Long continuation: price touched EMA from above, bounced back up
+        if trend_direction == 'long':
+            if low_p <= ema20 * 1.001 and close_p > ema20 and close_p > open_p:
+                return 'long'
+        # Short continuation: price touched EMA from below, dropped back down
+        elif trend_direction == 'short':
+            if high_p >= ema20 * 0.999 and close_p < ema20 and close_p < open_p:
+                return 'short'
+        return None
+    except Exception as e:
+        logging.error(f"check_ema_pullback({instrument}): {e}")
+        return None
+
+def get_prior_session_range(instrument):
+    """
+    Returns (high, low) of the prior 6 hours — represents the prior session's range
+    for momentum entry detection.
+    """
+    try:
+        candles = get_candles(instrument, 'H1', 10)
+        completed = [c for c in candles if c.get('complete', True)]
+        if len(completed) < 6:
+            return None, None
+        prior6 = completed[-7:-1]  # 6 complete hours
+        high   = max(float(c['mid']['h']) for c in prior6)
+        low    = min(float(c['mid']['l']) for c in prior6)
+        return high, low
+    except Exception as e:
+        logging.error(f"get_prior_session_range({instrument}): {e}")
+        return None, None
+
+def check_momentum_entry(instrument, prior_high, prior_low, ema20):
+    """
+    Detects momentum breakout: price breaks prior-session high/low
+    with strong candle + EMA alignment.
+    Returns 'long', 'short', or None.
+    """
+    if prior_high is None or ema20 is None:
+        return None
+    try:
+        candles = get_candles(instrument, 'M1', 3)
+        completed = [c for c in candles if c.get('complete', True)]
+        if not completed:
+            return None
+        last    = completed[-1]['mid']
+        close_p = float(last['c'])
+        open_p  = float(last['o'])
+
+        candle_range = abs(close_p - open_p)
+        body_pct     = candle_range / (abs(float(last['h']) - float(last['l'])) + 0.0001)
+
+        # Strong bullish candle (body > 60% of range) + above prior high + above EMA
+        if (close_p > prior_high and close_p > ema20 and
+                close_p > open_p and body_pct > 0.6):
+            return 'long'
+        # Strong bearish candle + below prior low + below EMA
+        if (close_p < prior_low and close_p < ema20 and
+                close_p < open_p and body_pct > 0.6):
+            return 'short'
+        return None
+    except Exception as e:
+        logging.error(f"check_momentum_entry({instrument}): {e}")
+        return None
+
+def get_h4_structure_level(instrument, direction):
+    """
+    Returns H4 structural SL level for Mode B swing trades.
+    For long: lowest H4 low in last 4 candles.
+    For short: highest H4 high in last 4 candles.
+    """
+    try:
+        candles = get_candles(instrument, 'H4', 8)
+        completed = [c for c in candles if c.get('complete', True)]
+        if len(completed) < 4:
+            return None
+        last4 = completed[-4:]
+        if direction == 'long':
+            return min(float(c['mid']['l']) for c in last4)
+        else:
+            return max(float(c['mid']['h']) for c in last4)
+    except Exception as e:
+        logging.error(f"get_h4_structure_level({instrument}): {e}")
+        return None
+
+def check_swing_entry(instrument, bias_direction):
+    """
+    Detects Mode B swing entry: price breaks H4 structural level in bias direction
+    with a confirming 1m candle.
+    Returns 'long', 'short', or None.
+    """
+    if bias_direction not in ('bullish', 'bearish'):
+        return None
+    try:
+        candles = get_candles(instrument, 'H4', 8)
+        completed = [c for c in candles if c.get('complete', True)]
+        if len(completed) < 5:
+            return None
+
+        # Structure defined by prior 4 H4 candles (excluding the most recent)
+        prior4      = completed[-5:-1]
+        struct_high = max(float(c['mid']['h']) for c in prior4)
+        struct_low  = min(float(c['mid']['l']) for c in prior4)
+
+        m1_candles = get_candles(instrument, 'M1', 3)
+        m1_done    = [c for c in m1_candles if c.get('complete', True)]
+        if not m1_done:
+            return None
+
+        last    = m1_done[-1]['mid']
+        close_p = float(last['c'])
+        open_p  = float(last['o'])
+
+        if bias_direction == 'bullish' and close_p > struct_high and close_p > open_p:
+            return 'long'
+        if bias_direction == 'bearish' and close_p < struct_low and close_p < open_p:
+            return 'short'
+        return None
+    except Exception as e:
+        logging.error(f"check_swing_entry({instrument}): {e}")
+        return None
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POSITION MANAGEMENT — Triple-position model (3/5/trail cascade)
+#
+# Each ORB entry places THREE paper positions:
+#   pos_key = f"{instrument}:1"  — Position 1: SL=opposite ORB, TP=+tp1_pips (+3)
+#   pos_key = f"{instrument}:2"  — Position 2: SL=opposite ORB, TP=+tp2_pips (+5)
+#   pos_key = f"{instrument}:3"  — Position 3: NO fixed TP — trailing stop (5 pts)
+#   TP1 hit → close pos1, move pos2+pos3 SL to BE; pos3 trail activates
+#   TP2 hit → close pos2, pos3 continues (trailing stop 5 pts behind peak)
+#   Trail hit → pos3 closes at trail_stop price
+#   SL hit before any TP → cascade-close all three
+#   BE stop → always P&L = $0.00, close at entry price
+#   SWING MODE: TP1=10, TP2=20, pos3 trails at 15 pts
+# ─────────────────────────────────────────────────────────────────────────────
+
+def has_open_pos(instrument):
+    """Return True if any of positions 1, 2, or 3 is open for this instrument."""
+    return any(f"{instrument}:{n}" in open_positions for n in ('1', '2', '3'))
+
+def place_paper_order(instrument, direction, orb_high, orb_low, session_name,
+                      mode, mode_config, stop_loss_override=None):
+    """
+    Place triple paper positions (pos1=TP1, pos2=TP2, pos3=TP3) for one ORB entry.
+    stop_loss_override sets a custom SL (used by swing/H4 trades).
+    Returns True if all positions placed successfully.
+    """
+    global paper_balance
+    try:
+        price = get_price(instrument)
+    except Exception as e:
+        logging.error(f"place_paper_order price error {instrument}: {e}")
+        return False
+
+    cfg        = INSTRUMENT_CONFIG[instrument]
+    pip_value  = cfg['pip_value']
+    units      = calculate_position_size(instrument, orb_high, orb_low)
+    if units is None:
+        logging.warning(f"place_paper_order {instrument}: ORB too wide for 1% risk sizing — skipping")
+        return False
+    tp1_dist   = mode_config['tp1_pips'] * pip_value
+    tp2_dist   = mode_config['tp2_pips'] * pip_value
+    trail_pips = mode_config.get('trail_pips', cfg['trail_pips'])
+
+    if direction == 'long':
+        stop_loss = stop_loss_override if stop_loss_override is not None else orb_low
+        tp1_price = price + tp1_dist
+        tp2_price = price + tp2_dist
+    else:
+        stop_loss = stop_loss_override if stop_loss_override is not None else orb_high
+        tp1_price = price - tp1_dist
+        tp2_price = price - tp2_dist
+
+    stop_dist  = abs(price - stop_loss)
+    if stop_dist < 0.0001:
+        logging.warning(f"Stop too tight for {instrument} ({stop_dist:.4f}), skip")
+        return False
+
+    stop_risk  = round(stop_dist * units * 3 * pip_value, 2)   # total risk across all 3 positions
+    tp1_reward = round(mode_config['tp1_pips'] * units * pip_value, 2)
+    tp2_reward = round(mode_config['tp2_pips'] * units * pip_value, 2)
+    trade_id_1 = str(uuid.uuid4())
+    trade_id_2 = str(uuid.uuid4())
+    trade_id_3 = str(uuid.uuid4())
+    now_str    = datetime.now(timezone.utc).isoformat()
+    now_date   = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    mode_tag   = " [SWING]" if mode == 'swing' else ""
+
+    pos_base = {
+        'direction':       direction,
+        'entry':           price,
+        'entry_price':     price,
+        'stop_loss':       stop_loss,
+        'units':           units,
+        'pip_value':       pip_value,
+        'breakeven_moved': False,
+        'open_time':       now_str,
+        'mode':            mode,
+        'orb_high':        orb_high,
+        'orb_low':         orb_low,
+    }
+
+    # Position 1: quick scalp, closes at TP1
+    open_positions[f"{instrument}:1"] = {**pos_base, 'trade_id': trade_id_1, 'tp1': tp1_price}
+    # Position 2: closes at TP2; SL → BE after pos1 TP
+    open_positions[f"{instrument}:2"] = {**pos_base, 'trade_id': trade_id_2, 'tp1': tp2_price}
+    # Position 3: NO fixed TP — trailing stop activates after TP1 hit moves SL to BE
+    open_positions[f"{instrument}:3"] = {
+        **pos_base,
+        'trade_id':   trade_id_3,
+        'trail_pips': trail_pips,
+        'peak_price': price,   # tracks best price for trail calculation
+    }
+
+    for i, (trade_id, tp_price, tp_pips, tp_reward) in enumerate([
+        (trade_id_1, tp1_price, mode_config['tp1_pips'], tp1_reward),
+        (trade_id_2, tp2_price, mode_config['tp2_pips'], tp2_reward),
+    ], start=1):
+        session_trades.append({
+            'id':         trade_id,
+            'agent':      AGENT_NAME,
+            'date':       now_date,
+            'timestamp':  now_str,
+            'session':    session_name,
+            'pair':       instrument,
+            'symbol':     instrument,
+            'direction':  direction,
+            'setup':      f'15m ORB ({mode}) pos{i}',
+            'entry':      price,
+            'stop':       stop_loss,
+            'tp1':        tp_price,
+            'tp2':        0,
+            'tp3':        0,
+            'result':     'Pending',
+            'pnl_usd':    0,
+            'r_multiple': 0,
+            'notes':      (f'{mode} pos{i}{mode_tag} | units:{units} | '
+                           f'SL:{stop_loss:.4f} | risk:${stop_risk} | '
+                           f'tp:+{tp_pips}pip/${tp_reward}'),
+        })
+    # Position 3 trade log entry (trailing stop — no fixed TP)
+    session_trades.append({
+        'id':         trade_id_3,
+        'agent':      AGENT_NAME,
+        'date':       now_date,
+        'timestamp':  now_str,
+        'session':    session_name,
+        'pair':       instrument,
+        'symbol':     instrument,
+        'direction':  direction,
+        'setup':      f'15m ORB ({mode}) pos3',
+        'entry':      price,
+        'stop':       stop_loss,
+        'tp1':        0,
+        'tp2':        0,
+        'tp3':        0,
+        'result':     'Pending',
+        'pnl_usd':    0,
+        'r_multiple': 0,
+        'notes':      (f'{mode} pos3{mode_tag} | units:{units} | '
+                       f'SL:{stop_loss:.4f} | risk:${stop_risk} | '
+                       f'TRAIL:{trail_pips}pts behind peak'),
+    })
+
+    msg = (f"PAPER TRADE: {instrument} {direction.upper()} [{mode}]{mode_tag} | "
+           f"Entry:{price:.4f} SL:{stop_loss:.4f} | "
+           f"Pos1 TP:{tp1_price:.4f}(+{mode_config['tp1_pips']}pts ${tp1_reward}) | "
+           f"Pos2 TP:{tp2_price:.4f}(+{mode_config['tp2_pips']}pts ${tp2_reward}) | "
+           f"Pos3 TRAIL:{trail_pips}pts behind peak | "
+           f"Units:{units} Risk:${stop_risk}")
+    print(f"  >> {msg}")
+    logging.info(msg)
+    hub_post(AGENT_NAME, "trade", msg, tags=["trading", "entry", session_name.lower()])
+    short_name = instrument.split('_')[0]
+    entry_icon = "🟢" if direction == "long" else "🔴"
+    dir_word   = "LONG" if direction == "long" else "SHORT"
+    # TRADE ALERT — commented out; re-enable for live accounts
+    # send_telegram_alert(
+    #     f"{entry_icon} BLADE {dir_word} {short_name} @ {price:.2f}{mode_tag} | "
+    #     f"SL:{stop_loss:.2f} TP1:{tp1_price:.2f} TP2:{tp2_price:.2f} Pos3:TRAIL({trail_pips}pts)"
+    # )
+    return True
+
+def manage_positions():
+    """
+    Check all open positions for TP hits and stop losses. Updates paper_balance.
+
+    Triple-position cascade logic:
+      - TP1 hit → close pos1, move pos2+pos3 SL to BE
+      - TP2 hit → close pos2, pos3 continues at BE
+      - TP3 hit → close pos3, full extraction complete
+      - SL hit (before BE moved) → cascade-close all remaining non-BE positions
+      - BE stop → always close at entry price, PnL = $0.00 exactly
+    """
+    global paper_balance
+    to_close = []
+    already_closing = set()
+
+    for pos_key, pos in list(open_positions.items()):
+        if ':' not in pos_key:
+            continue  # skip any legacy keys
+        instrument, pos_num = pos_key.rsplit(':', 1)
+        try:
+            price     = get_price(instrument)
+            direction = pos['direction']
+            entry     = pos['entry']
+            stop      = pos['stop_loss']
+            units     = pos['units']
+            pip_val   = pos.get('pip_value', 1.0)
+
+            pnl = (price - entry) * units * pip_val if direction == 'long' \
+                  else (entry - price) * units * pip_val
+
+            short_name = instrument.split('_')[0]
+            tp_labels  = {'1': 'TP1', '2': 'TP2', '3': 'TP3'}
+            tp_label   = tp_labels.get(pos_num, f'TP{pos_num}')
+
+            # ── TP check (pos1 and pos2 only — pos3 uses trailing stop) ─────
+            tp_price = pos.get('tp1')
+            if tp_price and pos_key not in already_closing:
+                tp_hit = (price >= tp_price if direction == 'long' else price <= tp_price)
+                if tp_hit:
+                    # Close at the TP price exactly (not market slippage)
+                    close_pnl = (tp_price - entry) * units * pip_val if direction == 'long' \
+                                else (entry - tp_price) * units * pip_val
+                    logging.info(f"{tp_label} HIT: {instrument} pos{pos_num} @ {tp_price:.4f} PnL:${close_pnl:.2f}")
+                    print(f"  {tp_label} HIT: {instrument} pos{pos_num} @ {tp_price:.4f} | PnL:${close_pnl:.2f}")
+                    to_close.append((pos_key, tp_label, close_pnl))
+                    already_closing.add(pos_key)
+
+                    if pos_num == '1':
+                        # TP1 hit → move pos2 and pos3 SL to breakeven; pos3 trail activates
+                        moved = []
+                        for n in ('2', '3'):
+                            pk = f"{instrument}:{n}"
+                            if pk in open_positions and pk not in already_closing:
+                                be_price = open_positions[pk]['entry']
+                                open_positions[pk]['stop_loss']       = be_price
+                                open_positions[pk]['breakeven_moved'] = True
+                                # For pos3: reset peak_price to current price so trail starts fresh
+                                if n == '3':
+                                    open_positions[pk]['peak_price'] = price
+                                logging.info(f"BREAKEVEN: {instrument} pos{n} SL → {be_price:.4f}")
+                                print(f"  BREAKEVEN: {instrument} pos{n} SL → {be_price:.4f}")
+                                moved.append(f"pos{n}")
+                        be_note = f" | {'+'.join(moved)} SL→BE" if moved else ""
+                        trail_n = moved[-1] if moved and '3' in (m[-1] for m in moved) else ''
+                        p3_key = f"{instrument}:3"
+                        trail_str = ""
+                        if p3_key in open_positions:
+                            t = open_positions[p3_key].get('trail_pips', 5)
+                            trail_str = f" | pos3 trail:{t}pts"
+                        # TRADE ALERT — commented out; re-enable for live accounts
+                        # send_telegram_alert(
+                        #     f"✅ BLADE TP1 {short_name} +${close_pnl:.2f}{be_note}{trail_str}"
+                        # )
+                    elif pos_num == '2':
+                        p3_key = f"{instrument}:3"
+                        t = open_positions.get(p3_key, {}).get('trail_pips', 5) if p3_key in open_positions else 5
+                        # TRADE ALERT — commented out; re-enable for live accounts
+                        # send_telegram_alert(
+                        #     f"✅ BLADE TP2 {short_name} +${close_pnl:.2f} | pos3 trailing ({t}pts)"
+                        # )
+                    continue
+
+            # ── TRAILING STOP check (pos3 after TP1 hit moves SL to BE) ──────
+            if (pos_num == '3' and pos.get('trail_pips') and
+                    pos.get('breakeven_moved') and pos_key not in already_closing):
+                trail_dist = pos['trail_pips'] * pip_val
+                if direction == 'long':
+                    pos['peak_price'] = max(price, pos.get('peak_price', entry))
+                    trail_stop = pos['peak_price'] - trail_dist
+                    trail_hit  = price <= trail_stop
+                else:
+                    pos['peak_price'] = min(price, pos.get('peak_price', entry))
+                    trail_stop = pos['peak_price'] + trail_dist
+                    trail_hit  = price >= trail_stop
+
+                if trail_hit:
+                    close_pnl = (trail_stop - entry) * units * pip_val if direction == 'long' \
+                                else (entry - trail_stop) * units * pip_val
+                    close_pnl = round(close_pnl, 2)
+                    logging.info(f"TRAIL HIT: {instrument} pos3 @ {trail_stop:.4f} "
+                                 f"peak={pos['peak_price']:.4f} PnL:${close_pnl:.2f}")
+                    print(f"  TRAIL HIT: {instrument} pos3 @ {trail_stop:.4f} | "
+                          f"peak={pos['peak_price']:.4f} | PnL:${close_pnl:.2f}")
+                    to_close.append((pos_key, 'TRAIL', close_pnl))
+                    already_closing.add(pos_key)
+                    # TRADE ALERT — commented out; re-enable for live accounts
+                    # send_telegram_alert(
+                    #     f"🏆 BLADE TRAIL {short_name} +${close_pnl:.2f} | "
+                    #     f"pos3 trail exit @ {trail_stop:.2f}"
+                    # )
+                    continue
+
+            # Also update peak_price for pos3 before TP1 activates the trail
+            if pos_num == '3' and pos.get('trail_pips') and not pos.get('breakeven_moved'):
+                if direction == 'long':
+                    pos['peak_price'] = max(price, pos.get('peak_price', entry))
+                else:
+                    pos['peak_price'] = min(price, pos.get('peak_price', entry))
+
+            # ── SL / BE stop check ────────────────────────────────────────────
+            if pos_key not in already_closing:
+                hit_stop = (price <= stop if direction == 'long' else price >= stop)
+                if hit_stop:
+                    result = 'BE' if pos.get('breakeven_moved') else 'SL'
+
+                    if result == 'BE':
+                        # BE stop: always close at entry price — PnL is exactly $0.00
+                        close_pnl   = 0.0
+                        close_price = entry
+                        logging.info(f"BE HIT: {instrument} pos{pos_num} @ {close_price:.4f} PnL:$0.00")
+                        print(f"  BE HIT: {instrument} pos{pos_num} @ {close_price:.4f} | PnL:$0.00")
+                        # TRADE ALERT — commented out; re-enable for live accounts
+                        # send_telegram_alert(f"⚪ BLADE BE {short_name} pos{pos_num} $0.00")
+                    else:
+                        close_pnl   = pnl
+                        close_price = price
+                        logging.info(f"SL HIT: {instrument} pos{pos_num} @ {close_price:.4f} PnL:${close_pnl:.2f}")
+                        print(f"  SL HIT: {instrument} pos{pos_num} @ {close_price:.4f} | PnL:${close_pnl:.2f}")
+                        # TRADE ALERT — commented out; re-enable for live accounts
+                        # send_telegram_alert(f"🔴 BLADE SL HIT {short_name} ${close_pnl:.2f}")
+                        # SL cascade: close all other positions for this instrument
+                        # that haven't moved to BE (they share the original SL)
+                        for n in ('1', '2', '3'):
+                            if n == pos_num:
+                                continue
+                            pk = f"{instrument}:{n}"
+                            if pk in open_positions and pk not in already_closing:
+                                other = open_positions[pk]
+                                if not other.get('breakeven_moved'):
+                                    o_pnl = (price - other['entry']) * other['units'] * pip_val \
+                                            if direction == 'long' \
+                                            else (other['entry'] - price) * other['units'] * pip_val
+                                    to_close.append((pk, 'SL', o_pnl))
+                                    already_closing.add(pk)
+                                    logging.info(f"SL CASCADE: {instrument} pos{n} @ {price:.4f} PnL:${o_pnl:.2f}")
+
+                    to_close.append((pos_key, result, close_pnl))
+                    already_closing.add(pos_key)
+
+            # ── Status line ───────────────────────────────────────────────────
+            be_tag = "|BE" if pos.get('breakeven_moved') else ""
+            icon   = "🟢" if pnl > 0 else "🔴"
+            if pos_num == '3' and pos.get('trail_pips'):
+                trail_dist = pos['trail_pips'] * pip_val
+                peak       = pos.get('peak_price', entry)
+                trail_stop = (peak - trail_dist) if direction == 'long' else (peak + trail_dist)
+                tp_info    = f"TRAIL@{trail_stop:.2f}(pk={peak:.2f})"
+            else:
+                tp_info = f"{tp_label}@{tp_price:.2f}" if tp_price else f"{tp_label}:pending"
+            print(f"  {icon} {instrument} p{pos_num} {direction.upper()} [{pos['mode']}] | "
+                  f"{entry:.2f}→{price:.2f} | PnL:${pnl:.2f} | "
+                  f"{tp_info}{be_tag} | SL:{stop:.2f}")
+
+        except Exception as e:
+            logging.error(f"manage_positions {pos_key}: {e}")
+
+    for pos_key, result, pnl in to_close:
+        paper_balance += pnl
+        if pos_key in open_positions:
+            update_trade_log(open_positions[pos_key]['trade_id'], result, pnl, f"Closed: {result}")
+            del open_positions[pos_key]
+
+def close_position_time_stop(instrument):
+    """Force-close both pos1 and pos2 for an instrument at session end."""
+    global paper_balance
+    try:
+        price = get_price(instrument)
+    except Exception:
+        price = None
+
+    for pos_num in ('1', '2', '3'):
+        pos_key = f"{instrument}:{pos_num}"
+        if pos_key not in open_positions:
+            continue
+        pos = open_positions[pos_key]
+        p   = price if price is not None else pos['entry']
+        pip_val = pos.get('pip_value', 1.0)
+        pnl = (p - pos['entry']) * pos['units'] * pip_val if pos['direction'] == 'long' \
+              else (pos['entry'] - p) * pos['units'] * pip_val
+        result = "BE+Time" if pos.get('breakeven_moved') else "Time Stop"
+        paper_balance += pnl
+        update_trade_log(pos['trade_id'], result, pnl, "Force-closed at session end.")
+        msg = f"TIME STOP: {instrument} pos{pos_num} | {result} PnL:${pnl:.2f}"
+        print(f"  {msg}")
+        logging.info(msg)
+        del open_positions[pos_key]
+
+def update_trade_log(trade_id, result, pnl, notes):
+    for t in session_trades:
+        if t['id'] == trade_id:
+            t['result']     = result
+            t['pnl_usd']    = round(pnl, 2)
+            entry = t.get('entry', 0)
+            stop  = t.get('stop',  0)
+            risk  = abs(entry - stop) if entry and stop else 1
+            t['r_multiple'] = round(pnl / risk, 1) if risk > 0 else 0
+            t['notes']      = notes
+            break
+
+def record_no_trade(session_name, instrument, reason):
+    session_trades.append({
+        'id':         str(uuid.uuid4()),
+        'agent':      AGENT_NAME,
+        'date':       datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+        'timestamp':  datetime.now(timezone.utc).isoformat(),
+        'session':    session_name,
+        'pair':       instrument,
+        'symbol':     instrument,
+        'direction':  'none',
+        'setup':      '15m ORB',
+        'entry':      0, 'stop': 0, 'tp1': 0, 'tp2': 0, 'tp3': 0,
+        'result':     'no_trade',
+        'pnl_usd':    0,
+        'r_multiple': 0,
+        'notes':      reason,
+    })
+    print(f"  NO TRADE [{instrument}]: {reason}")
+    logging.info(f"NO TRADE: {instrument} | {reason}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INSTRUMENT SETUP (pre-monitoring checks)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def setup_instrument(instrument, session_name, strat_score=50, strat_bias='neutral',
+                     session_open_time=None):
+    """
+    Run all pre-trade checks for an instrument.
+    Returns a state dict if tradeable, or None if it should be skipped.
+    Note: score no longer gates trading — only ADR and ORB quality can block.
+    """
+    cfg = INSTRUMENT_CONFIG[instrument]
+    print(f"\n  [{instrument}] Pre-trade checks...")
+
+    # Lens check
+    lens_dir, lens_conf = read_lens_bias(instrument)
+    print(f"  [{instrument}] Lens: {lens_dir} {lens_conf:.0f}%")
+
+    # ADR — informational only (gate removed; used for TP scaling below)
+    adr = get_5day_adr(instrument)
+    if adr is not None:
+        print(f"  [{instrument}] ADR: {adr:.1f} (informational)")
+
+    # Build ORB (with enhanced candle logging)
+    orb_high, orb_low = get_orb_15m(instrument, session_name=session_name,
+                                     session_open_time=session_open_time)
+    if orb_high is None:
+        reason = "ORB data unavailable"
+        print(f"  [{instrument}] {reason}")
+        hub_post(AGENT_NAME, "error", f"{instrument}: {reason}", tags=["error"])
+        record_no_trade(session_name, instrument, reason)
+        return None
+    print(f"  [{instrument}] ORB: H={orb_high:.4f} L={orb_low:.4f} R={orb_high-orb_low:.4f}")
+
+    # ORB quality check
+    orb_ok, orb_reason = check_orb_quality(instrument, orb_high, orb_low)
+    print(f"  [{instrument}] {orb_reason}")
+    if not orb_ok:
+        record_no_trade(session_name, instrument, orb_reason)
+        return None
+
+    # Mode A strategy selection (ORB config)
+    mode, mode_config, mode_reason = select_orb_mode(
+        instrument, orb_high, orb_low, lens_dir, lens_conf, adr
+    )
+    print(f"  [{instrument}] ORB Mode: {mode_reason}")
+
+    # Score-based mode report
+    if strat_score >= 70:
+        score_mode = f"score={strat_score} → ORB + additional strategies + SWING MODE"
+    elif strat_score >= 50:
+        score_mode = f"score={strat_score} → ORB + additional strategies enabled"
+    else:
+        score_mode = f"score={strat_score} → ORB ONLY (score < 50)"
+    print(f"  [{instrument}] {score_mode}")
+
+    hub_post(AGENT_NAME, "status",
+             f"{instrument} {session_name} | {mode_reason} | ORB:{orb_high:.2f}/{orb_low:.2f} | {score_mode}",
+             tags=["trading", session_name.lower()])
+
+    return {
+        'orb_high':            orb_high,
+        'orb_low':             orb_low,
+        'mode':                mode,
+        'mode_config':         mode_config,
+        'lens_direction':      lens_dir,
+        'lens_confidence':     lens_conf,
+        'adr':                 adr,
+        'sweep_state':         {},
+        'strat_score':         strat_score,
+        'strat_bias':          strat_bias,
+        'orb_direction_seen':  None,   # tracks ORB breakout direction for EMA pullback
+        'orb_directions_fired': set(), # tracks which ORB directions have traded (max 2)
+    }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REPORTING
+# ─────────────────────────────────────────────────────────────────────────────
+
+def write_session_trades_to_json():
+    def norm(t):
+        return {
+            "agent":     t.get('agent', AGENT_NAME),
+            "symbol":    t.get('symbol') or t.get('pair') or '',
+            "direction": t.get('direction', 'none'),
+            "pnl":       t.get('pnl_usd', t.get('pnl', 0)) or 0,
+            "date":      t.get('date', datetime.now(timezone.utc).strftime('%Y-%m-%d')),
+            "timestamp": t.get('timestamp', datetime.now(timezone.utc).isoformat()),
+            "session":   t.get('session', ''),
+            "result":    t.get('result', ''),
+        }
+    try:
+        with open(TRADES_JSON_PATH, 'r') as f:
+            data = json.load(f)
+    except Exception:
+        data = {"trades": []}
+
+    if not session_trades:
+        session_trades.append({
+            "agent": AGENT_NAME, "direction": "none", "pnl_usd": 0,
+            "date": datetime.now(timezone.utc).strftime('%Y-%m-%d'),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        })
+
+    existing = data.get('trades', [])
+    data['trades'] = existing + [norm(t) for t in session_trades]
+    with open(TRADES_JSON_PATH, 'w') as f:
+        json.dump(data, f, indent=2)
+    print(f"  Wrote {len(session_trades)} records to agent_trades.json")
+
+def send_telegram_alert(message):
+    subprocess.run([
+        "openclaw", "message", "send",
+        "--channel", "telegram", "--target", TELEGRAM_UID, "--message", message
+    ])
+
+
+def send_telegram_report(session_name):
+    traded = sum(1 for t in session_trades if t.get('result') not in ('no_trade', 'Pending'))
+    date_s = datetime.now(timezone.utc).strftime('%b %d')
+    lines  = [f"⚔️ BLADE v4 — {session_name} SESSION", f"📅 {date_s} | {traded} trades", ""]
+
+    for t in session_trades:
+        result    = t.get('result', '')
+        pnl       = t.get('pnl_usd', 0) or 0
+        r_mult    = t.get('r_multiple', 0)
+        pair      = t.get('pair', '?')
+        direction = t.get('direction', '?')
+        setup     = t.get('setup', 'ORB')
+
+        if result == 'no_trade':
+            note = (t.get('notes') or '')[:35]
+            lines.append(f"➡️ {pair} NO TRADE — {note}")
+            continue
+
+        icon = '✅' if (result.startswith('TP') or pnl > 0) else ('❌' if pnl < 0 else '➡️')
+        sign = '+' if pnl >= 0 else '-'
+        lines.append(f"{icon} {pair} {setup} {direction} → {result} | {sign}${abs(pnl):.2f} | {r_mult}R")
+
+    session_pnl = sum(t.get('pnl_usd', 0) or 0 for t in session_trades)
+    total_pnl   = 0
+    try:
+        with open('/root/.openclaw/dashboard/agent_pnl.json') as f:
+            total_pnl = json.load(f).get('blade', {}).get('pnl', 0)
+    except Exception:
+        pass
+
+    ss = '+' if session_pnl >= 0 else '-'
+    ts = '+' if total_pnl   >= 0 else '-'
+    lines += [
+        "",
+        f"📊 Session P&L: {ss}${abs(session_pnl):.2f}",
+        f"💰 Total P&L:   {ts}${abs(total_pnl):.2f}",
+        f"💼 Balance:     ${paper_balance:.2f}",
+    ]
+    message = "\n".join(lines)
+    subprocess.run([
+        "openclaw", "message", "send",
+        "--channel", "telegram", "--target", TELEGRAM_UID, "--message", message
+    ])
+    print("  Telegram report sent.")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MAIN SESSION RUNNER
+# ─────────────────────────────────────────────────────────────────────────────
+
+def run_session(session_name):
+    """
+    Run a complete session. All instruments monitored concurrently.
+
+    Strategy tiers based on score:
+      < 50  : ORB only
+      50-69 : ORB + sweep fade + EMA pullback + momentum
+      >= 70 : all above + Swing mode (risk-based sizing, H4 SL)
+    """
+    global session_trades
+    session_trades = []
+
+    instruments = [
+        i for i in SESSION_INSTRUMENTS.get(session_name, [])
+        if session_name in INSTRUMENT_CONFIG[i]['sessions']
+    ]
+
+    print(f"\n{'='*60}")
+    print(f"BLADE v4 — {session_name} SESSION")
+    print(f"Instruments: {instruments}")
+    print(f"Balance: ${paper_balance:.2f} | Mode: {'PAPER' if PAPER_MODE else 'LIVE'}")
+    print(f"{'='*60}")
+    logging.info(f"SESSION START: {session_name} | {instruments} | ${paper_balance:.2f}")
+    hub_post(AGENT_NAME, "status",
+             f"{session_name} starting. Instruments: {', '.join(instruments)}. Balance: ${paper_balance:.2f}",
+             tags=["session"])
+
+    # ── Wait for session open ─────────────────────────────────────────────────
+    wait_for_session_open(session_name)
+    session_open_time = datetime.now(timezone.utc)
+
+    # ── Session start notification — fires at session open, aligned with Edge ─
+    instrs = [i for i in SESSION_INSTRUMENTS.get(session_name, [])
+              if session_name in INSTRUMENT_CONFIG[i]['sessions']]
+    instr_short = [i.split('_')[0] for i in instrs]
+    session_notify.session_start('BLADE', instr_short, session_name)
+
+    # ── Wait for 15m ORB candle to close ─────────────────────────────────────
+    wait_for_15m_candle_close(session_open_time)
+
+    # ── Read Strategist scores (mode selector, NOT trade gate) ────────────────
+    strat_data = {}
+    for instrument in instruments:
+        score, strategy, bias, rec, notes = read_strategist_recommendation(instrument)
+        strat_data[instrument] = {'score': score, 'strategy': strategy, 'bias': bias, 'notes': notes}
+        print(f"  [{instrument}] Strategist: score={score} bias={bias} | {notes}")
+        logging.info(f"STRATEGIST [{instrument}]: score={score} bias={bias} {notes}")
+        if score >= 70:
+            mode_label = "ORB + additionals + SWING"
+        elif score >= 50:
+            mode_label = "ORB + additionals"
+        else:
+            mode_label = "ORB only"
+        hub_post(AGENT_NAME, "status",
+                 f"{instrument} score={score} → {mode_label}",
+                 tags=["strategy"])
+
+    # ── Setup: filters + ORB + strategy selection ────────────────────────────
+    states = {}
+    for instrument in instruments:
+        if has_open_pos(instrument):
+            print(f"  [{instrument}] Prior session position still open — setup ORB, will wait for it to close before new entry")
+        sd    = strat_data.get(instrument, {'score': 50, 'bias': 'neutral'})
+        state = setup_instrument(instrument, session_name,
+                                 strat_score=sd.get('score', 50),
+                                 strat_bias=sd.get('bias', 'neutral'),
+                                 session_open_time=session_open_time)
+        if state:
+            states[instrument] = state
+
+    if not states:
+        print("  All instruments filtered. No trades this session.")
+        hub_post(AGENT_NAME, "status", f"{session_name}: all instruments filtered — no trades",
+                 tags=["session"])
+        write_session_trades_to_json()
+        os.system("python3 /root/.openclaw/scripts/sync_agent_pnl.py")
+        return
+
+    # ── Monitoring loop ──────────────────────────────────────────────────────
+    sess_cfg    = SESSION_TIMES[session_name]
+    session_end = datetime.now(timezone.utc).replace(
+        hour=sess_cfg['close_hour'], minute=sess_cfg['close_min'],
+        second=0, microsecond=0
+    )
+    monitor_end = min(session_end, datetime.now(timezone.utc) + timedelta(hours=3))
+
+    # Per-instrument strategy tracking — each strategy can fire at most once
+    # Possible values: 'orb', 'sweep_fade', 'ema_pullback', 'momentum', 'swing'
+    strategy_fired = {inst: set() for inst in states}
+
+    # Preload prior session ranges for momentum strategy
+    prior_session_highs = {}
+    prior_session_lows  = {}
+    for instrument in states:
+        ph, pl = get_prior_session_range(instrument)
+        prior_session_highs[instrument] = ph
+        prior_session_lows[instrument]  = pl
+
+    print(f"\n  Monitoring {list(states.keys())} until {monitor_end.strftime('%H:%M UTC')}...")
+    hub_post(AGENT_NAME, "status",
+             f"{session_name}: monitoring {list(states.keys())} for breakouts",
+             tags=["trading"])
+
+    while datetime.now(timezone.utc) < monitor_end:
+        now            = datetime.now(timezone.utc)
+        mins_elapsed   = (now - session_open_time).total_seconds() / 60
+        post_orb       = mins_elapsed > 30   # ORB window = first 30 minutes
+
+        for instrument, state in states.items():
+            fired      = strategy_fired[instrument]
+            score      = state['strat_score']
+            bias       = state['strat_bias']
+            orb_high   = state['orb_high']
+            orb_low    = state['orb_low']
+            mode       = state['mode']
+            mode_cfg   = state['mode_config']
+            cfg        = INSTRUMENT_CONFIG[instrument]
+            lens_dir   = state['lens_direction']
+            lens_conf  = state['lens_confidence']
+            has_pos    = has_open_pos(instrument)
+
+            # ── MODE A: ORB breakout — up to 2 trades per session (one per direction) ──
+            # First entry: first 30 min only. Re-entry (opposite): any time in session.
+            orb_dirs = state.get('orb_directions_fired', set())
+            if len(orb_dirs) < 2 and not has_pos:
+                direction = check_5m_breakout(instrument, orb_high, orb_low)
+                if direction and direction not in orb_dirs:
+                    is_first_entry = len(orb_dirs) == 0
+                    is_reentry     = len(orb_dirs) == 1
+
+                    # First ORB entry is restricted to the 30-min ORB window
+                    # Re-entry in the opposite direction is allowed any time
+                    if is_first_entry and post_orb:
+                        pass  # ORB window closed for first trade
+                    else:
+                        blocked    = False
+                        filter_dir = mode_cfg.get('direction_filter')
+
+                        if filter_dir == 'bullish' and direction == 'short':
+                            print(f"  [{instrument}] SHORT blocked — Lens {lens_conf:.0f}% bullish")
+                            blocked = True
+                        elif filter_dir == 'bearish' and direction == 'long':
+                            print(f"  [{instrument}] LONG blocked — Lens {lens_conf:.0f}% bearish")
+                            blocked = True
+
+                        if not blocked:
+                            entry_type = "ORB RE-ENTRY (opposite)" if is_reentry else "ORB BREAKOUT"
+                            print(f"  [{instrument}] {entry_type}: {direction.upper()}")
+                            logging.info(f"{entry_type}: {instrument} {direction.upper()} [{mode}]")
+                            if place_paper_order(instrument, direction, orb_high, orb_low,
+                                                 session_name, mode, mode_cfg):
+                                state['orb_directions_fired'].add(direction)
+                                fired.add('orb')
+                                state['orb_direction_seen'] = direction
+
+                # Track ORB direction even if blocked (for EMA pullback context)
+                if direction and state['orb_direction_seen'] is None:
+                    state['orb_direction_seen'] = direction
+
+            # ── Post-ORB strategies (score >= 50) ─────────────────────────
+            if post_orb and score >= 50 and not has_pos:
+
+                # SWEEP FADE (most reliable in first hour post-ORB)
+                if 'sweep_fade' not in fired:
+                    sweep_dir, state['sweep_state'] = detect_liquidity_sweep(
+                        instrument, orb_high, orb_low, state['sweep_state']
+                    )
+                    if sweep_dir:
+                        print(f"  [{instrument}] SWEEP FADE: {sweep_dir.upper()}")
+                        logging.info(f"SWEEP FADE: {instrument} {sweep_dir.upper()}")
+                        sweep_cfg = {
+                            'tp1_pips':   cfg['tp1_pips'],
+                            'tp2_pips':   cfg['tp2_pips'],
+                            'trail_pips': cfg['trail_pips'],
+                        }
+                        if place_paper_order(instrument, sweep_dir, orb_high, orb_low,
+                                             session_name, 'sweep_fade', sweep_cfg):
+                            fired.add('sweep_fade')
+
+                # EMA PULLBACK (requires established ORB direction)
+                if 'ema_pullback' not in fired and state['orb_direction_seen']:
+                    ema20   = get_m15_ema20(instrument)
+                    ep_dir  = check_ema_pullback(instrument, state['orb_direction_seen'], ema20)
+                    if ep_dir:
+                        print(f"  [{instrument}] EMA PULLBACK: {ep_dir.upper()} (trend: {state['orb_direction_seen']})")
+                        logging.info(f"EMA PULLBACK: {instrument} {ep_dir.upper()}")
+                        ep_cfg = build_additional_config(instrument)
+                        if place_paper_order(instrument, ep_dir, orb_high, orb_low,
+                                             session_name, 'ema_pullback', ep_cfg):
+                            fired.add('ema_pullback')
+
+                # MOMENTUM ENTRY (any time post-ORB, prior-session range breakout)
+                if 'momentum' not in fired:
+                    ema20     = get_m15_ema20(instrument)
+                    prior_h   = prior_session_highs.get(instrument)
+                    prior_l   = prior_session_lows.get(instrument)
+                    mom_dir   = check_momentum_entry(instrument, prior_h, prior_l, ema20)
+                    if mom_dir:
+                        print(f"  [{instrument}] MOMENTUM ENTRY: {mom_dir.upper()}")
+                        logging.info(f"MOMENTUM ENTRY: {instrument} {mom_dir.upper()}")
+                        mom_cfg = build_additional_config(instrument, tp_scale=1.0)
+                        if place_paper_order(instrument, mom_dir, orb_high, orb_low,
+                                             session_name, 'momentum', mom_cfg):
+                            fired.add('momentum')
+
+            # ── MODE B: Swing Trade (score >= 70, any time, any position state) ──
+            # Can fire even while a standard trade is open ON A DIFFERENT INSTRUMENT.
+            # On the SAME instrument, waits for the current position to close.
+            if score >= 70 and 'swing' not in fired and not has_pos:
+                swing_dir = check_swing_entry(instrument, bias)
+                if swing_dir:
+                    h4_sl     = get_h4_structure_level(instrument, swing_dir)
+                    swing_cfg = build_swing_config(instrument)
+                    swing_cfg['direction_filter'] = None
+                    print(f"  [{instrument}] SWING TRADE MODE B: {swing_dir.upper()} "
+                          f"(bias={bias} score={score}) | risk-based sizing | H4 SL: {h4_sl}")
+                    logging.info(f"SWING TRADE: {instrument} {swing_dir.upper()} score={score}")
+                    if place_paper_order(instrument, swing_dir, orb_high, orb_low,
+                                         session_name, 'swing', swing_cfg,
+                                         stop_loss_override=h4_sl):
+                        fired.add('swing')
+
+        # ── Manage open positions ────────────────────────────────────────────
+        if open_positions:
+            manage_positions()
+
+        # ── Status line ─────────────────────────────────────────────────────
+        phase       = "POST-ORB" if post_orb else "ORB-WINDOW"
+        open_instrs = sorted(set(k.rsplit(':', 1)[0] for k in open_positions))
+        print(f"  [{now.strftime('%H:%M:%S')}] {phase} | "
+              f"Open: {open_instrs} | "
+              f"Balance: ${paper_balance:.2f}")
+        time.sleep(30)
+
+    # ── Record no-trade for instruments that never fired ────────────────────
+    for instrument in states:
+        if not strategy_fired[instrument]:
+            already_logged = any(
+                t['pair'] == instrument and t['result'] == 'no_trade'
+                for t in session_trades
+            )
+            if not already_logged:
+                record_no_trade(session_name, instrument, "No signal in window")
+
+    # ── Session complete ─────────────────────────────────────────────────────
+    total_trades = len([t for t in session_trades if t['result'] != 'no_trade'])
+    print(f"\n{'='*60}")
+    print(f"{session_name} SESSION COMPLETE | Balance: ${paper_balance:.2f} | Trades: {total_trades}")
+    print(f"{'='*60}")
+    logging.info(f"SESSION END: {session_name} | Balance: ${paper_balance:.2f}")
+    hub_post(AGENT_NAME, "status",
+             f"{session_name} complete. {total_trades} trades. Balance: ${paper_balance:.2f}.",
+             tags=["session", "complete"])
+
+    write_session_trades_to_json()
+    os.system("python3 /root/.openclaw/scripts/sync_agent_pnl.py")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ENTRY POINT
+# ─────────────────────────────────────────────────────────────────────────────
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("Usage: python3 blade_bot.py <SESSION>")
+        print("       Sessions: ASIA | LONDON | NY_EARLY | NY | NY_PM")
+        sys.exit(1)
+
+    session = sys.argv[1].upper()
+    if session not in SESSION_TIMES:
+        print(f"Unknown session '{session}'. Valid: {list(SESSION_TIMES.keys())}")
+        sys.exit(1)
+
+    run_session(session)

@@ -1,0 +1,6 @@
+{
+  "traceSchema": "openclaw-trajectory-pointer",
+  "schemaVersion": 1,
+  "sessionId": "gateway-fallback-9deb6db4-930c-4223-bb74-68afc24e3d90",
+  "runtimeFile": "/root/.openclaw/agents/main/sessions/gateway-fallback-9deb6db4-930c-4223-bb74-68afc24e3d90.trajectory.jsonl"
+}

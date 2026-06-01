@@ -161,7 +161,7 @@ def _save_cost(input_tokens: int, output_tokens: int) -> float:
 # ─── Service status ─────────────────────────────────────────────────────────────
 
 def check_service_statuses() -> dict:
-    services = ['edge', 'crisp-v5', 'kalshi-bot', 'jcf-hq', 'hq-storage']
+    services = ['edge', 'crisp-v5', 'jcf-hq', 'hq-storage']
     statuses = {}
     for svc in services:
         try:
@@ -176,30 +176,6 @@ def check_service_statuses() -> dict:
 
 
 # ─── Data loaders ───────────────────────────────────────────────────────────────
-
-def _load_kalshi_csv() -> dict:
-    """Parse kalshi trades_log.csv — count trades, errors, last activity."""
-    path = '/root/kalshi-bot/trades_log.csv'
-    try:
-        with open(path) as f:
-            rows = list(csv.DictReader(f))
-        if not rows:
-            return {'total_rows': 0, 'recent': []}
-        today  = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-        recent = [r for r in rows if r.get('timestamp', '').startswith(today)]
-        errors = [r for r in recent if r.get('status', '').startswith('error')]
-        filled = [r for r in recent if r.get('contracts', '0') not in ('0', '', None)]
-        return {
-            'total_rows':    len(rows),
-            'today_attempts': len(recent),
-            'today_filled':  len(filled),
-            'today_errors':  len(errors),
-            'last_timestamp': rows[-1].get('timestamp', '') if rows else '',
-            'error_sample':  errors[-1].get('status', '')[:120] if errors else None,
-        }
-    except Exception as e:
-        return {'error': str(e)}
-
 
 def _f(val, default=0.0) -> float:
     """Safe float conversion."""
@@ -230,24 +206,6 @@ def _format_tradelocker(data: dict) -> str:
         f"  Win Rate: {_f(data.get('win_rate')):.1f}%",
         f"  Today's trades: {len(today_trades)} | Today P&L: ${today_pnl:.2f}",
     ]
-    return '\n'.join(lines)
-
-
-def _format_oracle(picks: dict, resolved: dict, bankroll: dict) -> str:
-    today  = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-    lines  = ['Oracle Sports Betting:']
-    lines.append(f"  Bankroll: ${_f(bankroll.get('balance')):.2f} / ${_f(bankroll.get('bankroll')):.2f} starting")
-    lines.append(f"  Record: {picks.get('record','?')} | Win Rate: {_f(picks.get('win_rate')):.1f}%")
-    lines.append(f"  Total P&L: ${_f(picks.get('total_pnl')):.2f}")
-    all_picks = picks.get('picks', [])
-    today_picks = [p for p in all_picks if str(p.get('date', '')).startswith(today)]
-    lines.append(f"  Today's picks: {len(today_picks)}")
-    res_picks = resolved.get('picks', []) if resolved else []
-    today_res = [p for p in res_picks if str(p.get('date', '')).startswith(today)]
-    if today_res:
-        won  = sum(1 for p in today_res if p.get('result') == 'WIN')
-        lost = sum(1 for p in today_res if p.get('result') == 'LOSS')
-        lines.append(f"  Today resolved: {won}W / {lost}L")
     return '\n'.join(lines)
 
 
@@ -440,8 +398,6 @@ def _build_telegram_report(result: dict, svc_statuses: dict) -> str:
         f'  Blade:   {fmt(bdown.get("blade", 0))}',
         f'  Crisp:   {fmt(bdown.get("crisp", 0))}',
         f'  Edge:    {fmt(bdown.get("edge", 0))}',
-        f'  Oracle:  {fmt(bdown.get("oracle", 0))}',
-        f'  Kalshi:  {fmt(bdown.get("kalshi", 0))}',
         f'  Tao:     {fmt(bdown.get("tao", 0))}',
         '',
         f'MTD P&L: {fmt(fs.get("mtd_pnl", 0))}',
@@ -566,7 +522,7 @@ REPORT 1 — DAILY FINANCIAL SUMMARY
 Analyze all P&L data and produce a clear financial picture:
 - Total P&L today across all agents and manual trading
 - P&L breakdown by source (manual trades, Blade, Crisp, \
-Edge, Oracle, Kalshi, Tao)
+Edge, Tao)
 - MTD (month to date) performance
 - Current bankroll status for each account
 - Net worth snapshot (trading accounts + bank + crypto + investments)
@@ -595,9 +551,16 @@ verdict or critical alert, translate that into a concrete fix prompt.
 For each actionable problem:
 1. State the problem clearly with specific numbers from the data
 2. Identify the root cause (use Norman's analysis where available)
-3. Write a complete Claude Code prompt — include file paths, \
+3. Write 2-3 sentences of YOUR strategic diagnosis before the prompt. \
+This is your opinion as CFO — why you think this is happening and \
+what you would do about it. Be direct, no hedging. Write in your \
+voice: cold, aristocratic, blunt. Example: \
+"The bleeding from Edge is not accidental. It overtraded noise for \
+weeks with no real structural edge. The new 1H strategy must prove \
+itself before I recommend further intervention."
+4. Write a complete Claude Code prompt — include file paths, \
 specific instructions, and verification steps
-4. Estimate the impact of the fix
+5. Estimate the impact of the fix
 
 Rules:
 - Only generate fix prompts for ACTIONABLE problems (broken code, \
@@ -626,8 +589,6 @@ OUTPUT FORMAT (respond in valid JSON only, no markdown):
       "blade": 0.00,
       "crisp": 0.00,
       "edge": 0.00,
-      "oracle": 0.00,
-      "kalshi": 0.00,
       "tao": 0.00
     },
     "mtd_pnl": 0.00,
@@ -638,7 +599,6 @@ OUTPUT FORMAT (respond in valid JSON only, no markdown):
   },
   "operations_briefing": "Plain English paragraph...",
   "agent_status": {
-    "oracle": "ran at 06:30, 2 picks",
     "lens": "ran at 04:55, all instruments covered",
     "blade": "next session: London 07:55",
     "tao": "staking, next report Saturday"
@@ -667,9 +627,6 @@ def run_victoria() -> dict:
 
     # ── 1. Collect all data ──
     tl_data     = _load_json(DASHBOARD / 'tradelocker_trades.json', 'tradelocker')
-    op_data     = _load_json(DASHBOARD / 'oracle_picks.json',       'oracle_picks')
-    or_data     = _load_json(DASHBOARD / 'oracle_resolved.json',    'oracle_resolved')
-    ob_data     = _load_json(DASHBOARD / 'oracle_bankroll.json',    'oracle_bankroll')
     lens_data   = _load_json(DASHBOARD / 'market_bias.json',        'market_bias')
     plaid_data  = _load_json(DASHBOARD / 'plaid_data.json',         'plaid')
     kraken_data = _load_json(DASHBOARD / 'kraken_data.json',        'kraken')
@@ -681,7 +638,6 @@ def run_victoria() -> dict:
     rb_data     = _load_json(DASHBOARD / 'robinhood_data.json',     'robinhood')
     tw_data     = _load_json(DASHBOARD / 'trustwallet_data.json',   'trustwallet')
     norman_data = _load_json(NORMAN_PATH,                           'norman_report')
-    kalshi_data = _load_kalshi_csv()
 
     if norman_data:
         print(f'[victoria] Norman report loaded — dated {norman_data.get("date","?")}')
@@ -701,7 +657,6 @@ def run_victoria() -> dict:
 
     # ── 4. Format data for prompt ──
     tl_text     = _format_tradelocker(tl_data)      if tl_data   else 'TradeLocker: unavailable'
-    oracle_text = _format_oracle(op_data or {}, or_data or {}, ob_data or {})
     edge_text   = _format_edge(edge_data)            if edge_data else 'Edge: unavailable'
     tao_text    = _format_tao(tao_data)              if tao_data  else 'Tao: unavailable'
     apnl_text   = _format_agent_pnl(apnl_data)      if apnl_data else 'Blade/Crisp: unavailable'
@@ -709,16 +664,6 @@ def run_victoria() -> dict:
     lens_text   = _format_lens_bias(lens_data)       if lens_data else 'Lens: unavailable'
     sent_text   = _format_sentinel(sent_data)        if sent_data else 'Sentinel: unavailable'
     norman_text = _format_norman(norman_data)        if norman_data else 'Norman Report: not yet run'
-
-    kalshi_text = (
-        f"Kalshi Bot:\n"
-        f"  Total log rows: {kalshi_data.get('total_rows', 0)}\n"
-        f"  Today attempts: {kalshi_data.get('today_attempts', 0)} | "
-        f"Filled: {kalshi_data.get('today_filled', 0)} | "
-        f"Errors: {kalshi_data.get('today_errors', 0)}\n"
-        f"  Last activity: {kalshi_data.get('last_timestamp', 'unknown')}"
-        + (f"\n  Error sample: {kalshi_data.get('error_sample')}" if kalshi_data.get('error_sample') else '')
-    ) if not kalshi_data.get('error') else f"Kalshi Bot: CSV read error — {kalshi_data['error']}"
 
     svc_text = (
         'Service Status (systemctl):\n'
@@ -739,10 +684,8 @@ def run_victoria() -> dict:
         f"Today: {today} | Analysis timestamp: {now_ts}\n\n"
         f"{tl_text}\n\n"
         f"{apnl_text}\n\n"
-        f"{oracle_text}\n\n"
         f"{edge_text}\n\n"
         f"{tao_text}\n\n"
-        f"{kalshi_text}\n\n"
         f"{accts_text}\n\n"
         f"{lens_text}\n\n"
         f"{sent_text}\n\n"
@@ -923,9 +866,6 @@ def run_victoria_weekly() -> dict:
 
     # Load same data sources as daily
     tl_data     = _load_json(DASHBOARD / 'tradelocker_trades.json', 'tradelocker')
-    op_data     = _load_json(DASHBOARD / 'oracle_picks.json',       'oracle_picks')
-    or_data     = _load_json(DASHBOARD / 'oracle_resolved.json',    'oracle_resolved')
-    ob_data     = _load_json(DASHBOARD / 'oracle_bankroll.json',    'oracle_bankroll')
     lens_data   = _load_json(DASHBOARD / 'market_bias.json',        'market_bias')
     plaid_data  = _load_json(DASHBOARD / 'plaid_data.json',         'plaid')
     kraken_data = _load_json(DASHBOARD / 'kraken_data.json',        'kraken')
@@ -936,7 +876,6 @@ def run_victoria_weekly() -> dict:
     rb_data     = _load_json(DASHBOARD / 'robinhood_data.json',     'robinhood')
     tw_data     = _load_json(DASHBOARD / 'trustwallet_data.json',   'trustwallet')
     norman_data = _load_json(NORMAN_PATH,                           'norman_report')
-    kalshi_data = _load_kalshi_csv()
 
     # Load Victoria's daily history for 7-day aggregation
     history = _load_json(HISTORY_PATH, 'victoria_history') or []
@@ -950,7 +889,6 @@ def run_victoria_weekly() -> dict:
 
     # Build data dump
     tl_text     = _format_tradelocker(tl_data)  if tl_data   else 'TradeLocker: unavailable'
-    oracle_text = _format_oracle(op_data or {}, or_data or {}, ob_data or {})
     edge_text   = _format_edge(edge_data)        if edge_data else 'Edge: unavailable'
     tao_text    = _format_tao(tao_data)          if tao_data  else 'Tao: unavailable'
     apnl_text   = _format_agent_pnl(apnl_data)  if apnl_data else 'Blade/Crisp: unavailable'
@@ -970,7 +908,7 @@ def run_victoria_weekly() -> dict:
     user_message = (
         f"Today: {today} | WEEKLY TRIBUNAL\n\n"
         f"{daily_summaries}\n"
-        f"{tl_text}\n\n{apnl_text}\n\n{oracle_text}\n\n"
+        f"{tl_text}\n\n{apnl_text}\n\n"
         f"{edge_text}\n\n{tao_text}\n\n{accts_text}\n\n"
         f"{norman_text}\n\n"
         f"API costs MTD: ${api_costs['total_mtd']:.4f}\n\n"

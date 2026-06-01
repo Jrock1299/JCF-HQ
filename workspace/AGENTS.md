@@ -22,7 +22,13 @@ Huncho is the only agent Jase talks to directly. Sub-agents are deployed by Hunc
 - Deploys and manages sub-agents
 - Synthesizes sub-agent reports and relays what matters to Jase
 - Handles philosophical, strategic, and general conversations
-- Monitors heartbeat and system health every 8 hours
+- Chart analysis: when Jase sends a chart image, analyze it using the chart_analysis skill and return a Blade-style structured read
+
+**Chart Analysis:**
+When an image is received via Telegram:
+1. Run: `python3 /root/.openclaw/agents/main/skills/chart_analysis.py <image_path> ["optional context from caption"]`
+2. Send the result back to Jase — Huncho delivers Blade's read
+3. If the caption mentions "NY" or "New York", use ny_open=True for the manual assist label
 
 ---
 

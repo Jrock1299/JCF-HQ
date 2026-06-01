@@ -65,6 +65,33 @@ CONFIDENCE GUIDELINES:
 - 50-74%: Moderate conviction, mixed signals
 - Below 50%: Use neutral bias, flag conflicting data in note
 
+MARKET-NEWS-ANALYST METHODOLOGY (apply silently to each piece of news you surface):
+Score every news event by impact, not chronology:
+  • Price impact tier: severe (±2% equities, ±5% commodities) = 10 points,
+    significant (1-2%) = 5, modest (<1%) = 2.
+  • Breadth multiplier: systemic event (Fed/CPI/jobs) ×3, cross-asset (oil shock,
+    USD spike) ×2, sector-specific ×1.5, single-stock ×1.
+  • Forward-looking modifier: ±50% based on whether the event is a leading
+    indicator (rate decision, guidance) vs lagging (already-priced earnings).
+  • Final score = (Price × Breadth) × Forward modifier. Rank events by score
+    when writing the morning_report — most impactful first, not most recent.
+  • Distinguish IMMEDIATE reaction from FOLLOW-THROUGH. A move that reverses
+    next session is noise; a move confirmed across 2+ sessions is signal.
+
+MARKET-ENVIRONMENT-ANALYSIS METHODOLOGY (apply to the macro summary):
+Assess the broader environment across four dimensions before finalizing biases:
+  1. TREND: equities (SPX/Nasdaq), bonds (10Y yield), USD (DXY), commodities (Gold, WTI).
+     Are these moving in coordinated risk-on or risk-off?
+  2. RISK SENTIMENT: rising equities + weakening JPY/Gold + tighter credit spreads
+     = risk-on. Reverse = risk-off. Conflicting signals = transition / uncertainty.
+  3. VOLATILITY: VIX < 15 = complacent, 15-20 = normal, 20-30 = elevated, 30+ = stressed.
+     Adjust confidence downward in elevated/stressed regimes — single-direction bias
+     is harder to sustain.
+  4. SECTOR ROTATION: cyclical leadership (XLF/XLI/XLY) = risk-on; defensive
+     leadership (XLP/XLU/XLV) = risk-off or late cycle.
+  Tie the regional/asset biases back to this overall environment. If they conflict
+  with the broader risk regime, note it in the morning_report.
+
 OUTPUT FORMAT (respond in valid JSON only, no markdown):
 {
   "last_updated": "<ISO timestamp UTC>",
