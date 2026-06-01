@@ -590,5 +590,54 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 
 ---
 
+## Vault Maintenance (standing instruction)
+
+A navigable knowledge vault lives at `Vault/` (start at
+[`Vault/00-START-HERE.md`](Vault/00-START-HERE.md)). It expands this file
+into ~28 linked notes — one per agent, one per strategy, infrastructure,
+decisions, and dated session logs.
+
+**Standing rule for every Claude Code / Codex session:**
+
+If your work makes a **significant change** to an agent, a strategy, an
+infrastructure piece, or introduces a new design decision, you MUST do
+both of these in the same task / PR — not as a follow-up:
+
+1. **Update the matching vault note** at `Vault/agents/<name>.md`,
+   `Vault/strategies/<name>.md`, or `Vault/infrastructure/<name>.md`. The
+   note should remain a clean standalone explainer for the current state.
+   Add new `[[wiki-links]]` to neighbors where it helps navigation.
+
+2. **Append a dated entry** to the matching session note at
+   `Vault/sessions/YYYY-MM-DD.md`. Create the file if it doesn't exist
+   for today. Note what changed, why, and which commit it landed in.
+
+3. **Update [`Vault/decisions/decision-log.md`](Vault/decisions/decision-log.md)**
+   if the change reflects a *decision* (a chosen path with a why) — not
+   for routine implementation work.
+
+**What counts as a "significant change":**
+- New agent, new strategy, new infrastructure piece
+- Removal / benching / parking of an agent
+- A rule, rail, threshold, or tunable knob that affects trading behavior
+- A new cross-agent wire, integration, or data source
+- A change to the comms / observation layer (Phase 1 → 2 → 3 transitions)
+- A model routing change or new skill methodology baked into a prompt
+- A new security / secret-hygiene rule
+
+**What doesn't count** (no vault update needed):
+- Pure refactors with no behavior change
+- Typo or formatting fixes
+- Log-only output tweaks
+
+If you change the code but not the vault, future Claude sessions will read
+a stale map. The vault drifting from the code is technical debt — pay it
+down in the same task.
+
+When in doubt, update the vault. It's a living second brain — keep it
+current as a byproduct of the work.
+
+---
+
 *If anything in this file disagrees with the code, the code wins — and this
 file is wrong. Fix it.*
