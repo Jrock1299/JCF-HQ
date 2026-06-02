@@ -26,6 +26,7 @@ import json
 import time
 import uuid
 import logging
+import signal
 import subprocess
 import sys
 sys.path.insert(0, "/root/.openclaw/scripts")
@@ -926,13 +927,29 @@ def send_session_summary(session_name):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_session(session_name):
-    """Pure ORB runner: wait → ORB → monitor M1 breakouts → manage → close."""
+    """Pure ORB runner: wait → ORB → monitor M1 breakouts → manage → close.
+
+    Wrapped in try/finally + SIGTERM handler so the compounding balance is
+    persisted to disk even when `timeout` (cron wrapper) sends SIGTERM before
+    the natural session-end time — otherwise the in-process gains evaporate.
+    """
     global session_trades, paper_balance
     session_trades = []
     _current_session['name'] = session_name
 
     # Refresh compounding balance from disk in case it was updated mid-day.
     paper_balance = _load_paper_balance()
+
+    # Persist balance on SIGTERM (cron `timeout` kill) so paper gains survive.
+    def _persist_and_exit(signum, _frame):
+        logging.warning(f"SIGNAL {signum} received — persisting balance ${paper_balance:.2f} and exiting.")
+        try:
+            _save_paper_balance(paper_balance, last_session=session_name)
+        except Exception as e:
+            logging.error(f"emergency balance save failed: {e}")
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, _persist_and_exit)
+    signal.signal(signal.SIGINT,  _persist_and_exit)
 
     # Ensure today's DD state exists and locks day_start_balance to session-open.
     import os as _os
@@ -1008,6 +1025,9 @@ def run_session(session_name):
         open_instrs = sorted({k.rsplit(':', 1)[0] for k in open_positions})
         print(f"  [{datetime.now(timezone.utc).strftime('%H:%M:%S')}] open:{open_instrs} | "
               f"fired:{sorted(fired)} | ${paper_balance:.2f}")
+        # Persist incrementally so a cron-timeout kill mid-session doesn't lose
+        # the running gains. Tiny IO; SIGTERM handler is the primary safety net.
+        _save_paper_balance(paper_balance, last_session=session_name)
         time.sleep(30)
 
     if open_positions:

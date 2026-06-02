@@ -77,7 +77,7 @@ Activates **after pos1 fires** (BE-after-pos1 mechanic preserved):
 | ≤ 1% risk per single trade | `POSITION_WEIGHTS['pos3'] = 0.50 × 0.02 = 0.010` |
 | ≤ 2% cluster risk | `RISK_PCT_PER_CLUSTER = 0.02`; weights sum to 1.0 |
 | -4% daily DD circuit breaker | `dashboard/blade_dd_<date>.json` tracks daily cum_pnl; halts remaining sessions today once breached |
-| Compounding off current balance | `dashboard/blade_balance.json` reloaded at session start, saved at session end. Default $5,000 if missing. |
+| Compounding off current balance | `dashboard/blade_balance.json` reloaded at session start; saved at session end, on every monitor-loop tick, and on SIGTERM/SIGINT. Default $5,000 if missing. See [[#compounding-persistence]]. |
 | Min R:R ≥ 1.5 : 1 overall | D3 best-case = 3.3:1 ✓ |
 | Min balance floor $100 | Refuses to trade below |
 
@@ -168,7 +168,28 @@ Once `blade_learning_log.json` accumulates 100+ closed records:
   Blade as a sizing modifier (NEVER a hard binary gate)
 - See [[../infrastructure/system-architecture#cross-agent-comms-phase-1-3]]
 
+## Compounding persistence
+
+The balance file is written from three places, in order of safety net:
+
+1. **Normal session-end** — `_save_paper_balance()` at the tail of
+   `run_session()` after all positions close and the no-trade rows are
+   recorded. The natural path.
+2. **Per-tick incremental save** — the same call inside the main monitor
+   loop, right after each `time.sleep(30)`. A kill -9 (SIGKILL, which can't
+   be caught) loses at most one tick of state.
+3. **SIGTERM / SIGINT handler** — installed at session start; persists
+   balance and exits cleanly. This is the path `timeout 7200` triggers when
+   it kills a session before its natural end (LONDON is 4h, ASIA 6h, both
+   exceed the 2h cron timeout).
+
+Why three layers: the original code only had path 1, and `timeout` never
+let it run for LONDON / ASIA, so `dashboard/blade_balance.json` was never
+created — every session restarted at the $5,000 default, silently throwing
+away the compounded balance. See
+[[../sessions/2026-06-02#3-blade-balance-json-never-created-fixed]].
+
 ## Related
 - [[../agents/blade]] · [[../agents/norman]] · [[orb-strategy]]
 - [[../decisions/decision-log#blade-d3-redesign-2026-06-01]]
-- [[../sessions/2026-06-01]]
+- [[../sessions/2026-06-01]] · [[../sessions/2026-06-02]]

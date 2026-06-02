@@ -33,8 +33,11 @@ Full math in [[../strategies/blade-d3-sizing]].
 
 ## Compounding
 Balance persists in `dashboard/blade_balance.json` between sessions.
-Defaults to $5,000 if missing. Reloaded at session start, saved at session
-end.
+Defaults to $5,000 if missing. Reloaded at session start; saved at session
+end **and** on every monitor-loop tick (~30 s) **and** on SIGTERM/SIGINT,
+so a cron `timeout` kill mid-session can't lose accrued gains.
+See [[../strategies/blade-d3-sizing#compounding-persistence]] and
+[[../sessions/2026-06-02#3-blade-balance-json-never-created-fixed]].
 
 ## Team context (Phase 1 — observation only)
 At session start, Blade reads:

@@ -31,10 +31,16 @@ sys.path.insert(0, "/root/.openclaw/scripts")
 from telegram_personalities import wrap_message
 
 BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-CHAT_ID   = os.environ.get('TELEGRAM_CHAT_ID', '')
+CHAT_ID   = (
+    os.environ.get('TELEGRAM_ALERT_CHAT_ID')
+    or os.environ.get('TELEGRAM_CHAT_ID')
+    or ''
+)
 
-BLADE_TRADES = '/root/.openclaw/dashboard/agent_trades.json'
-EDGE_TRADES  = '/root/.openclaw/agents/edge/data/trade_history.json'
+# Blade writes its closed positions to blade_learning_log.json (Phase 1 dataset).
+# agent_trades.json is no longer updated by Blade — was the legacy v3 sink.
+BLADE_LEARNING = '/root/.openclaw/dashboard/blade_learning_log.json'
+EDGE_TRADES    = '/root/.openclaw/agents/edge/data/trade_history.json'
 
 OUTCOME_EMOJI = {
     'TP1':      '✅',
@@ -60,47 +66,69 @@ SESSION_WINDOWS = {
 
 
 def send_telegram(msg):
+    """Return True on confirmed delivery (Telegram ok:true), False otherwise."""
+    if not BOT_TOKEN or not CHAT_ID:
+        print(f"[session_end_notify] Telegram skipped: "
+              f"BOT_TOKEN={'set' if BOT_TOKEN else 'EMPTY'} "
+              f"CHAT_ID={'set' if CHAT_ID else 'EMPTY'}")
+        return False
     try:
         r = requests.post(
             f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage',
             json={'chat_id': CHAT_ID, 'text': msg, 'parse_mode': 'HTML'},
             timeout=15,
         )
-        r.raise_for_status()
+        if r.status_code != 200:
+            # Surface Telegram's actual reason — usually points at HTML markup
+            # (unclosed <b>, stray <, etc.) or empty chat_id.
+            print(f"[session_end_notify] Telegram {r.status_code}: {r.text[:300]}")
+            return False
+        body = r.json()
+        if not body.get('ok'):
+            print(f"[session_end_notify] Telegram not-ok: {body.get('description','?')}")
+            return False
+        return True
     except Exception as e:
-        print(f"[session_end_notify] Telegram error: {e}")
+        print(f"[session_end_notify] Telegram error: {type(e).__name__}: {e}")
+        return False
 
 
 def load_blade_trades(session_name, today):
-    """Return Blade trades for session_name on today (UTC date)."""
+    """Return Blade closed positions for session_name on today (UTC date).
+
+    Source: blade_learning_log.json (the Phase-1 dataset Blade writes after every
+    closed sub-position). Each record's fields are normalised to the shape the
+    rest of this script expects (symbol/direction/result/pnl/timestamp).
+    """
     try:
-        with open(BLADE_TRADES) as f:
+        with open(BLADE_LEARNING) as f:
             data = json.load(f)
-        trades = data.get('trades', [])
+        records = data.get('records', [])
     except Exception as e:
-        print(f"[session_end_notify] Could not read Blade trades: {e}")
+        print(f"[session_end_notify] Could not read Blade learning log: {e}")
         return []
 
     result = []
-    for t in trades:
-        if t.get('agent') != 'BLADE':
+    for r in records:
+        if r.get('session') != session_name:
             continue
-        if t.get('session') != session_name:
+        ts_str = r.get('timestamp_close') or r.get('timestamp_entry') or ''
+        try:
+            ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+        except Exception:
             continue
-        # Match today by timestamp field first, fall back to date string
-        ts_str = t.get('timestamp', '')
-        if ts_str:
-            try:
-                ts = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
-                if ts.date() != today:
-                    continue
-            except Exception:
-                if t.get('date', '') != today.isoformat():
-                    continue
-        else:
-            if t.get('date', '') != today.isoformat():
-                continue
-        result.append(t)
+        if ts.date() != today:
+            continue
+        result.append({
+            'agent':     'BLADE',
+            'session':   r.get('session'),
+            'symbol':    r.get('instrument'),
+            'direction': r.get('direction'),
+            'pos_num':   r.get('pos_num'),
+            'result':    r.get('outcome'),     # TP1 / TP2 / TRAIL / BE / SL
+            'pnl':       r.get('pnl_usd', 0) or 0,
+            'timestamp': ts_str,
+        })
     return result
 
 
@@ -183,14 +211,16 @@ def main():
             result  = t.get('result', '')
             instr   = (t.get('symbol') or t.get('pair') or '?')
             direc   = (t.get('direction') or '?').upper()
+            pos_num = t.get('pos_num', '')
             pnl     = t.get('pnl', 0) or 0
             emoji   = OUTCOME_EMOJI.get(result, '➡️')
             sign    = '+' if pnl >= 0 else ''
+            pos_tag = f" pos{pos_num}" if pos_num else ''
             if result in ('no_trade', 'none', ''):
-                detail_lines.append(f"    {instr} — no trade")
+                detail_lines.append(f"\n    {instr} — no trade")
             else:
                 detail_lines.append(
-                    f"    {instr} {direc} — {result} {emoji} {sign}${abs(pnl):.2f}"
+                    f"\n    {instr} {direc}{pos_tag} — {result} {emoji} {sign}${abs(pnl):.2f}"
                 )
 
     if edge_trades:
@@ -203,22 +233,23 @@ def main():
                 f"{'+' if t.get('pnl', 0) >= 0 else ''}${abs(t.get('pnl', 0)):.2f}"
                 for t in m1_trades
             ]
-            detail_lines.append(f"    M1: {' | '.join(parts)}")
+            detail_lines.append(f"\n    M1: {' | '.join(parts)}")
         if m5_trades:
             parts = [
                 f"SPX {t['direction'].upper()} "
                 f"{'+' if t.get('pnl', 0) >= 0 else ''}${abs(t.get('pnl', 0)):.2f}"
                 for t in m5_trades
             ]
-            detail_lines.append(f"    M5: {' | '.join(parts)}")
+            detail_lines.append(f"\n    M5: {' | '.join(parts)}")
 
     if detail_lines:
         lines.append('\n📎 <b>Details:</b>' + ''.join(detail_lines))
 
     msg = '\n'.join(lines)
     print(msg)
-    send_telegram(wrap_message("huncho", msg))
-    print(f"[session_end_notify] Sent.")
+    ok = send_telegram(wrap_message("huncho", msg))
+    print(f"[session_end_notify] {'Sent.' if ok else 'NOT sent (see error above).'}")
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == '__main__':

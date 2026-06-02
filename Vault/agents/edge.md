@@ -60,3 +60,23 @@ Continuous 5-min loop. See [[../infrastructure/cron-schedule#edge]].
 
 ## Strategy detail
 Full writeup in [[../strategies/edge-1h-crossover]].
+
+## Known issues
+
+### OANDA 403 — token not authorised for account 002 (open as of 2026-06-02)
+Every Edge order is rejected with `V20Error "The provided request was
+forbidden."` because the `oanda:default` token in
+`agents/main/agent/auth-profiles.json` is authorised only for account
+**001** (`101-001-22502524-001`), not the Scalper account **002**
+(`101-001-22502524-002`) Edge actually trades on. The token lists 002 via
+`/v3/accounts` but per-account calls return 403 — confirmed with curl.
+
+`edge_oanda.py` already prefers an `oanda:scalper` profile if present, but
+that profile doesn't exist yet. Fix path:
+1. OANDA → *Manage API Access* → regenerate or create a new token with
+   account 002 enabled.
+2. Add it as `"oanda:scalper"` (api_key, account_id `101-001-22502524-002`)
+   alongside `oanda:default`. Edge will pick it up automatically.
+
+Until then, signals fire but no orders place. See
+[[../sessions/2026-06-02#1-edge-oanda-orders-forbidden-diagnosed-blocked-on-token]].
