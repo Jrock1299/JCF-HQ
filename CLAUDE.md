@@ -499,6 +499,7 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 | **Cross-agent context layer (Phase 1)** | 2026-06-01 | Build the wires, prove value with logged data, gate later. Avoids the trap of acting on assumed-true patterns. |
 | **Centralized agent_strategies.json** | 2026-06-01 | Norman recommendations were unactionable when knobs were hardcoded — every tweak required a redeploy. Single file = single tunable surface. |
 | **Skills methodology baked into prompts** | 2026-06-01 | Option A: reference methodology in system prompts vs Option B: port the Python. Faster, cheaper, no parallel code to maintain. |
+| **OANDA practice token rotated** | 2026-06-02 | New token scoped to both sub-accounts 001 (Blade, Primary) and 002 (Edge, Scalper). Edge now able to place orders for the first time — previously blocked by 403 forbidden since the token only covered 001. `auth-profiles.json` remains gitignored; token value lives only on the VPS. |
 
 ---
 
