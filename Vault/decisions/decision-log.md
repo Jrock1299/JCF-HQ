@@ -243,6 +243,25 @@ for trading — silent retry, silent failure.
 
 ---
 
+## HQ Round 2 — Blade wiped + gold accent kept · 2026-07-17
+**Decision:** In the HQ dashboard Round 2 pass, (1) **reset Blade to a clean
+slate** — `blade_balance.json` balance → 0 and `blade_learning_log.json`
+records → `[]` — and drive the Trading page's Blade stats from an editable
+`blade_manual.json`; (2) **keep the gold accent** rather than the
+steel/slate an earlier UI question had selected.
+
+**Why:** (1) Jase asked for a fresh start he sets himself via the new in-UI
+edit mode; the old paper history + D3 cluster table were cleared with it.
+Note this discards the paper trade history that fed Norman's 100-cluster D3
+validation checkpoint — that counter restarts from zero. (2) The Round 2 spec
+(newer, more specific) repeatedly relies on gold (Huncho glow, group-chat
+accent, agent-modal ring), so gold wins over the earlier answer. Both flagged
+to Jase in the final report.
+
+**See:** [[../infrastructure/hq-dashboard]] · [[../sessions/2026-07-17]]
+
+---
+
 ## Earlier history
 For decisions made before 2026-06-01, see git log on the repo and the
 prior `CLAUDE.md` history. Not all earlier decisions are documented here —
