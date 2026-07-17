@@ -3,7 +3,23 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import BackgroundOrbs from './BackgroundOrbs'
 import { useLiveClock } from '../hooks/useLiveClock'
+import { useTheme } from '../hooks/useTheme'
 import { liveCount } from '../data/agentConfig'
+
+function ControlCluster() {
+  const { theme, toggle } = useTheme()
+  return (
+    <div className="control-cluster">
+      <button className="control-btn" onClick={toggle} title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'} aria-label="Toggle theme">
+        {theme === 'dark' ? '☀' : '☾'}
+      </button>
+      <button className="control-btn" title="Notifications" aria-label="Notifications" style={{ position: 'relative' }}>
+        <span style={{ fontSize: 15 }}>🔔</span>
+        <span style={{ position: 'absolute', top: 8, right: 9, width: 6, height: 6, borderRadius: 50, background: 'var(--gold)', boxShadow: '0 0 6px var(--gold)' }} />
+      </button>
+    </div>
+  )
+}
 
 const NAV = [
   { to: '/', label: 'Home', icon: '◉' },
@@ -31,7 +47,7 @@ function Sidebar() {
         flexDirection: 'column',
         padding: '22px 16px',
         borderRight: '0.5px solid var(--glass-border)',
-        background: 'rgba(7,8,15,0.55)',
+        background: 'var(--panel-bg)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         zIndex: 10,
@@ -41,7 +57,7 @@ function Sidebar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 30, paddingLeft: 4 }}>
         <img className="logo-img" src="/logo-jcf.png" alt="JCF" style={{ width: 38, height: 38 }} />
         <div style={{ lineHeight: 1.1 }}>
-          <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '0.02em' }}>JCF HQ</div>
+          <div className="head" style={{ fontSize: 22, letterSpacing: '0.04em' }}>JCF HQ</div>
           <div className="mono" style={{ fontSize: 8, color: 'var(--text-mute)', letterSpacing: '0.22em', marginTop: 2 }}>
             COMMAND CENTER
           </div>
@@ -63,8 +79,9 @@ function Sidebar() {
                   fontSize: 14,
                   fontWeight: isActive ? 600 : 400,
                   color: isActive ? 'var(--gold-hi)' : 'var(--text-dim)',
-                  background: isActive ? 'rgba(212,168,67,0.10)' : 'transparent',
+                  background: isActive ? 'rgba(212,168,67,0.12)' : 'transparent',
                   border: isActive ? '0.5px solid var(--gold-border)' : '0.5px solid transparent',
+                  boxShadow: isActive ? '0 0 16px -2px rgba(212,168,67,0.35)' : 'none',
                   transition: 'all 0.18s ease',
                 }}
               >
@@ -98,6 +115,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <BackgroundOrbs />
+      <ControlCluster />
       <div className="app-shell">
         <Sidebar />
         <main className="main-scroll">

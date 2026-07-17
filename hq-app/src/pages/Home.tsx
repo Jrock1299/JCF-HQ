@@ -1,20 +1,17 @@
-import { Link } from 'react-router-dom'
 import GlassCard from '../components/GlassCard'
 import StatCard from '../components/StatCard'
 import AgentAvatar from '../components/AgentAvatar'
 import AgentDot from '../components/AgentDot'
-import ChatBubble from '../components/ChatBubble'
 import { useLiveClock, greeting } from '../hooks/useLiveClock'
 import { quoteOfDay } from '../data/quotes'
-import { AGENTS, AGENT_MAP } from '../data/agentConfig'
-import { THREADS } from '../data/seedMessages'
+import { AGENTS } from '../data/agentConfig'
 import { useHQData, fmtUSD, fmtPct, fmtSigned } from '../hooks/useHQData'
 import { series, computeBladeTrades } from '../data/derive'
 
 const SPEC = { netWorth: 958000, goal: 10_000_000, tao: 3.345 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <div className="mono-label" style={{ marginBottom: 12 }}>{children}</div>
+  return <div className="mono-label" style={{ marginBottom: 14 }}>{children}</div>
 }
 
 export default function Home() {
@@ -42,27 +39,22 @@ export default function Home() {
   const taoAmt = tao?.root_staked_tao ?? SPEC.tao
   const taoPrice = tao?.tao_price_usd ?? null
 
-  // ── alerts (needs attention) ─────────────────────────────
   const alerts = buildAlerts(victoria, strat)
 
-  // ── econ calendar / news (today's high+med) ──────────────
   const news: any[] = Array.isArray(bias?.forex_news) ? bias.forex_news : []
-  const econ = news.filter((n) => ['high', 'medium'].includes(String(n.impact).toLowerCase())).slice(0, 5)
+  const econ = news.filter((n) => ['high', 'medium'].includes(String(n.impact).toLowerCase())).slice(0, 6)
 
-  // ── regime ───────────────────────────────────────────────
   const regimeName = strat?.regime ? cap(strat.regime) : null
   const regimeScore = regimeScoreOf(strat)
-
-  const hubPreview = THREADS.filter((t) => t.messages.length).slice(0, 3)
 
   return (
     <div className="page-pad">
       {/* Greeting */}
       <GlassCard style={{ padding: 26, marginBottom: 20 }}>
-        <div className="hero-num" style={{ fontSize: 28 }}>
+        <div className="hero-num" style={{ fontSize: 34 }}>
           {greeting(now)}, <span className="gold-text">Jase.</span>
         </div>
-        <div style={{ marginTop: 12, fontStyle: 'italic', color: 'var(--text-dim)', fontSize: 15, maxWidth: 720, lineHeight: 1.5 }}>
+        <div className="soft" style={{ marginTop: 12, fontStyle: 'italic', color: 'var(--text-dim)', fontSize: 16, maxWidth: 760, lineHeight: 1.5 }}>
           "{quote.text}"
         </div>
         <div className="mono" style={{ marginTop: 8, fontSize: 11, color: 'var(--gold)', letterSpacing: '0.04em' }}>
@@ -124,109 +116,89 @@ export default function Home() {
         />
       </div>
 
-      {/* Three-column grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr 1fr', gap: 18, marginBottom: 20 }}>
-        {/* Needs attention */}
+      {/* Row A: Needs Attention (wide) + Agents (full height) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 18, marginBottom: 18 }}>
         <GlassCard hover={false}>
           <Label>needs attention</Label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
             {alerts.map((a, i) => (
-              <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
-                <div style={{ width: 2, alignSelf: 'stretch', minHeight: 34, borderRadius: 2, background: `var(--${a.color})`, flexShrink: 0 }} />
+              <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', paddingBottom: i < alerts.length - 1 ? 13 : 0, borderBottom: i < alerts.length - 1 ? '0.5px solid rgba(128,128,140,0.10)' : 'none' }}>
+                <div style={{ width: 3, alignSelf: 'stretch', minHeight: 38, borderRadius: 2, background: `var(--${a.color})`, boxShadow: `0 0 8px var(--${a.color})`, flexShrink: 0 }} />
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 500 }}>{a.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-dim)', marginTop: 2, lineHeight: 1.45 }}>{a.sub}</div>
-                  <div className="mono-meta" style={{ marginTop: 3 }}>{a.time}</div>
+                  <div style={{ fontSize: 14, fontWeight: 500 }}>{a.title}</div>
+                  <div className="soft" style={{ fontSize: 12.5, color: 'var(--text-dim)', marginTop: 3, lineHeight: 1.45 }}>{a.sub}</div>
+                  <div className="mono-meta" style={{ marginTop: 4 }}>{a.time}</div>
                 </div>
               </div>
             ))}
           </div>
         </GlassCard>
 
-        {/* Agents */}
         <GlassCard hover={false}>
           <Label>agents</Label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
             {AGENTS.map((a) => (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <AgentDot state={a.state} />
-                <AgentAvatar agent={a} size={24} />
+                <AgentAvatar agent={a} size={26} />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500 }}>{a.name}</span>
-                  <span style={{ fontSize: 11.5, color: 'var(--text-mute)' }}> · {a.role}</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 500 }}>{a.name}</span>
+                  <span className="soft" style={{ fontSize: 11.5, color: 'var(--text-mute)' }}> · {a.role}</span>
                 </div>
-                <span className={`mono`} style={{ fontSize: 9, color: a.state === 'LIVE' ? 'var(--green)' : a.state === 'STANDBY' ? 'var(--amber)' : 'var(--purple)', letterSpacing: '0.06em' }}>
+                <span className="mono" style={{ fontSize: 9, color: a.state === 'LIVE' ? 'var(--green)' : a.state === 'STANDBY' ? 'var(--amber)' : 'var(--purple)', letterSpacing: '0.06em' }}>
                   {a.state}
                 </span>
               </div>
             ))}
           </div>
         </GlassCard>
-
-        {/* Right stack: econ + regime */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <GlassCard hover={false}>
-            <Label>econ calendar</Label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-              {econ.length === 0 && <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>No high-impact events queued. Quiet tape.</div>}
-              {econ.map((e, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
-                  <span className={`badge badge-${String(e.impact).toLowerCase() === 'high' ? 'red' : 'amber'}`}>
-                    {String(e.impact).toLowerCase() === 'high' ? 'HIGH' : 'MED'}
-                  </span>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 12.5, lineHeight: 1.35 }}>{e.headline}</div>
-                    <div className="mono-meta" style={{ marginTop: 2 }}>{e.source} · {e.time}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </GlassCard>
-
-          <GlassCard tint="blue" hover={false}>
-            <Label>regime</Label>
-            {regimeName ? (
-              <>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span className="stat-num text-blue" style={{ fontSize: 20 }}>{regimeName}</span>
-                  <span className="mono" style={{ fontSize: 12, color: 'var(--text-dim)' }}>{regimeScore}/100</span>
-                </div>
-                <div className="bar-track" style={{ marginTop: 10 }}>
-                  <div className="bar-fill" style={{ width: `${regimeScore}%`, background: 'var(--blue)' }} />
-                </div>
-                <div style={{ fontSize: 12.5, color: 'var(--text-dim)', marginTop: 10, lineHeight: 1.45 }}>
-                  {regimePlain(regimeName, regimeScore)}
-                </div>
-              </>
-            ) : (
-              <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>Awaiting Jarvis regime read — next brief 06:00 UTC.</div>
-            )}
-          </GlassCard>
-        </div>
       </div>
 
-      {/* Hub preview */}
-      <GlassCard tint="purple" hover={false}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div className="mono-label">agent hub · latest</div>
-          <Link to="/hub" className="badge badge-purple" style={{ cursor: 'pointer' }}>Open Agent Hub →</Link>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 16 }}>
-          {hubPreview.map((t) => {
-            const agent = AGENT_MAP[t.agentId]
-            const msg = t.messages[0]
-            return <ChatBubble key={t.agentId} from="agent" agent={agent} text={truncate(msg.text, 150)} time={msg.time} />
-          })}
-        </div>
-      </GlassCard>
+      {/* Row B: Econ Calendar + Regime */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 18 }}>
+        <GlassCard hover={false}>
+          <Label>econ calendar</Label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+            {econ.length === 0 && <div className="soft" style={{ fontSize: 13, color: 'var(--text-dim)' }}>No high-impact events queued. Quiet tape.</div>}
+            {econ.map((e, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span className={`badge badge-${String(e.impact).toLowerCase() === 'high' ? 'red' : 'amber'}`}>
+                  {String(e.impact).toLowerCase() === 'high' ? 'HIGH' : 'MED'}
+                </span>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 13, lineHeight: 1.4 }}>{e.headline}</div>
+                  <div className="mono-meta" style={{ marginTop: 2 }}>{e.source} · {e.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        <GlassCard tint="blue" hover={false}>
+          <Label>regime</Label>
+          {regimeName ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span className="stat-num text-blue" style={{ fontSize: 26 }}>{regimeName}</span>
+                <span className="mono" style={{ fontSize: 12, color: 'var(--text-dim)' }}>{regimeScore}/100</span>
+              </div>
+              <div className="bar-track" style={{ marginTop: 12 }}>
+                <div className="bar-fill" style={{ width: `${regimeScore}%`, background: 'var(--blue)', boxShadow: '0 0 10px 0 rgba(56,189,248,0.5)' }} />
+              </div>
+              <div className="soft" style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 12, lineHeight: 1.5 }}>
+                {regimePlain(regimeName, regimeScore)}
+              </div>
+            </>
+          ) : (
+            <div className="soft" style={{ fontSize: 13, color: 'var(--text-dim)' }}>Awaiting Jarvis regime read — next brief 06:00 UTC.</div>
+          )}
+        </GlassCard>
+      </div>
     </div>
   )
 }
 
 // ── helpers ──────────────────────────────────────────────────────────
-function truncate(s: string, n: number) {
-  return s.length > n ? s.slice(0, n).trimEnd() + '…' : s
-}
 function cap(s: string) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : s
 }
@@ -246,7 +218,7 @@ function buildAlerts(victoria: any, strat: any) {
   const alertList: string[] = Array.isArray(victoria?.alerts) ? victoria.alerts : []
   const fixPrompts: any[] = Array.isArray(victoria?.fix_prompts) ? victoria.fix_prompts : []
 
-  fixPrompts.slice(0, 2).forEach((f) => {
+  fixPrompts.slice(0, 3).forEach((f) => {
     out.push({
       title: f.problem || 'Issue flagged',
       sub: f.root_cause || f.estimated_impact || 'Victoria flagged this for review.',
@@ -254,18 +226,20 @@ function buildAlerts(victoria: any, strat: any) {
       color: f.severity === 'high' ? 'red' : f.severity === 'medium' ? 'amber' : 'blue',
     })
   })
-  alertList.slice(0, 4 - out.length).forEach((a) => {
+  alertList.slice(0, 6 - out.length).forEach((a) => {
     out.push({ title: a, sub: 'From Victoria’s daily briefing.', time: 'today', color: 'amber' })
   })
 
   if (out.length === 0) {
     out.push(
-      { title: 'All systems nominal', sub: 'No open alerts from Victoria or Norman. Family’s eating.', time: 'now', color: 'green' as any },
+      { title: 'All systems nominal', sub: 'No open alerts from Victoria or Norman. Family’s eating.', time: 'now', color: 'green' },
       { title: 'Blade D3 validation in progress', sub: 'Filling the learning log toward Norman’s 100-cluster checkpoint before live sizing.', time: 'ongoing', color: 'blue' },
       { title: 'Portfolio syncs on schedule', sub: 'Robinhood, Trust Wallet, Kraken, Plaid refresh on the 1st & 15th.', time: 'scheduled', color: 'blue' },
+      { title: 'Storage API online', sub: 'hq-storage (:8900) live — Agent Hub read/write and POST-backed features are up.', time: 'now', color: 'green' },
+      { title: 'Edge on standby', sub: '1H SMA strategy built and idle on account 002. Awaiting the green light.', time: 'idle', color: 'amber' },
     )
   }
-  return out.slice(0, 4)
+  return out.slice(0, 6)
 }
 function sev(s: string) {
   return s === 'high' ? 'high priority' : s === 'medium' ? 'medium' : 'low'

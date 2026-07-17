@@ -10,7 +10,7 @@ export default function Agents() {
   return (
     <div className="page-pad">
       <div className="mono-label" style={{ marginBottom: 4 }}>the roster</div>
-      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 20 }}>Agents</h1>
+      <h1 className="head" style={{ fontSize: 32, fontWeight: 400, marginBottom: 20, letterSpacing: '0.02em' }}>Agents</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
         {AGENTS.map((a, i) => (
@@ -27,7 +27,7 @@ function AgentCard({ agent, delay, onMessage }: { agent: Agent; delay: number; o
       <div style={{ position: 'relative' }}>
         <AgentAvatar agent={agent} size={80} />
       </div>
-      <div style={{ fontSize: 17, fontWeight: 600, marginTop: 14 }}>{agent.name} {agent.emoji}</div>
+      <div className="head" style={{ fontSize: 22, marginTop: 14 }}>{agent.name} {agent.emoji}</div>
       <div className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 3 }}>{agent.role}</div>
 
       <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
@@ -39,7 +39,7 @@ function AgentCard({ agent, delay, onMessage }: { agent: Agent; delay: number; o
         {agent.connectedTo.length ? `Connected to: ${agent.connectedTo.join(' → ')}` : 'No active wires yet'}
       </div>
 
-      <div style={{ fontSize: 12.5, fontStyle: 'italic', color: 'var(--text-dim)', marginTop: 10, lineHeight: 1.45, minHeight: 34 }}>
+      <div className="soft" style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--text-dim)', marginTop: 10, lineHeight: 1.45, minHeight: 34 }}>
         {agent.voice}
       </div>
 

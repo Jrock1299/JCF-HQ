@@ -75,7 +75,7 @@ export default function AgentHub() {
           width: 300,
           flexShrink: 0,
           borderRight: '0.5px solid var(--glass-border)',
-          background: 'rgba(7,8,15,0.4)',
+          background: 'var(--panel-bg)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           display: 'flex',
@@ -94,7 +94,7 @@ export default function AgentHub() {
             className="mono"
             style={{
               width: '100%', padding: '8px 12px', fontSize: 12, borderRadius: 9,
-              background: 'rgba(255,255,255,0.04)', border: '0.5px solid var(--glass-border)',
+              background: 'var(--input-bg)', border: '0.5px solid var(--glass-border)',
               color: 'var(--text-hi)', outline: 'none',
             }}
           />
@@ -146,7 +146,7 @@ export default function AgentHub() {
 
       {/* Right panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <div style={{ padding: '16px 24px', borderBottom: '0.5px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: 13, background: 'rgba(7,8,15,0.3)' }}>
+        <div style={{ padding: '16px 96px 16px 24px', borderBottom: '0.5px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: 13, background: 'var(--panel-bg)' }}>
           <AgentAvatar agent={active} size={40} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 600 }}>{active.name} {active.emoji}</div>
@@ -183,7 +183,7 @@ export default function AgentHub() {
               placeholder={`Message ${active.name}…`}
               style={{
                 flex: 1, padding: '12px 16px', fontSize: 14, borderRadius: 12,
-                background: 'rgba(255,255,255,0.04)', border: '0.5px solid var(--glass-border)',
+                background: 'var(--input-bg)', border: '0.5px solid var(--glass-border)',
                 color: 'var(--text-hi)', outline: 'none',
               }}
             />

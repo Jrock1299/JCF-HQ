@@ -4,12 +4,19 @@ Jase's personal command center — one web app that replaces checking ~10 tabs
 every morning (trading, finances, macro intel, agent status). Lives at
 `hq-app/`, served in production by `serve_hq.py`.
 
-## Stack (v3, 2026-07-17 rebuild)
+## Stack (v3, 2026-07-17 rebuild + Round 1 refinements)
 - React 18 + TypeScript + Vite. Deps: `framer-motion`, `recharts`,
-  `react-router-dom`. Fonts: Space Grotesk (display) + JetBrains Mono (data).
-- Glassmorphism dark design — real `backdrop-filter` blur, gold (`#d4a843`)
-  accent, three drifting background orbs. Design tokens in
-  `src/styles/globals.css`.
+  `react-router-dom`.
+- **Fonts** (Round 1): Iceland (headers/big numbers, `.head`/`.hero-num`/
+  `.stat-num`), League Spartan (body default), Edu NSW ACT Foundation (muted,
+  `.soft`), JetBrains Mono (`// labels`, badges, timestamps, terminal).
+- **Design** (Round 1): solid dark panels (`--surface` rgba(20,22,34,0.85) +
+  soft `box-shadow`) instead of transparent glass, moonlight sweep + dialed-back
+  orbs, glowing bars/dots/active-nav. All in `src/styles/globals.css`.
+- **Light/dark theme**: `data-theme` on `<html>`, tokens flip in `:root` vs
+  `:root[data-theme='light']`; `useTheme.ts` persists to localStorage (default
+  dark). Top-right control cluster (sun/moon toggle + bell placeholder) in
+  `Layout.tsx`, visible on all routes.
 - Build: `npm run build` → `vite build` (esbuild, no `tsc` gate so type
   issues never block the build).
 

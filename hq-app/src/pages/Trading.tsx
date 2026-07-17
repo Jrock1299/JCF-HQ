@@ -21,7 +21,7 @@ function SectionHead({ id, status }: { id: string; status: string }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
       <AgentAvatar agent={a} size={46} />
       <div>
-        <div style={{ fontSize: 20, fontWeight: 600 }}>{a.name} {a.emoji}</div>
+        <div className="head" style={{ fontSize: 26 }}>{a.name} {a.emoji}</div>
         <div className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>{a.role} · {status}</div>
       </div>
     </div>

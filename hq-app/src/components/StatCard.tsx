@@ -36,7 +36,7 @@ export default function StatCard({
       >
         {value}
       </div>
-      {sub && <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>{sub}</div>}
+      {sub && <div className="soft" style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>{sub}</div>}
       {children}
       {spark && spark.length > 1 && (
         <div style={{ marginTop: 'auto', paddingTop: 6 }}>

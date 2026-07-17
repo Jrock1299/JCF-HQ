@@ -106,7 +106,7 @@ export default function Intelligence() {
                 <div className="bar-track" style={{ marginTop: 12 }}>
                   <div className="bar-fill" style={{ width: `${scoreOf(strat)}%`, background: 'var(--blue)' }} />
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 14, lineHeight: 1.55 }}>
+                <div className="soft" style={{ fontSize: 13.5, color: 'var(--text-dim)', marginTop: 14, lineHeight: 1.55 }}>
                   {plainRegime(regimeName, scoreOf(strat))}
                 </div>
                 <div className="mono-meta" style={{ marginTop: 16, paddingTop: 12, borderTop: '0.5px solid var(--glass-border)' }}>
