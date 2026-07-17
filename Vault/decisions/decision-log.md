@@ -4,6 +4,29 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## HQ Dashboard v3 rebuild · 2026-07-17
+**Decision:** Rebuild `hq-app/` from scratch as a 6-route glassmorphism
+command center (React 18 + TypeScript + Vite + framer-motion/recharts/
+react-router). Clean-delete the old JSX pages; keep all data files. See
+[[../infrastructure/hq-dashboard]] and [[../sessions/2026-07-17]].
+
+**Why:** The roadmap's deferred "HQ React dashboard redesign" — the old UI
+predated the Oracle/Kalshi removal and current agent roster. Goal: one app
+that replaces checking ~10 tabs each morning.
+
+**Key calls:**
+- **Same-origin relative fetches**, not hardcoded `:8900`. Most endpoints are
+  static `dashboard/*.json` served by `serve_hq` (:8899); only `/hq/*` proxies
+  to Flask (:8900). App degrades gracefully if `:8900` is down.
+- **Prefer live data, spec numbers only as fallback** (e.g. net worth override
+  → else $958k).
+- **Blade per-trade R computed client-side** — learning log has no P&L field.
+- **Agent Hub runs off crafted in-character seed threads**, not live `/hq/hub`
+  status logs (which would clutter the voice).
+- `openclaw-hq.service` **enabled** (was disabled) so serve_hq survives reboot.
+
+---
+
 ## Vault build · 2026-06-01
 Created `Vault/` second-brain. Single source of truth stays the repo-root
 [[../00-START-HERE|CLAUDE.md]]; vault expands it for navigation. Standing

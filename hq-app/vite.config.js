@@ -1,24 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// Dev proxy mirrors production serve_hq.py (:8899):
+//   /hq/*        → :8900  (Flask storage server)
+//   /*.json      → :8899  (static dashboard JSON files)
+// In production the built app is served BY serve_hq on :8899, so the browser
+// only ever talks to same-origin — these proxies just replicate that in dev.
 export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
     port: 5173,
     proxy: {
-      '/hq':                    'http://localhost:8900',
-      '/market_bias.json':      'http://localhost:8899',
-      '/tradelocker_trades.json': 'http://localhost:8899',
-      '/oracle_picks.json':     'http://localhost:8899',
-      '/oracle_resolved.json':  'http://localhost:8899',
-      '/plaid_data.json':       'http://localhost:8899',
-      '/agent_hub.json':        'http://localhost:8899',
-      '/bet_log.json':          'http://localhost:8899',
-      '/robinhood_data.json':   'http://localhost:8899',
-      '/trustwallet_data.json': 'http://localhost:8899',
-      '/bball_stats.json':      'http://localhost:8899',
-      '/sports_intel.json':     'http://localhost:8899',
+      '/hq': 'http://localhost:8900',
+      '^/[^/]+\\.json$': 'http://localhost:8899',
     },
   },
 })

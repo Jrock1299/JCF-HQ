@@ -518,9 +518,10 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 ### Deferred
 - **Obsidian vault (second brain)** — in progress on Jase's local. Not part
   of this repo.
-- **HQ React dashboard redesign** — deferred. The current dashboard
-  (`hq-app/`) builds cleanly post-Oracle/Kalshi removal but the UX could be
-  rebuilt around the new agent set.
+- **HQ React dashboard redesign** — ✅ done 2026-07-17. `hq-app/` rebuilt as a
+  6-route glassmorphism command center (React 18 + TS + Vite + framer-motion/
+  recharts) around the current agent roster. See
+  `Vault/infrastructure/hq-dashboard.md` + decision log below.
 
 ### Conditional (gated on data)
 - **Blade live deployment** — after D3 paper results pass Norman validation.
