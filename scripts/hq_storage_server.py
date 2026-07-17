@@ -501,5 +501,74 @@ def get_forge_builds():
     return (jsonify({'builds': builds, 'specs': specs}), 200, CORS_HEADERS)
 
 
+# ── Universal in-UI edit endpoint (Round 2, Section 3) ────────────────
+# POST /hq/edit/<filename>  body: {"path": "dot.path.0.key", "value": <any>}
+# Writes a nested value into dashboard/<filename>. Used by the frontend
+# <EditableField> pattern so Jase can edit any displayed datum in place.
+import re as _re
+
+DASHBOARD_DIR = '/root/.openclaw/dashboard'
+_SAFE_NAME = _re.compile(r'^[A-Za-z0-9_-]+\.json$')
+
+
+def _set_deep(obj, path, value):
+    """Set value at a dot-path. Integer segments index into lists.
+    Creates intermediate dicts as needed. Returns the (possibly new) root."""
+    if path == '' or path is None:
+        return value
+    parts = path.split('.')
+    cur = obj
+    for i, raw in enumerate(parts):
+        last = i == len(parts) - 1
+        key = int(raw) if _re.fullmatch(r'-?\d+', raw) else raw
+        if last:
+            if isinstance(key, int) and isinstance(cur, list):
+                while len(cur) <= key:
+                    cur.append(None)
+                cur[key] = value
+            else:
+                cur[key] = value
+        else:
+            nxt = None
+            if isinstance(key, int) and isinstance(cur, list):
+                while len(cur) <= key:
+                    cur.append({})
+                nxt = cur[key]
+            else:
+                nxt = cur.get(key) if isinstance(cur, dict) else None
+                if not isinstance(nxt, (dict, list)):
+                    nxt = {}
+                    cur[key] = nxt
+            cur = nxt
+    return obj
+
+
+@app.route('/hq/edit/<filename>', methods=['POST', 'OPTIONS'])
+def edit_json_file(filename):
+    if request.method == 'OPTIONS':
+        return ('', 204, CORS_HEADERS)
+    if not _SAFE_NAME.match(filename):
+        return (jsonify({'ok': False, 'error': 'bad filename'}), 400, CORS_HEADERS)
+    body = request.get_json(force=True) or {}
+    if 'path' not in body or 'value' not in body:
+        return (jsonify({'ok': False, 'error': 'need path + value'}), 400, CORS_HEADERS)
+    fpath = os.path.join(DASHBOARD_DIR, filename)
+    try:
+        if os.path.exists(fpath):
+            with open(fpath) as f:
+                data = json.load(f)
+        else:
+            data = {}
+    except Exception as e:
+        return (jsonify({'ok': False, 'error': f'read: {e}'}), 500, CORS_HEADERS)
+    try:
+        data = _set_deep(data, str(body['path']), body['value'])
+        with open(fpath, 'w') as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        return (jsonify({'ok': False, 'error': f'write: {e}'}), 500, CORS_HEADERS)
+    return (jsonify({'ok': True, 'file': filename, 'path': body['path']}), 200, CORS_HEADERS)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8900, debug=False)

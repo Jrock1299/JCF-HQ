@@ -51,7 +51,7 @@ export default function Home() {
     <div className="page-pad">
       {/* Greeting */}
       <GlassCard style={{ padding: 26, marginBottom: 20 }}>
-        <div className="hero-num" style={{ fontSize: 34 }}>
+        <div className="iceland" style={{ fontSize: 40, lineHeight: 1.05 }}>
           {greeting(now)}, <span className="gold-text">Jase.</span>
         </div>
         <div className="soft" style={{ marginTop: 12, fontStyle: 'italic', color: 'var(--text-dim)', fontSize: 16, maxWidth: 760, lineHeight: 1.5 }}>

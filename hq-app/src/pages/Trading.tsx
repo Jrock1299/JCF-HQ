@@ -1,30 +1,45 @@
-import { useState } from 'react'
-import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import type { ReactNode } from 'react'
+import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import GlassCard from '../components/GlassCard'
 import AgentAvatar from '../components/AgentAvatar'
+import EditableValue from '../components/EditableValue'
 import { AGENT_MAP } from '../data/agentConfig'
 import { useHQData, fmtUSD, fmtPct, fmtNum } from '../hooks/useHQData'
-import { computeBladeTrades, bladeWinRate, trajectory } from '../data/derive'
-
-function Stat({ label, value, color }: { label: string; value: React.ReactNode; color?: string }) {
-  return (
-    <GlassCard style={{ padding: 16 }}>
-      <div className="mono-label" style={{ marginBottom: 8 }}>{label}</div>
-      <div className="stat-num" style={{ fontSize: 22, color: color || 'var(--text-hi)' }}>{value}</div>
-    </GlassCard>
-  )
-}
+import { trajectory } from '../data/derive'
 
 function SectionHead({ id, status }: { id: string; status: string }) {
   const a = AGENT_MAP[id]
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
       <AgentAvatar agent={a} size={46} />
       <div>
-        <div className="head" style={{ fontSize: 26 }}>{a.name} {a.emoji}</div>
+        <div className="head" style={{ fontSize: 24 }}>{a.name} {a.emoji}</div>
         <div className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>{a.role} · {status}</div>
       </div>
     </div>
+  )
+}
+
+// Stat card whose value is editable in place (Round 2, Section 3).
+function EditStat({
+  label, file, path, value, type = 'number', display, color,
+}: {
+  label: string; file: string; path: string; value: number | string | null
+  type?: 'number' | 'text'; display?: (v: any) => ReactNode; color?: string
+}) {
+  return (
+    <GlassCard style={{ padding: 16 }}>
+      <div className="mono-label" style={{ marginBottom: 8 }}>{label}</div>
+      <EditableValue
+        file={file}
+        path={path}
+        value={value}
+        type={type}
+        display={display}
+        className="stat-num"
+        style={{ fontSize: 22, color: color || 'var(--text-hi)' }}
+      />
+    </GlassCard>
   )
 }
 
@@ -32,7 +47,7 @@ export default function Trading() {
   return (
     <div className="page-pad">
       <BladeSection />
-      <div style={{ height: 32 }} />
+      <div style={{ height: 36 }} />
       <JerrySection />
     </div>
   )
@@ -40,102 +55,141 @@ export default function Trading() {
 
 function BladeSection() {
   const bal = useHQData('blade-balance').data
-  const log = useHQData('blade-learning-log').data
-  const victoria = useHQData('victoria-report').data
-  const [page, setPage] = useState(0)
+  const manual = useHQData('blade-manual').data
 
-  const trades = computeBladeTrades(log?.records || [])
-  const balance = bal?.balance ?? null
-  const winRate = bladeWinRate(trades)
-  const todayPnl = victoria?.financial_summary?.breakdown?.blade ?? null
-  const session = bal?.last_session ? cap(bal.last_session) : '—'
-
-  // circuit breaker: daily DD vs -4%
-  const ddPct = todayPnl != null && balance ? (todayPnl / balance) * 100 : 0
-  const ddRatio = Math.min(100, (Math.abs(Math.min(0, ddPct)) / 4) * 100)
-
-  const perPage = 10
-  const pageCount = Math.max(1, Math.ceil(trades.length / perPage))
-  const shown = trades.slice(page * perPage, page * perPage + perPage)
+  const balance = bal?.balance ?? 0
+  const pnlToday = manual?.pnl_today ?? 0
+  const winRate = manual?.win_rate ?? 0
+  const wins = manual?.wins ?? 0
+  const losses = manual?.losses ?? 0
+  const session = manual?.session ?? '—'
 
   return (
     <div>
-      <SectionHead id="blade" status={`ASIA · LONDON · NY_PM`} />
+      <SectionHead id="blade" status="ASIA · LONDON · NY_PM · clean slate" />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 16 }}>
-        <Stat label="balance" value={fmtUSD(balance)} />
-        <Stat label="today p&l" value={<span className={(todayPnl ?? 0) < 0 ? 'text-red' : 'text-green'}>{todayPnl != null ? (todayPnl >= 0 ? '+' : '−') + fmtUSD(Math.abs(todayPnl)) : '--'}</span>} />
-        <Stat label="win rate" value={winRate != null ? `${winRate.toFixed(1)}%` : '--'} color="var(--gold)" />
-        <Stat label="session" value={session} color="var(--blue)" />
+      {/* 4 stat cards — kept, now editable */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 22 }}>
+        <EditStat label="balance" file="blade_balance.json" path="balance" value={balance} display={(v) => fmtUSD(Number(v) || 0)} />
+        <EditStat
+          label="p&l today" file="blade_manual.json" path="pnl_today" value={pnlToday}
+          display={(v) => <span className={Number(v) < 0 ? 'text-red' : 'text-green'}>{signed(Number(v) || 0)}</span>}
+        />
+        <EditStat label="win rate" file="blade_manual.json" path="win_rate" value={winRate} display={(v) => `${(Number(v) || 0).toFixed(1)}%`} color="var(--gold)" />
+        <EditStat label="session" file="blade_manual.json" path="session" value={session} type="text" color="var(--blue)" />
       </div>
 
-      {/* D3 sizing + circuit breaker */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16, marginBottom: 16 }}>
-        <GlassCard hover={false}>
-          <div className="mono-label" style={{ marginBottom: 12 }}>d3 position sizing · 2% cluster risk</div>
-          <div style={{ display: 'flex', height: 34, borderRadius: 8, overflow: 'hidden', border: '0.5px solid var(--glass-border)' }}>
-            <SizeSeg pct={20} label="Pos1 · quick 1R" color="rgba(56,189,248,0.35)" />
-            <SizeSeg pct={30} label="Pos2 · 2R runner" color="rgba(212,168,67,0.4)" />
-            <SizeSeg pct={50} label="Pos3 · trail" color="rgba(34,197,94,0.35)" />
-          </div>
-          <div className="mono-meta" style={{ marginTop: 10, lineHeight: 1.5 }}>
-            Stop is structural (opposite ORB ± 3pt). TPs as R-multiples of real stop. Best-case cluster R:R 3.3:1.
-          </div>
-        </GlassCard>
-
-        <GlassCard hover={false}>
-          <div className="mono-label" style={{ marginBottom: 12 }}>circuit breaker · daily dd</div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <span className="stat-num" style={{ fontSize: 20, color: ddRatio > 75 ? 'var(--red)' : 'var(--text-hi)' }}>{fmtPct(ddPct)}</span>
-            <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)' }}>limit −4.0%</span>
-          </div>
-          <div className="bar-track" style={{ marginTop: 12 }}>
-            <div className="bar-fill" style={{ width: `${ddRatio}%`, background: ddRatio > 75 ? 'var(--red)' : ddRatio > 40 ? 'var(--amber)' : 'var(--green)' }} />
-          </div>
-          <div className="mono-meta" style={{ marginTop: 10 }}>
-            {ddRatio > 90 ? 'Near halt — sessions suspend at −4%.' : 'Within rails. Trading enabled.'}
-          </div>
-        </GlassCard>
-      </div>
-
-      {/* Trade table */}
-      <GlassCard hover={false} style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px 8px' }} className="mono-label">recent clusters · computed R</div>
-        {trades.length === 0 ? (
-          <div style={{ padding: 24, color: 'var(--text-dim)', fontSize: 13 }}>No trades logged yet. The learning log fills as sessions run.</div>
-        ) : (
-          <>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Date</th><th>Session</th><th>Instrument</th><th>Dir</th><th style={{ textAlign: 'right' }}>R</th><th style={{ textAlign: 'right' }}>Entry → Close</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shown.map((t, i) => (
-                    <tr key={i} style={{ background: t.pnlSign === 'win' ? 'rgba(34,197,94,0.04)' : 'rgba(239,68,68,0.04)' }}>
-                      <td className="mono" style={{ fontSize: 11, color: 'var(--text-dim)' }}>{fmtDate(t.timestamp_close)}</td>
-                      <td>{t.session}</td>
-                      <td className="mono" style={{ fontSize: 12 }}>{t.instrument}</td>
-                      <td><span className={`badge ${t.direction === 'LONG' ? 'badge-green' : 'badge-red'}`}>{t.direction}</span></td>
-                      <td className="mono" style={{ textAlign: 'right', color: t.r >= 0 ? 'var(--green)' : 'var(--red)', fontWeight: 600 }}>{t.r >= 0 ? '+' : ''}{t.r.toFixed(2)}R</td>
-                      <td className="mono" style={{ textAlign: 'right', fontSize: 11, color: 'var(--text-dim)' }}>{fmtNum(t.entry_price)} → {fmtNum(t.close_price)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
-              <span className="mono-meta">{trades.length} clusters · page {page + 1}/{pageCount}</span>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="badge badge-mute" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ opacity: page === 0 ? 0.4 : 1 }}>← Prev</button>
-                <button className="badge badge-mute" onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))} disabled={page >= pageCount - 1} style={{ opacity: page >= pageCount - 1 ? 0.4 : 1 }}>Next →</button>
+      {/* Redesigned premium block — donut centerpiece + layered depth cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: 20, alignItems: 'stretch' }}>
+        {/* Win / Loss ring */}
+        <GlassCard hover={false} style={{ padding: '30px 32px', display: 'flex', flexDirection: 'column' }}>
+          <div className="mono-label" style={{ marginBottom: 6 }}>win / loss ratio</div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, flexWrap: 'wrap' }}>
+            <WinLossRing winRate={Number(winRate) || 0} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <RingLegend color="var(--green)" label="Wins" file="blade_manual.json" path="wins" value={wins} />
+              <RingLegend color="var(--red)" label="Losses" file="blade_manual.json" path="losses" value={losses} />
+              <div className="mono-meta" style={{ maxWidth: 150, lineHeight: 1.5, marginTop: 4 }}>
+                Fresh account. The ring fills as clusters close and Norman validates the edge.
               </div>
             </div>
-          </>
-        )}
-      </GlassCard>
+          </div>
+        </GlassCard>
+
+        {/* Layered depth cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <LayeredCard tint="gold">
+            <div className="mono-label" style={{ marginBottom: 8 }}>risk rails · d3</div>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <Rail k="per trade" v="≤ 1%" />
+              <Rail k="per cluster" v="≤ 2%" />
+              <Rail k="daily halt" v="−4%" />
+            </div>
+            <div className="mono-meta" style={{ marginTop: 12, lineHeight: 1.5 }}>
+              Structural stop, R-multiple targets, pos3 trails. Rails are hard, not advisory.
+            </div>
+          </LayeredCard>
+
+          <LayeredCard tint="blue">
+            <div className="mono-label" style={{ marginBottom: 8 }}>validation</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="stat-num text-blue" style={{ fontSize: 26 }}>0<span style={{ fontSize: 15, color: 'var(--text-dim)' }}> / 100</span></span>
+              <span className="mono" style={{ fontSize: 11, color: 'var(--text-dim)' }}>clusters to Norman check</span>
+            </div>
+            <div className="bar-track" style={{ marginTop: 12 }}>
+              <div className="bar-fill" style={{ width: '0%', background: 'var(--blue)', boxShadow: '0 0 10px rgba(56,189,248,0.5)' }} />
+            </div>
+          </LayeredCard>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WinLossRing({ winRate }: { winRate: number }) {
+  const wr = Math.max(0, Math.min(100, winRate))
+  const hasData = wr > 0
+  const data = hasData
+    ? [{ name: 'win', value: wr }, { name: 'loss', value: 100 - wr }]
+    : [{ name: 'empty', value: 100 }]
+  const colors = hasData ? ['var(--green)', 'var(--red)'] : ['rgba(128,128,140,0.18)']
+  return (
+    <div style={{ position: 'relative', width: 190, height: 190 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie data={data} dataKey="value" innerRadius={68} outerRadius={92} startAngle={90} endAngle={-270} stroke="none" paddingAngle={hasData ? 2 : 0}>
+            {data.map((_, i) => <Cell key={i} fill={colors[i]} />)}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+        <div className="stat-num" style={{ fontSize: 40, color: hasData ? 'var(--text-hi)' : 'var(--text-dim)' }}>{wr.toFixed(0)}%</div>
+        <div className="mono" style={{ fontSize: 10, color: 'var(--text-dim)', letterSpacing: '0.08em' }}>{hasData ? 'WIN RATE' : 'NO TRADES YET'}</div>
+      </div>
+    </div>
+  )
+}
+
+function RingLegend({ color, label, file, path, value }: { color: string; label: string; file: string; path: string; value: number }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <span style={{ width: 10, height: 10, borderRadius: 3, background: color, boxShadow: `0 0 8px ${color}`, flexShrink: 0 }} />
+      <div>
+        <EditableValue file={file} path={path} value={value} type="number" className="stat-num" style={{ fontSize: 20 }} />
+        <div className="mono-meta">{label}</div>
+      </div>
+    </div>
+  )
+}
+
+function Rail({ k, v }: { k: string; v: string }) {
+  return (
+    <div>
+      <div className="stat-num text-gold" style={{ fontSize: 20 }}>{v}</div>
+      <div className="mono-meta" style={{ marginTop: 2 }}>{k}</div>
+    </div>
+  )
+}
+
+// Card with real stacked depth — two offset shadow layers behind the surface.
+function LayeredCard({ children, tint }: { children: ReactNode; tint: 'gold' | 'blue' }) {
+  const edge = tint === 'gold' ? 'rgba(212,168,67,0.16)' : 'rgba(56,189,248,0.14)'
+  return (
+    <div style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'absolute', inset: 0, transform: 'translate(10px, 10px)', borderRadius: 14, background: 'var(--surface)', border: `1px solid ${edge}`, opacity: 0.35 }} />
+      <div style={{ position: 'absolute', inset: 0, transform: 'translate(5px, 5px)', borderRadius: 14, background: 'var(--surface)', border: `1px solid ${edge}`, opacity: 0.6 }} />
+      <div
+        className="glass"
+        style={{
+          position: 'relative',
+          height: '100%',
+          padding: 20,
+          border: `1px solid ${edge}`,
+          boxShadow: `var(--card-shadow), 0 0 22px -6px ${edge}`,
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
@@ -210,11 +264,12 @@ function JerrySection() {
   )
 }
 
-function SizeSeg({ pct, label, color }: { pct: number; label: string; color: string }) {
+function Stat({ label, value, color }: { label: string; value: ReactNode; color?: string }) {
   return (
-    <div style={{ width: `${pct}%`, background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '0.5px solid rgba(7,8,15,0.5)' }}>
-      <span className="mono" style={{ fontSize: 9.5, color: 'var(--text-hi)', whiteSpace: 'nowrap', overflow: 'hidden', padding: '0 4px' }}>{label}</span>
-    </div>
+    <GlassCard style={{ padding: 16 }}>
+      <div className="mono-label" style={{ marginBottom: 8 }}>{label}</div>
+      <div className="stat-num" style={{ fontSize: 22, color: color || 'var(--text-hi)' }}>{value}</div>
+    </GlassCard>
   )
 }
 
@@ -228,10 +283,6 @@ function ChartTip({ active, payload, label }: any) {
   )
 }
 
-function cap(s: string) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s }
-function fmtDate(iso: string) {
-  if (!iso) return '--'
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return '--'
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+function signed(n: number): string {
+  return `${n >= 0 ? '+' : '−'}${fmtUSD(Math.abs(n))}`
 }

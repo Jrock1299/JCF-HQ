@@ -1,0 +1,6 @@
+{
+  "balance": 0,
+  "account_name": "Mercury Business Checking",
+  "last_updated": "2026-07-17T00:00:00+00:00",
+  "note": "Placeholder — no live API wiring yet (Round 2). Edit balance in-UI via edit mode."
+}

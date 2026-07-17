@@ -2,14 +2,31 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import BackgroundOrbs from './BackgroundOrbs'
+import HunchoAssistant from './HunchoAssistant'
 import { useLiveClock } from '../hooks/useLiveClock'
 import { useTheme } from '../hooks/useTheme'
+import { useEditMode } from '../edit/EditModeContext'
 import { liveCount } from '../data/agentConfig'
 
 function ControlCluster() {
   const { theme, toggle } = useTheme()
+  const { editing, toggle: toggleEdit } = useEditMode()
   return (
     <div className="control-cluster">
+      <button
+        className="control-btn"
+        onClick={toggleEdit}
+        title={editing ? 'Done editing' : 'Edit values'}
+        aria-label="Toggle edit mode"
+        aria-pressed={editing}
+        style={
+          editing
+            ? { color: 'var(--gold-hi)', borderColor: 'var(--gold-border)', background: 'rgba(212,168,67,0.14)', boxShadow: '0 0 14px -3px rgba(212,168,67,0.5)' }
+            : undefined
+        }
+      >
+        {editing ? '✓' : '✎'}
+      </button>
       <button className="control-btn" onClick={toggle} title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'} aria-label="Toggle theme">
         {theme === 'dark' ? '☀' : '☾'}
       </button>
@@ -57,7 +74,7 @@ function Sidebar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 30, paddingLeft: 4 }}>
         <img className="logo-img" src="/logo-jcf.png" alt="JCF" style={{ width: 38, height: 38 }} />
         <div style={{ lineHeight: 1.1 }}>
-          <div className="head" style={{ fontSize: 22, letterSpacing: '0.04em' }}>JCF HQ</div>
+          <div className="iceland" style={{ fontSize: 22, letterSpacing: '0.04em' }}>JCF HQ</div>
           <div className="mono" style={{ fontSize: 8, color: 'var(--text-mute)', letterSpacing: '0.22em', marginTop: 2 }}>
             COMMAND CENTER
           </div>
@@ -116,6 +133,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <BackgroundOrbs />
       <ControlCluster />
+      <HunchoAssistant />
       <div className="app-shell">
         <Sidebar />
         <main className="main-scroll">

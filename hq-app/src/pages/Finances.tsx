@@ -1,18 +1,19 @@
-import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell } from 'recharts'
+import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import GlassCard from '../components/GlassCard'
+import EditableValue from '../components/EditableValue'
 import { useHQData, fmtUSD, timeAgo } from '../hooks/useHQData'
 import { trajectory } from '../data/derive'
 
-const SPEC = { netWorth: 958000, goal: 10_000_000, robinhood: 13_500, trustwallet: 8_600, tao: 3.345 }
+const SPEC = { netWorth: 958000, goal: 10_000_000, robinhood: 13_500 }
 
 export default function Finances() {
   const nw = useHQData('net-worth').data
   const plaid = useHQData('plaid-data').data
   const tx = useHQData('plaid-transactions').data
-  const tl = useHQData('tradelocker-trades').data
   const tao = useHQData('tao-portfolio').data
   const rh = useHQData('robinhood').data
-  const tw = useHQData('trustwallet').data
+  const kraken = useHQData('kraken').data
+  const mercury = useHQData('mercury').data
 
   const netWorth = nw?.networth_override ?? SPEC.netWorth
   const goalPct = (netWorth / SPEC.goal) * 100
@@ -20,22 +21,24 @@ export default function Finances() {
 
   const chartData = trajectory(Math.round(netWorth * 0.72), netWorth, 12)
 
-  // accounts
-  const checking = plaid?.accounts?.find((a: any) => /check/i.test(a.subtype) || /check/i.test(a.name))?.balance
-  const mma = plaid?.accounts?.find((a: any) => /mma|money|8474/i.test(a.name))?.balance
+  // accounts (Plaid is index-addressable: 0 = checking, 1 = MMA)
+  const checking = plaid?.accounts?.[0]?.balance
+  const mma = plaid?.accounts?.[1]?.balance
   const rhVal = rh?.total_value ?? rh?.balance ?? SPEC.robinhood
-  const twVal = tw?.total_value ?? tw?.balance ?? SPEC.trustwallet
-  const tlVal = tl?.balance || (tl?.pnl != null ? tl.pnl : null)
-  const taoAmt = tao?.root_staked_tao ?? SPEC.tao
+  const krakenVal = kraken?.total_usd ?? null
+  const mercuryVal = mercury?.balance ?? null
+  const mercuryName = mercury?.account_name ?? 'Mercury Business'
+  const taoAmt = tao?.root_staked_tao ?? 3.345
   const taoUsd = tao?.tao_price_usd ? taoAmt * tao.tao_price_usd : null
 
+  // Round 2: TradeLocker removed · Trust Wallet → Kraken · + Mercury (business)
   const accounts = [
-    { name: 'Truist Checking', emoji: '🏦', balance: checking, color: 'green', sync: plaid?.updated },
-    { name: 'Truist MMA', emoji: '💰', balance: mma, color: 'green', sync: plaid?.updated },
-    { name: 'Robinhood', emoji: '📈', balance: rhVal, color: 'blue', sync: rh?.updated },
-    { name: 'Trust Wallet', emoji: '🔐', balance: twVal, color: 'gold', sync: tw?.updated },
-    { name: 'TradeLocker', emoji: '⚔️', balance: tlVal, color: 'blue', sync: tl?.last_sync },
-    { name: 'Tao Staking', emoji: '☯️', balance: taoUsd, sub: `${taoAmt} TAO`, color: 'purple', sync: tao?.updated },
+    { name: 'Truist Checking', emoji: '🏦', balance: checking, color: 'green', sync: plaid?.updated, file: 'plaid_data.json', path: 'accounts.0.balance' },
+    { name: 'Truist MMA', emoji: '💰', balance: mma, color: 'green', sync: plaid?.updated, file: 'plaid_data.json', path: 'accounts.1.balance' },
+    { name: 'Robinhood', emoji: '📈', balance: rhVal, color: 'blue', sync: rh?.updated, file: 'robinhood_data.json', path: 'total_value' },
+    { name: 'Kraken', emoji: '🐙', balance: krakenVal, color: 'purple', sync: kraken?.last_updated, file: 'kraken_data.json', path: 'total_usd' },
+    { name: 'Mercury', emoji: '🏛️', balance: mercuryVal, sub: mercuryName, color: 'blue', sync: mercury?.last_updated, file: 'mercury_data.json', path: 'balance' },
+    { name: 'Tao Staking', emoji: '☯️', balance: taoUsd, sub: `${taoAmt} TAO`, color: 'purple', sync: tao?.updated, file: 'tao_portfolio.json', path: 'manual_usd_value' },
   ]
 
   // income vs expenses
@@ -51,12 +54,19 @@ export default function Finances() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 28, alignItems: 'center' }}>
           <div>
             <div className="mono-label" style={{ marginBottom: 12 }}>total net worth</div>
-            <div className="hero-num gold-text" style={{ fontSize: 52 }}>{fmtUSD(netWorth)}</div>
+            <EditableValue
+              file="net_worth.json"
+              path="networth_override"
+              value={netWorth}
+              type="number"
+              display={(v) => fmtUSD(Number(v) || 0)}
+              className="hero-num gold-text"
+              style={{ fontSize: 52 }}
+            />
             <div style={{ marginTop: 18, position: 'relative' }}>
               <div className="bar-track" style={{ height: 8 }}>
                 <div className="bar-fill" style={{ width: `${Math.min(100, goalPct)}%`, background: 'linear-gradient(90deg,#d4a843,#f0c060)' }} />
               </div>
-              {/* $1M milestone ticks */}
               <div style={{ position: 'relative', height: 0 }}>
                 {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((p) => (
                   <span key={p} style={{ position: 'absolute', left: `${p}%`, top: -8, width: 1, height: 8, background: 'rgba(7,8,15,0.6)' }} />
@@ -94,7 +104,17 @@ export default function Finances() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 500 }}>{a.emoji} {a.name}</div>
-                <div className={`stat-num text-${a.color}`} style={{ fontSize: 24, marginTop: 10 }}>{fmtUSD(a.balance)}</div>
+                <div style={{ marginTop: 10 }}>
+                  <EditableValue
+                    file={a.file}
+                    path={a.path}
+                    value={a.balance ?? 0}
+                    type="number"
+                    display={(v) => fmtUSD(Number(v) || 0)}
+                    className={`stat-num text-${a.color}`}
+                    style={{ fontSize: 24 }}
+                  />
+                </div>
                 {a.sub && <div className="mono" style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>{a.sub}</div>}
               </div>
               <span className="text-green" style={{ fontSize: 13 }}>▲</span>
@@ -126,17 +146,23 @@ export default function Finances() {
         ) : (
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthly} margin={{ top: 4, right: 6, left: -12, bottom: 0 }}>
+              <AreaChart data={monthly} margin={{ top: 4, right: 6, left: -12, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.45} />
+                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="expenseFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <XAxis dataKey="m" tick={{ fill: 'rgba(240,237,230,0.4)', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'rgba(240,237,230,0.4)', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                <Tooltip content={<Tip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-                <Bar dataKey="income" radius={[4, 4, 0, 0]}>
-                  {monthly.map((_, i) => <Cell key={i} fill="rgba(34,197,94,0.6)" />)}
-                </Bar>
-                <Bar dataKey="expenses" radius={[4, 4, 0, 0]}>
-                  {monthly.map((_, i) => <Cell key={i} fill="rgba(239,68,68,0.55)" />)}
-                </Bar>
-              </BarChart>
+                <Tooltip content={<Tip />} cursor={{ stroke: 'rgba(255,255,255,0.12)' }} />
+                <Area type="monotone" dataKey="income" stroke="#22c55e" strokeWidth={2} fill="url(#incomeFill)" style={{ filter: 'drop-shadow(0 0 6px rgba(34,197,94,0.4))' }} />
+                <Area type="monotone" dataKey="expenses" stroke="#ef4444" strokeWidth={2} fill="url(#expenseFill)" style={{ filter: 'drop-shadow(0 0 6px rgba(239,68,68,0.35))' }} />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         )}

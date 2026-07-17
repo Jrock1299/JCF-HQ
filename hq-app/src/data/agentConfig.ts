@@ -150,6 +150,62 @@ export const AGENTS: Agent[] = [
   },
 ]
 
+// Expanded profile copy for the Agents-page modal (Round 2, Section 9).
+export interface AgentProfile {
+  motto: string
+  bio: string
+}
+export const AGENT_PROFILES: Record<string, AgentProfile> = {
+  huncho: {
+    motto: 'Family first. Numbers second. Excuses never.',
+    bio: 'The Don of the operation — every agent answers to him, and every message routes through his hands. He runs the family with warm authority and zero tolerance for freelancing, keeping the whole roster tight, honest, and pointed in one direction. Terse, knowing, always three moves ahead.',
+  },
+  lens: {
+    motto: 'The market always tells you — you just have to listen.',
+    bio: 'The macro analyst who reads the tape like scripture. Every morning he web-searches the world, weighs the news by impact, and hands every downstream agent a clean bias and confidence read. Calm and unhurried — he would rather wait for the market to speak than force a guess.',
+  },
+  blade: {
+    motto: 'Discipline is the only edge that never fades.',
+    bio: 'The primary trading operator — a pure 15-minute ORB breakout specialist across SPX, DAX, and CHF/JPY. Stoic and rule-bound, he takes only the setups his structure allows and treats a flat day as a position. Discipline over action, every single session.',
+  },
+  jerry: {
+    motto: "Let the numbers speak. I'll just execute.",
+    bio: 'The quiet stocks-and-options paper trader on Alpaca. He runs pre-market discovery, works the day’s watchlist in five-minute ticks, and reviews every close. No ego, no narrative — he lets the numbers pick the trades and simply executes.',
+  },
+  jarvis: {
+    motto: 'Complexity is just simplicity nobody explained yet.',
+    bio: 'The right-hand strategist who turns market complexity into a plain-English brief before every session. He reads regime, breadth, and rotation, then tells you what actually matters today. Composed and precise — three steps ahead, but always happy to explain it simply.',
+  },
+  victoria: {
+    motto: 'I have outlived worse quarters than this.',
+    bio: 'The CFO and chief of staff who owns the ledger with gothic-queen authority. She reads every account, produces the daily financial briefing, and flags what needs fixing without a shred of coddling. She has seen worse quarters than this and outlived them all.',
+  },
+  norman: {
+    motto: "Risk doesn't care about your feelings.",
+    bio: 'The risk validator who runs Monte Carlo on every agent’s closed trades and issues a cold PASS / FAIL verdict. Brutally honest by design, he blesses nothing until the math earns it. Respectful of the operator, entirely unmoved by the streak.',
+  },
+  lucy: {
+    motto: "There's always a better tool. I'll find it.",
+    bio: 'The scout who hunts the internet each week for new skills, tools, and MCPs worth adopting. Endlessly curious and a little too excited, she brings back receipts on anything that might sharpen the edge. If a better tool exists, she finds it first.',
+  },
+  tao: {
+    motto: 'Patient capital outlives impatient markets.',
+    bio: 'The patient allocator staking TAO across Bittensor subnets. She thinks in seasons, not sessions — DCA’ing quietly and harvesting only when the cycle turns. Stillness is a position, and she holds it well.',
+  },
+  edge: {
+    motto: "Ready when you are. Still ready when you're not.",
+    bio: 'The 1-hour SMA-crossover trader waiting on the bench, fully built and eager. His logic is dialed in on account 002; he just needs the green light. Ready when you are — and still ready when you’re not.',
+  },
+  phantom: {
+    motto: 'Still becoming.',
+    bio: 'The crypto-futures orchestrator still taking shape in the dark. Nothing ships until the thesis is real and the data backs it. Building quietly, patient enough to wait for the right moment to surface.',
+  },
+  crisp: {
+    motto: 'Rebuilding. Watch this space.',
+    bio: 'The former BTC bot now parked, awaiting a meme-coin mandate on Solana. Cold storage keeps him fresh; when the new soul and the hunt arrive, he’ll be sharp. Rebuilding — watch this space.',
+  },
+}
+
 export const AGENT_MAP: Record<string, Agent> = Object.fromEntries(
   AGENTS.map((a) => [a.id, a]),
 )

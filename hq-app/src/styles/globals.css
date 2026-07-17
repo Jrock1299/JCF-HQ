@@ -1,14 +1,15 @@
 /* ═══════════════════════════════════════════════════════════
-   JCF HQ v3 — Global design system (Round 1)
-   Iceland (headers) · League Spartan (body) · Edu NSW (muted)
-   · JetBrains Mono (labels/data). Solid panels · light+dark.
+   JCF HQ v3 — Global design system (Round 2)
+   Iceland (greeting headline + JCF HQ logo ONLY) ·
+   League Spartan (everything else non-mono) ·
+   JetBrains Mono (// labels, badges, timestamps).
+   Solid panels · light+dark.
    ═══════════════════════════════════════════════════════════ */
 
 :root {
   /* Fonts */
-  --font-head: 'Iceland', system-ui, sans-serif;
+  --font-head: 'Iceland', system-ui, sans-serif;   /* greeting + logo only */
   --font-body: 'League Spartan', system-ui, sans-serif;
-  --font-soft: 'Edu NSW ACT Foundation', 'League Spartan', cursive;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Accent (theme-independent) */
@@ -41,8 +42,9 @@
   --input-bg: rgba(255, 255, 255, 0.05);
 
   --text-hi: #f0ede6;
-  --text-dim: rgba(240, 237, 230, 0.52);
-  --text-mute: rgba(240, 237, 230, 0.26);
+  /* Round 2 contrast fix — descriptions 0.55, meta/timestamps 0.40 */
+  --text-dim: rgba(240, 237, 230, 0.55);
+  --text-mute: rgba(240, 237, 230, 0.40);
 
   --moonlight: rgba(210, 220, 255, 0.06);
   --orb-opacity: 0.62;
@@ -66,8 +68,9 @@
   --input-bg: rgba(28, 38, 66, 0.045);
 
   --text-hi: #1a1d29;
-  --text-dim: rgba(26, 29, 41, 0.56);
-  --text-mute: rgba(26, 29, 41, 0.34);
+  /* Round 2 contrast fix — descriptions 0.65, meta/timestamps 0.45 */
+  --text-dim: rgba(30, 32, 45, 0.65);
+  --text-mute: rgba(30, 32, 45, 0.45);
 
   --moonlight: rgba(120, 145, 210, 0.14);
   --orb-opacity: 0.35;
@@ -103,8 +106,12 @@ input { font-family: var(--font-body); }
 
 /* ═══════════ TYPOGRAPHY HELPERS ═══════════ */
 .mono { font-family: var(--font-mono); }
-.head { font-family: var(--font-head); letter-spacing: 0.01em; }
-.soft { font-family: var(--font-soft); }
+/* .iceland — the ONLY Iceland surface (greeting headline + JCF HQ logo). */
+.iceland { font-family: var(--font-head); letter-spacing: 0.02em; }
+/* .head — section/heading text. Now League Spartan (Iceland retired here). */
+.head { font-family: var(--font-body); font-weight: 600; letter-spacing: 0.005em; }
+/* .soft — quotes / soft descriptions. Now League Spartan (Edu NSW removed). */
+.soft { font-family: var(--font-body); }
 
 .mono-label {
   font-family: var(--font-mono);
@@ -131,15 +138,15 @@ input { font-family: var(--font-body); }
 }
 
 .hero-num {
-  font-family: var(--font-head);
-  font-weight: 400;
-  letter-spacing: 0.005em;
-  line-height: 1;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
 }
 .stat-num {
-  font-family: var(--font-head);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.005em;
   line-height: 1.05;
 }
 .data-num { font-family: var(--font-mono); font-weight: 500; }
@@ -204,6 +211,37 @@ input { font-family: var(--font-body); }
 :root[data-theme='light'] .glass-green {
   background: linear-gradient(180deg, rgba(34,197,94,0.10), #ffffff);
 }
+
+/* ═══════════ SECTION DIVIDERS (Intelligence) ═══════════ */
+.page-title { font-family: var(--font-body); font-weight: 600; font-size: 26px; letter-spacing: -0.01em; }
+.section-head { display: flex; align-items: center; gap: 14px; margin: 26px 0 14px; }
+.section-head:first-of-type { margin-top: 6px; }
+.section-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--surface-border), transparent); }
+.section-head h3 {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-dim); white-space: nowrap; margin: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ═══════════ EDIT MODE (pencils) ═══════════ */
+.edit-pencil {
+  font-size: 11px;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  background: rgba(212, 168, 67, 0.10);
+  border: 0.5px solid var(--gold-border);
+  opacity: 0.4;
+  transition: opacity 0.15s ease, background 0.15s ease, transform 0.12s ease;
+  flex-shrink: 0;
+}
+.edit-pencil:hover { opacity: 1; background: rgba(212, 168, 67, 0.22); transform: translateY(-1px); }
 
 /* ═══════════ STATUS DOTS (glowing) ═══════════ */
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
@@ -345,7 +383,7 @@ input { font-family: var(--font-body); }
 .text-blue { color: var(--blue); }
 .text-purple { color: var(--purple); }
 .text-gold { color: var(--gold); }
-.text-dim { color: var(--text-dim); font-family: var(--font-soft); }
+.text-dim { color: var(--text-dim); }
 .text-mute { color: var(--text-mute); }
 
 /* Responsive */

@@ -1,6 +1,6 @@
 {
-  "balance": 5064.35,
-  "last_session": "LONDON",
-  "updated": "2026-06-02T18:35:00+00:00",
-  "note": "Seeded from in-process NY_PM run @ 5064.35 after LONDON 2026-06-02 closed +$255.95 (compounded from $5,000 start). Persistence bug fixed in blade_bot.py (signal handler + per-tick save)."
+  "balance": 0,
+  "last_session": null,
+  "updated": "2026-07-17T00:00:00+00:00",
+  "note": "Reset to clean slate 2026-07-17 (Round 2). Jase sets a fresh starting number via edit mode."
 }

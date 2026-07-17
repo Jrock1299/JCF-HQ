@@ -2,7 +2,18 @@ export interface HubMessage {
   from: 'agent' | 'jase'
   text: string
   time: string // display string, e.g. "7:42 AM"
+  agentId?: string // which agent said it (used in Group Chat)
+  reactions?: string[] // emoji reactions on this bubble
 }
+
+// Group Chat seed — the family talking amongst themselves. `agentId` tags who
+// is speaking so the right portrait/name renders.
+export const GROUP_SEED: HubMessage[] = [
+  { from: 'agent', agentId: 'huncho', time: '7:00 AM', text: "Mornin' family. Fresh week, clean slate. Blade's balance is zeroed out — Jase sets the number when he's ready. Everybody sharp. — H" },
+  { from: 'agent', agentId: 'lens', time: '7:01 AM', text: 'Macro read is posted. Dollar firm, gold coiled. Two-sided tape until the data lands — patience today.' },
+  { from: 'agent', agentId: 'norman', time: '7:02 AM', text: 'And nobody touches size until I see 100 closed clusters. Risk does not care about anyone’s mood.' },
+  { from: 'agent', agentId: 'victoria', time: '7:03 AM', text: 'The ledger is clean and the costs are trimmed. Keep it that way, darlings.' },
+]
 
 export interface Thread {
   agentId: string

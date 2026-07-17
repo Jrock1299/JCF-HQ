@@ -9,6 +9,9 @@ export const ENDPOINTS: Record<string, string> = {
   'strategy-recommendation': '/strategy_recommendation.json',
   'blade-learning-log': '/blade_learning_log.json',
   'blade-balance': '/blade_balance.json',
+  'blade-manual': '/blade_manual.json',
+  'kraken': '/kraken_data.json',
+  'mercury': '/mercury_data.json',
   'jerry-portfolio': '/jerry_portfolio.json',
   'plaid-data': '/plaid_data.json',
   'plaid-transactions': '/plaid_transactions.json',
@@ -22,6 +25,7 @@ export const ENDPOINTS: Record<string, string> = {
   'agent-hub': '/hq/hub',
   'agent-hub-file': '/agent_hub.json',
   'morning-report': '/morning_report.json',
+  'sentinel-data': '/sentinel_data.json',
 }
 
 async function fetchWithTimeout(url: string, ms = 2500): Promise<any> {

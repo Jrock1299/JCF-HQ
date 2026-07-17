@@ -4,12 +4,17 @@ Jase's personal command center — one web app that replaces checking ~10 tabs
 every morning (trading, finances, macro intel, agent status). Lives at
 `hq-app/`, served in production by `serve_hq.py`.
 
-## Stack (v3, 2026-07-17 rebuild + Round 1 refinements)
+## Stack (v3, 2026-07-17 rebuild + Round 1 & Round 2 refinements)
 - React 18 + TypeScript + Vite. Deps: `framer-motion`, `recharts`,
   `react-router-dom`.
-- **Fonts** (Round 1): Iceland (headers/big numbers, `.head`/`.hero-num`/
-  `.stat-num`), League Spartan (body default), Edu NSW ACT Foundation (muted,
-  `.soft`), JetBrains Mono (`// labels`, badges, timestamps, terminal).
+- **Fonts** (Round 2 simplification): **Iceland is reserved to two surfaces
+  only** — the greeting headline and the "JCF HQ" sidebar logo (`.iceland`
+  class). Everything else non-mono is **League Spartan** (`.head`/`.hero-num`/
+  `.stat-num`/`.soft` all switched to it). JetBrains Mono unchanged for
+  `// labels`, badges, timestamps. **Edu NSW ACT Foundation removed entirely**
+  (font import dropped from `index.html`, `--font-soft` var retired).
+- **Contrast** (Round 2): muted text bumped for readability — dark
+  `--text-dim` 0.55 / `--text-mute` 0.40; light 0.65 / 0.45.
 - **Design** (Round 1): solid dark panels (`--surface` rgba(20,22,34,0.85) +
   soft `box-shadow`) instead of transparent glass, moonlight sweep + dialed-back
   orbs, glowing bars/dots/active-nav. All in `src/styles/globals.css`.
@@ -38,20 +43,63 @@ degrades to placeholders — no broken states if `:8900` is down.
 Jarvis) · `/hub` Agent Hub · `/agents`. SPA deep-links work via serve_hq's
 index.html fallback.
 
+## Universal edit mode (Round 2)
+Every displayed datum is editable in place. `src/edit/EditModeContext.tsx`
+provides a global `editing` toggle (persisted; button in the top control
+cluster, ✎/✓). `src/components/EditableValue.tsx` wraps any value —
+`{file, path, value, type, display}` — and on save writes BOTH a
+`localStorage['hq-edit:<file>:<path>']` override (instant + offline fallback)
+and `POST /hq/edit/<file>` `{path, value}`. Backend endpoint added to
+`hq_storage_server.py` (whitelisted filename, nested dot-path setter, creates
+the file if missing). Used across Trading + Finances (balances, stats,
+win/loss counts, net worth).
+
+## Floating Huncho assistant (Round 2)
+`src/components/HunchoAssistant.tsx`, mounted once in `Layout.tsx` → persists
+on every route. Collapsed = circular Huncho portrait + gold glow (bottom
+right); expanded = slide-up chat in the Don voice. Route-aware via
+`useLocation`. Canned local glossary (compressed regime, R-multiple, ADR, win
+rate, drawdown, PF, Sharpe) — UI shell, no live LLM yet.
+
 ## Agent Hub
-The centerpiece — a two-panel iMessage-style chat with every agent, written
-**in character** (`src/data/seedMessages.ts`). Send flow: message → typing
-dots → canned in-character reply. Runs entirely off seed data (does NOT merge
-live `/hq/hub` status logs — those terse lines would clutter the crafted
-voice). Roster + voices in `src/data/agentConfig.ts` (mirrors
-[[personalities]]; `jarvis` uses `strategist.png`; `edge` has no portrait →
-emoji fallback).
+Two-panel iMessage-style chat with every agent, written **in character**
+(`src/data/seedMessages.ts`). Send flow: message → typing dots → canned reply.
+**Round 2 additions:** a **Group Chat pinned first** (above Huncho, overlapping
+portraits) where a message keyword-routes to 2–3 agents who reply staggered;
+and **reactions** — double-click any bubble → iOS-style picker (👍❤️😂🔥👀✅) →
+corner pill, with agents occasionally reacting in-character to Jase. Roster +
+voices + `AGENT_PROFILES` (motto + expanded bio) in `src/data/agentConfig.ts`
+(mirrors [[personalities]]; `jarvis` uses `strategist.png`; `edge` → emoji
+fallback).
+
+## Agents page (Round 2)
+Cards are click-anywhere → **profile modal** (`src/pages/Agents.tsx`): big
+gold-ringed portrait, motto, role, status/model badges, connections, expanded
+personality, and a Message button → `/hub?agent=<id>`. Closes on X /
+click-outside / Escape.
 
 ## Data binding notes
-- Net worth: `net_worth.json` `networth_override` if set, else $958k fallback.
-- Blade per-trade **R is computed** (`src/data/derive.ts`) — the learning log
-  has no P&L field: `R = (close−entry)/(entry−stop)`, sign-adjusted by
-  direction; win = R>0.
+- Net worth: `net_worth.json` `networth_override` (now editable in-UI).
+- **Trading / Blade (Round 2 reset)**: Blade was reset to a clean slate —
+  `blade_balance.json` balance → 0, `blade_learning_log.json` records → `[]`.
+  The Trading page no longer renders the clusters table / D3-sizing / circuit
+  breaker; it now drives the 4 stat cards + a **win/loss donut ring** +
+  layered-depth cards from `blade_balance.json` (balance) and a new
+  `blade_manual.json` (`pnl_today`, `win_rate`, `wins`, `losses`, `session`) —
+  all editable. Jerry section unchanged.
+- **Finances (Round 2 swaps)**: TradeLocker card removed; Trust Wallet →
+  **Kraken** (`kraken_data.json` `total_usd`); new **Mercury** business card
+  (`mercury_data.json` placeholder, no live API). Monthly cash flow is now a
+  gradient **area** chart. Plaid data is stale (last sync 2026-04-20) — not
+  fixed, just reported.
+- **Intelligence (Round 2 revert)**: rebuilt by adapting the pre-v3
+  `Intelligence.jsx` (recovered from commit `e91d5e8`) into the v3 system —
+  Daily Brief, Macro Desk (Lens report, driven by `strategy_recommendation`
+  instruments + `market_bias`), tabbed Forex/Markets/Crypto feed, and an
+  Insider Intelligence (Sentinel, `sentinel_data.json`) block with graceful
+  fallbacks.
+- `src/data/derive.ts` R-computation helpers remain but Trading no longer uses
+  them after the reset (kept for any future re-wire).
 - Prefer live data everywhere, spec numbers only as fallback.
 
 ## Operations
