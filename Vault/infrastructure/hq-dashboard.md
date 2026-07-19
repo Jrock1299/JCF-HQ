@@ -102,10 +102,29 @@ click-outside / Escape.
   them after the reset (kept for any future re-wire).
 - Prefer live data everywhere, spec numbers only as fallback.
 
+## Performance (2026-07-19 pass, commit `eda3787`)
+The app felt sluggish. Diagnosis: one monolithic **776 kB / 240 kB gz** JS
+bundle (nothing code-split) dominated by `recharts` (pulls the whole `d3-*`
+family + `victory-vendor`), which only Trading + Finances use but shipped to
+every route. Fixes:
+- **Route code-splitting** (`src/App.tsx`): all 6 pages are `React.lazy()` +
+  `<Suspense>`. recharts is hoisted into a shared async chunk (~355 kB, bundled
+  with `EditableValue` since only those two pages import both) loaded **only** on
+  `/trading` and `/finances`. Initial-route JS dropped to **~350 kB / ~117 kB gz**.
+- **Blur trim**: `.glass`/tint variants `blur(16px)→8px`, sidebar `20→10`,
+  AgentHub panel `16→8`, ChatBubble `12→8`. Surfaces are 85% opaque so the glass
+  look is preserved. Orb element blur `48→32px` + `will-change:transform`.
+- **Polling**: `useHQData` default `30s → 60s` (all 22 call sites were on the
+  default; backend JSON only refreshes every 2–5 min via cron, so 60s still
+  over-samples). No 5s intervals existed to keep.
+- Already-optimal (left as-is): orbs already animate via `transform` (GPU), and
+  `index.html` fonts already carry `&display=swap`.
+
 ## Operations
 Served by systemd **user** unit `openclaw-hq.service` (`ExecStart=python3
-scripts/serve_hq.py`). Was previously disabled/manual; enabled 2026-07-17 so
-it survives reboots. Restart: `systemctl --user restart openclaw-hq`.
+scripts/serve_hq.py`) from `hq-app/dist/` (**gitignored** — rebuild in place on
+the VPS: `npm run build` then restart). Was previously disabled/manual; enabled
+2026-07-17 so it survives reboots. Restart: `systemctl --user restart openclaw-hq`.
 Do NOT edit `serve_hq.py` / `hq_storage_server.py` for frontend work.
 
 ## Related
