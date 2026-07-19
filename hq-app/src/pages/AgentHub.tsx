@@ -145,7 +145,7 @@ export default function AgentHub() {
       <div
         style={{
           width: 300, flexShrink: 0, borderRight: '0.5px solid var(--glass-border)',
-          background: 'var(--panel-bg)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+          background: 'var(--panel-bg)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
           display: 'flex', flexDirection: 'column',
         }}
       >

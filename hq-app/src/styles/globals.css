@@ -165,8 +165,8 @@ input { font-family: var(--font-body); }
 /* ═══════════ SOLID PANELS (was glass) ═══════════ */
 .glass {
   background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--surface-border);
   border-radius: 14px;
   box-shadow: var(--card-shadow);
@@ -178,8 +178,8 @@ input { font-family: var(--font-body); }
 }
 
 .glass-gold, .glass-purple, .glass-blue, .glass-green {
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 14px;
   box-shadow: var(--card-shadow);
 }

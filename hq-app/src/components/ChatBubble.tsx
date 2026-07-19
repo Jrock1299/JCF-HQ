@@ -81,8 +81,8 @@ export default function ChatBubble({
             fontSize: 14,
             lineHeight: 1.5,
             color: 'var(--text-hi)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             cursor: 'default',
             userSelect: 'text',
           }}

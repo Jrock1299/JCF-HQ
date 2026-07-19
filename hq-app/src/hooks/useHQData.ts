@@ -52,9 +52,12 @@ export interface HQResult<T = any> {
  * { data: null, error: true } so callers render a graceful fallback.
  *
  * @param name    logical endpoint key from ENDPOINTS, or a raw "/path.json"
- * @param pollMs  poll interval in ms (0 = no polling). Default 30s.
+ * @param pollMs  poll interval in ms (0 = no polling). Default 60s — backend
+ *                JSON is only refreshed every 2–5 min by cron, so faster
+ *                polling just wastes fetches. Pass a smaller value per-call
+ *                only for data that genuinely needs it.
  */
-export function useHQData<T = any>(name: string, pollMs = 30_000): HQResult<T> {
+export function useHQData<T = any>(name: string, pollMs = 60_000): HQResult<T> {
   const url = ENDPOINTS[name] || name
   const [state, setState] = useState<HQResult<T>>({ data: null, loading: true, error: false })
   const mounted = useRef(true)
@@ -90,7 +93,7 @@ export function useHQData<T = any>(name: string, pollMs = 30_000): HQResult<T> {
 export function useHQDataWithFallback<T = any>(
   primary: string,
   fallback: string,
-  pollMs = 30_000,
+  pollMs = 60_000,
 ): HQResult<T> {
   const a = useHQData<T>(primary, pollMs)
   const b = useHQData<T>(fallback, pollMs)

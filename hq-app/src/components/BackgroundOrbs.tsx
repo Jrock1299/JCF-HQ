@@ -57,6 +57,9 @@ const orb: React.CSSProperties = {
   height: '42vw',
   maxWidth: 700,
   maxHeight: 700,
-  filter: 'blur(48px)',
+  filter: 'blur(32px)',
   borderRadius: '50%',
+  // Promote each animated orb to its own compositor layer so the drift
+  // animation stays on the GPU (transforms only — no layout/paint per frame).
+  willChange: 'transform',
 }

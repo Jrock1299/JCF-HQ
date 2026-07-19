@@ -65,8 +65,8 @@ function Sidebar() {
         padding: '22px 16px',
         borderRight: '0.5px solid var(--glass-border)',
         background: 'var(--panel-bg)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         zIndex: 10,
       }}
     >
