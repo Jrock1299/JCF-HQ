@@ -387,7 +387,8 @@
       },
       "delivery": {
         "mode": "announce",
-        "channel": "last"
+        "channel": "telegram",
+        "to": "797062420"
       },
       "state": {
         "lastRunStatus": "never",
@@ -415,7 +416,8 @@
       },
       "delivery": {
         "mode": "announce",
-        "channel": "last"
+        "channel": "telegram",
+        "to": "797062420"
       },
       "state": {
         "lastRunStatus": "never",
