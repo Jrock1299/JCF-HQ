@@ -156,6 +156,22 @@ def load_edge_trades(session_name, today):
     return result
 
 
+def load_balances():
+    blade_bal = 0.0
+    edge_bal = 0.0
+    try:
+        with open('/root/.openclaw/dashboard/blade_balance.json') as f:
+            blade_bal = float(json.load(f).get('balance', 0.0))
+    except Exception as e:
+        print(f"[session_end_notify] Could not read Blade balance: {e}")
+    
+    try:
+        with open('/root/.openclaw/dashboard/edge_portfolio.json') as f:
+            edge_bal = float(json.load(f).get('balance', 0.0))
+    except Exception as e:
+        print(f"[session_end_notify] Could not read Edge balance: {e}")
+    return blade_bal, edge_bal
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python3 session_end_notify.py <SESSION>")
@@ -171,6 +187,7 @@ def main():
 
     blade_trades = load_blade_trades(session_name, today)
     edge_trades  = load_edge_trades(session_name, today)
+    blade_bal, edge_bal = load_balances()
 
     # ── Blade stats ───────────────────────────────────────────────────────────
     blade_active = [t for t in blade_trades
@@ -188,16 +205,16 @@ def main():
     lines = [f"📋 <b>{session_name} SESSION COMPLETE</b>"]
 
     if blade_count == 0:
-        lines.append("  BLADE: no trades")
+        lines.append(f"  BLADE: no trades | Bal: ${blade_bal:.2f}")
     else:
         sign = '+' if blade_pnl >= 0 else ''
-        lines.append(f"  BLADE: {blade_count} trade{'s' if blade_count != 1 else ''} | {sign}${abs(blade_pnl):.2f}")
+        lines.append(f"  BLADE: {blade_count} trade{'s' if blade_count != 1 else ''} | {sign}${abs(blade_pnl):.2f} | Bal: ${blade_bal:.2f}")
 
     if edge_count == 0:
-        lines.append("  EDGE: no trades")
+        lines.append(f"  EDGE: no trades | Bal: ${edge_bal:.2f}")
     else:
         sign = '+' if edge_pnl >= 0 else ''
-        lines.append(f"  EDGE: {edge_count} trade{'s' if edge_count != 1 else ''} | {sign}${abs(edge_pnl):.2f}")
+        lines.append(f"  EDGE: {edge_count} trade{'s' if edge_count != 1 else ''} | {sign}${abs(edge_pnl):.2f} | Bal: ${edge_bal:.2f}")
 
     sign_total = '+' if total_pnl >= 0 else ''
     lines.append(f"  Combined: {sign_total}${abs(total_pnl):.2f}")

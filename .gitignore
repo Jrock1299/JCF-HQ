@@ -86,3 +86,17 @@ identity/device-auth.json
 **/device-auth.json
 **/.aster-keys
 **/*-keys
+
+# Runtime churn (added 2026-07-21) — session logs, cron run records, sqlite
+# sidecars, migration markers, and scheduler state. Not source.
+**/sessions/*.jsonl
+**/sessions/*.jsonl.*
+cron/runs/
+**/cron/runs/
+*.sqlite-wal
+*.sqlite-shm
+*.migrated
+**/jobs-state.json
+**/runs.sqlite*
+**/registry.sqlite*
+**/telegram/update-offset-*

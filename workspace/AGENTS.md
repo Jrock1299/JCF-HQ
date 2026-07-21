@@ -53,6 +53,7 @@ When an image is received via Telegram:
 
 **Crisp reports back with:**
 - Asset | Direction | Entry | Stop | TP | R multiple | Outcome
+- Setup Tag (e.g., Momentum Expansion, Breakout) for win-rate analytics
 - Any session halts or drawdown alerts immediately
 
 **Do NOT deploy Crisp for:**
@@ -83,6 +84,7 @@ When an image is received via Telegram:
 
 **Blade reports back with:**
 - Pair | Direction | Entry | Stop | TP | R multiple | Outcome
+- ICT/ICC Setup Tag (e.g., +FVG, Liquidity Sweep, EQ Touch) for win-rate analytics
 - Any session halts or drawdown alerts immediately
 
 **Do NOT deploy Blade for:**
