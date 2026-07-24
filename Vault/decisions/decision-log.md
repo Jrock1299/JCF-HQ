@@ -4,6 +4,17 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Context7 MCP added to Claude Code · 2026-07-24
+**Decision:** `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`
+(in `/root/.claude.json`, project scope). Authorized by Jase.
+**Why:** gives future Claude Code sessions current library documentation when
+building JCF HQ features. **Claude Code tooling only** — not wired to any trading
+agent (Lens/Chad/etc.), no trading impact. Verified `✔ Connected` via
+`claude mcp list`. *(This is Claude Code's MCP config, separate from the OpenClaw
+gateway `mcp.servers` that hold alpaca/coincap.)*
+
+---
+
 ## Alpaca + CoinCap MCP servers installed · 2026-07-24 *(backfilled)*
 **Decision:** Two OpenClaw-managed MCP servers were added at the gateway level
 (`mcp.servers` in openclaw.json), installed by Huncho/the main-agent context via

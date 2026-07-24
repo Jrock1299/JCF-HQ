@@ -139,14 +139,14 @@ export const AGENTS: Agent[] = [
   },
   {
     id: 'crisp',
-    name: 'Crisp',
-    emoji: '🧊',
+    name: 'Chad',
+    emoji: '🏎️',
     portrait: '/agents/crisp.png',
     role: 'Meme Coins — Solana',
     model: 'Codex',
     state: 'BUILDING',
     connectedTo: [],
-    voice: 'Awaiting the meme coin pivot. Cold and coming.',
+    voice: 'I show up early and let the room chase me. Same with the wallet.',
   },
 ]
 
@@ -201,8 +201,8 @@ export const AGENT_PROFILES: Record<string, AgentProfile> = {
     bio: 'The crypto-futures orchestrator still taking shape in the dark. Nothing ships until the thesis is real and the data backs it. Building quietly, patient enough to wait for the right moment to surface.',
   },
   crisp: {
-    motto: 'Rebuilding. Watch this space.',
-    bio: 'The former BTC bot now parked, awaiting a meme-coin mandate on Solana. Cold storage keeps him fresh; when the new soul and the hunt arrive, he’ll be sharp. Rebuilding — watch this space.',
+    motto: 'Show up early. Let the room chase you.',
+    bio: 'Chad — the meme-coin hunter on Solana. DexScreener trending scans, wallet intelligence, momentum-death detection for the downside. Old-money-cool confidence over new-money noise; the swagger lives in the voice, the discipline lives underneath — simulation-only until the data earns real size, same as everyone else.',
   },
 }
 

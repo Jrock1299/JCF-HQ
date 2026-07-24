@@ -27,11 +27,13 @@ AGENT_EMOJIS = {
     'lens':     '\U0001f310',   # 🌐
     'norman':   '⚠️', # ⚠️
     'tao':      '☯️', # ☯️
+    'crisp':    '🏎️', # 🏎️ — Chad (internal id 'crisp'; meme-coin hunter)
 }
 
 # Aliases — agent IDs that should display as a different NAME header.
 AGENT_DISPLAY = {
     'strategist': 'JARVIS',     # internal id 'strategist' renders as JARVIS
+    'crisp':      'Chad',       # internal id 'crisp' renders as Chad (meme-coin pivot)
 }
 
 def wrap_message(agent: str, body: str) -> str:
