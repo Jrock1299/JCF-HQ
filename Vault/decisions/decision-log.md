@@ -4,6 +4,22 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Helius wired + Chad wallet intelligence (Phase 2) · 2026-07-24
+**Decision:** Added `HELIUS_API_KEY` to `.env` (gitignored, read-only data key)
+and built `agents/crisp/chad_wallet_intel.py`. Authorized by Jase.
+**Why:** Chad's wallet-intelligence layer — track smart-money Solana wallets,
+detect swaps, simulate copies, score wallets. **Seeding:** Helius has no "top
+traders" endpoint, so wallets are seeded from **real recent pump.fun SWAP
+feePayers** via the Enhanced Transactions API (reported transparently).
+**Tested live:** 12 wallets seeded, 32 real swaps detected + simulated.
+**Sim-only, architecturally:** only HTTP GETs + local JSON writes — no signer,
+keypair, or order path; execution is impossible by construction. Scoreboard is
+sparse (activity counts only; performance ranking flagged pending, not
+fabricated). Gotcha: Helius WAF 403s the default `Python-urllib` UA — send a
+real User-Agent. See [[../sessions/2026-07-24]].
+
+---
+
 ## Context7 MCP added to Claude Code · 2026-07-24
 **Decision:** `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest`
 (in `/root/.claude.json`, project scope). Authorized by Jase.

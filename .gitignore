@@ -103,3 +103,7 @@ cron/runs/
 
 # Google Drive Vault sync — runtime manifest (Drive file IDs + hashes, regenerable)
 state/gdrive_sync_manifest.json
+
+# Chad wallet-intel runtime data (regenerable from Helius)
+agents/crisp/data/tracked_wallets.json
+agents/crisp/data/sim_copy_trades.json

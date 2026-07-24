@@ -81,6 +81,11 @@ scratch."* — confidence that survives a red candle is the real kind.
 
 ## Status
 
-**PARKED / BUILDING** — identity live (this SOUL); scanning logic gated. Next:
-DexScreener scan + the Helius wallet-intelligence build. Simulation engine only.
-No live execution now or on revival until Norman signs off.
+**BUILDING** — identity live (this SOUL). **Wallet intelligence (Phase 2) is
+BUILT + tested** on real Helius data (`chad_wallet_intel.py`): seeds tracked
+wallets from real pump.fun swap activity, detects buy/sell moves, and
+simulates copies into `agents/crisp/data/sim_copy_trades.json`. **Read-only
+Helius key, no signer/keypair/order path — execution is architecturally
+impossible, not just policy.** Still gated: DexScreener trending scan +
+momentum-death detection. No live execution now or on revival until Norman
+signs off.
