@@ -1,8 +1,13 @@
 # Discord Bot — Two-Way (#ask-the-team + #risk-calculator)
 
-Added 2026-07-24. A gateway bot ("Hunxho Bot") that **listens** on two channels
-and replies as the relevant JCF HQ agents. Separate from the one-way broadcast
-webhooks in [[discord-broadcast]] / CLAUDE.md §4f — this is the interactive half.
+**Status: LIVE (2026-07-24).** pm2 `jcf-discord-bot`, watching 2/2 channels.
+Verified end-to-end in Discord — Norman graded a risk scenario in
+#risk-calculator; Lens + Jarvis answered a concentration question in
+#ask-the-team, each under their own name via the channel webhook.
+
+A gateway bot ("Hunxho Bot") that **listens** on two channels and replies as
+the relevant JCF HQ agents. Separate from the one-way broadcast webhooks in
+[[discord-broadcast]] / CLAUDE.md §4f — this is the interactive half.
 
 ## What it does
 
@@ -71,9 +76,11 @@ pm2 save
   Bot → Privileged Gateway Intents. (Verified ON 2026-07-24.) Without it,
   message text arrives empty and the bot logs a warning.
 - **Manage Webhooks** (or Path B webhook URLs) is required to post agent-identity
-  replies. As of 2026-07-24 the bot is in the server and sees both channels but
-  lacks this permission → logs `MISSING Manage Webhooks` and watches 0/2. This is
-  the last-mile unblock.
+  replies. Granted 2026-07-24 (Path A — Manage Webhooks on the "Hunxho Hoot"
+  role); the bot now auto-creates a `JCF HQ Agents` webhook in each channel and
+  watches 2/2. Note: re-running the OAuth invite for an already-present bot does
+  NOT refresh its role perms — toggle the role permission directly, or re-invite
+  fresh.
 - **Avatars:** reply *names* always work; *avatars* need `DISCORD_AVATAR_BASE`
   (a public host for `<agent>.png` — the repo is private, so GitHub-raw won't do).
 - The bot ignores its own and all webhook/bot messages (loop-safe) and only acts
