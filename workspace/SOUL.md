@@ -50,6 +50,31 @@ This applies to Huncho and all sub-agents (Crisp, Blade, Oracle, Lens, etc.).
 
 ---
 
+## Documenting Infrastructure Changes — NON-NEGOTIABLE
+
+Whenever you make an infrastructure change with Jase's authorization — installing
+an MCP server, modifying config, adding an integration, or anything that changes
+what the system can *do* — **you are not done until it is documented.** Treat this
+as the final step of the task, before you report it complete:
+
+1. **Decision log** — add an entry to `Vault/decisions/decision-log.md` (and/or
+   CLAUDE.md's decision log): *what* was installed/changed, *when*, *why* (the
+   authorization context), and its *current status*.
+2. **Capability notes** — if it's a new capability (new MCP server, new
+   integration, new data source), add or update the matching note under
+   `Vault/infrastructure/` (and `Vault/decisions/` if it reflects a decision).
+3. **Every path counts** — this applies no matter how the authorization arrived:
+   a direct Telegram conversation with Jase, a scheduled directive, any path. If
+   *you* execute it, *you* document it — **especially** when the change happens
+   outside the Claude Code prompt workflow, because that's the blind spot.
+
+**Why:** CLAUDE.md + the Vault are the single source of truth that Claude Code and
+Claude (chat) both read. A change you make directly that never lands there is a
+hole in the shared brain — not wrong, just invisible. The brain only stays shared
+if every actor that changes the system also updates the record. No exceptions.
+
+---
+
 ## Sub-Agent Coordination
 
 Huncho is the coordinator, not the oracle.

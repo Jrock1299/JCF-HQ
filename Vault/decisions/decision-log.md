@@ -4,6 +4,33 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Alpaca + CoinCap MCP servers installed · 2026-07-24 *(backfilled)*
+**Decision:** Two OpenClaw-managed MCP servers were added at the gateway level
+(`mcp.servers` in openclaw.json), installed by Huncho/the main-agent context via
+`openclaw mcp add` (per `logs/config-audit.jsonl`). Authorized by Jase.
+*This entry backfills the documentation gap — the installs happened 2026-07-24
+but weren't recorded until the [[../../CLAUDE.md]]/Vault check flagged it; see the
+new "Documenting Infrastructure Changes" rule in Huncho's [[../../workspace/SOUL.md|SOUL]].*
+
+- **`alpaca`** (`npx @alpaca-open-api/mcp`) — added **13:01:30 UTC**, key set
+  **13:05:53 UTC**. **118 tools** (orders, positions, account, market data).
+  Uses the **existing PAPER key** (`PKKYEZ…`, `ALPACA_ENV=paper`, same as Jerry's
+  `.env`) — **not a new key, not live, no real-money scope.** Available to
+  gateway-agent turns (not the standalone Python bots, which use their own clients).
+- **`coincap`** (`npx coincap-mcp`) — added **13:02:45 UTC**. **3 tools**,
+  read-only public crypto data, no key. Traces to Lucy's 2026-07-18 research
+  recommendation ("CoinCap MCP, priority HIGH").
+- **Status:** both functional (`openclaw mcp probe` OK). Hygiene note: the Alpaca
+  key/secret are stored as literal plaintext in openclaw.json (gitignored). The
+  "270+ tools / instant execution / shared across whole roster" framing in the
+  original Huncho report was inaccurate — real surface is 118+3 tools, paper-only.
+
+**Why (rule that follows from this):** infra changes Huncho makes directly must
+land in this log going forward — see [[../../workspace/SOUL.md|SOUL §Documenting
+Infrastructure Changes]].
+
+---
+
 ## Google Drive Vault mirror · 2026-07-24
 **Decision:** Mirror `CLAUDE.md` + `Vault/**/*.md` to a Google Drive folder via a
 cron-driven Python sync, using **OAuth user credentials** (not a service account).

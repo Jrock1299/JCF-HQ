@@ -589,6 +589,8 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 
 | Decision | Date | Why |
 |---|---|---|
+| **Huncho documentation rule** | 2026-07-24 | Infra changes Huncho makes directly (e.g. `openclaw mcp add`) weren't landing in CLAUDE.md/Vault — a blind spot in the shared brain. Added a NON-NEGOTIABLE "Documenting Infrastructure Changes" rule to Huncho's SOUL: any authorized capability/config change must be logged (decision log + Vault/infrastructure note) before reporting complete. Huncho acknowledged. See `Vault/decisions/decision-log.md`. |
+| **Alpaca + CoinCap MCP installed** | 2026-07-24 | Gateway-level MCP servers added by Huncho via `openclaw mcp add` (backfilled). Alpaca = 118 tools on the existing **paper** key (not live); CoinCap = 3 read-only crypto tools (Lucy-recommended). Full detail in `Vault/decisions/decision-log.md`. |
 | **Oracle deleted** | 2026-06-01 | Sports betting bankroll ran -69% ROI. Resolver was firing quota-exhaustion errors hourly. Strategist's pre-trade scoring fed nobody (Blade v5 ignored it, Crisp was halted). Dead weight. Backed up to `/tmp/oracle_deleted_backup/`. |
 | **Kalshi deleted** | 2026-06-01 | CSV logged order placement but not settlement — P&L was unknowable. API-key rotation and 429s were noisy. Settlement pipeline never finished. Backed up to `/tmp/kalshi_deleted_backup/`. |
 | **Blade D3 redesign** | 2026-06-01 | Norman flagged Blade as FAIL. Root cause was 4× sizing under-count (used 3pt SL buffer as divisor instead of real stop distance) AND sub-1R TPs on positions 1 and 2 (0.26:1 and 0.44:1 against typical 11.4pt stop). MC backtest of D3: PF 0.92 → 1.54, max DD 25%, 0% ruin. |
