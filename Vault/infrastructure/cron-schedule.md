@@ -44,31 +44,36 @@ See [[../agents/lens]].
 ```
 See [[../agents/jarvis]].
 
-## Session prep pings (Huncho voice + auto 4H reads)
+## Session prep pings (Huncho voice + auto 4H reads) — HELD 2026-07-24
 ```
-40 23 * * 1-5    session_prep_ping.sh ASIA            # T-10 before ASIA
-45 7  * * 1-5    session_prep_ping.sh LONDON          # T-10 before LONDON
-15 13 * * 1-5    session_prep_ping.sh NY_OPEN         # T-10 before NY open (manual)
-45 17 * * 1-5    session_prep_ping.sh NY_PM           # T-10 before NY_PM
+#HOLD 40 23 * * 1-5    session_prep_ping.sh ASIA            # T-10 before ASIA
+#HOLD 45 7  * * 1-5    session_prep_ping.sh LONDON          # T-10 before LONDON
+#HOLD 15 13 * * 1-5    session_prep_ping.sh NY_OPEN         # T-10 before NY open (manual)
+#HOLD 45 17 * * 1-5    session_prep_ping.sh NY_PM           # T-10 before NY_PM
 ```
 Each prep ping generates an [[system-architecture#h4-read-pipeline|H4 read]]
 per instrument, packages them via [[../agents/huncho|Huncho]], and Telegrams
 the lot. Reads cache 30 min so Blade's session-start call hits the cache.
 
-## Blade trading sessions
+## Blade trading sessions — HELD 2026-07-24
 ```
-50 23 * * 1-5    timeout 7200 blade/bot/run_session.sh ASIA     # SPX500
-55 7  * * 1-5    timeout 7200 blade/bot/run_session.sh LONDON   # SPX500 + DE30 + CHF/JPY
-55 17 * * 1-5    timeout 7200 blade/bot/run_session.sh NY_PM    # SPX500
+#HOLD 50 23 * * 1-5    timeout 7200 blade/bot/run_session.sh ASIA     # SPX500
+#HOLD 55 7  * * 1-5    timeout 7200 blade/bot/run_session.sh LONDON   # SPX500 + DE30 + CHF/JPY
+#HOLD 55 17 * * 1-5    timeout 7200 blade/bot/run_session.sh NY_PM    # SPX500
 ```
 2-hour `timeout` is a safety net — each session is hard-capped at the
 defined close time within the script.
 
-## Session-end unified reports
+**Held 2026-07-24 at Jase's direction** — no live strategy yet, so Blade's
+paper sessions + all session support (prep pings above, end reports below) are
+`#HOLD`'d. Un-hold all three groups together to resume. Code-ready: OANDA auth
+was restored the same day, nothing else blocks it.
+
+## Session-end unified reports — HELD 2026-07-24
 ```
-0  6  * * 1-5    session_end_notify.py ASIA
-30 13 * * 1-5    session_end_notify.py LONDON
-0  21 * * 1-5    session_end_notify.py NY_PM
+#HOLD 0  6  * * 1-5    session_end_notify.py ASIA
+#HOLD 30 13 * * 1-5    session_end_notify.py LONDON
+#HOLD 0  21 * * 1-5    session_end_notify.py NY_PM
 ```
 
 ## Sentinel — insider/market intel

@@ -39,13 +39,13 @@ remembering — write it down here.
 
 ## 2. Active Agents
 
-**Fleet state (2026-07-24):** the fleet is back online after the June hold —
-**19 active agent cron lines** (plus supporting infra, 29 active cron lines
-total). Live on cron: **Lens, Blade** (3 sessions), **Jarvis** (2 briefings),
-**Lucy, Tao** (5 jobs), **Victoria** (daily+weekly), **Norman, Sentinel** (3×),
-plus the Drive-sync and Blade support crons (session prep/end pings, agent-PnL,
-TradeLocker sync, dashboard mirror), plus the **Kraken** sync (keys wired
-2026-07-24). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
+**Fleet state (2026-07-24 evening):** Live on cron: **Lens, Jarvis** (2
+briefings), **Lucy, Tao** (5 jobs), **Victoria** (daily+weekly), **Norman,
+Sentinel** (3×), plus the Drive-sync, agent-PnL, TradeLocker sync, dashboard
+mirror, API-cost, and **Kraken** syncs. **Blade is now HELD** (all 3 sessions +
+session support — prep pings + end reports — `#HOLD`'d at Jase's direction:
+no live strategy yet, so no reason to run paper sessions). It's code-ready to
+resume the moment it's un-held (OANDA auth restored same day). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
 not yet started — awaiting go-ahead), **Edge** (systemd service stopped —
 awaiting go-ahead; its missing OANDA `auth-profiles.json` was **restored
 2026-07-24 evening** from the Jul-17 migration `.bak`, token validated
@@ -117,8 +117,12 @@ two of three positions had inverted reward-to-risk.
 - `dashboard/blade_learning_log.json` — Phase 1 context dataset
 - `dashboard/agent_strategies.json` (`"blade"` block) — all tunable knobs
 
-**Status:** Active on paper. Reset 2026-06-01 to $5,000 clean. Norman D3
-validation at 100 closed clusters before any live deployment.
+**Status:** **HELD 2026-07-24** — sessions + session support (prep pings, end
+reports) `#HOLD`'d in cron at Jase's direction (no live strategy yet, so no
+reason to accrue paper sessions/noise). The OANDA auth restore earlier the same
+day means it *can* run the moment it's un-held; nothing code-side blocks it.
+Paper account, reset 2026-06-01 to $5,000 clean. Norman D3 validation at 100
+closed clusters before any live deployment.
 
 ### 📡 **EDGE** — `edge`
 **Job:** 1H SMA 8/21 crossover on SPX500_USD only (OANDA practice account
@@ -266,6 +270,18 @@ not active trading.
 **Key files:** `agents/tao/tao_*.py` (separate scripts for each cycle)
 **Knobs:** in `tao_config.py` (env-gated; should eventually migrate to
 `agent_strategies.json`).
+**Status (2026-07-24 evening):** the `websockets 10.4` ImportError that killed
+every chain/btcli call since ~June is **fixed** — system `websockets` upgraded
+to 14.2 (user-approved; only other consumer, Jerry/alpaca, verified safe;
+btcli 9.20.1 + bittensor 10.2.0 import clean). Profit-monitor runs again (no
+staking action — all positions underwater, tiers empty). **Still broken:** the
+**data collector** (which writes the dashboard `updated` field + subnet
+snapshot) hits bittensor-10.2.0 API drift — `Balance()` rejects a tuple, and
+the chain query `Swap.AlphaSqrtPrice` storage function is gone. That's a
+**separate SDK-migration task** (the Tao scripts were written for an older
+bittensor) — not attempted here since it touches live staking code. Until then
+`dashboard/tao_portfolio.json` `updated` stays April; price + position
+monitoring work.
 
 ### 🔍 **LUCY** — `lucy`
 **Job:** Weekly skills/tools/MCP research scout. Searches GitHub, Reddit,
@@ -513,21 +529,21 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 0  12 * * 1-5    strategist/run_research.sh           # pre-NY brief
 0  8  * * 6      strategist/deep_backtest.py          # Saturday weekly deep backtest
 
-# ── Session prep pings (Huncho voice + auto 4H chart reads)
-40 23 * * 1-5    session_prep_ping.sh ASIA            # 10 min before ASIA
-45 7  * * 1-5    session_prep_ping.sh LONDON          # 10 min before LONDON
-15 13 * * 1-5    session_prep_ping.sh NY_OPEN         # 10 min before NY open (manual session)
-45 17 * * 1-5    session_prep_ping.sh NY_PM           # 10 min before NY_PM
+# ── Session prep pings (Huncho voice + auto 4H chart reads) — HELD 2026-07-24 with Blade
+#HOLD 40 23 * * 1-5    session_prep_ping.sh ASIA            # 10 min before ASIA
+#HOLD 45 7  * * 1-5    session_prep_ping.sh LONDON          # 10 min before LONDON
+#HOLD 15 13 * * 1-5    session_prep_ping.sh NY_OPEN         # 10 min before NY open (manual session)
+#HOLD 45 17 * * 1-5    session_prep_ping.sh NY_PM           # 10 min before NY_PM
 
-# ── Blade trading sessions (D3 sizing)
-50 23 * * 1-5    timeout 7200 blade/bot/run_session.sh ASIA
-55 7  * * 1-5    timeout 7200 blade/bot/run_session.sh LONDON
-55 17 * * 1-5    timeout 7200 blade/bot/run_session.sh NY_PM
+# ── Blade trading sessions (D3 sizing) — HELD 2026-07-24 (no live strategy yet; un-hold to resume)
+#HOLD 50 23 * * 1-5    timeout 7200 blade/bot/run_session.sh ASIA
+#HOLD 55 7  * * 1-5    timeout 7200 blade/bot/run_session.sh LONDON
+#HOLD 55 17 * * 1-5    timeout 7200 blade/bot/run_session.sh NY_PM
 
-# ── Session-end unified reports
-0  6  * * 1-5    session_end_notify.py ASIA
-30 13 * * 1-5    session_end_notify.py LONDON
-0  21 * * 1-5    session_end_notify.py NY_PM
+# ── Session-end unified reports — HELD 2026-07-24 with Blade
+#HOLD 0  6  * * 1-5    session_end_notify.py ASIA
+#HOLD 30 13 * * 1-5    session_end_notify.py LONDON
+#HOLD 0  21 * * 1-5    session_end_notify.py NY_PM
 
 # ── Sentinel (insider/market intel) — 3x daily weekdays
 0  8  * * 1-5    sentinel/run_sentinel.sh
