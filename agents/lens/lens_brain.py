@@ -308,10 +308,11 @@ def _extract_json(text: str) -> dict | None:
 
 # ─── Telegram ──────────────────────────────────────────────────────────────────
 
-def _send_telegram(text: str) -> None:
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        print('[lens_brain] Telegram not configured — skipping send')
-        return
+TG_MAX = 4000  # Telegram's hard limit is 4096; keep headroom
+
+
+def _tg_send_chunk(text: str) -> bool:
+    """Send a single chunk. Returns True on success."""
     try:
         resp = requests.post(
             f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage',
@@ -320,10 +321,39 @@ def _send_telegram(text: str) -> None:
         )
         if not resp.ok:
             print(f'[lens_brain] Telegram error {resp.status_code}: {resp.text[:200]}')
-        else:
-            print('[lens_brain] Telegram report sent')
+            return False
+        return True
     except Exception as e:
         print(f'[lens_brain] Telegram exception: {e}')
+        return False
+
+
+def _send_telegram(text: str) -> None:
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        print('[lens_brain] Telegram not configured — skipping send')
+        return
+    if len(text) <= TG_MAX:
+        if _tg_send_chunk(text):
+            print('[lens_brain] Telegram report sent')
+        return
+    # Report exceeds the 4096-char limit — split at newlines (mirrors Victoria).
+    chunks = []
+    current = ''
+    for line in text.split('\n'):
+        candidate = current + ('\n' if current else '') + line
+        if len(candidate) > TG_MAX:
+            if current:
+                chunks.append(current)
+            current = line
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+    for i, chunk in enumerate(chunks, 1):
+        ok = _tg_send_chunk(chunk)
+        print(f'[lens_brain] Telegram chunk {i}/{len(chunks)} {"sent" if ok else "FAILED"}')
+        if not ok:
+            break
 
 
 def _build_telegram_report(result: dict) -> str:

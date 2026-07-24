@@ -6,7 +6,7 @@
 > If something is in this file, it's current. If it's not, assume it doesn't
 > exist or was deleted.
 >
-> **Last updated:** 2026-06-01 (see `git log` for revision history).
+> **Last updated:** 2026-07-24 (see `git log` for revision history).
 
 ---
 
@@ -39,7 +39,15 @@ remembering — write it down here.
 
 ## 2. Active Agents
 
-Eleven agents are currently running on cron or systemd. Internal agent ID
+**Fleet state (2026-07-24):** the fleet is back online after the June hold —
+**19 active agent cron lines** (plus supporting infra, 29 active cron lines
+total). Live on cron: **Lens, Blade** (3 sessions), **Jarvis** (2 briefings),
+**Lucy, Tao** (5 jobs), **Victoria** (daily+weekly), **Norman, Sentinel** (3×),
+plus the Drive-sync and Blade support crons (session prep/end pings, agent-PnL,
+TradeLocker sync, dashboard mirror). **Held:** **Jerry** (Anthropic SDK,
+separate decision — the only remaining Anthropic-billed agent besides Lens),
+**Edge** (systemd — currently down on a missing OANDA `auth-profiles.json`),
+**Robinhood/Kraken** syncs, and **Crisp/Phantom** (parked). Internal agent ID
 shown in `code-format`; display name (Telegram header) shown in **bold**.
 
 ### 👑 **HUNCHO** — `huncho`
