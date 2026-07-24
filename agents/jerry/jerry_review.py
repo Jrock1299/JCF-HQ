@@ -10,13 +10,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import anthropic
-
 sys.path.insert(0, str(Path(__file__).parent))
 from jerry_config import (
     REVIEW_MODEL, TRADE_HISTORY_PATH, PERFORMANCE_PATH, WATCHLIST_PATH,
     get_logger, send_telegram, save_api_cost, load_json, save_json,
-    extract_json,
+    extract_json, _run_codex,
 )
 
 log = get_logger('review')
@@ -77,10 +75,12 @@ def _build_review_prompt(trade_history: list, portfolio: dict) -> str:
     parts = [f"EOD REVIEW — {today_str}", ""]
 
     # Today's trades
+    # (guard against explicit None values — `.get(k, '')` returns None, not '',
+    #  when the key is present but null; pre-existing bug surfaced 2026-07-24)
     today_trades = [
         t for t in trade_history
-        if t.get('opened_at', '').startswith(today_str) or
-           t.get('closed_at', '').startswith(today_str)
+        if (t.get('opened_at') or '').startswith(today_str) or
+           (t.get('closed_at') or '').startswith(today_str)
     ]
 
     parts.append(f"TODAY'S TRADES ({len(today_trades)}):")
@@ -168,30 +168,19 @@ def review_day(trade_history: list, portfolio: dict) -> dict:
     log.info('Review starting — %d total trades, %d open positions',
              len(trade_history), len(portfolio.get('positions', [])))
 
-    client = anthropic.Anthropic()
     prompt = _build_review_prompt(trade_history, portfolio)
 
-    print(f'[review] Calling {REVIEW_MODEL}...')
+    print(f'[review] Calling {REVIEW_MODEL} (Codex via gateway)...')
 
-    response = client.messages.create(
-        model=REVIEW_MODEL,
-        max_tokens=MAX_TOKENS,
-        system=SYSTEM_PROMPT,
-        messages=[{'role': 'user', 'content': prompt}],
-    )
-
-    input_tokens  = response.usage.input_tokens
-    output_tokens = response.usage.output_tokens
+    # Codex has no separate system slot — persona prepended into the message.
+    result_text   = _run_codex(SYSTEM_PROMPT, prompt, model=REVIEW_MODEL)
+    input_tokens  = 0   # Codex free tier — no Anthropic token billing
+    output_tokens = 0
     cost_usd      = save_api_cost('review', input_tokens, output_tokens)
 
-    print(f'[review] {input_tokens}in + {output_tokens}out | ${cost_usd:.4f}')
+    print(f'[review] {len(result_text or "")} chars returned | ${cost_usd:.4f}')
 
-    result_text = ''
-    for block in response.content:
-        if getattr(block, 'type', '') == 'text' and block.text:
-            result_text = block.text
-
-    result = extract_json(result_text)
+    result = extract_json(result_text) if result_text else None
 
     if result is None:
         log.error('Review returned no parseable JSON')
@@ -239,7 +228,7 @@ def _notify_review(result: dict, trade_history: list, portfolio: dict) -> None:
     today_str     = date_str
     today_closed  = [
         t for t in trade_history
-        if t.get('closed_at', '').startswith(today_str) and
+        if (t.get('closed_at') or '').startswith(today_str) and
            t.get('pnl') is not None
     ]
     best_trade = max(today_closed, key=lambda t: float(t.get('pnl', 0)),

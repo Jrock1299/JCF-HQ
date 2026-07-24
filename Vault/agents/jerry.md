@@ -55,5 +55,11 @@ Logged to `dashboard/jerry_learning_log.json` AND stamped onto every row in
 - Wraps Telegram via: [[huncho]]
 
 ## Model routing
-Claude Sonnet 4.6 for discovery + review (reasoning). Trade execution is
-deterministic Alpaca REST. See [[../infrastructure/model-routing]].
+`openai/gpt-5.6-terra` via the Codex gateway (`_run_codex` in `jerry_config.py`,
+shared by discover + review) — **migrated 2026-07-24** off the Anthropic SDK, same
+pattern as [[victoria]]/[[norman]]/[[lucy]]. Discovery still web-searches via the
+gateway agent's own tools. No `ANTHROPIC_API_KEY` dependency. Trade execution
+stays deterministic Alpaca REST. `jerry.service` held (not started) pending
+go-ahead. Also fixed a pre-existing `None`-value crash in the review's date
+filter (`t.get('closed_at', '')` → `(t.get('closed_at') or '')`). See
+[[../infrastructure/model-routing]], [[../sessions/2026-07-24]].

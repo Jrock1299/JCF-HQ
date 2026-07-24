@@ -44,11 +44,12 @@ remembering — write it down here.
 total). Live on cron: **Lens, Blade** (3 sessions), **Jarvis** (2 briefings),
 **Lucy, Tao** (5 jobs), **Victoria** (daily+weekly), **Norman, Sentinel** (3×),
 plus the Drive-sync and Blade support crons (session prep/end pings, agent-PnL,
-TradeLocker sync, dashboard mirror). **Held:** **Jerry** (Anthropic SDK,
-separate decision — the only remaining Anthropic-billed agent besides Lens),
-**Edge** (systemd — currently down on a missing OANDA `auth-profiles.json`),
-**Robinhood/Kraken** syncs, and **Crisp/Phantom** (parked). Internal agent ID
-shown in `code-format`; display name (Telegram header) shown in **bold**.
+TradeLocker sync, dashboard mirror), plus the **Kraken** sync (keys wired
+2026-07-24). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
+not yet started — awaiting go-ahead), **Edge** (systemd — down on a missing OANDA
+`auth-profiles.json`), **Robinhood** sync, and **Crisp/Phantom** (parked). **Lens
+is now the only Anthropic-billed cron agent.** Internal agent ID shown in
+`code-format`; display name (Telegram header) shown in **bold**.
 
 ### 👑 **HUNCHO** — `huncho`
 **Job:** Orchestrator. Telegram router. Kill-zone scheduler. Don personality
@@ -136,7 +137,8 @@ post-rebuild dataset because the strategy was reset).
 
 ### 📊 **JERRY** — `jerry`
 **Job:** Autonomous stocks + options paper trader on Alpaca.
-**Model:** Codex + Claude (Sonnet 4.6 brain for discovery & review).
+**Model:** `openai/gpt-5.6-terra` via Codex (discovery & review; migrated off
+the Anthropic SDK 2026-07-24). Trade execution is deterministic Alpaca REST.
 **Cycle (UTC):**
 - 13:00 — pre-market discovery run (Claude reasons about Sentinel + market context)
 - 13:30–20:00 — 5-min trading ticks against the day's watchlist
@@ -367,7 +369,7 @@ Each agent has its own voice:
 | Lens | `claude-sonnet-4-6` (Anthropic SDK) | web_search depth + structured JSON. **Only** remaining Anthropic-billed cron agent. |
 | Norman, Victoria, Lucy | `openai/gpt-5.6-terra` via Codex runtime (`openclaw agent` subprocess, Lucy pattern) | Migrated 2026-07-24; bumped 5.5→5.6 Terra. Override id must be a **plain** tier id AND whitelisted in `agents.defaults.models` — the `-codex` suffixed ids are runtime-bound and rejected as `--model` overrides. Terra + Luna work; **Sol 400s** on this backend and plain `gpt-5.6` is unknown. |
 | Jarvis, H4 reads, Huncho narratives | `openai/gpt-5.6-terra` via `openclaw infer model run`, fallback `openai/gpt-5.5` → `openrouter/auto` | `infer model run` is not gated by the allow-list. Retired: `gpt-5.2-codex` / `gpt-5.3-codex`. |
-| Jerry brain | `claude-sonnet-4-6` (Anthropic SDK — **NOT** yet migrated) | Discovery + review. Listed for Codex migration 2026-07-24 but held: it's on Anthropic (not Codex) and needs the same `_run_codex` refactor Victoria/Norman got, not a string swap. Separate decision. |
+| Jerry brain | `openai/gpt-5.6-terra` via Codex (`_run_codex` in `jerry_config.py`) | **Migrated 2026-07-24** off the Anthropic SDK (discover + review). Discovery keeps web search via the gateway agent's own tools (like Lucy). `jerry.service` still held — not started pending go-ahead. |
 | Blade, Edge | none (pure algorithmic bots) | No LLM calls at runtime. The stale `openai/gpt-5.3-codex` entries under `agents.list` (crisp/blade/oracle), the duplicate in `agents.defaults.model.fallbacks`, and the dead allow-list entry were **pruned 2026-07-24** via `openclaw config patch`. |
 | chart_analysis.py | Image-capable models with fallback list: `codex/gpt-5.4` → `codex/gpt-5.5` | Default `moonshot/kimi-k2.5` is currently suspended for billing — do NOT use until restored. |
 

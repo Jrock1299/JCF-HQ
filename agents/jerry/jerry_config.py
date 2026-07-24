@@ -57,9 +57,12 @@ SENTINEL_DATA    = Path('/root/.openclaw/dashboard/sentinel_data.json')
 DASHBOARD_PATH   = Path('/root/.openclaw/dashboard/jerry_portfolio.json')
 API_COSTS_PATH   = Path('/root/.openclaw/logs/jerry_api_costs.json')
 
-# Claude model
-DISCOVER_MODEL   = 'claude-sonnet-4-6'
-REVIEW_MODEL     = 'claude-sonnet-4-6'
+# Model — migrated 2026-07-24 off the Anthropic SDK to Codex via the openclaw
+# gateway (Lucy/Victoria/Norman pattern; see _run_codex below). Override must be
+# a plain tier id whitelisted in agents.defaults.models; '-codex' suffixed ids
+# are rejected as --model overrides.
+DISCOVER_MODEL   = 'openai/gpt-5.6-terra'
+REVIEW_MODEL     = 'openai/gpt-5.6-terra'
 
 # ── Telegram ──────────────────────────────────────────────────────────────────
 
@@ -205,6 +208,56 @@ def save_api_cost(call_type: str, input_tokens: int, output_tokens: int,
     costs.append(entry)
     save_json(API_COSTS_PATH, costs)
     return cost
+
+
+def _run_codex(system_prompt: str, user_message: str,
+               model: str = DISCOVER_MODEL, timeout: int = 400) -> str | None:
+    """Route a prompt through the openclaw gateway agent (Codex) — Lucy's
+    subprocess pattern, shared by jerry_discover + jerry_review.
+
+    The gateway agent has no separate `system` slot, so the persona is prepended
+    into the message. The (large) payload goes via --message-file to dodge the
+    ~128KB single CLI-arg limit. Web search, when the prompt asks for it, runs
+    inside the gateway agent's own tools (same as Lucy). Returns text or None.
+    """
+    import subprocess
+    import tempfile
+    combined = f"{system_prompt}\n\n=== TASK ===\n\n{user_message}"
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            'w', suffix='.txt', prefix='jerry_codex_',
+            dir='/tmp', delete=False, encoding='utf-8',
+        ) as fh:
+            fh.write(combined)
+            tmp_path = fh.name
+        cmd = [
+            'openclaw', 'agent',
+            '--agent', 'main',
+            '--model', model,
+            '--message-file', tmp_path,
+            '--json',
+            '--timeout', str(timeout),
+        ]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 60)
+        if proc.returncode != 0:
+            print(f'[jerry] Codex call failed: {proc.stderr[:300]}')
+            return None
+        data = json.loads(proc.stdout)
+        payloads = data.get('result', {}).get('payloads', [])
+        return payloads[0].get('text', '') if payloads else None
+    except subprocess.TimeoutExpired:
+        print('[jerry] Codex call timed out')
+        return None
+    except Exception as e:
+        print(f'[jerry] Codex call error: {e}')
+        return None
+    finally:
+        if tmp_path:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
 
 
 # ── Market hours helpers ───────────────────────────────────────────────────────

@@ -11,13 +11,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import anthropic
-
 sys.path.insert(0, str(Path(__file__).parent))
 from jerry_config import (
     DISCOVER_MODEL, SENTINEL_DATA, WATCHLIST_PATH, API_COSTS_PATH,
     get_logger, send_telegram, save_api_cost, load_json, save_json,
-    extract_json,
+    extract_json, _run_codex,
 )
 
 log = get_logger('discover')
@@ -251,64 +249,32 @@ def discover_opportunities(portfolio: dict, sentinel_data: dict,
     log.info('Discovery starting — %d open positions, %d trades in history',
              len(portfolio.get('positions', [])), len(performance_history))
 
-    client = anthropic.Anthropic()
     prompt = _format_context(portfolio, sentinel_data, performance_history)
 
-    print(f'[discover] Calling {DISCOVER_MODEL} with web search...')
+    print(f'[discover] Calling {DISCOVER_MODEL} (Codex via gateway) with web search...')
 
-    messages = [{'role': 'user', 'content': prompt}]
+    # Codex has no separate system slot — persona prepended into the message.
+    # web_search runs inside the gateway agent's own tools (count not exposed).
+    result_text  = _run_codex(SYSTEM_PROMPT, prompt, model=DISCOVER_MODEL)
+    web_searches = 0
+    total_input  = 0   # Codex free tier — no Anthropic token billing
+    total_output = 0
 
-    response = client.messages.create(
-        model=DISCOVER_MODEL,
-        max_tokens=MAX_TOKENS,
-        system=SYSTEM_PROMPT,
-        tools=[{'type': 'web_search_20250305', 'name': 'web_search'}],
-        messages=messages,
-    )
+    print(f'[discover] Turn 1: {len(result_text or "")} chars returned')
 
-    web_searches = sum(
-        1 for block in response.content
-        if getattr(block, 'type', '') in ('tool_use', 'server_tool_use')
-        and 'web_search' in getattr(block, 'name', '')
-    ) or sum(
-        1 for block in response.content
-        if 'web_search' in getattr(block, 'type', '')
-    )
-
-    total_input  = response.usage.input_tokens
-    total_output = response.usage.output_tokens
-
-    print(f'[discover] Turn 1: {total_input}in + {total_output}out | '
-          f'{web_searches} web searches')
-
-    result_text = ''
-    for block in response.content:
-        if getattr(block, 'type', '') == 'text' and block.text:
-            result_text = block.text
-
-    result = extract_json(result_text)
+    result = extract_json(result_text) if result_text else None
 
     # Fallback: request JSON-only follow-up if needed
     if result is None and result_text:
         print('[discover] No JSON in turn 1 — requesting JSON-only follow-up...')
-        response2 = client.messages.create(
-            model=DISCOVER_MODEL,
-            max_tokens=MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            tools=[{'type': 'web_search_20250305', 'name': 'web_search'}],
-            messages=messages + [
-                {'role': 'assistant', 'content': response.content},
-                {'role': 'user', 'content':
-                 'Output ONLY the JSON now — no prose, no markdown. '
-                 'Start with { and end with }.'},
-            ],
+        follow_up = (
+            prompt
+            + '\n\nYOUR PREVIOUS RESPONSE:\n' + result_text
+            + '\n\nOutput ONLY the JSON now — no prose, no markdown. '
+              'Start with { and end with }.'
         )
-        total_input  += response2.usage.input_tokens
-        total_output += response2.usage.output_tokens
-        for block in response2.content:
-            if getattr(block, 'type', '') == 'text' and block.text:
-                result_text = block.text
-        result = extract_json(result_text)
+        result_text2 = _run_codex(SYSTEM_PROMPT, follow_up, model=DISCOVER_MODEL)
+        result = extract_json(result_text2) if result_text2 else None
 
     cost_usd = save_api_cost('discover', total_input, total_output, web_searches)
     print(f'[discover] Total: {total_input}in + {total_output}out | '
