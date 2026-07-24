@@ -381,7 +381,8 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 0  6  1,15 * *   sync_robinhood.py
 0  6  1,15 * *   sync_trustwallet.py
 0  6  1,15 * *   sync_kraken.py
-0  6  1,15 * *   plaid/sync_plaid_transactions.py
+0  6  1,15 * *   plaid/sync_plaid_transactions.py     # Truist transactions
+0  6  1,15 * *   plaid/sync_plaid.py                  # Truist checking/MMA balances (restored 2026-07-24)
 
 # ── Lens (macro briefing)
 55 4  * * 1-5    run_lens_brain.sh                    # 04:55 — before all sessions
@@ -455,7 +456,8 @@ All times UTC unless noted. Mon–Fri = weekdays only.
    Without it: `TypeError: Could not resolve authentication method`.
 
 3. **Portfolio syncs run 1st & 15th only** (`0 6 1,15 * *`). Robinhood,
-   Trustwallet, Kraken, Plaid. Do not increase frequency — RH 429s and
+   Trustwallet, Kraken, Plaid (both `sync_plaid_transactions.py` and
+   `sync_plaid.py` balances). Do not increase frequency — RH 429s and
    wallet rate limits are real.
 
 4. **Skills live in `~/.claude/skills/`.** 67 installed as of this writing.

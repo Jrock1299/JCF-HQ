@@ -14,11 +14,20 @@ All times UTC. `* * 1-5` = weekdays only.
 0  6  1,15 * *   sync_robinhood.py
 0  6  1,15 * *   sync_trustwallet.py
 0  6  1,15 * *   sync_kraken.py
-0  6  1,15 * *   plaid/sync_plaid_transactions.py
+0  6  1,15 * *   plaid/sync_plaid_transactions.py    # Truist transactions
+0  6  1,15 * *   plaid/sync_plaid.py                 # Truist checking/MMA balances
 ```
 Slowed from daily to bi-monthly 2026-06-01. Robinhood was 429ing daily; the
 data doesn't move fast enough to justify the spam. See
 [[../decisions/decision-log]].
+
+**Plaid balance sync restored 2026-07-24.** `plaid/sync_plaid.py` (writes
+`dashboard/plaid_data.json`, the checking/MMA balances) had **never** been in
+cron — it only ever ran by hand, so the dashboard balance went ~95 days stale
+(last hand-run 2026-04-20). Added on the same 1st/15th cadence as the other
+syncs, and un-held `sync_plaid_transactions.py` (it had been `#HOLD`). The Plaid
+production access token was never the problem — it validated live and pulled
+fresh balances immediately. No re-auth was needed.
 
 ## Lens — macro briefing
 ```
