@@ -4,6 +4,14 @@ export type Theme = 'dark' | 'light'
 const KEY = 'jcf-theme'
 
 function initialTheme(): Theme {
+  // URL override (?theme=light|dark) — shareable forced theme; also lets
+  // headless screenshot checks pin a theme without localStorage.
+  try {
+    const q = new URLSearchParams(window.location.search).get('theme')
+    if (q === 'light' || q === 'dark') return q
+  } catch {
+    /* no window/URL */
+  }
   try {
     const stored = localStorage.getItem(KEY)
     if (stored === 'light' || stored === 'dark') return stored

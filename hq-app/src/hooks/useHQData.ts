@@ -26,6 +26,7 @@ export const ENDPOINTS: Record<string, string> = {
   'agent-hub-file': '/agent_hub.json',
   'morning-report': '/morning_report.json',
   'sentinel-data': '/sentinel_data.json',
+  'api-costs': '/api_costs.json',
 }
 
 async function fetchWithTimeout(url: string, ms = 2500): Promise<any> {

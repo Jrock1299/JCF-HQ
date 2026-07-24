@@ -130,3 +130,30 @@ Do NOT edit `serve_hq.py` / `hq_storage_server.py` for frontend work.
 ## Related
 - [[system-architecture]] · [[personalities]] · [[cron-schedule]]
 - [[../decisions/decision-log]] · [[../sessions/2026-07-17]]
+
+## API Usage & Cost card (2026-07-24)
+
+Finances page, bottom section. Design piece — donut ring centerpiece with
+soft glow, per the reference set in `/root/.openclaw/reference/`.
+
+- **Data:** `dashboard/api_costs.json`, produced hourly (cron :17) by
+  `scripts/sync_api_costs.py` from `logs/*_api_costs.json`. Real dollars only —
+  Codex-routed runs log $0 and contribute nothing; nothing fabricated.
+- **Donut:** custom SVG (rounded caps, per-segment color-matched glow, gold →
+  bronze sequence). Arc length = share of real spend this month. Dotted muted
+  inner ring = the subscription-covered Codex fleet ($0 marginal). Framer-motion
+  draw-in.
+- **Trend:** 30-day daily spend sparkline (recharts, animation off so it renders
+  on first paint; gold endpoint dot keeps "today" visible at the right edge).
+- **Ceiling:** default $50, editable in-place via `<EditableValue>`
+  (`api_costs.json` · `ceiling_usd`); the producer preserves the edited value
+  across rewrites. Warning states: ≥70% amber "approaching", ≥100% red bar +
+  "over ceiling" badge + red card ring.
+- **Fleet list:** every agent with portrait; badges `METERED` (Lens) /
+  `CODEX · INCLUDED` / `NO AI COST` (Blade, Edge, Tao — algorithmic, shown as
+  "—" not $0). Jerry/Victoria/Norman/Lucy carry an "Anthropic-billed until
+  Jul 24" note while their pre-migration July spend is nonzero.
+- **Theme:** both modes verified by headless screenshot; `useTheme` now honors
+  a `?theme=light|dark` URL param (shareable + lets headless checks pin a theme).
+- `agentConfig.ts` model fields corrected (Victoria/Norman → Codex) to match
+  the 2026-07-24 migration.

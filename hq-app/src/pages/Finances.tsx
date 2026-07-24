@@ -1,6 +1,7 @@
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import GlassCard from '../components/GlassCard'
 import EditableValue from '../components/EditableValue'
+import ApiCostCard from '../components/ApiCostCard'
 import { useHQData, fmtUSD, timeAgo } from '../hooks/useHQData'
 import { trajectory } from '../data/derive'
 
@@ -167,6 +168,10 @@ export default function Finances() {
           </div>
         )}
       </GlassCard>
+
+      {/* API usage & cost */}
+      <div className="mono-label" style={{ margin: '24px 0 12px' }}>api usage &amp; cost</div>
+      <ApiCostCard />
     </div>
   )
 }

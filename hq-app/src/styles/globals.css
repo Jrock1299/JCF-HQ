@@ -386,6 +386,31 @@ input { font-family: var(--font-body); }
 .text-dim { color: var(--text-dim); }
 .text-mute { color: var(--text-mute); }
 
+/* ═══════════ API COST CARD ═══════════ */
+.cost-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) auto minmax(260px, 1.1fr);
+  gap: 30px;
+  align-items: start;
+}
+@media (max-width: 1180px) {
+  .cost-grid { grid-template-columns: 1fr auto; }
+  .cost-grid > div:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .cost-grid { grid-template-columns: 1fr; justify-items: stretch; }
+  .cost-grid > div:nth-child(2) { justify-self: center; }
+}
+
+/* Faint full-circle track the spend arcs sit on. */
+.donut-track { stroke: rgba(128, 128, 140, 0.10); }
+:root[data-theme='light'] .donut-track { stroke: rgba(28, 38, 66, 0.07); }
+/* Dotted inner ring = the always-on subscription-covered fleet ($0 marginal). */
+.donut-muted { stroke: rgba(160, 165, 185, 0.30); }
+:root[data-theme='light'] .donut-muted { stroke: rgba(28, 38, 66, 0.22); }
+.legend-muted-tick { background: rgba(160, 165, 185, 0.35); }
+:root[data-theme='light'] .legend-muted-tick { background: rgba(28, 38, 66, 0.25); }
+
 /* Responsive */
 @media (max-width: 900px) {
   :root { --sidebar-w: 0px; }

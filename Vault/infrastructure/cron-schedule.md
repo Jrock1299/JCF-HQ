@@ -7,6 +7,7 @@ All times UTC. `* * 1-5` = weekdays only.
 */2  * * * *     sync_dashboard_public.sh             # dashboard mirror, every 2 min
 */30 * * * *     sync_tradelocker.py                  # broker fills, every 30 min
 */5  * * * *     sync_agent_pnl.py                    # rolling P&L per agent, every 5 min
+17   * * * *     sync_api_costs.py                    # API cost card feed, hourly
 ```
 
 ## Portfolio syncs (1st + 15th of month only)

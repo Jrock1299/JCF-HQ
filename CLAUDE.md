@@ -492,6 +492,7 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 */2  * * * *     sync_dashboard_public.sh             # dashboard mirror, every 2 min
 */30 * * * *     sync_tradelocker.py                  # broker fills, every 30 min
 */5  * * * *     sync_agent_pnl.py                    # rolling P&L per agent, every 5 min
+17   * * * *     sync_api_costs.py                    # API cost card feed, hourly
 
 # ── Portfolio syncs — every 2 weeks (1st + 15th, 06:00 UTC)
 0  6  1,15 * *   sync_robinhood.py
