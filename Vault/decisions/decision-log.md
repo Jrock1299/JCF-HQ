@@ -4,6 +4,39 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Google Drive Vault mirror · 2026-07-24
+**Decision:** Mirror `CLAUDE.md` + `Vault/**/*.md` to a Google Drive folder via a
+cron-driven Python sync, using **OAuth user credentials** (not a service account).
+See [[../infrastructure/gdrive-sync.md]].
+
+**Why OAuth over the originally-requested service account:** the Google account is
+a personal `@gmail.com`. Service accounts have no consumer-Drive storage quota, so
+SA-owned uploads fail (`storageQuotaExceeded`) even into a shared folder. OAuth
+user creds make the VPS act as the account owner — files owned by the user, in the
+user's Drive, readable by the connector. Scope `drive.file` (least privilege).
+
+**Why cron over a post-commit hook:** decoupled from git (Vault edits come from
+the VPS *and* the laptop; a hook only fires where the commit happens and would
+need creds there), no commit latency, self-healing on failure. Hash-based skip
+keeps idle 30-min runs near-free.
+
+**Gotcha captured:** refresh tokens are durable only if the OAuth consent screen
+is published to **"In production"** (Testing status expires them after 7 days).
+
+**Status:** scripts built + verified (compile, dry-run, change-detection). Cron
+added HELD. Real upload pending Jase's one-time Cloud Console + consent step.
+
+---
+
+## Prune dead gpt-5.3-codex from openclaw.json · 2026-07-24
+**Decision:** Remove all `openai/gpt-5.3-codex` references from config (agents.list
+crisp/blade/oracle overrides, the duplicate fallback, and the allow-list entry)
+via `openclaw config patch`/`unset`. gpt-5.3-codex is retired server-side and
+errored on every default-routing run. Config validates; VPS-only (openclaw.json
+gitignored).
+
+---
+
 ## Codex model routing → GPT-5.6 Terra · 2026-07-24
 **Decision:** Move the Codex-routed agents from `openai/gpt-5.5` to
 `openai/gpt-5.6-terra` (balanced tier) and rewrite the SOUL.md fallback chain

@@ -123,8 +123,9 @@ When current model hits rate limits, manually switch to the next one in order.
 - When Codex weekly quota resets, switch back to #1.
 - Sub-agents: Crisp is PARKED, Oracle is DELETED, and Blade/Edge are pure
   algorithmic bots with no LLM calls — none route to a model at runtime. (The
-  stale `openai/gpt-5.3-codex` entries under `agents.list` for crisp/blade/oracle
-  in openclaw.json are dead and can be pruned.)
+  stale `openai/gpt-5.3-codex` entries under `agents.list` for crisp/blade/oracle,
+  the duplicate in `agents.defaults.model.fallbacks`, and the dead allow-list
+  entry were PRUNED 2026-07-24 via `openclaw config patch`.)
 - If daily costs approach $3, alert Jase immediately.
 
 ---

@@ -360,7 +360,7 @@ Each agent has its own voice:
 | Norman, Victoria, Lucy | `openai/gpt-5.6-terra` via Codex runtime (`openclaw agent` subprocess, Lucy pattern) | Migrated 2026-07-24; bumped 5.5→5.6 Terra. Override id must be a **plain** tier id AND whitelisted in `agents.defaults.models` — the `-codex` suffixed ids are runtime-bound and rejected as `--model` overrides. Terra + Luna work; **Sol 400s** on this backend and plain `gpt-5.6` is unknown. |
 | Jarvis, H4 reads, Huncho narratives | `openai/gpt-5.6-terra` via `openclaw infer model run`, fallback `openai/gpt-5.5` → `openrouter/auto` | `infer model run` is not gated by the allow-list. Retired: `gpt-5.2-codex` / `gpt-5.3-codex`. |
 | Jerry brain | `claude-sonnet-4-6` (Anthropic SDK — **NOT** yet migrated) | Discovery + review. Listed for Codex migration 2026-07-24 but held: it's on Anthropic (not Codex) and needs the same `_run_codex` refactor Victoria/Norman got, not a string swap. Separate decision. |
-| Blade, Edge | none (pure algorithmic bots) | No LLM calls at runtime. Stale `openai/gpt-5.3-codex` entries under `agents.list` in openclaw.json are dead. |
+| Blade, Edge | none (pure algorithmic bots) | No LLM calls at runtime. The stale `openai/gpt-5.3-codex` entries under `agents.list` (crisp/blade/oracle), the duplicate in `agents.defaults.model.fallbacks`, and the dead allow-list entry were **pruned 2026-07-24** via `openclaw config patch`. |
 | chart_analysis.py | Image-capable models with fallback list: `codex/gpt-5.4` → `codex/gpt-5.5` | Default `moonshot/kimi-k2.5` is currently suspended for billing — do NOT use until restored. |
 
 **Critical .env auth fix:** Anthropic SDK calls fail with *"Could not resolve
@@ -373,6 +373,35 @@ set +a
 ```
 Currently applied in: `run_lens_brain.sh`, `run_victoria.sh`, `run_norman.sh`.
 **If you add a new Anthropic-using agent, add this block to its launcher.**
+
+### 4e. Google Drive Vault mirror
+
+Mirrors `CLAUDE.md` + `Vault/**/*.md` to a Google Drive folder (**"JCF HQ
+Vault"**) so Claude (chat) can read current project state via the Google Drive
+connector without manual pasting. Added 2026-07-24.
+
+| Piece | Path |
+|---|---|
+| Sync script | `scripts/gdrive_sync.py` (`--dry-run` plans without creds) |
+| One-time auth | `scripts/gdrive_auth.py` (mints the refresh token) |
+| Cron wrapper | `scripts/run_gdrive_sync.sh` (uses the openclaw venv) |
+| Credentials | `credentials/gdrive/{client_secret.json,token.json}` (gitignored) |
+| Change manifest | `state/gdrive_sync_manifest.json` (path → {drive id, sha256}) |
+| Log | `logs/gdrive_sync.log` |
+| Schedule | `#HOLD */30 * * * * run_gdrive_sync.sh` — held until OAuth is set up |
+
+- **Auth:** OAuth *user* credentials (not a service account — the account is a
+  personal `@gmail.com`, and service accounts can't own files in consumer
+  Drive). Least-privilege scope `drive.file`: the app only ever sees files it
+  created. The refresh token is durable **only if the OAuth consent screen is
+  published to "In production"** (Testing mode expires refresh tokens after 7
+  days). Google libs live in `venv/` (system Python is PEP-668 externally-managed).
+- **Efficiency:** SHA-256 content hash vs the manifest — unchanged files are
+  skipped, so idle 30-min runs make near-zero API calls.
+- **Trigger choice — cron, not a post-commit hook:** decoupled from git (Vault
+  edits land from either the VPS or the laptop; a hook only fires on the machine
+  that commits and would need creds there), no commit latency, and self-healing
+  (a failed run just retries next tick). See `Vault/infrastructure/gdrive-sync.md`.
 
 ---
 

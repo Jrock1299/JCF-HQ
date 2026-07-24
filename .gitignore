@@ -100,3 +100,6 @@ cron/runs/
 **/runs.sqlite*
 **/registry.sqlite*
 **/telegram/update-offset-*
+
+# Google Drive Vault sync — runtime manifest (Drive file IDs + hashes, regenerable)
+state/gdrive_sync_manifest.json
