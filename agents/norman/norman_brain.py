@@ -13,11 +13,11 @@ Modes:
     python3 norman_brain.py --validate all    # On-demand: all agents
 """
 
-import anthropic
 import csv
 import json
 import math
 import os
+import subprocess
 import re
 import sys
 import time
@@ -47,8 +47,62 @@ EDGE_PORTFOLIO_PATH = DASHBOARD / 'edge_portfolio.json'
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-MODEL      = 'claude-sonnet-4-6'
+# Migrated 2026-07-24: Norman routes through Codex via the openclaw gateway
+# (Lucy's subprocess pattern), no longer the Anthropic SDK.
+# NOTE: the working gateway override string is 'openai/gpt-5.5'. The '-codex'
+# suffixed ids (e.g. openai/gpt-5.5-codex) are agent-runtime-bound and are
+# rejected as --model overrides by `openclaw agent`; the gateway still routes
+# openai/gpt-5.5 through the Codex runtime.
+MODEL      = 'openai/gpt-5.5'
 MAX_TOKENS = 4096
+
+
+def _run_codex(system_prompt: str, user_message: str, timeout: int = 300) -> str | None:
+    """Route a prompt through the openclaw gateway agent (Codex).
+
+    Mirrors Lucy's `_run_agent` subprocess pattern. The gateway agent has no
+    separate `system` slot, so the persona/system prompt is prepended into the
+    message. The payload is passed via --message-file to avoid the ~128KB
+    single CLI-arg limit. Returns response text, or None.
+    """
+    import tempfile
+    combined = f"{system_prompt}\n\n=== TASK ===\n\n{user_message}"
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            'w', suffix='.txt', prefix='norman_codex_',
+            dir='/tmp', delete=False, encoding='utf-8',
+        ) as fh:
+            fh.write(combined)
+            tmp_path = fh.name
+        cmd = [
+            'openclaw', 'agent',
+            '--agent', 'main',
+            '--model', MODEL,
+            '--message-file', tmp_path,
+            '--json',
+            '--timeout', str(timeout),
+        ]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 60)
+        if proc.returncode != 0:
+            print(f'[norman] Codex call failed: {proc.stderr[:300]}')
+            return None
+        data = json.loads(proc.stdout)
+        payloads = data.get('result', {}).get('payloads', [])
+        return payloads[0].get('text', '') if payloads else None
+    except subprocess.TimeoutExpired:
+        print('[norman] Codex call timed out')
+        return None
+    except Exception as e:
+        print(f'[norman] Codex call error: {e}')
+        return None
+    finally:
+        if tmp_path:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
 
 TELEGRAM_TOKEN   = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CHAT_ID')
@@ -702,29 +756,18 @@ def weekly_analysis() -> dict:
     }
 
     # ── Claude synthesis ──────────────────────────────────────────────────────
-    print('[norman] Calling Claude for strategic synthesis...')
+    print('[norman] Calling Codex (via gateway) for strategic synthesis...')
     prompt = _build_analysis_prompt(agent_validations, today)
 
-    client   = anthropic.Anthropic()
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=MAX_TOKENS,
-        system=SYSTEM_PROMPT,
-        messages=[{'role': 'user', 'content': prompt}],
-    )
-
-    input_tokens  = response.usage.input_tokens
-    output_tokens = response.usage.output_tokens
+    # Codex has no separate system slot — persona is prepended into the message.
+    result_text   = _run_codex(SYSTEM_PROMPT, prompt)
+    input_tokens  = 0  # Codex free tier — no Anthropic token billing
+    output_tokens = 0
     cost_usd      = _save_cost(input_tokens, output_tokens)
 
-    print(f'[norman] Claude: {input_tokens} in + {output_tokens} out | ${cost_usd:.4f}')
+    print(f'[norman] Codex synthesis — {len(result_text or "")} chars | ${cost_usd:.4f}')
 
-    result_text = ''
-    for block in response.content:
-        if getattr(block, 'type', '') == 'text' and block.text:
-            result_text = block.text
-
-    claude_report = _extract_json(result_text)
+    claude_report = _extract_json(result_text) if result_text else None
 
     if claude_report is None:
         print(f'[norman] No JSON from Claude, snippet: {result_text[:300]}')

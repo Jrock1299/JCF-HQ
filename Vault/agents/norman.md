@@ -65,8 +65,14 @@ From `dashboard/agent_strategies.json` `"norman"` block:
 - **Edge**: INSUFFICIENT_DATA (n=0 post-reset)
 
 ## Model routing
-`claude-sonnet-4-6` (Anthropic SDK). Requires `.env` sourced — see
-[[../infrastructure/model-routing#env-auth-fix]].
+`openai/gpt-5.5` via the Codex runtime — **migrated 2026-07-24** off the
+Anthropic SDK to Lucy's `openclaw agent` subprocess pattern (`_run_codex`).
+No tools, so it ported cleanly; the system prompt is prepended into the user
+message (the gateway agent has no `system` slot). Test run confirmed the cold
+voice survives and the report JSON schema is unchanged. No longer draws on
+`ANTHROPIC_API_KEY`. Note: the working `--model` override string is
+`openai/gpt-5.5`; the `-codex` suffixed ids are runtime-bound and rejected as
+overrides. See [[../sessions/2026-07-24]].
 
 ## Phase 2 role (upcoming)
 Once Blade's `blade_learning_log.json` hits 100 closed records, Norman will

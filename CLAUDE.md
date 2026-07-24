@@ -159,7 +159,8 @@ environment assessment (trend / risk sentiment / volatility / sector rotation).
 **Job:** Risk validator. Monte Carlo on every trading agent's closed trades.
 Issues PASS / FAIL / INSUFFICIENT_DATA verdict + recommendation. Brutally
 honest by design.
-**Model:** `claude-sonnet-4-6`.
+**Model:** `openai/gpt-5.5` via Codex runtime (migrated 2026-07-24 off the
+Anthropic SDK, using Lucy's `openclaw agent` subprocess pattern). No tools.
 **Schedule:** `0 10 * * 6` (Saturday 10:00 UTC weekly).
 **System prompt:** Includes `backtest-expert` 6-phase stress-test methodology
 (hypothesis → backtest ≥5yr → parameter sensitivity ±15-30% → 1.5-2× slippage
@@ -177,7 +178,10 @@ Ruin prob >10% = FAIL.
 Norman, Lens, Sentinel, Plaid, Robinhood, Trustwallet, Kraken). Produces a
 daily Telegram financial summary + operations briefing + recommendations +
 fix_prompts. Persona: gothic queen — owns the operation, never coddles.
-**Model:** `claude-sonnet-4-6`.
+**Model:** `openai/gpt-5.5` via Codex runtime (migrated 2026-07-24 off the
+Anthropic SDK, using Lucy's `openclaw agent` subprocess pattern). Persona is
+prepended into the user message since the gateway agent has no `system` slot;
+voice verified intact on test runs. No tools.
 **Schedule:**
 - Daily: `0 21 * * *` (21:00 UTC) — daily report
 - Weekly: `0 7 * * 1` (Monday 07:00 UTC) — weekly tribunal
@@ -349,7 +353,8 @@ Each agent has its own voice:
 
 | Agent | Primary | Why |
 |---|---|---|
-| Lens, Norman, Victoria | `claude-sonnet-4-6` (Anthropic SDK) | Reasoning + web_search depth, structured JSON. |
+| Lens | `claude-sonnet-4-6` (Anthropic SDK) | web_search depth + structured JSON. **Only** remaining Anthropic-billed cron agent. |
+| Norman, Victoria | `openai/gpt-5.5` via Codex runtime (`openclaw agent` subprocess, Lucy pattern) | Migrated 2026-07-24 off Anthropic SDK. No tools; persona prepended into user message (no `system` slot). Override string is `openai/gpt-5.5` — the `-codex` suffixed ids are runtime-bound and rejected as `--model` overrides. |
 | Jarvis, H4 reads, Huncho narratives | `openai/gpt-5.5` via Codex runtime, fallback `openrouter/auto` | Cheap, fast prose generation. Note: older `gpt-5.3-codex` / `gpt-5.2-codex` aliases are deprecated server-side — the gateway redirects everything to `openai/gpt-5.5`. |
 | Jerry brain | `claude-sonnet-4-6` | Discovery + review needs reasoning. |
 | chart_analysis.py | Image-capable models with fallback list: `codex/gpt-5.4` → `codex/gpt-5.5` | Default `moonshot/kimi-k2.5` is currently suspended for billing — do NOT use until restored. |

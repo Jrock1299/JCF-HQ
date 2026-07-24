@@ -87,10 +87,10 @@ Heartbeats run lean. Sub-agents do NOT run heartbeats — only Huncho does.
 
 When current model hits rate limits, manually switch to the next one in order.
 
-**Priority chain:**
-1. `openai-codex/gpt-5.2-codex` — **PRIMARY** (Codex free tier via Copilot)
+**Priority chain:** (updated 2026-07-24 — gpt-5.2 ids retired server-side)
+1. `openai-codex/gpt-5.5-codex` — **PRIMARY** (Codex free tier via Copilot; matches `agents.defaults.model.primary` in openclaw.json)
 2. `openai-codex/gpt-5.3-codex` — same Codex quota as #1
-3. `openai-codex/gpt-5.2` — same Codex quota as #1
+3. `openai/gpt-5.5` — plain Codex-runtime id; **use this as the `--model` override for `openclaw agent` subprocess calls** (the `-codex` suffixed ids are runtime-bound and rejected as overrides)
 4. `google/gemini-3.1-pro` — fallback (Google Tier 1 subscription)
 5. `google/gemini-3.1-pro-preview` — via OpenRouter
 6. `openrouter/minimax/minimax-m2.5`
@@ -105,7 +105,7 @@ When current model hits rate limits, manually switch to the next one in order.
 
 **Rules:**
 - When Codex weekly quota resets, switch back to #1.
-- Sub-agents (Crisp, Blade, Oracle) stay on `openai-codex/gpt-5.2-codex`.
+- Sub-agents (Crisp, Blade, Oracle) stay on `openai-codex/gpt-5.5-codex`.
 - If daily costs approach $3, alert Jase immediately.
 
 ---

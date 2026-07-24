@@ -4,6 +4,36 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Victoria + Norman → Codex · 2026-07-24
+**Decision:** Migrate [[../agents/victoria]] and [[../agents/norman]] off the
+Anthropic SDK (`claude-sonnet-4-6`) onto the Codex runtime (`openai/gpt-5.5`)
+via Lucy's `openclaw agent` subprocess pattern (`_run_codex`). [[../agents/lens]]
+stays on Anthropic (it depends on the server-side `web_search` tool, which the
+Codex path can't provide).
+
+**Why:** Both agents are pure reasoning + structured-JSON with **no tool
+dependencies**, so they port cleanly to the free Codex quota and stop drawing
+on the paid `ANTHROPIC_API_KEY` balance. Investigated/approved 2026-07-21;
+implemented 07-24.
+
+**Key calls:**
+- **Model override string is `openai/gpt-5.5`, not `openai/gpt-5.5-codex`.**
+  Empirically confirmed: the `-codex` suffixed ids are agent-runtime-bound and
+  the gateway rejects them as `--model` overrides ("Unknown model … served by
+  an agent runtime"). Plain `openai/gpt-5.5` resolves and routes through Codex.
+- **Persona prepended into the user message** — the gateway agent has no
+  `system` slot. Voice verified intact on test runs (Victoria's gothic-queen
+  and Norman's cold register both survived).
+- **Large payloads via `--message-file`**, not `-m`, to dodge the ~128KB
+  single CLI-arg limit (Victoria stuffs a lot of data).
+- **Cost logged as $0** (Codex free tier); `_save_cost(0, 0)` keeps the log
+  cadence without fabricating Anthropic spend.
+- **NOT un-held in cron yet** — Jase reviews test output before go-live.
+
+**See:** [[../sessions/2026-07-24]].
+
+---
+
 ## HQ Dashboard v3 rebuild · 2026-07-17
 **Decision:** Rebuild `hq-app/` from scratch as a 6-route glassmorphism
 command center (React 18 + TypeScript + Vite + framer-motion/recharts/

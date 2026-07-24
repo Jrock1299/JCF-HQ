@@ -51,10 +51,17 @@ Reads everything every day at 21:00 UTC and on Monday mornings, then calls
 - Wraps Telegram via: [[huncho]] (her own emoji 🧛‍♀️ + footer)
 
 ## Recent updates
+- 2026-07-24: Migrated off the Anthropic SDK to Codex (`openai/gpt-5.5` via
+  the `openclaw agent` subprocess pattern). Both call sites (daily + the
+  two-turn JSON fallback) and the weekly tribunal now route through
+  `_run_codex`. Voice verified intact on test runs. See [[../sessions/2026-07-24]].
 - 2026-06-01: All Oracle / Kalshi data sources removed from `victoria_brain.py`
   (no more `_format_oracle`, `_load_kalshi_csv`, etc.). Service status list
   no longer includes `kalshi-bot`. See [[../sessions/2026-06-01]].
 
 ## Model routing
-`claude-sonnet-4-6`. Needs `.env` sourced — see
-[[../infrastructure/model-routing#env-auth-fix]].
+`openai/gpt-5.5` via the Codex runtime (Lucy's `_run_codex` subprocess
+pattern). No separate `system` slot, so the gothic-queen persona is prepended
+into the user message — mild drift expected, not collapse; verified on test.
+No longer draws on `ANTHROPIC_API_KEY`. The working `--model` override is
+`openai/gpt-5.5` (the `-codex` suffixed ids are rejected as overrides).

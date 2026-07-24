@@ -9,7 +9,6 @@ Usage:
     python3 victoria_brain.py
 """
 
-import anthropic
 import csv
 import json
 import os
@@ -34,11 +33,65 @@ COST_LOG_PATH = LOGS / 'victoria_api_costs.json'
 VICTORIA_LOG  = LOGS / 'victoria.log'
 NORMAN_PATH   = DASHBOARD / 'norman_report.json'
 
-MODEL      = 'claude-sonnet-4-6'
+# Migrated 2026-07-24: Victoria routes through Codex via the openclaw gateway
+# (Lucy's subprocess pattern), no longer the Anthropic SDK.
+# NOTE: the working gateway override string is 'openai/gpt-5.5'. The '-codex'
+# suffixed ids (e.g. openai/gpt-5.5-codex) are agent-runtime-bound and are
+# rejected as --model overrides by `openclaw agent`; the gateway still routes
+# openai/gpt-5.5 through the Codex runtime.
+MODEL      = 'openai/gpt-5.5'
 MAX_TOKENS = 8192
 
 TELEGRAM_TOKEN   = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CHAT_ID')
+
+
+def _run_codex(system_prompt: str, user_message: str, timeout: int = 300) -> str | None:
+    """Route a prompt through the openclaw gateway agent (Codex).
+
+    Mirrors Lucy's `_run_agent` subprocess pattern. The gateway agent has no
+    separate `system` slot, so the persona/system prompt is prepended into the
+    message. The (potentially large) payload is passed via --message-file to
+    avoid the ~128KB single CLI-arg limit. Returns response text, or None.
+    """
+    import tempfile
+    combined = f"{system_prompt}\n\n=== TASK ===\n\n{user_message}"
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            'w', suffix='.txt', prefix='victoria_codex_',
+            dir='/tmp', delete=False, encoding='utf-8',
+        ) as fh:
+            fh.write(combined)
+            tmp_path = fh.name
+        cmd = [
+            'openclaw', 'agent',
+            '--agent', 'main',
+            '--model', MODEL,
+            '--message-file', tmp_path,
+            '--json',
+            '--timeout', str(timeout),
+        ]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 60)
+        if proc.returncode != 0:
+            print(f'[victoria] Codex call failed: {proc.stderr[:300]}')
+            return None
+        data = json.loads(proc.stdout)
+        payloads = data.get('result', {}).get('payloads', [])
+        return payloads[0].get('text', '') if payloads else None
+    except subprocess.TimeoutExpired:
+        print('[victoria] Codex call timed out')
+        return None
+    except Exception as e:
+        print(f'[victoria] Codex call error: {e}')
+        return None
+    finally:
+        if tmp_path:
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+
 
 # ─── JSON helpers ───────────────────────────────────────────────────────────────
 
@@ -699,64 +752,30 @@ def run_victoria() -> dict:
     )
 
     # ── 5. Call Claude ──
-    print(f'[victoria] Calling {MODEL}...')
-    client = anthropic.Anthropic()
+    print(f'[victoria] Calling {MODEL} (Codex via gateway)...')
 
-    messages = [{'role': 'user', 'content': user_message}]
+    # Codex has no separate system slot — persona is prepended into the message.
+    result_text  = _run_codex(SYSTEM_PROMPT, user_message)
+    total_input  = 0  # Codex free tier — no Anthropic token billing
+    total_output = 0
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=MAX_TOKENS,
-        system=SYSTEM_PROMPT,
-        tools=[],
-        messages=messages,
-    )
+    print(f'[victoria] Turn 1 — {len(result_text or "")} chars returned')
+    result = _extract_json(result_text) if result_text else None
 
-    total_input  = response.usage.input_tokens
-    total_output = response.usage.output_tokens
-
-    print(f'[victoria] Turn 1 — {total_input} in + {total_output} out')
-
-    result_text = ''
-    for block in response.content:
-        if getattr(block, 'type', '') == 'text' and block.text:
-            result_text = block.text
-
-    result = _extract_json(result_text)
-
-    # Fallback turn
+    # Fallback turn — re-ask for JSON only, echoing the prior attempt.
     if result is None and result_text:
         print('[victoria] No JSON in turn 1 — requesting JSON-only follow-up...')
-        follow_up = messages + [
-            {'role': 'assistant', 'content': response.content},
-            {
-                'role': 'user',
-                'content': (
-                    'Your analysis is complete. Now output ONLY the final JSON object '
-                    '— no prose, no markdown, no explanation. '
-                    'Start your response with { and end with }.'
-                ),
-            },
-        ]
-        response2 = client.messages.create(
-            model=MODEL,
-            max_tokens=MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            tools=[],
-            messages=follow_up,
+        follow_up_msg = (
+            user_message
+            + '\n\nYOUR PREVIOUS RESPONSE:\n' + result_text
+            + '\n\nYour analysis is complete. Now output ONLY the final JSON '
+              'object — no prose, no markdown, no explanation. '
+              'Start your response with { and end with }.'
         )
-        total_input  += response2.usage.input_tokens
-        total_output += response2.usage.output_tokens
-
-        result_text2 = ''
-        for block in response2.content:
-            if getattr(block, 'type', '') == 'text' and block.text:
-                result_text2 = block.text
-
-        print(f'[victoria] Turn 2 — {response2.usage.input_tokens} in + {response2.usage.output_tokens} out')
-        result = _extract_json(result_text2)
+        result_text2 = _run_codex(SYSTEM_PROMPT, follow_up_msg)
+        result = _extract_json(result_text2) if result_text2 else None
         if result is None:
-            print(f'[victoria] Turn 2 snippet:\n{result_text2[:400]}')
+            print(f'[victoria] Turn 2 snippet:\n{(result_text2 or "")[:400]}')
 
     # ── 6. Track cost ──
     cost_usd = _save_cost(total_input, total_output)
@@ -915,26 +934,13 @@ def run_victoria_weekly() -> dict:
         "Analyze the full week and respond with ONLY valid JSON."
     )
 
-    print(f'[victoria-weekly] Calling {MODEL}...')
-    client = anthropic.Anthropic()
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=MAX_TOKENS,
-        system=WEEKLY_SYSTEM_PROMPT,
-        tools=[],
-        messages=[{'role': 'user', 'content': user_message}],
-    )
+    print(f'[victoria-weekly] Calling {MODEL} (Codex via gateway)...')
+    result_text  = _run_codex(WEEKLY_SYSTEM_PROMPT, user_message)
+    total_input  = 0  # Codex free tier — no Anthropic token billing
+    total_output = 0
+    print(f'[victoria-weekly] {len(result_text or "")} chars returned')
 
-    total_input  = response.usage.input_tokens
-    total_output = response.usage.output_tokens
-    print(f'[victoria-weekly] {total_input} in + {total_output} out')
-
-    result_text = ''
-    for block in response.content:
-        if getattr(block, 'type', '') == 'text' and block.text:
-            result_text = block.text
-
-    result = _extract_json(result_text)
+    result = _extract_json(result_text) if result_text else None
     cost_usd = _save_cost(total_input, total_output)
 
     if result is None:
