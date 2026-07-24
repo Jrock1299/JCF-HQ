@@ -24,9 +24,13 @@ credentials make the VPS act as the account owner: files are owned by the user,
 live in the user's Drive, and are directly readable by the connector.
 
 - **Scope:** `drive.file` (least privilege — the app only sees files it created).
-- **Refresh-token durability:** only long-lived if the OAuth consent screen is
-  **published to "In production."** In "Testing" status Google expires refresh
-  tokens after 7 days, which would silently break the cron weekly.
+- **Refresh-token durability:** the consent screen is in **"Testing"** mode, so
+  Google expires the refresh token ~7 days after issuance (Google verification
+  isn't worth it for a private tool). When the token dies, `gdrive_sync.py`
+  **Telegram-alerts the owner** (`openclaw message send` to the allowFrom chat
+  id, throttled to once per outage via `state/gdrive_auth_alert.sent`). Re-auth
+  = re-run `gdrive_auth.py`. The script validates creds on **every** run
+  (including no-change runs) so expiry is caught within one 30-min tick.
 
 ## How the sync works
 1. Discover `CLAUDE.md` + every `Vault/**/*.md` (34 files at creation).
@@ -43,8 +47,10 @@ live in the user's Drive, and are directly readable by the connector.
 calls and no credentials** — used to validate discovery + change-detection.
 
 ## Trigger: cron (not a post-commit hook)
-`#HOLD */30 * * * * scripts/run_gdrive_sync.sh` — **held** until OAuth is set up;
-remove `#HOLD` to activate.
+**ACTIVE** since 2026-07-24: `*/30 * * * * scripts/run_gdrive_sync.sh`.
+Drive folder: `https://drive.google.com/drive/folders/1jTqwCeNWPPYatuz3dSgWZk4tGKn91jv9`
+(lives in **crocjay9@gmail.com**'s Drive — the account connected to the
+claude.ai Drive connector).
 
 Chosen over a post-commit hook because:
 - Vault edits land from **either** the VPS or the laptop; a git hook only fires

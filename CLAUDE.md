@@ -388,14 +388,17 @@ connector without manual pasting. Added 2026-07-24.
 | Credentials | `credentials/gdrive/{client_secret.json,token.json}` (gitignored) |
 | Change manifest | `state/gdrive_sync_manifest.json` (path → {drive id, sha256}) |
 | Log | `logs/gdrive_sync.log` |
-| Schedule | `#HOLD */30 * * * * run_gdrive_sync.sh` — held until OAuth is set up |
+| Schedule | **ACTIVE** — `*/30 * * * * run_gdrive_sync.sh` (live 2026-07-24) |
+| Drive folder | "JCF HQ Vault" — `https://drive.google.com/drive/folders/1jTqwCeNWPPYatuz3dSgWZk4tGKn91jv9` (in **crocjay9@gmail.com**'s Drive, the connected account) |
 
 - **Auth:** OAuth *user* credentials (not a service account — the account is a
   personal `@gmail.com`, and service accounts can't own files in consumer
   Drive). Least-privilege scope `drive.file`: the app only ever sees files it
-  created. The refresh token is durable **only if the OAuth consent screen is
-  published to "In production"** (Testing mode expires refresh tokens after 7
-  days). Google libs live in `venv/` (system Python is PEP-668 externally-managed).
+  created. **Consent screen is in "Testing" mode → the refresh token expires
+  ~7 days after issuance** (verification not worth it for a private tool). When
+  it dies, `gdrive_sync.py` **Telegram-alerts the owner** (via `openclaw message
+  send`, throttled once per outage) — just re-run `gdrive_auth.py` to reconnect.
+  Google libs live in `venv/` (system Python is PEP-668 externally-managed).
 - **Efficiency:** SHA-256 content hash vs the manifest — unchanged files are
   skipped, so idle 30-min runs make near-zero API calls.
 - **Trigger choice — cron, not a post-commit hook:** decoupled from git (Vault

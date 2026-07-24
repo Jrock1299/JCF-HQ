@@ -21,6 +21,7 @@ import hashlib
 import json
 import logging
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,6 +31,9 @@ CRED_DIR   = OPENCLAW / 'credentials' / 'gdrive'
 TOKEN      = CRED_DIR / 'token.json'
 MANIFEST   = OPENCLAW / 'state' / 'gdrive_sync_manifest.json'
 LOG_PATH   = OPENCLAW / 'logs' / 'gdrive_sync.log'
+ALERT_SENTINEL = OPENCLAW / 'state' / 'gdrive_auth_alert.sent'
+ALLOWFROM  = OPENCLAW / 'credentials' / 'telegram-default-allowFrom.json'
+OWNER_CHAT_FALLBACK = '797062420'   # owner Telegram chat id (from allowFrom)
 ROOT_NAME  = 'JCF HQ Vault'
 SCOPES     = ['https://www.googleapis.com/auth/drive.file']
 FOLDER_MIME = 'application/vnd.google-apps.folder'
@@ -89,11 +93,63 @@ def _save_manifest(m: dict) -> None:
     tmp.replace(MANIFEST)
 
 
+# ── Auth-expiry Telegram alert (via the openclaw gateway) ───────────────────────
+
+def _owner_chat_id() -> str:
+    try:
+        ids = json.loads(ALLOWFROM.read_text()).get('allowFrom') or []
+        if ids:
+            return str(ids[0])
+    except Exception:
+        pass
+    return OWNER_CHAT_FALLBACK
+
+
+def _alert_auth_expired(detail: str) -> None:
+    """Telegram-alert the owner that the Drive token died, via the gateway
+    (`openclaw message send`). Throttled to once per outage by a sentinel file
+    so the 30-min cron doesn't spam once expired."""
+    if ALERT_SENTINEL.exists():
+        return
+    msg = (
+        '🔧 JCF HQ — Google Drive Vault sync AUTH EXPIRED.\n\n'
+        'The OAuth refresh token was rejected — Testing-mode tokens expire ~7 '
+        'days after issuance. Vault→Drive sync is PAUSED until you re-auth.\n\n'
+        'Re-auth (in an HQ session):\n'
+        '  /root/.openclaw/venv/bin/python3 /root/.openclaw/scripts/gdrive_auth.py\n'
+        'then run gdrive_sync.py to confirm.'
+    )
+    try:
+        r = subprocess.run(
+            ['openclaw', 'message', 'send', '--channel', 'telegram',
+             '--target', _owner_chat_id(), '--message', msg],
+            capture_output=True, text=True, timeout=60)
+        if r.returncode == 0:
+            ALERT_SENTINEL.parent.mkdir(parents=True, exist_ok=True)
+            ALERT_SENTINEL.write_text(detail[:200])
+            log.info('auth-expiry Telegram alert sent to owner')
+        else:
+            log.error('auth-expiry alert send failed: %s',
+                      (r.stderr or r.stdout or '')[:200])
+    except Exception as e:
+        log.error('auth-expiry alert exception: %s', e)
+
+
+def _clear_auth_alert() -> None:
+    """Reset the alert throttle once creds are healthy — a future expiry
+    re-alerts."""
+    try:
+        ALERT_SENTINEL.unlink()
+    except FileNotFoundError:
+        pass
+
+
 # ── Drive credentials + service ─────────────────────────────────────────────────
 
 def _service():
     from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.auth.exceptions import RefreshError
     from googleapiclient.discovery import build
 
     if not TOKEN.exists():
@@ -101,13 +157,22 @@ def _service():
     creds = Credentials.from_authorized_user_file(str(TOKEN), SCOPES)
     if not creds.valid:
         if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except RefreshError as e:
+                # Testing-mode refresh tokens die after ~7 days -> alert + pause.
+                _alert_auth_expired(str(e))
+                log.error('token refresh failed (%s) — Drive sync paused '
+                          'until re-auth', e)
+                sys.exit(2)
             TOKEN.write_text(creds.to_json())
             os.chmod(TOKEN, 0o600)
             log.info('access token refreshed')
         else:
+            _alert_auth_expired('credentials present but not refreshable')
             sys.exit('ERROR: credentials invalid and not refreshable — '
                      're-run gdrive_auth.py.')
+    _clear_auth_alert()  # creds healthy -> reset the alert throttle
     return build('drive', 'v3', credentials=creds, cache_discovery=False)
 
 
@@ -245,11 +310,16 @@ def sync() -> int:
     changed = [x for x in plan if x[0] != 'skip']
     log.info('sync start — %d file(s), %d changed', len(plan), len(changed))
 
+    # Validate creds first, even on no-change runs — this is how we notice the
+    # ~7-day Testing-mode token death promptly and alert. Cheap: the refresh
+    # only hits the network when the access token needs its ~hourly renewal;
+    # _service() alerts + exits(2) if the refresh token itself is dead.
+    svc = _service()
+
     if not changed and m.get('root_folder_id'):
         log.info('nothing changed — up to date (root=%s)', m['root_folder_id'])
         return 0
 
-    svc = _service()
     root_id = _ensure_root(svc, m)
     _save_manifest(m)  # persist root/folder ids early
 
