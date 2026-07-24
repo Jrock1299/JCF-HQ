@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 import sys
 sys.path.insert(0, "/root/.openclaw/scripts")
 from telegram_personalities import wrap_message
+from discord_notify import notify as discord_notify   # posts alongside Telegram; no-op if webhook unset
 from pathlib import Path
 
 LOG_PATH         = '/root/.openclaw/logs/lens_api_costs.json'
@@ -565,6 +566,14 @@ def analyze_markets() -> dict:
     # Send Telegram report
     tg_report = _build_telegram_report(result)
     _send_telegram(tg_report)
+
+    # ALSO post to Discord (#lens) — alongside Telegram, never replacing it.
+    # No-ops silently if DISCORD_WEBHOOK_LENS is unset.
+    try:
+        dres = discord_notify('lens', tg_report)
+        print(f'[lens_brain] Discord: {dres}')
+    except Exception as e:
+        print(f'[lens_brain] Discord post skipped: {e}')
 
     # Attach metadata (not written to market_bias.json, only in return value)
     result['_meta'] = {

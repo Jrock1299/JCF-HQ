@@ -416,6 +416,54 @@ connector without manual pasting. Added 2026-07-24.
   that commits and would need creds there), no commit latency, and self-healing
   (a failed run just retries next tick). See `Vault/infrastructure/gdrive-sync.md`.
 
+### 4f. Discord broadcast (alongside Telegram)
+
+Agents post their reports to Discord webhooks **in addition to** Telegram
+(never replacing it). Added 2026-07-24.
+
+- **Helper:** `scripts/discord_notify.py` — `notify(agent, text, channels=None)`.
+  Posts with a per-agent username (emoji + name, matching the Telegram voice)
+  and optional avatar. Chunks content to Discord's **2000-char** limit, retries
+  once on HTTP 429. **No-ops silently when a channel's webhook env var is unset**,
+  so it's safe to wire in before webhooks exist.
+- **Webhooks** live in `.env` (gitignored), one per channel:
+  `DISCORD_WEBHOOK_<CHANNEL>` — e.g. `DISCORD_WEBHOOK_LENS`,
+  `DISCORD_WEBHOOK_STOCK_NEWS`, `DISCORD_WEBHOOK_BLADE_SIGNALS`,
+  `DISCORD_WEBHOOK_JERRY_PAPER`, `DISCORD_WEBHOOK_ALERTS`,
+  `DISCORD_WEBHOOK_AGENT_HUB`. Default per-agent routing is in `_ROUTES`.
+- **Avatars** (optional): set `DISCORD_AVATAR_BASE` to a **public** base URL
+  serving `<agent>.png` (portraits live at `hq-app/public/agents/*.png`, but
+  the repo is private so GitHub-raw won't work — host them or leave unset for
+  username-only). Jarvis maps to `strategist.png`.
+- **Wiring:** each agent calls `discord_notify(agent, report)` right after its
+  `_send_telegram(...)`. **Lens is wired first** (proven agent); the rest get
+  wired after Lens's delivery is confirmed. To add an agent: import
+  `from discord_notify import notify as discord_notify` and call it beside the
+  Telegram send.
+
+### 4g. Claude Code mobile access (Remote Control)
+
+`/remote-control` (alias `/rc`) links a **local** Claude Code session to Jase's
+phone/browser via `claude.ai/code`; code still executes on the VPS. Requires a
+Pro/Max/Team plan (**Max ✓**), a **claude.ai `/login`** (not API-key auth), and
+`ANTHROPIC_BASE_URL` = api.anthropic.com (unset ✓). Session ends if the terminal
+closes or after a 10-min network outage — so run it inside **tmux** for
+persistence.
+
+**Persistent session (tmux 3.4 installed; `claude-main` created):**
+```bash
+tmux attach -t claude-main     # or: tmux new -s claude-main
+claude                         # start Claude Code (once, accept trust dialog)
+/remote-control                # inside the session → prints URL; SPACEBAR toggles QR
+# detach (leave it running):  Ctrl+B  then  D
+# reattach later over SSH:    tmux attach -t claude-main
+```
+**Phone pairing (one-time):** scan the QR (or open the URL) → opens in the
+Claude app / `claude.ai/code`; the session shows a green dot when online.
+`/mobile` inside Claude Code shows the app-download QR. After pairing, Jase can
+reconnect from the app's **Code** tab **without SSH**. Docs:
+https://code.claude.com/docs/en/remote-control
+
 ---
 
 ## 5. Cron Schedule (annotated)
