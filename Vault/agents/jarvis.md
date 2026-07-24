@@ -65,8 +65,11 @@ is parked. See [[../decisions/decision-log#jarvis-strategist-trim-2026-06-01]].
 - `dashboard/strategy_recommendation.json`
 
 ## Model routing
-Codex via `openclaw infer model run --model openai/gpt-5.5` (older
-`gpt-5.3-codex` alias is deprecated server-side — gateway redirects to 5.5).
+Codex via `openclaw infer model run --model openai/gpt-5.6-terra` (bumped
+2026-07-24 from 5.5; fallback `openai/gpt-5.5` → `openrouter/auto`). Sol would
+suit regime reasoning but is unavailable on this Codex OAuth backend (400s), so
+Terra is the top working tier. `infer model run` is not gated by the
+`agents.defaults.models` allow-list. Older `gpt-5.3-codex` alias retired.
 Fallback `openrouter/auto`. Pre-trade engine itself is pure Python.
 
 ## Cross-agent connections

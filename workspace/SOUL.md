@@ -87,17 +87,33 @@ Heartbeats run lean. Sub-agents do NOT run heartbeats — only Huncho does.
 
 When current model hits rate limits, manually switch to the next one in order.
 
-**Priority chain:** (updated 2026-07-24 — gpt-5.2 ids retired server-side)
-1. `openai-codex/gpt-5.5-codex` — **PRIMARY** (Codex free tier via Copilot; matches `agents.defaults.model.primary` in openclaw.json)
-2. `openai-codex/gpt-5.3-codex` — same Codex quota as #1
-3. `openai/gpt-5.5` — plain Codex-runtime id; **use this as the `--model` override for `openclaw agent` subprocess calls** (the `-codex` suffixed ids are runtime-bound and rejected as overrides)
-4. `google/gemini-3.1-pro` — fallback (Google Tier 1 subscription)
-5. `google/gemini-3.1-pro-preview` — via OpenRouter
+**Priority chain:** (updated 2026-07-24 — GPT-5.6 rollout; 5.2/5.3-codex + 5.4 retired)
+1. `openai/gpt-5.6-terra` — **PRIMARY** (GPT-5.6 Terra, balanced everyday tier,
+   ~$2.50/$15 per MTok). Whitelisted in `agents.defaults.models`; verified working
+   as an `openclaw agent --model` override AND via `infer model run`.
+2. `openai/gpt-5.6-luna` — faster/cheaper tier (~$1/$6) for lighter structured
+   work; also whitelisted + verified working.
+3. `openai/gpt-5.5` — proven fallback (the previous primary; still works).
+4. `moonshot/kimi-k2.5` — deeper fallback. **LEAVE AS-IS — do NOT swap to Kimi K3
+   yet** (launched 2026-07-16; weights not fully public until 07-27; revisit then).
+   Usage Limits: Concurrency 3, TPM 500000, RPM 20, TPD 1500000.
+5. `google/gemini-3.1-pro-preview` — deeper fallback (via OpenRouter).
 6. `openrouter/minimax/minimax-m2.5`
-7. `moonshot/kimi-k2.5`
-   - Kimi K2.5 Usage Limits: Concurrency 3, TPM 500000, RPM 20, TPD 1500000
-8. `openrouter/nvidia/nemotron-3-super`
-9. `openrouter/step/step-3.5-flash`
+7. `openrouter/step/step-3.5-flash`
+
+**NOT available on this Codex OAuth backend — do NOT use (they 400 / are unknown):**
+- `openai/gpt-5.6-sol` — the Sol flagship tier is not served by this account's
+  Codex backend (`chatgpt.com/backend-api/codex` returns 400). Terra is the top
+  working tier here.
+- `openai/gpt-5.6` (plain) — "Unknown model" via this path.
+- `openai-codex/gpt-5.2-codex`, `openai-codex/gpt-5.3-codex`, `gpt-5.4*` — retired.
+
+**Model-string rules (important):**
+- For `openclaw agent --model` overrides: use a PLAIN tier id (e.g.
+  `openai/gpt-5.6-terra`) that is ALSO whitelisted in `agents.defaults.models`.
+  The `-codex` suffixed ids are agent-runtime-bound and rejected as overrides.
+- `openclaw infer model run --model` is NOT gated by that allow-list (direct
+  provider call). Jarvis uses this path.
 
 **BANNED MODELS — never use under any circumstances:**
 - `google/gemini-2.5-pro` — REMOVED. Do not use.
@@ -105,7 +121,10 @@ When current model hits rate limits, manually switch to the next one in order.
 
 **Rules:**
 - When Codex weekly quota resets, switch back to #1.
-- Sub-agents (Crisp, Blade, Oracle) stay on `openai-codex/gpt-5.5-codex`.
+- Sub-agents: Crisp is PARKED, Oracle is DELETED, and Blade/Edge are pure
+  algorithmic bots with no LLM calls — none route to a model at runtime. (The
+  stale `openai/gpt-5.3-codex` entries under `agents.list` for crisp/blade/oracle
+  in openclaw.json are dead and can be pruned.)
 - If daily costs approach $3, alert Jase immediately.
 
 ---

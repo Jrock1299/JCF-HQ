@@ -65,14 +65,16 @@ From `dashboard/agent_strategies.json` `"norman"` block:
 - **Edge**: INSUFFICIENT_DATA (n=0 post-reset)
 
 ## Model routing
-`openai/gpt-5.5` via the Codex runtime — **migrated 2026-07-24** off the
-Anthropic SDK to Lucy's `openclaw agent` subprocess pattern (`_run_codex`).
-No tools, so it ported cleanly; the system prompt is prepended into the user
-message (the gateway agent has no `system` slot). Test run confirmed the cold
-voice survives and the report JSON schema is unchanged. No longer draws on
-`ANTHROPIC_API_KEY`. Note: the working `--model` override string is
-`openai/gpt-5.5`; the `-codex` suffixed ids are runtime-bound and rejected as
-overrides. See [[../sessions/2026-07-24]].
+`openai/gpt-5.6-terra` via the Codex runtime — **migrated 2026-07-24** off the
+Anthropic SDK to Lucy's `openclaw agent` subprocess pattern (`_run_codex`), then
+bumped 5.5→5.6 Terra the same day. No tools, so it ported cleanly; the system
+prompt is prepended into the user message (the gateway agent has no `system`
+slot). Test runs (both 5.5 and 5.6-terra) confirmed the cold voice survives and
+the report JSON schema is unchanged. No longer draws on `ANTHROPIC_API_KEY`.
+Note: the override must be a **plain** tier id (`openai/gpt-5.6-terra`) AND be
+whitelisted in `agents.defaults.models`; the `-codex` suffixed ids are
+runtime-bound and rejected as overrides. Sol 400s on this backend. See
+[[../sessions/2026-07-24]].
 
 ## Phase 2 role (upcoming)
 Once Blade's `blade_learning_log.json` hits 100 closed records, Norman will

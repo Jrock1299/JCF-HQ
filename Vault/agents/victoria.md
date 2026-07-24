@@ -60,8 +60,9 @@ Reads everything every day at 21:00 UTC and on Monday mornings, then calls
   no longer includes `kalshi-bot`. See [[../sessions/2026-06-01]].
 
 ## Model routing
-`openai/gpt-5.5` via the Codex runtime (Lucy's `_run_codex` subprocess
-pattern). No separate `system` slot, so the gothic-queen persona is prepended
-into the user message — mild drift expected, not collapse; verified on test.
-No longer draws on `ANTHROPIC_API_KEY`. The working `--model` override is
-`openai/gpt-5.5` (the `-codex` suffixed ids are rejected as overrides).
+`openai/gpt-5.6-terra` via the Codex runtime (Lucy's `_run_codex` subprocess
+pattern); bumped 5.5→5.6 Terra 2026-07-24. No separate `system` slot, so the
+gothic-queen persona is prepended into the user message — verified intact on
+test ("The coffers neither grew nor shrank. A stagnant eve."). No longer draws
+on `ANTHROPIC_API_KEY`. Override must be a plain tier id whitelisted in
+`agents.defaults.models`; `-codex` ids and Sol don't work on this backend.

@@ -38,4 +38,8 @@ decision — non-trading but feeds the meta-system.
 - Wraps Telegram via: [[huncho]]
 
 ## Model routing
-`claude-sonnet-4-6` with web_search. Needs `.env` sourced.
+Codex via the `openclaw agent` subprocess pattern (`_run_agent`), not the
+Anthropic SDK. PRIMARY `openai/gpt-5.6-terra` (bumped 2026-07-24 from the dead
+`openai/gpt-5.3-codex`, which was a runtime-bound id the gateway silently
+rejected → always fell back), FALLBACK `openai/gpt-5.5`. web_search runs inside
+the gateway agent turn.

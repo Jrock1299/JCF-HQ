@@ -4,6 +4,41 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Codex model routing → GPT-5.6 Terra · 2026-07-24
+**Decision:** Move the Codex-routed agents from `openai/gpt-5.5` to
+`openai/gpt-5.6-terra` (balanced tier) and rewrite the SOUL.md fallback chain
+to what's actually live. Applies to [[../agents/victoria]], [[../agents/norman]],
+[[../agents/lucy]] (PRIMARY), and [[../agents/jarvis]] (`infer` primary).
+
+**Why:** GPT-5.6 rolled out 2026-07-09; 5.4 retired 07-23. Terra is the current
+balanced everyday tier and cheaper than the Sol flagship. Reasoning/reporting
+agents don't need Sol.
+
+**Key findings (verified empirically, not assumed):**
+- **Sol is unavailable on this account's Codex OAuth backend** — `openai/gpt-5.6-sol`
+  returns HTTP 400 from `chatgpt.com/backend-api/codex` via *both* `openclaw agent`
+  and `infer model run`. Plain `openai/gpt-5.6` is "Unknown model." So the user's
+  "Sol for Jarvis" preference can't be honored; **Terra is the top working tier.**
+  Terra ✅ and Luna ✅ both work.
+- **A model must be whitelisted in `agents.defaults.models` to be usable as an
+  `openclaw agent --model` override.** Added `openai/gpt-5.6-terra` + `-luna`
+  (plain entries, like gpt-5.5) via `openclaw config patch`; removed the dead
+  `-sol` entry. `infer model run` is NOT gated by this list (Jarvis's path).
+- **Jerry NOT migrated.** The task listed it as "Codex-routed," but Jerry is on
+  the **Anthropic SDK** (`claude-sonnet-4-6`) and last round was explicitly
+  ring-fenced. It needs the same `_run_codex` refactor Victoria/Norman got — a
+  migration, not a string swap. Held for a separate decision.
+- **Blade & Edge have no LLM at runtime** (pure algorithmic bots) — "update to
+  5.6" is a no-op for them. Stale `openai/gpt-5.3-codex` entries under
+  `agents.list` (crisp/blade/oracle) in openclaw.json are dead and prunable.
+
+**Tested:** Victoria daily + Norman weekly on Terra — voice intact, schema valid,
+$0 cost. Cron still HELD.
+
+**See:** [[../sessions/2026-07-24]].
+
+---
+
 ## Victoria + Norman → Codex · 2026-07-24
 **Decision:** Migrate [[../agents/victoria]] and [[../agents/norman]] off the
 Anthropic SDK (`claude-sonnet-4-6`) onto the Codex runtime (`openai/gpt-5.5`)

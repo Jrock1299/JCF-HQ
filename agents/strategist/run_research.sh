@@ -123,8 +123,13 @@ JSON:
 """
 
 def call_codex(prompt: str, timeout_s: int = 90) -> str | None:
-    """Run a prompt through openclaw infer model. Primary: openai/gpt-5.5. Returns text or None."""
-    for model in ('openai/gpt-5.5', 'openrouter/auto'):
+    """Run a prompt through openclaw infer model. Primary: openai/gpt-5.6-terra. Returns text or None."""
+    # 2026-07-24: bumped to GPT-5.6 Terra. NOTE: Sol (the flagship tier) would
+    # suit regime reasoning better but is unavailable on this Codex OAuth backend
+    # (400s), so Terra is the top working tier. gpt-5.5 kept as proven fallback.
+    # Jarvis uses `infer model run` (not `openclaw agent`), so it is not gated by
+    # the agents.defaults.models allow-list.
+    for model in ('openai/gpt-5.6-terra', 'openai/gpt-5.5', 'openrouter/auto'):
         try:
             proc = subprocess.run(
                 ['openclaw', 'infer', 'model', 'run',

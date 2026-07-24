@@ -47,13 +47,14 @@ EDGE_PORTFOLIO_PATH = DASHBOARD / 'edge_portfolio.json'
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-# Migrated 2026-07-24: Norman routes through Codex via the openclaw gateway
-# (Lucy's subprocess pattern), no longer the Anthropic SDK.
-# NOTE: the working gateway override string is 'openai/gpt-5.5'. The '-codex'
-# suffixed ids (e.g. openai/gpt-5.5-codex) are agent-runtime-bound and are
-# rejected as --model overrides by `openclaw agent`; the gateway still routes
-# openai/gpt-5.5 through the Codex runtime.
-MODEL      = 'openai/gpt-5.5'
+# Migrated 2026-07-24 off the Anthropic SDK to Codex via the openclaw gateway
+# (Lucy's subprocess pattern). Tier: GPT-5.6 Terra (balanced everyday tier,
+# cheaper than the Sol flagship — and Sol is NOT available on this Codex OAuth
+# backend, it 400s). Was openai/gpt-5.5.
+# NOTE: the override must be a plain tier id ('openai/gpt-5.6-terra') AND be
+# whitelisted in `agents.defaults.models` (openclaw.json). The '-codex' suffixed
+# ids are runtime-bound and rejected as --model overrides by `openclaw agent`.
+MODEL      = 'openai/gpt-5.6-terra'
 MAX_TOKENS = 4096
 
 

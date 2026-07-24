@@ -33,7 +33,11 @@ HISTORY_PATH = Path('/root/.openclaw/logs/lucy_history.json')
 for _p in (OUTPUT_PATH.parent, HISTORY_PATH.parent):
     _p.mkdir(parents=True, exist_ok=True)
 
-PRIMARY_MODEL  = 'openai/gpt-5.3-codex'
+# 2026-07-24: PRIMARY was 'openai/gpt-5.3-codex' — a runtime-bound id that the
+# gateway rejected as a --model override, so Lucy always silently fell back to
+# gpt-5.5. Now GPT-5.6 Terra (whitelisted in agents.defaults.models, verified
+# working via `openclaw agent`); gpt-5.5 retained as the proven fallback.
+PRIMARY_MODEL  = 'openai/gpt-5.6-terra'
 FALLBACK_MODEL = 'openai/gpt-5.5'
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
