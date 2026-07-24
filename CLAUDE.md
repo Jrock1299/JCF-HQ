@@ -46,8 +46,12 @@ total). Live on cron: **Lens, Blade** (3 sessions), **Jarvis** (2 briefings),
 plus the Drive-sync and Blade support crons (session prep/end pings, agent-PnL,
 TradeLocker sync, dashboard mirror), plus the **Kraken** sync (keys wired
 2026-07-24). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
-not yet started — awaiting go-ahead), **Edge** (systemd — down on a missing OANDA
-`auth-profiles.json`), **Robinhood** sync, and **Crisp/Phantom** (parked). **Lens
+not yet started — awaiting go-ahead), **Edge** (systemd service stopped —
+awaiting go-ahead; its missing OANDA `auth-profiles.json` was **restored
+2026-07-24 evening** from the Jul-17 migration `.bak`, token validated
+live), **Robinhood** sync, and **Crisp/Phantom** (parked). Note: that same
+missing file had **silently broken Blade every session since Jul 17** —
+fixed by the same restore; Blade trades again from the next session. **Lens
 is now the only Anthropic-billed cron agent.** Internal agent ID shown in
 `code-format`; display name (Telegram header) shown in **bold**.
 

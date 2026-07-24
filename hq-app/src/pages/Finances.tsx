@@ -25,7 +25,8 @@ export default function Finances() {
   // accounts (Plaid is index-addressable: 0 = checking, 1 = MMA)
   const checking = plaid?.accounts?.[0]?.balance
   const mma = plaid?.accounts?.[1]?.balance
-  const rhVal = rh?.total_value ?? rh?.balance ?? SPEC.robinhood
+  // sync_robinhood.py writes total_equity + last_update (older shapes kept as fallbacks)
+  const rhVal = rh?.total_equity ?? rh?.total_value ?? rh?.balance ?? SPEC.robinhood
   const krakenVal = kraken?.total_usd ?? null
   const mercuryVal = mercury?.balance ?? null
   const mercuryName = mercury?.account_name ?? 'Mercury Business'
@@ -36,7 +37,7 @@ export default function Finances() {
   const accounts = [
     { name: 'Truist Checking', emoji: '🏦', balance: checking, color: 'green', sync: plaid?.updated, file: 'plaid_data.json', path: 'accounts.0.balance' },
     { name: 'Truist MMA', emoji: '💰', balance: mma, color: 'green', sync: plaid?.updated, file: 'plaid_data.json', path: 'accounts.1.balance' },
-    { name: 'Robinhood', emoji: '📈', balance: rhVal, color: 'blue', sync: rh?.updated, file: 'robinhood_data.json', path: 'total_value' },
+    { name: 'Robinhood', emoji: '📈', balance: rhVal, color: 'blue', sync: rh?.last_update ?? rh?.updated, file: 'robinhood_data.json', path: 'total_equity' },
     { name: 'Kraken', emoji: '🐙', balance: krakenVal, color: 'purple', sync: kraken?.last_updated, file: 'kraken_data.json', path: 'total_usd' },
     { name: 'Mercury', emoji: '🏛️', balance: mercuryVal, sub: mercuryName, color: 'blue', sync: mercury?.last_updated, file: 'mercury_data.json', path: 'balance' },
     { name: 'Tao Staking', emoji: '☯️', balance: taoUsd, sub: `${taoAmt} TAO`, color: 'purple', sync: tao?.updated, file: 'tao_portfolio.json', path: 'manual_usd_value' },
