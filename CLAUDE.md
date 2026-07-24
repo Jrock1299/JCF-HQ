@@ -441,6 +441,22 @@ Agents post their reports to Discord webhooks **in addition to** Telegram
   `from discord_notify import notify as discord_notify` and call it beside the
   Telegram send.
 
+**Two-way bot (interactive)** — added 2026-07-24, separate from the one-way
+broadcasts above. "Hunxho Bot" (`agents/discord_bot/`, pm2 `jcf-discord-bot`)
+**listens** on `#ask-the-team` and `#risk-calculator` only:
+- `#ask-the-team` → the relevant agents each reply **in their own voice**
+  (`fanout.py`, reuses `hub_collab` context) — individual named agents, not a
+  single synthesis.
+- `#risk-calculator` → **Norman** grades the risk (`risk_calc.py`): real
+  R-multiple + %-of-account math vs his rails, tone shifting on quick-money vs
+  disciplined framing.
+- Replies post through a **channel webhook** with per-message username+avatar
+  override (reuses `discord_notify._DISPLAY`/`_avatar_url`), so they appear as
+  Norman/Lens/Victoria/etc. — the bot's own login is listen-only.
+- Needs the **Message Content** intent (privileged, ON) + **Manage Webhooks**
+  in the two channels (or `DISCORD_ASK_TEAM_WEBHOOK`/`DISCORD_RISK_CALC_WEBHOOK`
+  in `.env` — Path B, no perm). Full detail: `Vault/infrastructure/discord-bot.md`.
+
 ### 4g. Claude Code mobile access (Remote Control)
 
 `/remote-control` (alias `/rc`) links a **local** Claude Code session to Jase's
