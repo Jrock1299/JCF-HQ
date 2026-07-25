@@ -89,6 +89,35 @@ workspace/skills/tavily-search/
 hq-app/.agents/skills/
 hq-app/.claude/skills/
 
+# Impeccable skill payload — vendored third-party, reinstallable with
+#   cd /root/.openclaw && npx impeccable@3.3.1 install
+# The hook config in .claude/settings.local.json IS tracked (it is shared here,
+# unlike Impeccable's README assumption that the file is machine-local).
+.claude/skills/impeccable/
+
+# impeccable-ignore-start
+# Ephemeral output, runtime state, and per-dev overrides.
+# Unanchored: .impeccable may sit at the repo root or under a nested
+# workspace (apps/web/.impeccable/...); anchored patterns would miss it.
+# Shared artifacts stay tracked: config.json, live/config.json,
+# design.json, critique/*.md.
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/*.png
+.impeccable/live/server.json
+.impeccable/live/sessions/
+.impeccable/live/previews/
+.impeccable/live/annotations/
+.impeccable/live/cache/
+.impeccable/live/manual-edit-apply-transaction.json
+.impeccable/live/manual-edit-events.jsonl
+.impeccable/live/manual-edit-evidence/
+.impeccable/live/pending-manual-edits.json
+.impeccable/live/deferred-svelte-component-accepts.json
+.impeccable/live/*.png
+# impeccable-ignore-end
+
 # Old workspace scripts with hardcoded tokens
 workspace/scripts/send_dashboard.py
 
