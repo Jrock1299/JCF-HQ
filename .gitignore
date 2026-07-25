@@ -79,6 +79,16 @@ workspace/references/claude-cookbooks/scripts/detect-secrets/.secrets.baseline
 # Tavily search skill (contains API key in source)
 workspace/skills/tavily-search/
 
+# ── Agent skills installed via the `skills` CLI (hq-app) ─────────────────────
+# Vendored third-party skill content + the symlink farm the CLI generates.
+# Both are regenerable: `skills-lock.json` pins source repo, upstream path, and
+# a content hash per skill, so `npx skills install` reproduces them exactly.
+# skills-lock.json IS committed — it is the manifest, not a working file.
+# (No "impeccable block" existed to mirror; this follows the skills-CLI
+# convention of lock-in-repo / content-out, same shape as node_modules.)
+hq-app/.agents/skills/
+hq-app/.claude/skills/
+
 # Old workspace scripts with hardcoded tokens
 workspace/scripts/send_dashboard.py
 
