@@ -28,9 +28,15 @@ from statistics import mean, stdev
 sys.path.insert(0, "/root/.openclaw/scripts")
 from hub_post import add_hub_message as hub_post
 
-# Import shared engine functions
-sys.path.insert(0, "/root/.openclaw/agents/strategist")
-from strategy_engine import (
+# Import shared engine functions.
+#
+# RETIRED 2026-07-25: these used to come from agents/strategist/strategy_engine.py.
+# Jarvis was retired and his regime engine moved to agents/lens/lens_regime.py,
+# which exposes the same function names with identical behaviour (plus the
+# convergence read). strategy_engine.py is retained on disk as the archived
+# original but is no longer the source of truth — do not import it.
+sys.path.insert(0, "/root/.openclaw/agents/lens")
+from lens_regime import (
     fetch_candles, calc_indicators, ema_alignment, ema_slope_direction,
     bb_squeeze_ratio, calc_adr,
     detect_regime, monte_carlo, read_lens_bias, build_edge_map,

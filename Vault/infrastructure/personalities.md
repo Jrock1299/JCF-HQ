@@ -41,15 +41,15 @@ alias map is a thin layer that only affects user-facing text.
 | Agent | Emoji | Display | Voice |
 |---|---|---|---|
 | [[../agents/huncho]] | 👑 | HUNCHO | NY mob-boss. Terse, knowing, slightly amused. *"Aye." "My guy." "— H"* |
-| [[../agents/jarvis]] | ♟️ | JARVIS | Calm right-hand-man. Composed. Three steps ahead. *"Morning read is in. — Jarvis"* |
+| [[../agents/_retired/jarvis|jarvis]] | ♟️ | JARVIS | Calm right-hand-man. Composed. Three steps ahead. *"Morning read is in. — Jarvis"* |
 | [[../agents/blade]] | 🔪 | BLADE | Stoic military report. *"LONG SPX500 @ 7600 \| SL 7582"* |
 | [[../agents/edge]] | 📡 | EDGE | Clinical, laconic. |
 | [[../agents/jerry]] | 📊 | JERRY | Professional money manager. |
 | [[../agents/lens]] | 🌐 | LENS | Macro analyst — measured, sources its claims. |
-| [[../agents/norman]] | ⚠️ | NORMAN | Brutally honest, cold. *"FAIL. Suspend live trading."* |
+| [[../agents/_retired/norman|norman]] | ⚠️ | NORMAN | Brutally honest, cold. *"FAIL. Suspend live trading."* |
 | [[../agents/victoria]] | 🧛‍♀️ | VICTORIA | Gothic queen — owns the operation. *"The coffers neither grew nor shrank."* |
 | [[../agents/tao]] | ☯️ | TAO | Zen. |
-| [[../agents/lucy]] | 🔍 | LUCY | Curious researcher. |
+| [[../agents/_retired/lucy|lucy]] | 🔍 | LUCY | Curious researcher. |
 
 [[../agents/sentinel|Sentinel]] has no Telegram personality — it's a data
 pipeline. Its outputs surface through other agents.

@@ -42,8 +42,8 @@ See [[../strategies/blade-d3-sizing#compounding-persistence]] and
 ## Team context (Phase 1 — observation only)
 At session start, Blade reads:
 - [[lens]]'s `market_bias.json` for macro bias per instrument
-- [[jarvis]]'s `strategy_recommendation.json` for regime per instrument
-- [[norman]]'s `norman_report.json` for the latest verdict on Blade itself
+- [[_retired/jarvis|jarvis]]'s `strategy_recommendation.json` for regime per instrument
+- [[_retired/norman|norman]]'s `norman_report.json` for the latest verdict on Blade itself
 - [[../infrastructure/system-architecture#h4-read-pipeline|H4 read]] per instrument
 
 These ride along on every closed position into `blade_learning_log.json` as
@@ -64,8 +64,8 @@ See [[../infrastructure/cron-schedule#blade]]. Three sessions weekdays plus
 prep pings 10 min before each.
 
 ## Cross-agent connections
-- Reads: [[lens]], [[jarvis]], [[norman]], H4 read pipeline
-- Reports to: [[victoria]] (daily ledger), [[norman]] (weekly validation)
+- Reads: [[lens]], [[_retired/jarvis|jarvis]], [[_retired/norman|norman]], H4 read pipeline
+- Reports to: [[victoria]] (daily ledger), [[_retired/norman|norman]] (weekly validation)
 - Wraps Telegram via: [[huncho]]
 
 ## Decision context

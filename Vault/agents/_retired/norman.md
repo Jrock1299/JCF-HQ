@@ -1,8 +1,17 @@
 # ⚠️ Norman — Risk Validator
 
+> 🪦 **RETIRED 2026-07-25 — merged into Lens/Victoria.**
+> **Absorbed by:** [[../lens]] (Blade, Edge) and [[../victoria]] (Jerry, Chad) — pipeline in `scripts/risk_validation.py`
+> **What moved:** Monte Carlo simulation, the sample-size gate, verdict synthesis.
+> Code archived in place at `agents/norman/` (see `RETIRED.md` there).
+> Cron lines held permanently (`#HOLD RETIRED`), not deleted. History preserved.
+> The note below is kept as the historical record of how this agent worked.
+
+
+
 **Internal id:** `norman`
 **Role:** Monte Carlo strategy validator for every trading agent
-**Status:** Active. Last run 2026-06-01.
+**Status:** RETIRED 2026-07-25 (see banner above)
 **Voice:** Brutally honest, cold, calculated. Named after the strategist
 from *The Promised Neverland*. Doesn't coddle.
 

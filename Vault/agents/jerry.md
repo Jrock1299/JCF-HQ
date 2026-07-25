@@ -29,9 +29,9 @@ during market hours.
 ## Team context (Phase 1 — observation only)
 Loads context at every trade entry via `jerry_context.py`:
 - [[lens]] bias for the ticker (with US100/SPX500 fallback)
-- [[jarvis]] regime for SPX500/DE30/XAU/BTC (or `neutral` if Jerry's ticker
+- [[_retired/jarvis|jarvis]] regime for SPX500/DE30/XAU/BTC (or `neutral` if Jerry's ticker
   isn't covered)
-- [[norman]] verdict on Jerry itself
+- [[_retired/norman|norman]] verdict on Jerry itself
 - `strategist_aligned` flag (does bias match trade direction?)
 
 Logged to `dashboard/jerry_learning_log.json` AND stamped onto every row in
@@ -50,14 +50,14 @@ Logged to `dashboard/jerry_learning_log.json` AND stamped onto every row in
 
 ## Cross-agent connections
 - Reads: [[sentinel]] (insider/discovery signals — primary input), [[lens]],
-  [[jarvis]], [[norman]]
-- Reports to: [[victoria]] (daily P&L), [[norman]] (validation)
+  [[_retired/jarvis|jarvis]], [[_retired/norman|norman]]
+- Reports to: [[victoria]] (daily P&L), [[_retired/norman|norman]] (validation)
 - Wraps Telegram via: [[huncho]]
 
 ## Model routing
 `openai/gpt-5.6-terra` via the Codex gateway (`_run_codex` in `jerry_config.py`,
 shared by discover + review) — **migrated 2026-07-24** off the Anthropic SDK, same
-pattern as [[victoria]]/[[norman]]/[[lucy]]. Discovery still web-searches via the
+pattern as [[victoria]]/[[_retired/norman|norman]]/[[_retired/lucy|lucy]]. Discovery still web-searches via the
 gateway agent's own tools. No `ANTHROPIC_API_KEY` dependency. Trade execution
 stays deterministic Alpaca REST. `jerry.service` held (not started) pending
 go-ahead. Also fixed a pre-existing `None`-value crash in the review's date

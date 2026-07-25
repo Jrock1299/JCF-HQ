@@ -66,7 +66,7 @@ See [[../agents/lens]].
 0  12 * * 1-5    strategist/run_research.sh           # pre-NY brief
 0  8  * * 6      strategist/deep_backtest.py          # Saturday weekly deep backtest
 ```
-See [[../agents/jarvis]].
+See [[../agents/_retired/jarvis|jarvis]].
 
 ## Session prep pings (Huncho voice + auto 4H reads) — HELD 2026-07-24
 ```

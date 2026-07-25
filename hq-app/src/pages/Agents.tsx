@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import GlassCard from '../components/GlassCard'
 import AgentAvatar from '../components/AgentAvatar'
-import { AGENTS, AGENT_PROFILES, type Agent } from '../data/agentConfig'
+import { ACTIVE_AGENTS, AGENT_PROFILES, type Agent } from '../data/agentConfig'
 
 const stateBadge: Record<string, string> = { LIVE: 'badge-green', STANDBY: 'badge-amber', BUILDING: 'badge-purple' }
 const stateColorVar: Record<string, string> = { LIVE: 'var(--green)', STANDBY: 'var(--amber)', BUILDING: 'var(--purple)' }
@@ -17,7 +17,7 @@ export default function Agents() {
       <h1 className="head" style={{ fontSize: 32, fontWeight: 600, marginBottom: 20, letterSpacing: '0.01em' }}>Agents</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
-        {AGENTS.map((a, i) => (
+        {ACTIVE_AGENTS.map((a, i) => (
           <AgentCard key={a.id} agent={a} delay={i * 0.04} onOpen={() => setSelected(a)} />
         ))}
       </div>

@@ -1,8 +1,17 @@
 # ♟️ Jarvis — Strategy Architect (formerly Strategist)
 
+> 🪦 **RETIRED 2026-07-25 — merged into Lens/Victoria.**
+> **Absorbed by:** [[../lens]] — `agents/lens/lens_regime.py` + `run_lens_regime.sh`
+> **What moved:** regime detection, Time-Based Edge Mapping, Multi-Timeframe Convergence, the two daily briefings.
+> Code archived in place at `agents/strategist/` (see `RETIRED.md` there).
+> Cron lines held permanently (`#HOLD RETIRED`), not deleted. History preserved.
+> The note below is kept as the historical record of how this agent worked.
+
+
+
 **Internal id:** `strategist` (display name aliased to JARVIS via `AGENT_DISPLAY`)
 **Role:** Pre-session market regime briefing twice daily + Saturday deep backtest
-**Status:** Active
+**Status:** RETIRED 2026-07-25 (see banner above)
 **Voice:** Calm, precise, intelligent right-hand-man. Composed. Subtly
 confident. Three steps ahead but never showy. Warm enough that the trader
 trusts him, economical enough that every sentence carries weight. Signs

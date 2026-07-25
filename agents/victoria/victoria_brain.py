@@ -873,14 +873,20 @@ Review all data and produce a weekly report in this JSON format:
     {"issue": "description", "action": "recommended fix"}
   ],
   "matters_of_note": ["observation 1", "observation 2"],
-  "verdict": "2-3 sentence CFO verdict on the week"
+  "verdict": "2-3 sentence CFO verdict on the week",
+  "scouting_verdict": "2-3 sentences ruling on this week's scouting findings — which, if any, are worth the coin and the maintenance burden. Name the one you would actually adopt, or say plainly that none earn their keep this week."
 }
+
+You also receive a SCOUTING REPORT — tools, skills, and MCP servers found \
+this week (this desk was Lucy's until 2026-07-25; it is yours now). Rule on \
+it as CFO: what is worth adopting, what is noise, what costs more than it \
+returns. Populate "scouting_verdict".
 
 Be direct, use actual numbers, and be honest about what is \
 working and what is not."""
 
 
-def run_victoria_weekly() -> dict:
+def run_victoria_weekly(with_scout: bool = False) -> dict:
     today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     print(f'[victoria-weekly] Starting weekly tribunal — {today}')
 
@@ -907,6 +913,29 @@ def run_victoria_weekly() -> dict:
     api_costs = aggregate_api_costs()
     svc_statuses = check_service_statuses()
 
+    # ── Scouting desk (absorbed from Lucy 2026-07-25) ──────────────────────────
+    # Runs as an additional weekly output alongside the CFO tribunal. Its
+    # findings are folded into this prompt so Victoria rules on them in her own
+    # voice rather than sending a second, disconnected report. A failure here
+    # must never take the tribunal down — the CFO report is the primary product.
+    # ⛔ DEFAULT OFF. Victoria's weekly cron line is ALREADY LIVE (Sun 8:00 AM ET).
+    #    Defaulting the scout ON would have silently activated Lucy's absorbed
+    #    function on a schedule this Sunday without approval — exactly what the
+    #    consolidation brief said not to do. It runs only when explicitly asked
+    #    (--with-scout / VICTORIA_WITH_SCOUT=1) until Jase signs off.
+    if os.getenv('VICTORIA_WITH_SCOUT', '').strip() in ('1', 'true', 'yes'):
+        with_scout = True
+    scout_result, scout_text = None, 'SCOUTING REPORT: not run (scouting desk held pending approval).'
+    if with_scout:
+        try:
+            import victoria_scout
+            scout_result = victoria_scout.research_tools(send_telegram=False)
+            scout_text = victoria_scout.summarize_for_tribunal(scout_result)
+            print(f'[victoria-weekly] Scout: {len(scout_result.get("findings", []))} findings')
+        except Exception as e:
+            print(f'[victoria-weekly] Scout failed (non-fatal): {e}')
+            scout_text = f'SCOUTING REPORT: failed to run ({e}).'
+
     # Build data dump
     tl_text     = _format_tradelocker(tl_data)  if tl_data   else 'TradeLocker: unavailable'
     edge_text   = _format_edge(edge_data)        if edge_data else 'Edge: unavailable'
@@ -931,6 +960,7 @@ def run_victoria_weekly() -> dict:
         f"{tl_text}\n\n{apnl_text}\n\n"
         f"{edge_text}\n\n{tao_text}\n\n{accts_text}\n\n"
         f"{norman_text}\n\n"
+        f"{scout_text}\n\n"
         f"API costs MTD: ${api_costs['total_mtd']:.4f}\n\n"
         "Analyze the full week and respond with ONLY valid JSON."
     )
@@ -1000,6 +1030,20 @@ def run_victoria_weekly() -> dict:
         tg_lines.append(verdict)
         tg_lines.append('')
 
+    # Scouting desk (absorbed from Lucy) — reported inside the tribunal.
+    if scout_result is not None:
+        finds = scout_result.get('findings', [])
+        highs = [f for f in finds if f.get('priority') == 'HIGH']
+        tg_lines.append('\U0001f50d THE SCOUTING DESK')
+        tg_lines.append(f'{len(finds)} brought before me ({len(highs)} HIGH). '
+                        f'Top pick: {scout_result.get("top_pick", "none")}')
+        for f in highs[:3]:
+            tg_lines.append(f'• {f.get("name", "?")} [{f.get("category", "?")}]')
+        sv = result.get('scouting_verdict')
+        if sv:
+            tg_lines.append(sv)
+        tg_lines.append('')
+
     tg_lines.append('— Victoria')
 
     body = '\n'.join(tg_lines)
@@ -1007,10 +1051,13 @@ def run_victoria_weekly() -> dict:
 
     # Save weekly report
     weekly_path = DASHBOARD / 'victoria_weekly.json'
+    result['scouting'] = scout_result
     result['_meta'] = {
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'cost_usd': cost_usd,
         'model': MODEL,
+        'scout_findings': len((scout_result or {}).get('findings', [])),
+        'absorbed': ['lucy scouting (2026-07-25)'],
     }
     try:
         with open(weekly_path, 'w') as f:
@@ -1027,9 +1074,13 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Victoria — CFO & Chief of Staff')
     parser.add_argument('--weekly', action='store_true', help='Run weekly tribunal')
+    parser.add_argument('--with-scout', action='store_true',
+                        help='Weekly only: also run the scouting desk (absorbed from Lucy). '
+                             'OFF by default — Victoria\'s weekly cron is live and the '
+                             'scouting desk is held pending approval.')
     args = parser.parse_args()
 
     if args.weekly:
-        run_victoria_weekly()
+        run_victoria_weekly(with_scout=args.with_scout)
     else:
         run_victoria()

@@ -4,7 +4,7 @@ import AgentAvatar from '../components/AgentAvatar'
 import AgentDot from '../components/AgentDot'
 import { useLiveClock, greeting } from '../hooks/useLiveClock'
 import { quoteOfDay } from '../data/quotes'
-import { AGENTS } from '../data/agentConfig'
+import { ACTIVE_AGENTS } from '../data/agentConfig'
 import { useHQData, fmtUSD, fmtPct, fmtSigned } from '../hooks/useHQData'
 import { series, computeBladeTrades } from '../data/derive'
 
@@ -137,7 +137,7 @@ export default function Home() {
         <GlassCard hover={false}>
           <Label>agents</Label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-            {AGENTS.map((a) => (
+            {ACTIVE_AGENTS.map((a) => (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <AgentDot state={a.state} />
                 <AgentAvatar agent={a} size={26} />

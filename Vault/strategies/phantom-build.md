@@ -48,9 +48,9 @@ Before any deployment:
 ### Team context wiring
 When implemented, Phantom plugs into the same Phase 1 observation layer as
 [[../agents/blade]] / [[../agents/edge]] / [[../agents/jerry]]:
-- Reads [[../agents/jarvis]] regime
+- Reads [[../agents/_retired/jarvis|jarvis]] regime
 - Reads [[../agents/lens]] bias
-- Reads [[../agents/norman]] verdict
+- Reads [[../agents/_retired/norman|norman]] verdict
 - Reads [[../infrastructure/system-architecture#h4-read-pipeline|H4 read]]
 - Writes to `dashboard/phantom_learning_log.json`
 - Phase 1 logs only; never gates

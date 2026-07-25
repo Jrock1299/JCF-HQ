@@ -1,17 +1,303 @@
 {
-  "updated": "2026-06-01T16:07:42.540045+00:00",
+  "updated": "2026-07-25T20:40:59.252838+00:00",
   "regime": "ranging",
   "instruments": {
     "SPX500_USD": {
+      "regime": "trending",
+      "bias": "bearish",
+      "lens_bias": "bearish",
+      "lens_confidence": 67.0,
+      "adr": 80.2,
+      "current_price": 7415.8,
+      "convergence": {
+        "score": 78.4,
+        "label": "strong",
+        "direction": "bearish",
+        "components": {
+          "h4_ema_alignment": {
+            "value": "bearish",
+            "agrees": 1.0
+          },
+          "daily_ema_alignment": {
+            "value": "neutral",
+            "agrees": 0.5
+          },
+          "price_vs_h4_ema50": {
+            "value": "bearish",
+            "agrees": 1.0,
+            "ema50_h4": 7483.2145
+          },
+          "lens_macro_bias": {
+            "value": "bearish",
+            "confidence": 67.0,
+            "agrees": 1.0,
+            "conf_scale": 0.67
+          },
+          "adr_regime": {
+            "value": "normal",
+            "adr": 80.20999999999995
+          }
+        },
+        "note": "Observation only \u2014 never gates a trade (CLAUDE.md Rule #6)."
+      },
+      "edge_map": [
+        {
+          "window": "13:45-14:00",
+          "edge": "bullish",
+          "win_rate": 67.3,
+          "samples": 55,
+          "slot": [
+            13,
+            45
+          ]
+        },
+        {
+          "window": "17:15-17:30",
+          "edge": "bullish",
+          "win_rate": 67.3,
+          "samples": 52,
+          "slot": [
+            17,
+            15
+          ]
+        },
+        {
+          "window": "18:45-19:00",
+          "edge": "bearish",
+          "win_rate": 65.4,
+          "samples": 52,
+          "slot": [
+            18,
+            45
+          ]
+        }
+      ],
+      "in_top_window": false,
+      "active_window": null
+    },
+    "DE30_EUR": {
       "regime": "ranging",
-      "bias": "bullish",
+      "bias": "neutral",
       "lens_bias": "neutral",
       "lens_confidence": 50.0,
-      "adr": 66.5,
-      "current_price": 7588.6
+      "adr": 376.8,
+      "current_price": 25061.2,
+      "convergence": {
+        "score": 50.0,
+        "label": "weak",
+        "direction": "neutral",
+        "components": {
+          "h4_ema_alignment": {
+            "value": "neutral",
+            "agrees": 0.5
+          },
+          "daily_ema_alignment": {
+            "value": "neutral",
+            "agrees": 0.5
+          },
+          "price_vs_h4_ema50": {
+            "value": "bullish",
+            "agrees": 0.5,
+            "ema50_h4": 24969.7054
+          },
+          "lens_macro_bias": {
+            "value": "neutral",
+            "confidence": 50.0,
+            "agrees": 0.5,
+            "conf_scale": 0.5
+          },
+          "adr_regime": {
+            "value": "normal",
+            "adr": 376.79000000000013
+          }
+        },
+        "note": "Observation only \u2014 never gates a trade (CLAUDE.md Rule #6)."
+      },
+      "edge_map": [
+        {
+          "window": "17:15-17:30",
+          "edge": "bullish",
+          "win_rate": 65.6,
+          "samples": 64,
+          "slot": [
+            17,
+            15
+          ]
+        },
+        {
+          "window": "07:00-07:15",
+          "edge": "bullish",
+          "win_rate": 65.1,
+          "samples": 63,
+          "slot": [
+            7,
+            0
+          ]
+        },
+        {
+          "window": "16:15-16:30",
+          "edge": "bearish",
+          "win_rate": 64.1,
+          "samples": 64,
+          "slot": [
+            16,
+            15
+          ]
+        }
+      ],
+      "in_top_window": false,
+      "active_window": null
+    },
+    "XAU_USD": {
+      "regime": "ranging",
+      "bias": "neutral",
+      "lens_bias": "bearish",
+      "lens_confidence": 63.0,
+      "adr": 84.8,
+      "current_price": 4052.81,
+      "convergence": {
+        "score": 77.6,
+        "label": "strong",
+        "direction": "bearish",
+        "components": {
+          "h4_ema_alignment": {
+            "value": "neutral",
+            "agrees": 0.5
+          },
+          "daily_ema_alignment": {
+            "value": "bearish",
+            "agrees": 1.0
+          },
+          "price_vs_h4_ema50": {
+            "value": "bearish",
+            "agrees": 1.0,
+            "ema50_h4": 4062.3195
+          },
+          "lens_macro_bias": {
+            "value": "bearish",
+            "confidence": 63.0,
+            "agrees": 1.0,
+            "conf_scale": 0.63
+          },
+          "adr_regime": {
+            "value": "normal",
+            "adr": 84.81600000000003
+          }
+        },
+        "note": "Observation only \u2014 never gates a trade (CLAUDE.md Rule #6)."
+      },
+      "edge_map": [
+        {
+          "window": "05:45-06:00",
+          "edge": "bearish",
+          "win_rate": 69.1,
+          "samples": 55,
+          "slot": [
+            5,
+            45
+          ]
+        },
+        {
+          "window": "09:15-09:30",
+          "edge": "bearish",
+          "win_rate": 67.3,
+          "samples": 55,
+          "slot": [
+            9,
+            15
+          ]
+        },
+        {
+          "window": "18:30-18:45",
+          "edge": "bearish",
+          "win_rate": 65.4,
+          "samples": 52,
+          "slot": [
+            18,
+            30
+          ]
+        }
+      ],
+      "in_top_window": false,
+      "active_window": null
+    },
+    "BTC_USD": {
+      "regime": "ranging",
+      "bias": "bearish",
+      "lens_bias": "neutral",
+      "lens_confidence": 48.0,
+      "adr": 1485.5,
+      "current_price": 64335.08,
+      "convergence": {
+        "score": 75.0,
+        "label": "strong",
+        "direction": "bearish",
+        "components": {
+          "h4_ema_alignment": {
+            "value": "bearish",
+            "agrees": 1.0
+          },
+          "daily_ema_alignment": {
+            "value": "neutral",
+            "agrees": 0.5
+          },
+          "price_vs_h4_ema50": {
+            "value": "bearish",
+            "agrees": 1.0,
+            "ema50_h4": 64791.7974
+          },
+          "lens_macro_bias": {
+            "value": "neutral",
+            "confidence": 48.0,
+            "agrees": 0.5,
+            "conf_scale": 0.48
+          },
+          "adr_regime": {
+            "value": "normal",
+            "adr": 1485.4689999999987
+          }
+        },
+        "note": "Observation only \u2014 never gates a trade (CLAUDE.md Rule #6)."
+      },
+      "edge_map": [
+        {
+          "window": "10:15-10:30",
+          "edge": "bullish",
+          "win_rate": 90.0,
+          "samples": 10,
+          "slot": [
+            10,
+            15
+          ]
+        },
+        {
+          "window": "12:15-12:30",
+          "edge": "bearish",
+          "win_rate": 81.8,
+          "samples": 11,
+          "slot": [
+            12,
+            15
+          ]
+        },
+        {
+          "window": "21:15-21:30",
+          "edge": "bearish",
+          "win_rate": 80.0,
+          "samples": 10,
+          "slot": [
+            21,
+            15
+          ]
+        }
+      ],
+      "in_top_window": false,
+      "active_window": null
     }
   },
   "monte_carlo": {
     "note": "No recent trades for Monte Carlo"
-  }
+  },
+  "convergence_avg": 70.2,
+  "produced_by": "lens/lens_regime.py (absorbed from strategist/Jarvis 2026-07-25)"
 }

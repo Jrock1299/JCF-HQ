@@ -63,7 +63,7 @@ there — `os.getenv()` runs before the central JSON fallback.
 See:
 - [[../strategies/blade-d3-sizing]] for the D3 knob meanings
 - [[../agents/edge]] for Edge knobs
-- [[../agents/norman]] for verdict rules
+- [[../agents/_retired/norman|norman]] for verdict rules
 
 ### `dashboard/watchlist.json`
 Jase's by-theme tickers (extracted from sentinel_sync.py hardcoded dict).

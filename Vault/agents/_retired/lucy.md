@@ -1,8 +1,17 @@
 # 🔍 Lucy — Skills & Tools Scout
 
+> 🪦 **RETIRED 2026-07-25 — merged into Lens/Victoria.**
+> **Absorbed by:** [[../victoria]] — `agents/victoria/victoria_scout.py`, folded into the weekly tribunal
+> **What moved:** weekly skills / tools / MCP scouting.
+> Code archived in place at `agents/lucy/` (see `RETIRED.md` there).
+> Cron lines held permanently (`#HOLD RETIRED`), not deleted. History preserved.
+> The note below is kept as the historical record of how this agent worked.
+
+
+
 **Internal id:** `lucy`
 **Role:** Weekly scout for new skills, tools, APIs, and MCP servers
-**Status:** Active but low-traffic. Not a trading agent.
+**Status:** RETIRED 2026-07-25 (see banner above)
 **Voice:** Curious researcher — surfaces options, doesn't decide.
 
 ## What Lucy does
@@ -20,7 +29,7 @@ decides what to integrate.
 ## Why kept active
 Lucy is the only agent that proactively scouts for tools that could
 strengthen the rest of the system. She caught the skills system we now
-bake into [[jarvis]], [[norman]], [[lens]], and the chart-analysis prompt.
+bake into [[jarvis|jarvis]], [[norman|norman]], [[lens]], and the chart-analysis prompt.
 
 She was considered for benching in the 2026-06-01 rundown but kept by user
 decision — non-trading but feeds the meta-system.

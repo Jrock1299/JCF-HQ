@@ -1,4 +1,4 @@
-export type AgentState = 'LIVE' | 'STANDBY' | 'BUILDING'
+export type AgentState = 'LIVE' | 'STANDBY' | 'BUILDING' | 'RETIRED'
 export type AgentModel = 'Codex' | 'Anthropic' | 'cron'
 
 export interface Agent {
@@ -11,6 +11,10 @@ export interface Agent {
   state: AgentState
   connectedTo: string[]
   voice: string
+  /** Set on RETIRED agents: when they were retired and who absorbed the function.
+   *  History is archived, not deleted — see agents/<id>/RETIRED.md. */
+  retiredOn?: string
+  absorbedBy?: string
 }
 
 // Portrait files live in /public/agents/<id>.png — jarvis uses strategist.png
@@ -32,10 +36,10 @@ export const AGENTS: Agent[] = [
     name: 'Lens',
     emoji: '🌐',
     portrait: '/agents/lens.png',
-    role: 'Macro Intel',
+    role: 'Macro Intel / Regime / Risk (Blade, Edge)',
     model: 'Anthropic',
     state: 'LIVE',
-    connectedTo: ['blade', 'jerry', 'jarvis'],
+    connectedTo: ['blade', 'jerry', 'edge'],
     voice: 'Reads the macro tea leaves. Zen, but never foggy.',
   },
   {
@@ -65,21 +69,23 @@ export const AGENTS: Agent[] = [
     name: 'Jarvis',
     emoji: '🧩',
     portrait: '/agents/strategist.png',
-    role: 'Regime / Strategy',
+    role: 'Regime / Strategy — retired',
     model: 'Codex',
-    state: 'LIVE',
+    state: 'RETIRED',
     connectedTo: ['lens'],
     voice: 'The smart friend who breaks the market down simply.',
+    retiredOn: '2026-07-25',
+    absorbedBy: 'lens',
   },
   {
     id: 'victoria',
     name: 'Victoria',
     emoji: '🧛‍♀️',
     portrait: '/agents/victoria.png',
-    role: 'CFO',
+    role: 'CFO / Scouting / Risk (Jerry, Chad)',
     model: 'Codex',
     state: 'LIVE',
-    connectedTo: ['all P&L'],
+    connectedTo: ['all P&L', 'jerry', 'crisp'],
     voice: 'Medieval vampire CFO. Owns the ledger, never coddles.',
   },
   {
@@ -87,22 +93,26 @@ export const AGENTS: Agent[] = [
     name: 'Norman',
     emoji: '⚠️',
     portrait: '/agents/norman.png',
-    role: 'Risk / Monte Carlo',
+    role: 'Risk / Monte Carlo — retired',
     model: 'Codex',
-    state: 'STANDBY',
+    state: 'RETIRED',
     connectedTo: ['blade', 'jerry', 'edge'],
     voice: 'Stern professor who respects you. Runs Saturdays.',
+    retiredOn: '2026-07-25',
+    absorbedBy: 'lens + victoria',
   },
   {
     id: 'lucy',
     name: 'Lucy',
     emoji: '🔍',
     portrait: '/agents/lucy.png',
-    role: 'Skills Scout',
+    role: 'Skills Scout — retired',
     model: 'Codex',
-    state: 'STANDBY',
+    state: 'RETIRED',
     connectedTo: ['huncho'],
     voice: 'Your homegirl who texts excited about new tools.',
+    retiredOn: '2026-07-25',
+    absorbedBy: 'victoria',
   },
   {
     id: 'tao',
@@ -174,7 +184,7 @@ export const AGENT_PROFILES: Record<string, AgentProfile> = {
   },
   jarvis: {
     motto: 'Complexity is just simplicity nobody explained yet.',
-    bio: 'The right-hand strategist who turns market complexity into a plain-English brief before every session. He reads regime, breadth, and rotation, then tells you what actually matters today. Composed and precise — three steps ahead, but always happy to explain it simply.',
+    bio: 'RETIRED 2026-07-25 — merged into Lens. The right-hand strategist who turned market complexity into a plain-English brief before every session. His regime detection, Time-Based Edge Map and Multi-Timeframe Convergence now run inside Lens (agents/lens/lens_regime.py), which still writes the same strategy_recommendation.json that Blade, Edge and Jerry read.',
   },
   victoria: {
     motto: 'I have outlived worse quarters than this.',
@@ -182,11 +192,11 @@ export const AGENT_PROFILES: Record<string, AgentProfile> = {
   },
   norman: {
     motto: "Risk doesn't care about your feelings.",
-    bio: 'The risk validator who runs Monte Carlo on every agent’s closed trades and issues a cold PASS / FAIL verdict. Brutally honest by design, he blesses nothing until the math earns it. Respectful of the operator, entirely unmoved by the streak.',
+    bio: 'RETIRED 2026-07-25 — split between Lens and Victoria. The risk validator who ran Monte Carlo on every agent’s closed trades and issued a cold PASS / FAIL verdict. His pipeline — Monte Carlo, the sample-size gate, verdict synthesis — now lives in scripts/risk_validation.py: Lens validates Blade and Edge, Victoria validates Jerry and Chad. The gate still outranks the model.',
   },
   lucy: {
     motto: "There's always a better tool. I'll find it.",
-    bio: 'The scout who hunts the internet each week for new skills, tools, and MCPs worth adopting. Endlessly curious and a little too excited, she brings back receipts on anything that might sharpen the edge. If a better tool exists, she finds it first.',
+    bio: 'RETIRED 2026-07-25 — merged into Victoria. The scout who hunted the internet each week for new skills, tools, and MCPs worth adopting. Her search now runs as Victoria’s scouting desk (agents/victoria/victoria_scout.py), folded into the weekly tribunal so the CFO rules on what is worth the coin.',
   },
   tao: {
     motto: 'Patient capital outlives impatient markets.',
@@ -210,7 +220,15 @@ export const AGENT_MAP: Record<string, Agent> = Object.fromEntries(
   AGENTS.map((a) => [a.id, a]),
 )
 
+/** The ACTIVE roster — what the dashboard shows by default.
+ *  RETIRED agents (Jarvis, Norman, Lucy — consolidated 2026-07-25) are excluded
+ *  here but remain in AGENTS and AGENT_MAP so their history, portraits and past
+ *  hub messages still resolve. Archived, not hard-deleted. */
+export const ACTIVE_AGENTS: Agent[] = AGENTS.filter((a) => a.state !== 'RETIRED')
+
+export const RETIRED_AGENTS: Agent[] = AGENTS.filter((a) => a.state === 'RETIRED')
+
 export const stateColor = (s: AgentState): string =>
-  s === 'LIVE' ? 'green' : s === 'STANDBY' ? 'amber' : 'purple'
+  s === 'LIVE' ? 'green' : s === 'STANDBY' ? 'amber' : s === 'RETIRED' ? 'mute' : 'purple'
 
 export const liveCount = AGENTS.filter((a) => a.state === 'LIVE').length

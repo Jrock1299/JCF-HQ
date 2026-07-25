@@ -190,6 +190,6 @@ away the compounded balance. See
 [[../sessions/2026-06-02#3-blade-balance-json-never-created-fixed]].
 
 ## Related
-- [[../agents/blade]] · [[../agents/norman]] · [[orb-strategy]]
+- [[../agents/blade]] · [[../agents/_retired/norman|norman]] · [[orb-strategy]]
 - [[../decisions/decision-log#blade-d3-redesign-2026-06-01]]
 - [[../sessions/2026-06-01]] · [[../sessions/2026-06-02]]

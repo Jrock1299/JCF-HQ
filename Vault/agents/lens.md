@@ -51,7 +51,7 @@ See [[../infrastructure/model-routing]] for skill integration approach.
 
 ## Cross-agent connections
 - Reads: [[sentinel]] (watchlist signals fold into Lens's calculations)
-- Read by: [[blade]], [[edge]], [[jerry]], [[jarvis]], [[victoria]], the
+- Read by: [[blade]], [[edge]], [[jerry]], [[_retired/jarvis|jarvis]], [[victoria]], the
   Intelligence dashboard, every Telegram briefing
 - Wraps Telegram via: [[huncho]]
 
@@ -62,3 +62,26 @@ the `set -a / source .env / set +a` block is in `run_lens_brain.sh`. See
 
 ## Related decisions
 - Bot directory (`bot/run_lens.sh`) deprecated 2026-04 in favor of `lens_brain.py`.
+
+
+## Absorbed 2026-07-25 (consolidation)
+
+Lens took over two functions when [[_retired/jarvis|Jarvis]] and
+[[_retired/norman|Norman]] were retired:
+
+### Regime briefing (from Jarvis)
+`agents/lens/lens_regime.py` + `run_lens_regime.sh`. Two runs/day (06:00
+pre-London, 12:00 pre-NY) — kept **separate** from Lens's 04:55 macro thesis,
+because a 04:55 regime read is ~7h stale by the NY open. Writes
+`dashboard/strategy_recommendation.json` — a **frozen 5-consumer contract**
+([[blade]], [[edge]], [[jerry]], Crisp, hq-app). New keys additive only.
+Adds a Multi-Timeframe Convergence read (0-100, **observation only, never a
+gate**) and the Time-Based Edge Map.
+
+### Risk validation for Blade + Edge (from Norman)
+`agents/lens/lens_validator.py`, importing Norman's pipeline from
+`scripts/risk_validation.py` — Monte Carlo, the sample-size gate, verdict
+synthesis. Writes `dashboard/lens_validation.json`. The deterministic gate
+outranks the LLM: `--test-gate` proves it.
+
+⚠️ Both are `#HOLD PENDING-APPROVAL` in cron as of 2026-07-25.

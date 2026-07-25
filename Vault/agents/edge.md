@@ -29,9 +29,9 @@ then open a 3-position **cluster** as one aggregate market order.
 
 ## Team context (Phase 1 — observation only)
 At cluster entry, Edge calls `_load_team_context()`:
-- [[jarvis]] regime
+- [[_retired/jarvis|jarvis]] regime
 - [[lens]] bias for SPX500
-- [[norman]] verdict on Edge
+- [[_retired/norman|norman]] verdict on Edge
 - [[../infrastructure/system-architecture#h4-read-pipeline|H4 read]] (cached 30 min)
 
 Logged to `dashboard/edge_learning_log.json` and stamped onto every trade
@@ -54,8 +54,8 @@ See [[../infrastructure/config]].
 Continuous 5-min loop. See [[../infrastructure/cron-schedule#edge]].
 
 ## Cross-agent connections
-- Reads: [[jarvis]], [[lens]], [[norman]], H4 read pipeline
-- Reports to: [[norman]] (validation), [[victoria]] (daily ledger)
+- Reads: [[_retired/jarvis|jarvis]], [[lens]], [[_retired/norman|norman]], H4 read pipeline
+- Reports to: [[_retired/norman|norman]] (validation), [[victoria]] (daily ledger)
 - Wraps Telegram via: [[huncho]]
 
 ## Strategy detail

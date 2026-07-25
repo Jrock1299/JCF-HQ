@@ -4,14 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AgentAvatar from '../components/AgentAvatar'
 import ChatBubble from '../components/ChatBubble'
 import AgentDot from '../components/AgentDot'
-import { AGENTS, AGENT_MAP } from '../data/agentConfig'
+import { ACTIVE_AGENTS, AGENT_MAP } from '../data/agentConfig'
 import { THREAD_MAP, GROUP_SEED, type HubMessage } from '../data/seedMessages'
 
 const GROUP_ID = 'group'
-const GROUP_MEMBERS = ['huncho', 'lens', 'blade', 'jerry', 'norman', 'victoria']
+// Norman retired 2026-07-25 — his risk seat is now split between Lens and Victoria.
+const GROUP_MEMBERS = ['huncho', 'lens', 'blade', 'jerry', 'victoria']
 
 // Ordered conversation list (BUILDING agents drop to the bottom).
-const ORDER = [...AGENTS].sort((a, b) => {
+const ORDER = [...ACTIVE_AGENTS].sort((a, b) => {
   const rank = (s: string) => (s === 'LIVE' ? 0 : s === 'STANDBY' ? 1 : 2)
   return rank(a.state) - rank(b.state)
 })
@@ -20,7 +21,7 @@ const ORDER = [...AGENTS].sort((a, b) => {
 const ROUTES: { keys: string[]; id: string }[] = [
   { keys: ['blade', 'orb', 'forex', 'indices', 'spx', 'dax', 'breakout'], id: 'blade' },
   { keys: ['jerry', 'stock', 'alpaca', 'option', 'equit', 'watchlist'], id: 'jerry' },
-  { keys: ['risk', 'drawdown', 'norman', 'monte', 'sharpe', 'ruin', 'size'], id: 'norman' },
+  { keys: ['risk', 'drawdown', 'monte', 'sharpe', 'ruin', 'size'], id: 'lens' },
   { keys: ['macro', 'lens', 'news', 'cpi', 'fed', 'dollar', 'gold', 'oil'], id: 'lens' },
   { keys: ['money', 'cost', 'pnl', 'p&l', 'ledger', 'victoria', 'budget', 'cash'], id: 'victoria' },
   { keys: ['regime', 'jarvis', 'trend', 'compress', 'range'], id: 'jarvis' },
@@ -38,7 +39,7 @@ function nowClock() {
   return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
 }
 function liveOther(exclude: string): string {
-  const pool = AGENTS.filter((a) => a.state === 'LIVE' && a.id !== exclude)
+  const pool = ACTIVE_AGENTS.filter((a) => a.state === 'LIVE' && a.id !== exclude)
   return pool[Math.floor(Math.random() * pool.length)]?.id || 'lens'
 }
 function groupResponders(text: string): string[] {
@@ -58,7 +59,7 @@ export default function AgentHub() {
   const [query, setQuery] = useState('')
   const [threads, setThreads] = useState<Record<string, HubMessage[]>>(() => ({
     [GROUP_ID]: [...GROUP_SEED],
-    ...Object.fromEntries(AGENTS.map((a) => [a.id, [...(THREAD_MAP[a.id]?.messages || [])]])),
+    ...Object.fromEntries(ACTIVE_AGENTS.map((a) => [a.id, [...(THREAD_MAP[a.id]?.messages || [])]])),
   }))
   const [typing, setTyping] = useState<Record<string, string | null>>({})
   const [replyIdx, setReplyIdx] = useState<Record<string, number>>({})

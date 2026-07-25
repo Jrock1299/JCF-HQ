@@ -4,6 +4,61 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Reporting layer consolidated: Jarvis, Norman, Lucy retired · 2026-07-25
+**Decision:** Retired three reporting agents and split their functions across the
+two that already run. **Lens** absorbed Jarvis's regime engine plus risk
+validation for Blade and Edge. **Victoria** absorbed Lucy's scouting desk plus
+risk validation for Jerry and Chad. Trading infrastructure (Blade, Edge, Jerry,
+Chad, Tao) **untouched**. Nothing activated in cron — 4 new lines built, tested,
+and `#HOLD PENDING-APPROVAL`'d pending Jase's review.
+**Why:** three agents, three cron slots and three voices for functions that map
+cleanly onto two agents already on schedule. Fewer moving parts, same outputs.
+**Two premises in the brief were wrong and are corrected in the build:**
+- Blade has **no "strategy mode selector."** It reads `strategy_recommendation.json`
+  for observation only (Critical Rule #6). And **five** consumers read that file —
+  Blade, Edge, Jerry, Crisp, hq-app — not one. Contract frozen and verified for all
+  five; new keys are additive only. See CLAUDE.md §4h.
+- The **Multi-Timeframe Convergence Score had already been deleted** in the
+  2026-06-01 trim. There was no code to move. Rebuilt from the four components
+  Jarvis's own brief documents; **the weights are new and stated openly** in
+  `lens_regime.py` rather than passed off as the recovered original.
+**Also decided:** the two regime briefings did **not** fold into Lens's 04:55
+thesis run. The thesis is a daily research product; the regime read is
+session-scoped, and a 04:55 read is ~7h stale by the NY open — when Blade's NY_PM
+session consumes it. Merging would serve a stale regime or triple Anthropic spend.
+See [[../sessions/2026-07-25]].
+
+---
+
+## Norman's sample-size gate: one implementation, imported twice · 2026-07-25
+**Decision:** The brief called for duplicating Norman's full pipeline into both
+Lens and Victoria. Instead the pipeline was extracted **once** to
+`scripts/risk_validation.py` and imported by both validators; each owns its own
+roster, loaders, prompt, report and delivery.
+**Why:** duplicating a *safety rail* is how rails drift. Two hand-copied gates
+means the next person to fix a bug in one has no way to know the other exists —
+the same class of failure as the stale-feed bugs fixed earlier the same night.
+One implementation is the strongest available guarantee the gate is identical in
+both places. It is still **tested independently from each side**: `--test-gate`
+runs four rogue-synthesis cases (under-sample → PASS refused, no-data → FAIL
+refused, no-balance → MARGINAL refused, sufficient sample → synthesis allowed).
+Both validators pass all four.
+
+---
+
+## All-zero P&L is NO_DATA, not a grade · 2026-07-25
+**Decision:** `validate_strategy()` now refuses to grade a sample where every
+trade reports exactly 0.00 P&L (n>=5), returning `NO_DATA` with the reason.
+**Why:** bringing Jerry under validation for the first time exposed that all 90 of
+his closed positions carry `pnl: 0.0` — `jerry_trader.py` never writes realised
+P&L on close. Without this guard the sample is large enough to clear the 20-trade
+gate and grades **FAIL** (0% WR, PF 0, Sharpe 0): a real-looking verdict on a feed
+that reported nothing. Extends Critical Rule #9 ("an empty success is not a
+verified zero") from the loaders into the validator itself. Fixing Jerry's close
+path is a separate open task; until then he is correctly ungradeable.
+
+---
+
 ## Helius wired + Chad wallet intelligence (Phase 2) · 2026-07-24
 **Decision:** Added `HELIUS_API_KEY` to `.env` (gitignored, read-only data key)
 and built `agents/crisp/chad_wallet_intel.py`. Authorized by Jase.
@@ -94,8 +149,8 @@ gitignored).
 ## Codex model routing → GPT-5.6 Terra · 2026-07-24
 **Decision:** Move the Codex-routed agents from `openai/gpt-5.5` to
 `openai/gpt-5.6-terra` (balanced tier) and rewrite the SOUL.md fallback chain
-to what's actually live. Applies to [[../agents/victoria]], [[../agents/norman]],
-[[../agents/lucy]] (PRIMARY), and [[../agents/jarvis]] (`infer` primary).
+to what's actually live. Applies to [[../agents/victoria]], [[../agents/_retired/norman|norman]],
+[[../agents/_retired/lucy|lucy]] (PRIMARY), and [[../agents/_retired/jarvis|jarvis]] (`infer` primary).
 
 **Why:** GPT-5.6 rolled out 2026-07-09; 5.4 retired 07-23. Terra is the current
 balanced everyday tier and cheaper than the Sol flagship. Reasoning/reporting
@@ -127,7 +182,7 @@ $0 cost. Cron still HELD.
 ---
 
 ## Victoria + Norman → Codex · 2026-07-24
-**Decision:** Migrate [[../agents/victoria]] and [[../agents/norman]] off the
+**Decision:** Migrate [[../agents/victoria]] and [[../agents/_retired/norman|norman]] off the
 Anthropic SDK (`claude-sonnet-4-6`) onto the Codex runtime (`openai/gpt-5.5`)
 via Lucy's `openclaw agent` subprocess pattern (`_run_codex`). [[../agents/lens]]
 stays on Anthropic (it depends on the server-side `web_search` tool, which the
@@ -197,8 +252,8 @@ and bake into agent system prompts. Reject Option B (port the Python).
 trade time. Methodology survives skill-script changes; agents stay stable.
 
 Baked methodology:
-- [[../agents/jarvis]] — `macro-regime-detector`, `market-breadth-analyzer`, `sector-analyst`
-- [[../agents/norman]] — `backtest-expert`, `position-sizer`
+- [[../agents/_retired/jarvis|jarvis]] — `macro-regime-detector`, `market-breadth-analyzer`, `sector-analyst`
+- [[../agents/_retired/norman|norman]] — `backtest-expert`, `position-sizer`
 - [[../agents/lens]] — `market-news-analyst`, `market-environment-analysis`
 - chart_analysis.py — `technical-analyst`
 
@@ -231,7 +286,7 @@ single line wraps the display.
 Voice: calm, precise right-hand-man. Composed. Subtly confident. Signs
 `— Jarvis`. Full identity in `agents/strategist/CLAUDE.md`.
 
-See [[../agents/jarvis]] · [[../infrastructure/personalities]].
+See [[../agents/_retired/jarvis|jarvis]] · [[../infrastructure/personalities]].
 
 ---
 
@@ -502,7 +557,7 @@ pending Jase's edit-mode entry, so Monte Carlo is skipped rather than run
 against the old invented 10,000 notional.
 
 **See:** [[../infrastructure/data-freshness]] · [[../infrastructure/cron-schedule]]
-· [[../agents/norman]] · [[../agents/tao]] · [[../sessions/2026-07-25]]
+· [[../agents/_retired/norman|norman]] · [[../agents/tao]] · [[../sessions/2026-07-25]]
 
 ---
 

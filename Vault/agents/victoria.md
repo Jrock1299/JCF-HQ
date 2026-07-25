@@ -26,7 +26,7 @@ Reads everything every day at 21:00 UTC and on Monday mornings, then calls
 - Net worth aggregator
 - [[lens]] `market_bias.json`
 - [[sentinel]] `sentinel_data.json`
-- [[norman]] `norman_report.json`
+- [[_retired/norman|norman]] `norman_report.json`
 - API cost rollups per agent
 - Service statuses (systemctl is-active for `edge`, `crisp-v5`, `jcf-hq`, `hq-storage`)
 
@@ -66,3 +66,27 @@ gothic-queen persona is prepended into the user message — verified intact on
 test ("The coffers neither grew nor shrank. A stagnant eve."). No longer draws
 on `ANTHROPIC_API_KEY`. Override must be a plain tier id whitelisted in
 `agents.defaults.models`; `-codex` ids and Sol don't work on this backend.
+
+
+## Absorbed 2026-07-25 (consolidation)
+
+Victoria took over two functions when [[_retired/lucy|Lucy]] and
+[[_retired/norman|Norman]] were retired:
+
+### Scouting desk (from Lucy)
+`agents/victoria/victoria_scout.py`. Weekly hunt for skills / tools / MCP
+servers, run **inline by the weekly tribunal** so the CFO rules on findings in
+her own voice rather than sending a second disconnected report. Writes
+`dashboard/victoria_scout.json`.
+**DEFAULT OFF** (`--with-scout` / `VICTORIA_WITH_SCOUT=1`) — her weekly cron is
+already live, and defaulting it on would have activated Lucy's function on a
+schedule without approval.
+
+### Risk validation for Jerry + Chad (from Norman)
+`agents/victoria/victoria_validator.py`, importing the pipeline from
+`scripts/risk_validation.py`. Writes `dashboard/victoria_validation.json`.
+**[[jerry]] is new to validation** — Norman never covered him. His P&L feed is
+currently unpopulated (all closed positions report 0.00), so the validator
+correctly returns `NO_DATA` rather than grading a FAIL off nothing.
+
+⚠️ The validation cron line is `#HOLD PENDING-APPROVAL` as of 2026-07-25.

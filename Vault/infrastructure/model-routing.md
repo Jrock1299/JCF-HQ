@@ -7,10 +7,10 @@ Which agent uses which LLM, and why.
 | Agent | Primary | Fallback | Why |
 |---|---|---|---|
 | [[../agents/lens]] | `claude-sonnet-4-6` (Anthropic SDK) | none | Needs web_search + reasoning depth + structured JSON |
-| [[../agents/norman]] | `claude-sonnet-4-6` (Anthropic SDK) | none | Structured verdict reasoning |
+| [[../agents/_retired/norman|norman]] | `claude-sonnet-4-6` (Anthropic SDK) | none | Structured verdict reasoning |
 | [[../agents/victoria]] | `claude-sonnet-4-6` (Anthropic SDK) | none | Long-context aggregation across all agent outputs |
 | [[../agents/jerry]] discovery + review | `claude-sonnet-4-6` (Anthropic SDK) | none | Discovery requires reasoning over Sentinel signals |
-| [[../agents/jarvis]] narrative | Codex via `openai/gpt-5.5` | `openrouter/auto` | Cheap, fast prose generation |
+| [[../agents/_retired/jarvis|jarvis]] narrative | Codex via `openai/gpt-5.5` | `openrouter/auto` | Cheap, fast prose generation |
 | H4 read pipeline | `openai/gpt-5.5` | `openrouter/auto` | Same — fast prose with structured format |
 | [[../agents/huncho]] chart_analysis.py | Image-capable list: `codex/gpt-5.4` → `codex/gpt-5.5` | fallback returns "couldn't get a read" | Image vision needed |
 | Trade execution (everywhere) | N/A — deterministic Python | N/A | No LLM in the execution path |
@@ -71,8 +71,8 @@ codebase) because:
 - Methodology survives skill-script changes; agents stay stable
 
 Methodologies currently baked in:
-- [[../agents/jarvis]] — `macro-regime-detector`, `market-breadth-analyzer`, `sector-analyst`
-- [[../agents/norman]] — `backtest-expert`, `position-sizer`
+- [[../agents/_retired/jarvis|jarvis]] — `macro-regime-detector`, `market-breadth-analyzer`, `sector-analyst`
+- [[../agents/_retired/norman|norman]] — `backtest-expert`, `position-sizer`
 - [[../agents/lens]] — `market-news-analyst`, `market-environment-analysis`
 - chart_analysis.py — `technical-analyst` (scenarios with invalidation levels)
 
@@ -81,5 +81,5 @@ relevant ones.
 
 ## Related
 - [[system-architecture]]
-- [[../agents/lens]] · [[../agents/norman]] · [[../agents/jarvis]]
+- [[../agents/lens]] · [[../agents/_retired/norman|norman]] · [[../agents/_retired/jarvis|jarvis]]
 - [[../decisions/decision-log#skills-baked-into-prompts-2026-06-01]]

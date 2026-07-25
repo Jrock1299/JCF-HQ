@@ -6,7 +6,7 @@
 > If something is in this file, it's current. If it's not, assume it doesn't
 > exist or was deleted.
 >
-> **Last updated:** 2026-07-24 (see `git log` for revision history).
+> **Last updated:** 2026-07-25 (see `git log` for revision history).
 
 ---
 
@@ -39,10 +39,14 @@ remembering — write it down here.
 
 ## 2. Active Agents
 
-**Fleet state (2026-07-24 evening):** Live on cron: **Lens, Jarvis** (2
-briefings), **Lucy, Tao** (5 jobs), **Victoria** (daily+weekly), **Norman,
-Sentinel** (3×), plus the Drive-sync, agent-PnL, TradeLocker sync, dashboard
-mirror, API-cost, and **Kraken** syncs. **Blade is now HELD** (all 3 sessions +
+**Fleet state (2026-07-25):** **CONSOLIDATION LANDED — Jarvis, Norman and Lucy
+are RETIRED**, their functions absorbed by Lens and Victoria (see §3b). Live on
+cron: **Lens** (daily thesis), **Victoria** (daily+weekly), **Sentinel** (3×),
+plus the Drive-sync, agent-PnL, TradeLocker sync, dashboard mirror, API-cost,
+and **Kraken** syncs. **Tao** — all 5 jobs held. The four NEW consolidation cron
+lines (2 Lens regime briefings, 2 weekly validations) are **built, manually
+tested, and `#HOLD PENDING-APPROVAL`'d** — nothing is scheduled until Jase
+signs off. **Blade is now HELD** (all 3 sessions +
 session support — prep pings + end reports — `#HOLD`'d at Jase's direction:
 no live strategy yet, so no reason to run paper sessions). It's code-ready to
 resume the moment it's un-held (OANDA auth restored same day). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
@@ -168,12 +172,31 @@ report and priority list.
 **System prompt:** Includes baked-in methodology from `market-news-analyst`
 and `market-environment-analysis` skills — impact-scored news, 4-dimension
 environment assessment (trend / risk sentiment / volatility / sector rotation).
-**Key files:**
-- `agents/lens/lens_brain.py` (the only live entrypoint; legacy `bot/run_lens.sh` deprecated)
-- `agents/lens/run_lens_brain.sh`
-- `dashboard/market_bias.json` (the file every downstream agent reads)
+**Absorbed 2026-07-25 (from Jarvis + Norman):**
+- **Regime briefing** — `lens_regime.py` / `run_lens_regime.sh`. Writes
+  `dashboard/strategy_recommendation.json` (⚠️ frozen contract, see §4h).
+  Adds a Multi-Timeframe Convergence read and the Time-Based Edge Map.
+- **Risk validation for Blade + Edge** — `lens_validator.py`, importing
+  Norman's pipeline from `scripts/risk_validation.py`. Writes
+  `dashboard/lens_validation.json`.
 
-### ⚠️ **NORMAN** — `norman`
+**Key files:**
+- `agents/lens/lens_brain.py` (daily macro thesis; the original Lens entrypoint)
+- `agents/lens/run_lens_brain.sh`
+- `agents/lens/lens_regime.py` + `run_lens_regime.sh`   ← absorbed from Jarvis
+- `agents/lens/lens_validator.py` + `run_lens_validation.sh` ← absorbed from Norman
+- `dashboard/market_bias.json` (the file every downstream agent reads)
+- `dashboard/strategy_recommendation.json` (⚠️ 5-consumer contract — §4h)
+- `dashboard/lens_validation.json`
+
+### ⚠️ **NORMAN** — `norman` — 🪦 **RETIRED 2026-07-25 → split between Lens and Victoria**
+> His pipeline (Monte Carlo + sample-size gate + verdict synthesis) was extracted
+> to **`scripts/risk_validation.py`** and is imported by both successors:
+> **Lens** validates Blade + Edge (`agents/lens/lens_validator.py`), **Victoria**
+> validates Jerry + Chad (`agents/victoria/victoria_validator.py`). One gate
+> implementation, imported twice — two hand-copied safety rails drift.
+> Gate test: `--test-gate` on either validator. Code archived at `agents/norman/`.
+
 **Job:** Risk validator. Monte Carlo on every trading agent's closed trades.
 Issues PASS / FAIL / INSUFFICIENT_DATA verdict + recommendation. Brutally
 honest by design.
@@ -204,12 +227,31 @@ agent has no `system` slot; voice verified intact on test runs. No tools.
 **Schedule:**
 - Daily: `0 21 * * *` (21:00 UTC) — daily report
 - Weekly: `0 7 * * 1` (Monday 07:00 UTC) — weekly tribunal
+**Absorbed 2026-07-25 (from Lucy + Norman):**
+- **Scouting desk** — `victoria_scout.py`, run inline by the weekly tribunal.
+  **DEFAULT OFF** (`--with-scout` / `VICTORIA_WITH_SCOUT=1`): her weekly cron is
+  already live, so defaulting it on would have activated Lucy's function on a
+  schedule without approval. Writes `dashboard/victoria_scout.json`.
+- **Risk validation for Jerry + Chad** — `victoria_validator.py`, importing
+  Norman's pipeline from `scripts/risk_validation.py`. Writes
+  `dashboard/victoria_validation.json`. **Jerry is new to validation** — Norman
+  never covered him.
+
 **Key files:**
 - `agents/victoria/victoria_brain.py`
 - `agents/victoria/run_victoria.sh` (has the `.env` source fix)
+- `agents/victoria/victoria_scout.py`      ← absorbed from Lucy
+- `agents/victoria/victoria_validator.py` + `run_victoria_validation.sh` ← from Norman
 - `dashboard/victoria_report.json` / `victoria_weekly.json`
+- `dashboard/victoria_scout.json` / `victoria_validation.json`
 
-### ♟️ **JARVIS** — internal id `strategist`
+### ♟️ **JARVIS** — internal id `strategist` — 🪦 **RETIRED 2026-07-25 → merged into Lens**
+> Absorbed by **Lens**: `agents/lens/lens_regime.py` + `run_lens_regime.sh`.
+> Code archived in place at `agents/strategist/` (see `RETIRED.md` there);
+> cron lines held permanently. **Do not import `strategy_engine.py`** — it is
+> the archived original and no longer receives fixes. `deep_backtest.py` now
+> imports from `lens_regime.py`. Full history below, kept for reference.
+
 **Job:** Pre-session market regime briefing. Calm, precise right-hand-man.
 **Model:** Codex (`openai/gpt-5.6-terra`, fallback `openai/gpt-5.5`) via
 `openclaw infer model run`. (Sol would suit regime reasoning but is unavailable
@@ -327,7 +369,13 @@ wallet access**; alert-only, fires **once** above $393, fully silent below (no
 Telegram, no log, no churn). It cannot stake by construction.
 `--status` to inspect, `--reset` to re-arm.
 
-### 🔍 **LUCY** — `lucy`
+### 🔍 **LUCY** — `lucy` — 🪦 **RETIRED 2026-07-25 → merged into Victoria**
+> Absorbed by **Victoria** as her scouting desk:
+> `agents/victoria/victoria_scout.py`, folded into the weekly tribunal so the CFO
+> rules on findings in her own voice. **Default OFF** (`--with-scout` /
+> `VICTORIA_WITH_SCOUT=1`) because Victoria's weekly cron is already live —
+> enabling it is part of the approval step. Code archived at `agents/lucy/`.
+
 **Job:** Weekly skills/tools/MCP research scout. Searches GitHub, Reddit,
 HackerNews, Product Hunt, Anthropic docs, MCP registries.
 **Schedule:** `0 12 * * 0` (Sunday noon UTC).
@@ -354,6 +402,35 @@ cron, systemd, or Telegram. Their dirs are preserved for revival.
 |---|---|---|
 | **Crisp** | BTC/USDT multi-strategy bot. `crisp-v5.service` (now `failed`). | Awaiting **meme coin pivot** — new SOUL.md + strategy. Cron line commented out in crontab. Trade history preserved. |
 | **Phantom** | Futures orchestrator (5-min cycle). Service `inactive`. | Awaiting **strategy build** — collaborative, data-driven design pending data accumulation. |
+
+### 3b. Retired (consolidated 2026-07-25)
+
+Reporting-layer consolidation to cut complexity. **Trading infrastructure
+(Blade, Edge, Jerry, Chad, Tao) was NOT touched.** Code archived in place —
+same treatment as Crisp — with a `RETIRED.md` in each directory. Cron lines
+held permanently (`#HOLD RETIRED`), never deleted.
+
+| Retired | Was | Absorbed by | Where it lives now |
+|---|---|---|---|
+| **Jarvis** (`strategist`) | Pre-session regime briefing (2×/day) | **Lens** | `agents/lens/lens_regime.py`, `run_lens_regime.sh` |
+| **Norman** (`norman`) | Weekly Monte Carlo risk validation | **Lens** (Blade, Edge) + **Victoria** (Jerry, Chad) | `scripts/risk_validation.py` → `lens_validator.py`, `victoria_validator.py` |
+| **Lucy** (`lucy`) | Weekly skills/tools/MCP scout | **Victoria** | `agents/victoria/victoria_scout.py` |
+
+**Norman's split — one gate, imported twice.** The brief asked for the pipeline
+to be duplicated into both agents. It is duplicated where that matters: each
+validator owns its roster, loaders, prompt, report and delivery. But the
+**sample-size gate is a safety rail**, and two hand-copied rails drift — the
+next person to fix one has no way to know the other exists. So the gate lives
+once, in `scripts/risk_validation.py`, and is imported by both. It is still
+**tested independently from each side**: `--test-gate` on either validator runs
+four rogue-synthesis cases and both must pass.
+
+**Still to do (deliberately out of scope):**
+- **Discord** — `#jarvis`, `#norman`, `#lucy` channels are now redundant, and
+  `agents/discord_bot/fanout.py` + `risk_calc.py` still reference the retired
+  ids. Flagged for a future cleanup pass; untouched here by instruction.
+- **`agents/lucy/lucy_brain.py`** and `agents/strategist/strategy_engine.py`
+  remain on disk as archived originals. Do not import them.
 
 ---
 
@@ -447,6 +524,36 @@ set +a
 ```
 Currently applied in: `run_lens_brain.sh`, `run_victoria.sh`, `run_norman.sh`.
 **If you add a new Anthropic-using agent, add this block to its launcher.**
+
+### 4h. `strategy_recommendation.json` — the frozen 5-consumer contract
+
+Written by **`agents/lens/lens_regime.py`** (was Jarvis's `strategy_engine.py`
+until 2026-07-25). **Five** consumers read it — this is why the consolidation
+could not rename or restructure it:
+
+| Consumer | What it reads |
+|---|---|
+| `agents/blade/bot/blade_bot.py` | `instruments.<INST>.{regime, bias}` in `load_session_context()` |
+| `agents/edge/edge_main.py` | same, snapshotted at trade time |
+| `agents/jerry/jerry_context.py` | `instruments` (full dict) + per-symbol bias |
+| `agents/crisp/bot/crisp_bot.py` | parked, but still reads it |
+| `hq-app/src/pages/Intelligence.tsx` | `strat.instruments`, `strat.regime` |
+
+**Frozen keys — never rename or remove:**
+- top level: `updated`, `regime`, `instruments`, `monte_carlo`
+- per instrument: `regime`, `bias`, `lens_bias`, `lens_confidence`, `adr`,
+  `current_price`
+
+New keys are **additive only**. The consolidation added `convergence`,
+`edge_map`, `in_top_window`, `active_window` (per instrument) and
+`convergence_avg`, `produced_by` (top level). Verified post-migration: all six
+per-instrument keys and all four top-level keys still present for all four
+instruments.
+
+**Note — there is no "strategy mode selector."** Blade reads this file for
+*observation only* (Critical Rule #6). It has no score gate and no mode
+selection; `is_strategist_aligned()` only stamps a boolean onto the learning
+log. Do not add gating here without a Phase-3 PR.
 
 ### 4e. Google Drive Vault mirror
 
@@ -595,10 +702,16 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 # ── Lens (macro briefing)
 55 4  * * 1-5    run_lens_brain.sh                    # 04:55 — before all sessions
 
-# ── Jarvis (regime briefing, formerly Strategist)
-0  6  * * 1-5    strategist/run_research.sh           # pre-London brief
-0  12 * * 1-5    strategist/run_research.sh           # pre-NY brief
-0  8  * * 6      strategist/deep_backtest.py          # Saturday weekly deep backtest
+# ── Regime briefing — RETIRED as Jarvis, ABSORBED by Lens (2026-07-25)
+#HOLD RETIRED 0  6  * * 1-5    strategist/run_research.sh    # -> lens/run_lens_regime.sh
+#HOLD RETIRED 0  12 * * 1-5    strategist/run_research.sh    # -> lens/run_lens_regime.sh
+#HOLD RETIRED 0  8  * * 6      strategist/deep_backtest.py   # now imports lens_regime.py
+
+# ── CONSOLIDATION 2026-07-25 — built + tested, ALL HELD PENDING APPROVAL
+#HOLD PENDING-APPROVAL 0  6  * * 1-5   lens/run_lens_regime.sh      # pre-London regime brief
+#HOLD PENDING-APPROVAL 0  12 * * 1-5   lens/run_lens_regime.sh      # pre-NY regime brief
+#HOLD PENDING-APPROVAL 0 12,13 * * 0   [ET==08:00] lens/run_lens_validation.sh      # Lens validates Blade+Edge
+#HOLD PENDING-APPROVAL 0 12,13 * * 0   [ET==08:00] victoria/run_victoria_validation.sh  # Victoria validates Jerry+Chad
 
 # ── Session prep pings (Huncho voice + auto 4H chart reads) — HELD 2026-07-24 with Blade
 #HOLD 40 23 * * 1-5    session_prep_ping.sh ASIA            # 10 min before ASIA
@@ -637,8 +750,8 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 0 12,13 * * *  [ET==08:00] scripts/tao_price_watch.py # alert-only if TAO > $393
 
 # ── Weekly — all standardized to Sunday 8:00 AM ET (2026-07-25)
-0  12,13 * * 0   [ET==08:00] norman/run_norman.sh              # Norman validation
-0  12,13 * * 0   [ET==08:00] lucy/lucy_brain.py --research     # skills/tools scout
+#HOLD RETIRED 0 12,13 * * 0 [ET==08:00] norman/run_norman.sh          # -> lens + victoria validators
+#HOLD RETIRED 0 12,13 * * 0 [ET==08:00] lucy/lucy_brain.py --research  # -> victoria_scout.py (inline, default OFF)
 0  12,13 * * 0   [ET==08:00] victoria/run_victoria_weekly.sh   # weekly tribunal
 0  12,13 * * 0   [ET==08:00] lens/run_portfolio_thesis.sh      # portfolio thesis
 0  13,14 * * 0   [ET==09:00] scripts/run_council.sh            # council (1h after Lens)
@@ -725,6 +838,9 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 
 | Decision | Date | Why |
 |---|---|---|
+| **Reporting-layer consolidation: Jarvis/Norman/Lucy retired** | 2026-07-25 | Three reporting agents to maintain, three cron slots, three voices — for functions that map cleanly onto two agents that already run. Lens absorbed regime + Blade/Edge validation; Victoria absorbed scouting + Jerry/Chad validation. Trading infra untouched. Two premises in the brief were wrong and are corrected here: Blade has no "strategy mode selector" (it reads `strategy_recommendation.json` for observation only, and 5 consumers read that file, not 1), and the Multi-Timeframe Convergence Score had already been deleted in the 2026-06-01 trim — it was rebuilt from Jarvis's four documented components, with new weights, stated openly. |
+| **Norman's gate: one implementation, imported twice** | 2026-07-25 | The brief said duplicate the pipeline into both agents. Duplicating a *safety rail* is how rails drift — a fix to one copy silently leaves the other broken, which is the same class of failure as the stale-feed bugs. `scripts/risk_validation.py` holds the gate once; both validators import it and each is tested independently (`--test-gate`, 4 rogue-synthesis cases). |
+| **All-zero P&L treated as NO_DATA, not a grade** | 2026-07-25 | Bringing Jerry under validation exposed that all 90 of his closed trades carry `pnl: 0.0` — the field is never written on close. Without a guard that sample clears the 20-trade gate and grades FAIL (0% WR, PF 0, Sharpe 0): a real-looking verdict on a feed that reported nothing. Extends Rule #9 ("an empty success is not a verified zero") into the validator. Fixing `jerry_trader.py`'s close path is a separate task. |
 | **Huncho documentation rule** | 2026-07-24 | Infra changes Huncho makes directly (e.g. `openclaw mcp add`) weren't landing in CLAUDE.md/Vault — a blind spot in the shared brain. Added a NON-NEGOTIABLE "Documenting Infrastructure Changes" rule to Huncho's SOUL: any authorized capability/config change must be logged (decision log + Vault/infrastructure note) before reporting complete. Huncho acknowledged. See `Vault/decisions/decision-log.md`. |
 | **Alpaca + CoinCap MCP installed** | 2026-07-24 | Gateway-level MCP servers added by Huncho via `openclaw mcp add` (backfilled). Alpaca = 118 tools on the existing **paper** key (not live); CoinCap = 3 read-only crypto tools (Lucy-recommended). Full detail in `Vault/decisions/decision-log.md`. |
 | **Oracle deleted** | 2026-06-01 | Sports betting bankroll ran -69% ROI. Resolver was firing quota-exhaustion errors hourly. Strategist's pre-trade scoring fed nobody (Blade v5 ignored it, Crisp was halted). Dead weight. Backed up to `/tmp/oracle_deleted_backup/`. |
@@ -795,17 +911,18 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 │   ├── edge/     edge_main.py (SMA 8/21)
 │   ├── huncho/   killzone_sync.py
 │   ├── jerry/    jerry_main.py + jerry_context.py
-│   ├── lens/     lens_brain.py
-│   ├── lucy/     lucy_brain.py
+│   ├── lens/     lens_brain.py + lens_regime.py + lens_validator.py
+│   ├── lucy/     RETIRED 2026-07-25 -> victoria_scout.py
 │   ├── main/     skills/chart_analysis.py
-│   ├── norman/   norman_brain.py
+│   ├── norman/   RETIRED 2026-07-25 -> scripts/risk_validation.py
 │   ├── phantom/  PARKED — strategy pending
-│   ├── strategist/  (display: JARVIS) strategy_engine.py + run_research.sh
+│   ├── strategist/  RETIRED 2026-07-25 -> agents/lens/lens_regime.py
 │   ├── tao/      tao_*.py
-│   ├── victoria/ victoria_brain.py
+│   ├── victoria/ victoria_brain.py + victoria_scout.py + victoria_validator.py
 │   └── (benched) forge/, naomi/, advisor/
 ├── scripts/
 │   ├── agent_config.py                ← shared config loader
+│   ├── risk_validation.py             ← Norman's pipeline (gate lives here)
 │   ├── h4_read.py                     ← automated 4H chart reads
 │   ├── telegram_personalities.py      ← voice + emoji + display names
 │   ├── session_prep_ping.sh           ← Huncho pre-session ping + H4 reads

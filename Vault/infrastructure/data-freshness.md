@@ -1,7 +1,7 @@
 # Data Freshness — killing silent fallbacks
 
 **Added:** 2026-07-25 · **Module:** `scripts/data_freshness.py`
-**Consumers:** [[norman]], [[tao]] · **Related:** [[cron-schedule]], [[decision-log]]
+**Consumers:** [[_retired/norman|norman]], [[tao]] · **Related:** [[cron-schedule]], [[decision-log]]
 
 ---
 

@@ -68,5 +68,5 @@ These ride along on every closed trade into `dashboard/edge_learning_log.json`.
 No gating. Phase 2 validates patterns once data accumulates.
 
 ## Related
-- [[../agents/edge]] · [[../agents/norman]]
+- [[../agents/edge]] · [[../agents/_retired/norman|norman]]
 - [[../infrastructure/config]] — where the knobs live
