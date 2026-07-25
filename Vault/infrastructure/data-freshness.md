@@ -40,10 +40,26 @@ job, but no new trade has arrived since May. `from_records()` judges a
 collection by its **newest record**, not the container.
 
 **3. An empty success is not a verified zero.**
-The chain query for root stake now *succeeds* and returns `[]`, while the
-wallet's own DCA history records 1.672485 τ staked to root. We cannot tell a
-real unstake from accessor drift without the parked SDK migration — so
-`contradicted()` reports **UNVERIFIED**, not `0`.
+The chain query for root stake *succeeds* and returns `[]`, while the wallet's
+own DCA history claims 1.672485 τ staked to root. `contradicted()` reported
+**UNVERIFIED** rather than picking a side.
+
+> **Resolved 2026-07-25 — and this is the module's best case study.** taostats
+> confirmed the chain was right: nothing was ever staked. The DCA history was
+> fabricated by a *different* instance of the same bug — `btcli` exited 0
+> without submitting an extrinsic, and the engine recorded intent as outcome
+> (see [[../agents/tao]]).
+>
+> Two lessons. First, the module worked: it refused to publish `0.000000` as
+> fact *and* refused to trust the history — flagging a real contradiction
+> instead of laundering either number. Second, **freshness tooling can detect
+> a contradiction but cannot adjudicate it.** Resolving this took an external
+> source of truth (taostats). When two internal sources disagree, escalate to
+> something outside the system; do not let code pick a winner.
+>
+> The compounder now treats on-chain as truth and flags the DCA history as
+> unreliable, gated on `_dca_history_is_trusted()` so the trust decision is
+> checked rather than assumed.
 
 ## API
 

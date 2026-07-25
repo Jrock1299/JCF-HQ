@@ -414,6 +414,50 @@ to Jase in the final report.
 
 ---
 
+## 2026-07-25 (later) — Tao parked until TAO > $393; nothing was ever staked
+
+**Decision:** Park the Tao agent entirely — all 5 crons `#HOLD`'d — until TAO
+crosses **$393**, and gate reactivation on a verified execution path rather
+than on price alone.
+
+**Why:** taostats confirmed the coldkey has never held stake (Root 0, Alpha 0,
+Delegated 0; subnet table shows only "Unstaked TAO"). The DCA engine had
+reported 5 successful entries deploying 3.344971 τ. All fiction. The extrinsics
+*were* submitted — 0.056408 τ burned in fees at ~0.001446 τ × 39 attempts —
+but no stake resulted. Jase's rationale for the threshold: bear market, no
+staking into declining subnets, stake with momentum on the way back up.
+
+**Root cause** — three defects, all required:
+1. `run_btcli_stake()` sets `success = returncode == 0`, nothing else. btcli
+   exiting 0 after printing a warning banner and an empty "Staking to:" table
+   is recorded as SUCCESS.
+2. No post-submit verification anywhere. `get_balance()` runs once before the
+   run, never after.
+3. `update_state_and_portfolio()` is called unconditionally; `exec_ok` only
+   selects a log status string.
+
+**Source-of-truth reversal.** This **supersedes** the conclusion in the entry
+below. The Apr 15 `tao_wallet_state.json` was **accurate**; `tao_dca_state.json`
+is the fabricated record, now flagged `UNRELIABLE_DO_NOT_TRUST`. On-chain is
+the only truth for positions. Real result: −34% on price, not the −87.4%
+computed over phantom positions.
+
+**Hard gate — crossing $393 does NOT authorize staking.** Written into the
+alert body itself so it travels with the notification: (1) DCA bug fixed,
+(2) bittensor 10.2.0 migration done, (3) a small test stake verified on-chain
+via taostats. `entries_executed` must also be reset to 0.
+
+**What still runs:** `scripts/tao_price_watch.py`, daily 08:00 ET. One
+CoinGecko GET; no LLM, no bittensor import, no chain connection, no wallet
+access; alert-only, fires once. It cannot stake by construction.
+
+**Deliberately not done:** no fix to the staking path, no re-stake attempt.
+Diagnosis only, per instruction.
+
+**See:** [[../agents/tao]] · [[../sessions/2026-07-25]] · [[../infrastructure/data-freshness]]
+
+---
+
 ## 2026-07-25 — Silent fallbacks banned; cron moved to ET wall-clock
 
 **Decision:** (1) Any value that could not be refreshed must carry its

@@ -270,18 +270,62 @@ not active trading.
 **Key files:** `agents/tao/tao_*.py` (separate scripts for each cycle)
 **Knobs:** in `tao_config.py` (env-gated; should eventually migrate to
 `agent_strategies.json`).
-**Status (2026-07-24 evening):** the `websockets 10.4` ImportError that killed
-every chain/btcli call since ~June is **fixed** — system `websockets` upgraded
-to 14.2 (user-approved; only other consumer, Jerry/alpaca, verified safe;
-btcli 9.20.1 + bittensor 10.2.0 import clean). Profit-monitor runs again (no
-staking action — all positions underwater, tiers empty). **Still broken:** the
-**data collector** (which writes the dashboard `updated` field + subnet
-snapshot) hits bittensor-10.2.0 API drift — `Balance()` rejects a tuple, and
-the chain query `Swap.AlphaSqrtPrice` storage function is gone. That's a
-**separate SDK-migration task** (the Tao scripts were written for an older
-bittensor) — not attempted here since it touches live staking code. Until then
-`dashboard/tao_portfolio.json` `updated` stays April; price + position
-monitoring work.
+**Status (2026-07-25): 🛑 ALL 5 TAO CRONS `#HOLD`'d. NOTHING WAS EVER STAKED.**
+
+taostats ground truth for coldkey `5FPP7TKkkY4Jpoobg…` (verified 2026-07-25):
+balance **3.288560861 τ**, Root **0**, Alpha **0**, Delegated **0**, subnet
+table shows a single row: *"Unstaked TAO."* Account created 03 Apr 2026.
+
+The DCA engine reported 5 successful entries (3.344971 τ across root + 8
+subnets) Apr 3–15. **None of it landed.** Every `btcli stake add` exited 0
+after printing only a warning banner and an empty `"Staking to:"` table — no
+extrinsic confirmation. The extrinsics *were* submitted (0.001446 τ fee each,
+39 total = **0.056408 τ burned**) but produced no stake.
+
+Three defects had to line up:
+1. `run_btcli_stake()` sets `success = returncode == 0` and nothing else — no
+   output parsing, no extrinsic-hash check.
+2. **No post-submit verification.** `get_balance()` runs once *before* the run
+   and never after; chain state is never re-read to confirm a stake landed.
+3. `update_state_and_portfolio()` is called **unconditionally** — `exec_ok`
+   only picks a log status *string*.
+
+**Source-of-truth reversal (supersedes the earlier 2026-07-25 entry):** the
+Apr 15 `tao_wallet_state.json` (`total_staked_tao: 0.0`, `free_tao:
+3.288560861`) was **CORRECT** — it matches taostats exactly. **`tao_dca_state.json`
+is the unreliable record**, now flagged `_status: UNRELIABLE_DO_NOT_TRUST` and
+retained as evidence only. On-chain is the only truth for positions.
+
+Real position: **3.2886 τ, entirely unstaked**, ~$625 at $190.11 against a
+~$944 cost basis ≈ **−34%** — price drawdown, not the −87.4% the fictional
+positions previously produced.
+
+**Still broken (unchanged):** the data collector hits bittensor-10.2.0 API
+drift (`Balance()` rejects a tuple; `Swap.AlphaSqrtPrice` storage function
+gone). Separate SDK-migration task, still parked.
+
+**Jase's decision (2026-07-25):** Tao does nothing until TAO crosses **$393**.
+Bear market; no staking into declining subnets; stake with momentum on the way
+back up.
+
+**⛔ HARD GATE — crossing $393 does NOT authorize staking.** All three must be
+true before any real stake executes:
+1. The DCA silent-failure bug is fixed (output parsing for a confirmed
+   extrinsic + a post-stake chain read comparing expected vs actual + state
+   writes gated on that verification).
+2. The bittensor 10.2.0 SDK migration is done.
+3. A **small test stake is verified ON-CHAIN via taostats** before any larger
+   amount follows.
+
+Also reset `entries_executed` to 0 — the recorded 5 are fiction. Test with
+`--simulate` first. This gate is repeated verbatim in the price-watch alert
+body so it travels with the notification.
+
+**What still runs:** `scripts/tao_price_watch.py` — daily 08:00 ET (ET-guarded).
+One CoinGecko GET; **no LLM, no bittensor import, no chain connection, no
+wallet access**; alert-only, fires **once** above $393, fully silent below (no
+Telegram, no log, no churn). It cannot stake by construction.
+`--status` to inspect, `--reset` to re-arm.
 
 ### 🔍 **LUCY** — `lucy`
 **Job:** Weekly skills/tools/MCP research scout. Searches GitHub, Reddit,
@@ -584,12 +628,13 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 0  12,13 * * *   [ET==08:00] victoria/run_victoria.sh # 8:00 AM ET — daily CFO report
 0  23 * * *      daily_cost_tracker.sh                # API cost rollup
 
-# ── Tao (Bittensor)
-0  3,11,19 * * *      tao_data_collector.py           # 3x daily  [BROKEN — see §2 TAO]
-0  12,13 * * *        [ET==08:00] tao_subnet_scorer.py   # 8:00 AM ET
-0  9,21 * * *         tao_dca_engine.py               # 2x daily DCA check
-0  0,6,12,18 * * *    tao_profit_monitor.py           # every 6 hours
-0  12,13 * * 0        [ET==08:00] tao_compounder.py      # Sunday 8:00 AM ET
+# ── Tao (Bittensor) — 🛑 ALL 5 HELD 2026-07-25 (parked until TAO > $393)
+#HOLD 0 3,11,19 * * *    tao_data_collector.py
+#HOLD 0 12,13 * * *      [ET==08:00] tao_subnet_scorer.py
+#HOLD 0 9,21 * * *       tao_dca_engine.py            # ⚠️ staking path UNVERIFIED
+#HOLD 0 0,6,12,18 * * *  tao_profit_monitor.py
+#HOLD 0 12,13 * * 0      [ET==08:00] tao_compounder.py
+0 12,13 * * *  [ET==08:00] scripts/tao_price_watch.py # alert-only if TAO > $393
 
 # ── Weekly — all standardized to Sunday 8:00 AM ET (2026-07-25)
 0  12,13 * * 0   [ET==08:00] norman/run_norman.sh              # Norman validation

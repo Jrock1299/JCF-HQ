@@ -66,12 +66,25 @@ def assess_sources() -> dict:
 # Emissions check
 # ---------------------------------------------------------------------------
 
-def _recorded_root_stake() -> float:
-    """Root stake this wallet's own DCA history says was staked.
+def _dca_history_is_trusted() -> bool:
+    """Whether tao_dca_state.json may be used as a source of truth.
 
-    Used only as a contradiction check against the live chain query — never as
-    a substitute for it. If the chain says nothing and this says something, we
-    report 'unverified', not either number.
+    It may not. 2026-07-25: taostats confirmed the coldkey has NEVER held
+    stake, while the DCA history claims 5 executed entries across 8 subnets.
+    The file is retained as evidence and explicitly flagged
+    `_status: UNRELIABLE_DO_NOT_TRUST`.
+
+    On-chain state is the ONLY source of truth for positions. This helper
+    exists so that trust is checked, not assumed, if the flag is ever cleared.
+    """
+    dca = config.load_json(str(DCA_STATE_FILE)) or {}
+    return dca.get("_status") != "UNRELIABLE_DO_NOT_TRUST"
+
+
+def _recorded_root_stake() -> float:
+    """Root stake the DCA history CLAIMS was staked. Not authoritative.
+
+    Retained only for reporting the discrepancy. Never use as a position value.
     """
     dca = config.load_json(str(DCA_STATE_FILE)) or {}
     return sum(
@@ -108,29 +121,32 @@ def check_emissions(portfolio: dict, portfolio_freshness=None) -> tuple[float, f
                 if getattr(s, "netuid", -1) == 0:
                     current_root += float(s.stake.tao) if hasattr(s, "stake") else 0.0
 
-        # An EMPTY response is not the same as a verified zero.
+        # RESOLVED 2026-07-25 — the empty response is CORRECT.
         #
-        # Under the bittensor 10.2.0 drift this query returns [] for a coldkey
-        # whose own DCA history records root stake being funded. We cannot tell
-        # "genuinely unstaked" from "this accessor no longer returns what it
-        # used to" without the parked SDK migration — so we refuse to publish
-        # 0.000000 as fact when recorded history disagrees.
+        # This block previously reported UNVERIFIED when the chain returned no
+        # positions while the DCA history claimed stake, on the theory that the
+        # bittensor 10.2.0 drift might be hiding real positions. taostats
+        # settled it: the coldkey has never held stake (Root 0, Alpha 0,
+        # Delegated 0). The chain was right and the DCA history was fiction.
+        #
+        # So an empty stake list is now reported as a REAL zero. What gets
+        # flagged instead is the DCA history disagreeing with it.
         recorded_root = _recorded_root_stake()
-        if not stake_info and recorded_root > 0:
+        if not stake_info and recorded_root > 0 and _dca_history_is_trusted():
+            # Only reachable if someone clears the UNRELIABLE flag without
+            # re-verifying. Fail loud rather than silently trusting either side.
             config.log(
-                f"WARN: compounder — chain returned NO stake positions, but DCA "
-                f"history records {recorded_root:.6f} τ staked to root. Reporting "
-                f"root stake as UNVERIFIED rather than 0."
+                f"WARN: compounder — chain shows no stake but DCA history claims "
+                f"{recorded_root:.6f} τ, and the history is not flagged unreliable. "
+                f"Re-verify against taostats before trusting either source."
             )
             return (
                 current_root,
                 0.0,
                 contradicted(
                     "on-chain root stake (get_stake_info_for_coldkey)",
-                    f"chain returned 0 stake positions; DCA history records "
-                    f"{recorded_root:.6f} τ staked to root. Cannot distinguish a real "
-                    f"unstake from bittensor 10.2.0 accessor drift without the parked "
-                    f"SDK migration.",
+                    f"chain returned 0 stake positions; DCA history claims "
+                    f"{recorded_root:.6f} τ. Verify on taostats.",
                     stale_after_days=STALE_AFTER_DAYS,
                 ),
             )
@@ -276,15 +292,16 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
     def mark(fr) -> str:
         return f"  {fr.marker()}" if fr is not None and fr.stale else ""
 
-    # Totals
+    # Totals — holdings are staked + FREE. Omitting free balance is how this
+    # report showed "$0.00" while the wallet held 3.29 τ unstaked.
     positions   = portfolio.get("subnet_positions", [])
     subnet_tao  = sum(p.get("current_value_tao", p.get("staked_tao", 0)) for p in positions)
-    total_tao   = current_root + subnet_tao
+    free_tao    = portfolio.get("free_tao", 0.0)
+    total_tao   = current_root + subnet_tao + free_tao
     total_usd   = total_tao * tao_price
 
-    cost_tao    = portfolio.get("total_invested_tao", 0.0)
-    cost_usd    = portfolio.get("total_invested_usd", 0.0)
-    ret_pct     = (total_tao - cost_tao) / cost_tao * 100 if cost_tao > 0 else 0.0
+    cost_usd    = portfolio.get("cost_basis_usd", portfolio.get("total_invested_usd", 0.0))
+    ret_pct     = (total_usd - cost_usd) / cost_usd * 100 if cost_usd > 0 else 0.0
     ret_sign    = "+" if ret_pct >= 0 else ""
 
     # DCA state
@@ -306,10 +323,16 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
 
     lines += [
         f"Portfolio Value: {total_tao:.4f} τ (${total_usd:,.2f}){mark(pf_fresh)}",
-        f"Cost Basis: {cost_tao:.3f} τ (${cost_usd:,.2f}){mark(pf_fresh)}",
+        f"  Staked: {current_root + subnet_tao:.4f} τ   |   Free/unstaked: {free_tao:.4f} τ",
+        f"Cost Basis: ${cost_usd:,.2f}{mark(pf_fresh)}",
         f"Total Return: {ret_sign}{ret_pct:.1f}%{mark(pf_fresh)}",
-        f"",
     ]
+    if portfolio.get("fees_burned_tao"):
+        lines.append(
+            f"Fees burned: {portfolio['fees_burned_tao']:.6f} τ "
+            f"({portfolio.get('fees_burned_note','')})"
+        )
+    lines.append("")
 
     # Root stake gets its own treatment: when the chain response is
     # contradicted, printing "0.000000 τ" is worse than printing nothing —
@@ -383,8 +406,16 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
     # hardcoded string "Entry 2 triggers when..." which contradicted the
     # "Entry 5/5 used" line printed directly above it — two numbers, one of
     # them a literal, disagreeing inside the same report.
-    executed = dca_state.get("entries_executed") if dca_state else None
-    planned  = dca_state.get("total_entries_planned", TOTAL_DCA_ENTRIES) if dca_state else TOTAL_DCA_ENTRIES
+    # Entry counts come from the PORTFOLIO (on-chain-derived), not the DCA
+    # state file. The DCA state claims 5 executed entries that never landed;
+    # it is flagged UNRELIABLE_DO_NOT_TRUST and must not drive this line.
+    dca_trusted = _dca_history_is_trusted()
+    if dca_trusted and dca_state:
+        executed = dca_state.get("entries_executed")
+        planned  = dca_state.get("total_entries_planned", TOTAL_DCA_ENTRIES)
+    else:
+        executed = portfolio.get("dca_entries_used", 0)
+        planned  = TOTAL_DCA_ENTRIES
     if executed is None:
         next_line = "Next: DCA state unavailable — cannot determine next entry."
     elif executed >= planned:
@@ -397,16 +428,20 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
             f"Next: Entry {executed + 1} of {planned} triggers when TAO drops "
             f"{DCA_DIP_THRESHOLD_PCT:.0f}%+ below the 7d MA."
         )
-    if dca_fresh is not None and dca_fresh.stale:
+    if dca_trusted and dca_fresh is not None and dca_fresh.stale:
         next_line += f"  {dca_fresh.marker()}"
 
     lines += [
         "",
-        f"DCA Status: Entry {dca_used}/{planned} used | "
-        f"{rem_tao:.3f} τ remaining{mark(dca_fresh)}",
+        f"DCA Status: Entry {executed}/{planned} used | {rem_tao:.3f} τ remaining",
         f"Profit Tiers: {tier_summary}{mark(pf_fresh)}",
         next_line,
     ]
+    if not dca_trusted:
+        lines.append(
+            "  ⚠️ DCA state file is flagged UNRELIABLE (claims 5 executed entries "
+            "that never landed on-chain). Counts above are on-chain derived."
+        )
 
     return "\n".join(lines)
 

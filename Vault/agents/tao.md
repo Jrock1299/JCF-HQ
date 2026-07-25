@@ -2,8 +2,70 @@
 
 **Internal id:** `tao`
 **Role:** TAO staking + DCA + subnet scoring on Bittensor
-**Status:** Active. Passive allocation, not active trading.
+**Status:** 🛑 **PARKED 2026-07-25.** All 5 cron jobs `#HOLD`'d. Nothing was
+ever staked. Reactivates only when TAO > **$393** *and* the gate below is met.
 **Voice:** Zen — measured, patient.
+
+---
+
+## 🛑 PARKED — read before touching anything
+
+**Ground truth (taostats, coldkey `5FPP7TKkkY4Jpoobg…`, verified 2026-07-25):**
+balance **3.288560861 τ** · Root **0** · Alpha **0** · Delegated **0** · subnet
+table shows one row: *"Unstaked TAO."* Account created 03 Apr 2026.
+
+The DCA engine reported 5 successful entries (3.344971 τ across root + 8
+subnets) Apr 3–15 2026. **None of it landed on-chain.** The extrinsics were
+submitted — 0.001446 τ fee each, 39 total = **0.056408 τ burned** — but
+produced no stake. See [[../sessions/2026-07-25]] for the full root cause.
+
+**Real position:** 3.2886 τ, entirely unstaked, ~$625 at $190.11 against a
+~$944 cost basis ≈ **−34%** (price drawdown). The **−87.4%** previously
+reported was arithmetic over positions that never existed.
+
+**Jase's decision (2026-07-25):** Tao does nothing until TAO crosses **$393**.
+Bear market; no staking into declining subnets; stake with momentum on the way
+back up.
+
+### Source-of-truth reversal
+
+| Source | Status |
+|---|---|
+| `tao_wallet_state.json` (Apr 15) | ✅ **ACCURATE** — `total_staked_tao: 0.0`, `free_tao: 3.288560861`, matches taostats exactly |
+| `tao_dca_state.json` | ❌ **FABRICATED** — flagged `_status: UNRELIABLE_DO_NOT_TRUST`, retained as evidence only |
+| On-chain / taostats | ✅ **The only truth for positions** |
+
+This **reverses** the earlier 2026-07-25 conclusion, which treated the empty
+chain response as suspect and the DCA history as corroborating. The chain was
+right.
+
+### ⛔ Hard gate on reactivation
+
+**Crossing $393 does NOT authorize staking.** The price watcher's alert says so
+in its own body. All three must be true before any real stake executes:
+
+1. **The DCA silent-failure bug is fixed** — the path that logged 5 successful
+   entries while zero extrinsics landed.
+2. **The bittensor 10.2.0 SDK migration is done** — `Balance()` rejects a
+   tuple; `Swap.AlphaSqrtPrice` storage function is gone.
+3. **A SMALL test stake is verified ON-CHAIN via taostats** before any larger
+   amount follows.
+
+Also reset `entries_executed` to **0** — the recorded 5 are fiction.
+
+### What still runs
+
+`scripts/tao_price_watch.py` — daily 08:00 ET, ET-guarded. One CoinGecko GET.
+No LLM, no bittensor import, no chain connection, no wallet access. Alerts
+**once** if TAO > $393, silent otherwise (no log, no Telegram, no churn).
+**It cannot stake — there is no code path in it that could.**
+
+```
+python3 scripts/tao_price_watch.py --status   # inspect, send nothing
+python3 scripts/tao_price_watch.py --reset    # re-arm the one-shot alert
+```
+
+---
 
 ## What Tao does
 A 5-phase pipeline running on cron:

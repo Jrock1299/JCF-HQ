@@ -1,0 +1,101 @@
+{
+  "updated": "2026-04-15T09:03:17.181313+00:00",
+  "tao_price_usd": 189.81,
+  "root_staked_tao": 0.0,
+  "subnet_positions": [
+    {
+      "netuid": 64,
+      "name": "Chutes",
+      "staked_tao": 0.348544,
+      "cost_basis_usd": 98.99,
+      "score": 86.9,
+      "current_value_tao": 0.077603,
+      "pnl_pct": -77.74,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 120,
+      "name": "Affine",
+      "staked_tao": 0.157214,
+      "cost_basis_usd": 45.41,
+      "score": 60.2,
+      "current_value_tao": 0.055527,
+      "pnl_pct": -64.68,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 62,
+      "name": "Ridges",
+      "staked_tao": 0.245855,
+      "cost_basis_usd": 69.73,
+      "score": 61.6,
+      "current_value_tao": 0.053185,
+      "pnl_pct": -78.37,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 28,
+      "name": "oracle",
+      "staked_tao": 0.241842,
+      "cost_basis_usd": 68.48,
+      "score": 61.3,
+      "current_value_tao": 0.050844,
+      "pnl_pct": -78.98,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 56,
+      "name": "Gradients",
+      "staked_tao": 0.231138,
+      "cost_basis_usd": 65.52,
+      "score": 57.8,
+      "current_value_tao": 0.04984,
+      "pnl_pct": -78.44,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 51,
+      "name": "lium.io",
+      "staked_tao": 0.228797,
+      "cost_basis_usd": 64.78,
+      "score": 58.2,
+      "current_value_tao": 0.047499,
+      "pnl_pct": -79.24,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 4,
+      "name": "Targon",
+      "staked_tao": 0.132461,
+      "cost_basis_usd": 35.37,
+      "score": 56.5,
+      "current_value_tao": 0.045157,
+      "pnl_pct": -65.91,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    },
+    {
+      "netuid": 3,
+      "name": "deprecated",
+      "staked_tao": 0.086635,
+      "cost_basis_usd": 23.96,
+      "score": 61.1,
+      "current_value_tao": 0.04315,
+      "pnl_pct": -50.19,
+      "tiers_hit": [],
+      "total_profit_taken_tao": 0.0
+    }
+  ],
+  "total_invested_tao": 3.34497,
+  "total_invested_usd": 944.44,
+  "dca_entries_used": 5,
+  "dca_entries_remaining": 0,
+  "last_profit_check": "2026-07-25T12:00:13.476607+00:00",
+  "last_weekly_report": "2026-07-25T08:00:07.642908+00:00"
+}

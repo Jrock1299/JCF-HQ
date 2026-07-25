@@ -496,5 +496,14 @@
   ],
   "last_entry_time": "2026-04-15T09:03:17.181313+00:00",
   "initial_tao_balance": 3.344969,
-  "tao_per_entry": 0.668994
+  "tao_per_entry": 0.668994,
+  "_status": "UNRELIABLE_DO_NOT_TRUST",
+  "_correction_2026_07_25": "None of the 5 recorded entries landed on-chain. taostats confirms the coldkey has never held stake (Root 0, Alpha 0, Delegated 0; subnet table shows only 'Unstaked TAO'). Every btcli call returned rc=0 but produced only a warning banner and an empty 'Staking to:' table \u2014 no extrinsic confirmation. tao_dca_engine.run_btcli_stake() treats rc==0 as success with no output parsing and no post-submit chain verification, and update_state_and_portfolio() is called unconditionally regardless of exec_ok. The extrinsics WERE submitted (0.001446 \u03c4 fee each, 39 total = 0.056408 \u03c4 burned) but no stake resulted. entries_executed/entry_history/subnet_stakes are all fiction. Retained as evidence only. Reset entries_executed to 0 before any future DCA run.",
+  "_real_outcome": {
+    "entries_actually_landed": 0,
+    "tao_actually_staked": 0.0,
+    "tao_burned_in_fees": 0.056408,
+    "balance_before": 3.344969,
+    "balance_after": 3.288560861
+  }
 }

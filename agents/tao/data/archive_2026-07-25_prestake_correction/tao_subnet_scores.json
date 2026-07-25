@@ -1,0 +1,84 @@
+{
+  "scored_at": "2026-04-15T06:00:16.921533+00:00",
+  "total_subnets_analyzed": 122,
+  "top_subnets": [
+    {
+      "netuid": 64,
+      "name": "Chutes",
+      "score": 86.9,
+      "alloc_pct": 19.6,
+      "total_stake_tao": 215793.69,
+      "emission_share": 0.87,
+      "pending_emission": 184.7241,
+      "volume": 4382366.45,
+      "num_uids": 256
+    },
+    {
+      "netuid": 62,
+      "name": "Ridges",
+      "score": 61.6,
+      "alloc_pct": 13.9,
+      "total_stake_tao": 47683.15,
+      "emission_share": 0.86,
+      "pending_emission": 182.1567,
+      "volume": 4042239.56,
+      "num_uids": 256
+    },
+    {
+      "netuid": 28,
+      "name": "oracle",
+      "score": 61.3,
+      "alloc_pct": 13.9,
+      "total_stake_tao": 12866.97,
+      "emission_share": 0.74,
+      "pending_emission": 157.3243,
+      "volume": 6052648.94,
+      "num_uids": 256
+    },
+    {
+      "netuid": 120,
+      "name": "Affine",
+      "score": 60.2,
+      "alloc_pct": 13.6,
+      "total_stake_tao": 90553.93,
+      "emission_share": 1.03,
+      "pending_emission": 217.8749,
+      "volume": 909452.58,
+      "num_uids": 256
+    },
+    {
+      "netuid": 51,
+      "name": "lium.io",
+      "score": 58.2,
+      "alloc_pct": 13.2,
+      "total_stake_tao": 107304.36,
+      "emission_share": 0.82,
+      "pending_emission": 174.4564,
+      "volume": 1486574.46,
+      "num_uids": 256
+    },
+    {
+      "netuid": 56,
+      "name": "Gradients",
+      "score": 57.8,
+      "alloc_pct": 13.1,
+      "total_stake_tao": 62614.61,
+      "emission_share": 0.84,
+      "pending_emission": 178.2099,
+      "volume": 2755401.44,
+      "num_uids": 256
+    },
+    {
+      "netuid": 4,
+      "name": "Targon",
+      "score": 56.5,
+      "alloc_pct": 12.7,
+      "total_stake_tao": 123268.81,
+      "emission_share": 0.66,
+      "pending_emission": 139.2151,
+      "volume": 1859318.49,
+      "num_uids": 256
+    }
+  ],
+  "notes": "Top 7 subnets selected (min score 50). Factors: Emission 25%, TVL 30%, Volume 25%, Network Size 20%. Excluded: root(0) and subnets with tao_in < 500."
+}

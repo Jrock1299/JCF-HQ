@@ -1,4 +1,41 @@
 """
+⚠️  BROKEN — DO NOT RUN. All 5 cron entries #HOLD'd 2026-07-25.
+==============================================================================
+This engine reported 5 successful DCA entries (3.344971 τ across root + 8
+subnets) between Apr 3-15 2026. NONE of it landed on-chain. taostats confirms
+the coldkey has never held stake: Root 0, Alpha 0, Delegated 0, subnet table
+shows only "Unstaked TAO".
+
+What actually happened: every `btcli stake add` exited 0 after printing only
+a warning banner and an EMPTY "Staking to:" table — no extrinsic confirmation,
+no tx hash. The extrinsics were submitted (0.001446 τ fee each, 39 total =
+0.056408 τ burned) but produced no stake.
+
+Three defects, all required to produce a silent loss:
+
+  1. run_btcli_stake() sets `success = result.returncode == 0` and nothing
+     else. It never parses stdout for a success marker or extrinsic hash.
+     btcli exiting 0 having done nothing is therefore "SUCCESS".
+
+  2. No post-submit verification anywhere. get_balance() is called once
+     BEFORE the run (for init_state) and never after. Chain state is never
+     re-queried to confirm a stake landed.
+
+  3. update_state_and_portfolio() is called UNCONDITIONALLY. `exec_ok` only
+     selects a status *string* for the log line. So entry_history,
+     entries_executed, and the portfolio are written with the INTENDED
+     amounts whether or not anything was staked.
+
+Before this is ever re-enabled it needs, at minimum: output parsing for a
+confirmed extrinsic, a post-stake chain read comparing expected vs actual
+stake, state writes gated on that verification, and `entries_executed` reset
+to 0 (the recorded 5 are fiction). Test with --simulate and a single small
+manual stake first.
+
+tao_dca_state.json is flagged `_status: UNRELIABLE_DO_NOT_TRUST` and retained
+as evidence. Do not read positions from it. On-chain is the only truth.
+==============================================================================
+
 Tao DCA Engine — Phase 2
 Core execution script: evaluates entry conditions and stakes TAO via btcli.
 
