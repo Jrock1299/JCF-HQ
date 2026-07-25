@@ -505,6 +505,33 @@ https://code.claude.com/docs/en/remote-control
 
 ## 5. Cron Schedule (annotated)
 
+> ⚠️ **TIMEZONE — read before editing any cron line.**
+> This box supersedes any UTC time listed below for ET-guarded jobs.
+>
+> This cron build (**vixie-cron 3.0pl1**, Ubuntu) schedules **only in system
+> time, which is UTC**. Neither mechanism people reach for actually works:
+>
+> | Mechanism | Status here |
+> |---|---|
+> | `TZ=America/New_York` | **Inert for scheduling.** `man 5 crontab` LIMITATIONS: it "will affect only the commands executed in the crontab, not the execution of the crontab tasks themselves." The old two-line `TZ=` block was removed 2026-07-25 — it implied timezone-aware sections that never existed. |
+> | `CRON_TZ=America/New_York` | **Not supported.** A cronie (RHEL) feature; absent from this binary and man page. A live probe scheduled via `CRON_TZ` never fired. |
+>
+> Jobs that must hold an **America/New_York wall-clock** time are scheduled at
+> **both** candidate UTC hours with an ET guard — the pattern the crontab man
+> page itself recommends:
+>
+> ```cron
+> 0 12,13 * * *  [ "$(TZ=America/New_York date +\%H:\%M)" = "08:00" ] && cmd
+> ```
+>
+> EDT: 12:00 UTC = 08:00 ET → runs; 13:00 UTC = 09:00 ET → skipped.
+> EST: 12:00 UTC = 07:00 ET → skipped; 13:00 UTC = 08:00 ET → runs.
+>
+> Exactly one candidate matches per season, so **the November DST shift needs
+> no edit**. Verified live before adoption (probe fired 16:45:01 UTC = 12:45 ET).
+> **Do not "simplify" these to a single UTC hour** — that reintroduces the drift.
+> Regenerate with `scripts/apply_cron_standardization.py`.
+
 All times UTC unless noted. Mon–Fri = weekdays only.
 
 ```cron
@@ -550,25 +577,27 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 0  14 * * 1-5    sentinel/run_sentinel.sh
 0  20 * * 1-5    sentinel/run_sentinel.sh
 
-# ── Daily ops
-0  7  * * *      daily_briefing.py                    # consolidated Telegram digest
+# ── Daily ops   (ET-guarded — see the TIMEZONE box above)
+#HOLD 0 0,1 * * *  [ET==20:00] daily_briefing.py      # 8:00 PM ET — consolidated digest (HELD)
 0  8  * * *      scrape_bball_stats.py                # Jase's eurobasket stats (personal)
 30 5,21 * * *    sync_market_data.py                  # 2x daily market data refresh
-0  21 * * *      victoria/run_victoria.sh             # daily CFO report
+0  12,13 * * *   [ET==08:00] victoria/run_victoria.sh # 8:00 AM ET — daily CFO report
 0  23 * * *      daily_cost_tracker.sh                # API cost rollup
 
 # ── Tao (Bittensor)
-0  3,11,19 * * *      tao_data_collector.py           # 3x daily
-0  6  * * *           tao_subnet_scorer.py
+0  3,11,19 * * *      tao_data_collector.py           # 3x daily  [BROKEN — see §2 TAO]
+0  12,13 * * *        [ET==08:00] tao_subnet_scorer.py   # 8:00 AM ET
 0  9,21 * * *         tao_dca_engine.py               # 2x daily DCA check
 0  0,6,12,18 * * *    tao_profit_monitor.py           # every 6 hours
-0  8  * * 6           tao_compounder.py               # Saturday weekly
+0  12,13 * * 0        [ET==08:00] tao_compounder.py      # Sunday 8:00 AM ET
 
-# ── Weekly
-0  10 * * 6      norman/run_norman.sh                 # Saturday 10:00 — Norman validation
-0  12 * * 0      lucy/lucy_brain.py --research        # Sunday noon — skills/tools scout
-0  7  * * 1      victoria/run_victoria_weekly.sh      # Monday — weekly tribunal
-0  8  * * 6      enrichment_tracker.py                # Saturday — Crisp enrichment analysis
+# ── Weekly — all standardized to Sunday 8:00 AM ET (2026-07-25)
+0  12,13 * * 0   [ET==08:00] norman/run_norman.sh              # Norman validation
+0  12,13 * * 0   [ET==08:00] lucy/lucy_brain.py --research     # skills/tools scout
+0  12,13 * * 0   [ET==08:00] victoria/run_victoria_weekly.sh   # weekly tribunal
+0  12,13 * * 0   [ET==08:00] lens/run_portfolio_thesis.sh      # portfolio thesis
+0  13,14 * * 0   [ET==09:00] scripts/run_council.sh            # council (1h after Lens)
+#HOLD 0 8 * * 6  enrichment_tracker.py                # Saturday — Crisp enrichment analysis
 
 # ── Commented out (parked / replaced)
 # 55 23 * * 1-5  crisp/bot/run_session.sh ASIAN       # Crisp parked
@@ -622,6 +651,28 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 8. **Risk rails are not advisory.** Blade max 1% per trade, 2% per cluster,
    -4% daily DD halt. Don't ship a change that breaches any of these
    without an explicit conversation about why.
+
+9. **Never substitute a stale or invented value for a failed read.** (Added
+   2026-07-25 after Norman spent two months grading a dead broker feed and
+   Tao printed April data as live.) When a source fails, freezes, or returns
+   nothing:
+   - Return the value **with its provenance**, never bare. Use
+     `scripts/data_freshness.py` (`from_file`, `from_records`, `call_failed`,
+     `contradicted`).
+   - Renderers mark it (`⚠️ STALE — last updated …`); graders **refuse** it.
+   - **File mtime is not freshness.** A sync job rewriting a file every 30 min
+     keeps mtime current while the payload is months old — prefer an embedded
+     timestamp field, or the newest record for collections.
+   - **An empty success is not a verified zero.** If a live call returns
+     nothing but recorded history says otherwise, report `UNVERIFIED`, not `0`.
+   - Never invent a notional to make a calculation run. No balance = no Monte
+     Carlo.
+
+10. **A deterministic gate outranks an LLM's narrative.** Where a rule engine
+    declines to grade (`INSUFFICIENT_DATA` / `NO_DATA` / `STALE_DATA` /
+    `NO_BALANCE`), the synthesis layer may describe the gap but may not issue
+    a grade. Enforce in code after the model returns — a prompt instruction
+    alone is not a gate. See `_final_verdict()` in `norman_brain.py`.
 
 ---
 

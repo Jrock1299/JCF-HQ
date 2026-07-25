@@ -41,9 +41,29 @@ REPORT_PATH  = DASHBOARD / 'norman_report.json'
 HISTORY_PATH = LOGS / 'norman_history.json'
 COSTS_PATH   = LOGS / 'norman_api_costs.json'
 
-BLADE_TRADES_PATH  = DASHBOARD / 'tradelocker_trades.json'
-CRISP_TRADES_PATH  = AGENTS / 'crisp' / 'data' / 'trade_history.json'
+# ── Trade sources ─────────────────────────────────────────────────────────────
+# Blade migrated to OANDA (blade_bot.py -> profiles['oanda:default']) and now
+# writes closed positions to agent_trades.json, tagged agent='blade'.
+#
+# tradelocker_trades.json is the PRE-MIGRATION broker feed. Its newest trade
+# closed 2026-05-27; the */30 sync keeps refreshing `last_sync` so the file
+# looks live, but no new trades have arrived in two months. Norman graded it
+# as "Blade" for that entire period — 330 dormant trades from a broker Blade
+# no longer uses. It is retained below ONLY so the report can name it when
+# explaining why Blade has no gradeable data. It is never graded.
+BLADE_TRADES_PATH   = DASHBOARD / 'agent_trades.json'
+BLADE_LEGACY_PATH   = DASHBOARD / 'tradelocker_trades.json'
+BLADE_BALANCE_PATH  = DASHBOARD / 'blade_balance.json'
+
+# Internal id stays 'crisp' (matches strategist→JARVIS convention, CLAUDE.md
+# Critical Rule #7); user-facing text uses the AGENT_DISPLAY alias -> "Chad".
+CRISP_TRADES_PATH   = AGENTS / 'crisp' / 'data' / 'trade_history.json'
 EDGE_PORTFOLIO_PATH = DASHBOARD / 'edge_portfolio.json'
+
+# A trade file whose newest record is older than this is reported, not graded.
+# Two weeks is generous for agents that trade on weekday sessions; it exists to
+# catch dead feeds (months), not quiet weeks.
+STALE_AFTER_DAYS = 14
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -112,6 +132,13 @@ TG_MAX           = 4000
 # Norman's thresholds
 sys.path.insert(0, '/root/.openclaw/scripts')
 from agent_config import load_strategy as _load_strategy
+from data_freshness import from_records, from_file, banner, summarize
+from telegram_personalities import AGENT_DISPLAY
+
+
+def _display(agent_key: str) -> str:
+    """User-facing name for an internal agent id ('crisp' -> 'Chad')."""
+    return AGENT_DISPLAY.get(agent_key, agent_key.capitalize())
 _NORMAN_CFG = _load_strategy('norman', {
     'MIN_TRADES_FOR_VERDICT': 20,
     'RUIN_DRAWDOWN_PCT':      0.50,   # 50% drawdown = "ruin"
@@ -200,33 +227,90 @@ OUTPUT FORMAT (valid JSON only, no markdown):
 # DATA LOADERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _load_blade_trades() -> list[dict]:
-    """Load Blade trades from tradelocker_trades.json."""
+def _load_blade_trades() -> tuple[list[dict], object]:
+    """Load Blade's OANDA closed trades from agent_trades.json (agent='blade').
+
+    Returns (trades, freshness). Blade writes here via TRADES_JSON_PATH in
+    blade_bot.py. If it holds no Blade records, that is reported as an absent
+    source — NOT silently backfilled from the dormant TradeLocker feed, which
+    is what produced two months of reports grading a dead broker account.
+    """
     try:
         with open(BLADE_TRADES_PATH) as f:
             data = json.load(f)
-        trades = data.get('trades', [])
+        rows = [
+            t for t in data.get('trades', [])
+            if str(t.get('agent', '')).lower() == 'blade'
+            and t.get('direction', 'none') != 'none'
+        ]
         result = []
-        for t in trades:
-            pnl = t.get('pnl')
+        for t in rows:
+            pnl = t.get('pnl', t.get('pnl_usd'))
             if pnl is None:
                 continue
-            ts = t.get('close_date') or t.get('open_date') or ''
             result.append({
                 'pnl':        float(pnl),
-                'direction':  t.get('side', ''),
+                'direction':  t.get('direction', ''),
                 'instrument': t.get('symbol', ''),
-                'timestamp':  ts,
-                'result':     'W' if float(pnl) > 0 else ('L' if float(pnl) < 0 else 'BE'),
+                'timestamp':  t.get('timestamp') or t.get('date') or '',
+                'result':     t.get('result') or
+                              ('W' if float(pnl) > 0 else ('L' if float(pnl) < 0 else 'BE')),
             })
-        return result
+        return result, from_records(str(BLADE_TRADES_PATH), result, STALE_AFTER_DAYS)
     except Exception as e:
         print(f'[norman] blade load error: {e}')
-        return []
+        return [], from_file(BLADE_TRADES_PATH, STALE_AFTER_DAYS)
 
 
-def _load_crisp_trades() -> list[dict]:
-    """Load Crisp trades from trade_history.json (closed only)."""
+def _blade_legacy_note() -> str:
+    """One-line description of the dormant TradeLocker feed, for the report.
+
+    Named explicitly so the report can say WHY Blade has no data rather than
+    leaving a bare zero the reader has to interpret.
+    """
+    try:
+        with open(BLADE_LEGACY_PATH) as f:
+            data = json.load(f)
+        trades = data.get('trades', [])
+        fr = from_records(str(BLADE_LEGACY_PATH), trades, STALE_AFTER_DAYS)
+        return (f"{len(trades)} trades exist in the pre-migration TradeLocker feed "
+                f"({BLADE_LEGACY_PATH.name}), newest {fr.as_of_str()} — not graded: "
+                f"Blade trades OANDA now.")
+    except Exception:
+        return ""
+
+
+def _blade_starting_balance() -> tuple[float | None, str]:
+    """Authoritative Blade balance, or (None, reason) when it is not set.
+
+    blade_bot.py's _load_paper_balance() reads blade_balance.json and treats
+    STARTING_BALANCE_DEFAULT purely as a missing-file fallback — so this file
+    is the authority, not the constant.
+
+    It currently holds 0 with the note "Reset to clean slate 2026-07-17
+    (Round 2). Jase sets a fresh starting number via edit mode." That is a
+    deliberate placeholder, not a balance. Returning None here makes Norman
+    say so instead of substituting the old hardcoded 10_000 notional, which
+    was never connected to any real account.
+    """
+    try:
+        with open(BLADE_BALANCE_PATH) as f:
+            d = json.load(f)
+        bal = float(d.get('balance', 0) or 0)
+        if bal > 0:
+            return bal, f"{BLADE_BALANCE_PATH.name}"
+        note = d.get('note', '').strip()
+        return None, (f"{BLADE_BALANCE_PATH.name} balance={bal:g}"
+                      + (f" — {note}" if note else ""))
+    except Exception as e:
+        return None, f"{BLADE_BALANCE_PATH.name} unreadable ({e})"
+
+
+def _load_crisp_trades() -> tuple[list[dict], object]:
+    """Load Chad/crisp trades from trade_history.json (closed only).
+
+    Returns (trades, freshness).
+    """
     try:
         with open(CRISP_TRADES_PATH) as f:
             data = json.load(f)
@@ -246,10 +330,10 @@ def _load_crisp_trades() -> list[dict]:
                 'timestamp':  ts,
                 'result':     t.get('result', 'W' if float(pnl) > 0 else 'L'),
             })
-        return result
+        return result, from_records(str(CRISP_TRADES_PATH), result, STALE_AFTER_DAYS)
     except Exception as e:
         print(f'[norman] crisp load error: {e}')
-        return []
+        return [], from_file(CRISP_TRADES_PATH, STALE_AFTER_DAYS)
 
 
 def _load_edge_trades() -> list[dict]:
@@ -279,10 +363,10 @@ def _load_edge_trades() -> list[dict]:
             'win_rate_pct': data.get('win_rate', 0),
             'total_pnl':    data.get('total_pnl', 0),
             'balance':      data.get('balance', 0),
-        }
+        }, from_file(EDGE_PORTFOLIO_PATH, STALE_AFTER_DAYS, ts_fields=('updated',))
     except Exception as e:
         print(f'[norman] edge load error: {e}')
-        return [], {}
+        return [], {}, from_file(EDGE_PORTFOLIO_PATH, STALE_AFTER_DAYS)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -522,8 +606,10 @@ def _determine_verdict(stats: dict, mc: dict) -> str:
 def validate_strategy(
     trade_history: list[dict],
     strategy_name: str,
-    starting_balance: float = 10_000,
+    starting_balance: float | None = None,
     extra_context: dict = None,
+    freshness=None,
+    balance_source: str = '',
 ) -> dict:
     """
     Run full statistical validation on a strategy's trade history.
@@ -531,25 +617,66 @@ def validate_strategy(
     Args:
         trade_history:    List of trade dicts with 'pnl' field.
         strategy_name:    Human-readable name for the strategy.
-        starting_balance: Notional account size for Monte Carlo.
+        starting_balance: Real account size for Monte Carlo. None means the
+                          balance is unknown — MC is skipped rather than run
+                          against a made-up notional.
         extra_context:    Additional aggregate data (e.g. from edge_portfolio).
+        freshness:        Freshness of the source. Stale sources are reported,
+                          not graded.
+        balance_source:   Where starting_balance came from (or why it's absent).
 
     Returns:
-        Structured validation report dict.
+        Structured validation report dict. `verdict` is the DETERMINISTIC
+        verdict — it is the ceiling the synthesis layer may not exceed.
     """
     print(f'[norman] Validating {strategy_name} — {len(trade_history)} trades')
 
     pnls = [t['pnl'] for t in trade_history if t.get('pnl') is not None]
 
+    base = {
+        'strategy':       strategy_name,
+        'freshness':      freshness.to_dict() if freshness is not None else None,
+        'balance_source': balance_source,
+    }
+
     if not pnls:
+        detail = 'No P&L data available'
+        if freshness is not None and freshness.reason == 'empty':
+            detail = f'Source contains no trades ({freshness.source})'
+        elif freshness is not None and freshness.reason == 'missing':
+            detail = f'Source file missing ({freshness.source})'
+        return {**base, 'n': 0, 'verdict': 'NO_DATA', 'message': detail,
+                'stats': {}, 'monte_carlo': {}, 'regime': {}}
+
+    # A stale source is refused BEFORE any statistics are computed. Grading it
+    # would produce real-looking numbers describing a period that has already
+    # ended — which is exactly what happened for two months on the dormant
+    # TradeLocker feed.
+    if freshness is not None and freshness.stale and freshness.reason == 'stale':
         return {
-            'strategy':  strategy_name,
-            'n':         0,
-            'verdict':   'INSUFFICIENT_DATA',
-            'message':   'No P&L data available',
-            'stats':     {},
-            'monte_carlo': {},
-            'regime':    {},
+            **base,
+            'n': len(pnls),
+            'verdict': 'STALE_DATA',
+            'message': (f'Newest trade is {freshness.age_days:.0f} days old '
+                        f'({freshness.as_of_str()}). Not graded — a verdict here '
+                        f'would describe a period that has already ended.'),
+            'stats': {}, 'monte_carlo': {}, 'regime': {},
+        }
+
+    # No known account size means no Monte Carlo. The previous behaviour
+    # substituted a 10_000 notional that was never tied to any real account,
+    # so ruin/double probabilities were computed against a fiction.
+    if starting_balance is None or starting_balance <= 0:
+        stats = calculate_stats(trade_history, strategy_name)
+        return {
+            **base,
+            'n': len(pnls),
+            'verdict': 'NO_BALANCE',
+            'message': (f'Account balance unknown ({balance_source}). Trade stats '
+                        f'computed, but Monte Carlo (ruin/double probability) '
+                        f'requires a real balance and was skipped.'),
+            'stats': stats, 'monte_carlo': {},
+            'regime': regime_analysis(trade_history),
         }
 
     stats  = calculate_stats(trade_history, strategy_name)
@@ -568,7 +695,7 @@ def validate_strategy(
     mc_pnl_pct     = mc_pnl_change / starting_balance * 100 if starting_balance > 0 else 0
 
     report = {
-        'strategy':      strategy_name,
+        **base,
         'n':             stats['n'],
         'verdict':       verdict,
         'stats':         stats,
@@ -596,9 +723,47 @@ def validate_strategy(
 # WEEKLY ANALYSIS — Claude API synthesis
 # ══════════════════════════════════════════════════════════════════════════════
 
+# Verdicts the deterministic layer owns outright. When one of these is set,
+# the synthesis layer may describe the situation but may NOT substitute a
+# graded verdict — it is overwritten in code after synthesis regardless of
+# what the model returns. Belt and braces: the prompt asks, the merge enforces.
+_LOCKED_VERDICTS = {'INSUFFICIENT_DATA', 'NO_DATA', 'STALE_DATA', 'NO_BALANCE'}
+
+
+def _final_verdict(val: dict, synthesized: str | None) -> str:
+    """Reconcile the deterministic verdict with whatever synthesis returned.
+
+    The deterministic layer wins whenever it declined to grade. Previously this
+    was `ar.get('verdict') or val.get('verdict')` — the model's answer first —
+    which is how Edge received a substantive verdict off 0 trades while
+    _determine_verdict had correctly refused to issue one.
+    """
+    deterministic = val.get('verdict', 'INSUFFICIENT_DATA')
+    if deterministic in _LOCKED_VERDICTS:
+        if synthesized and synthesized != deterministic:
+            print(f'[norman]  ⚠️  synthesis returned "{synthesized}" for '
+                  f'{val.get("strategy")} (n={val.get("n", 0)}); '
+                  f'overriding with "{deterministic}" — sample gate.')
+        return deterministic
+    return synthesized or deterministic
+
+
 def _build_analysis_prompt(agent_validations: dict, today: str) -> str:
     """Format all agent validation results as compact text for Claude."""
-    lines = [f"WEEKLY STRATEGY REVIEW DATA — {today}", ""]
+    lines = [
+        f"WEEKLY STRATEGY REVIEW DATA — {today}",
+        "",
+        "VERDICT RULES (binding):",
+        "  • Each agent below carries a DETERMINISTIC VERDICT computed from its",
+        "    trade sample. You may not override it with a graded verdict.",
+        f"  • Any agent marked LOCKED ({', '.join(sorted(_LOCKED_VERDICTS))}) must be",
+        "    reported with that exact verdict string. Do NOT emit ABANDON, REFINE,",
+        "    MARGINAL, PASS, or FAIL for a LOCKED agent — there is not enough",
+        f"    evidence to grade it (minimum {MIN_TRADES_FOR_VERDICT} trades).",
+        "  • Explain the gap and what would resolve it. Do not infer performance",
+        "    from an insufficient, stale, or absent sample.",
+        "",
+    ]
 
     for agent, val in agent_validations.items():
         n       = val.get('n', 0)
@@ -607,8 +772,22 @@ def _build_analysis_prompt(agent_validations: dict, today: str) -> str:
         mc      = val.get('monte_carlo', {})
         regime  = val.get('regime', {})
 
-        lines.append(f"═══ {agent.upper()} ══════════════════")
-        lines.append(f"  Trades (with P&L): {n}  |  Verdict: {verdict}")
+        lines.append(f"═══ {_display(agent).upper()} ══════════════════")
+        lines.append(f"  Trades (with P&L): {n}  |  DETERMINISTIC VERDICT: {verdict}")
+
+        if verdict in _LOCKED_VERDICTS:
+            lines.append(
+                f"  ⚠️ LOCKED: {val.get('message', '')} "
+                f"You MUST report this agent's verdict as exactly "
+                f"\"{verdict}\". Do not grade it."
+            )
+        for note in val.get('notes', []):
+            lines.append(f"  NOTE: {note}")
+        if val.get('balance_source'):
+            lines.append(f"  Balance source: {val['balance_source']}")
+        fr = val.get('freshness')
+        if fr and not fr.get('ok'):
+            lines.append(f"  DATA FRESHNESS: {fr.get('marker')}")
 
         if stats:
             lines.append(
@@ -728,26 +907,43 @@ def weekly_analysis() -> dict:
     print(f'\n[norman] ═══ WEEKLY ANALYSIS — {today} ═══')
 
     # ── Load and validate each agent ─────────────────────────────────────────
-    blade_trades  = _load_blade_trades()
-    crisp_trades  = _load_crisp_trades()
-    edge_result   = _load_edge_trades()
+    blade_trades, blade_fresh = _load_blade_trades()
+    crisp_trades, crisp_fresh = _load_crisp_trades()
+    edge_trades, edge_context, edge_fresh = _load_edge_trades()
 
-    # _load_edge_trades returns (list, context_dict)
-    if isinstance(edge_result, tuple):
-        edge_trades, edge_context = edge_result
-    else:
-        edge_trades, edge_context = edge_result, {}
+    sources = {
+        'blade': blade_fresh,
+        'crisp': crisp_fresh,
+        'edge':  edge_fresh,
+    }
+    stale_labels = [k for k, v in sources.items() if v is not None and v.stale]
+    if stale_labels:
+        print(f'[norman] ⚠️  {len(stale_labels)}/{len(sources)} sources not current:')
+        for k in sorted(stale_labels):
+            print(f'[norman]     {_display(k)}: {sources[k].marker()}')
 
-    print(f'[norman] Data loaded: Blade={len(blade_trades)}, '
-          f'Crisp={len(crisp_trades)}, Edge={len(edge_trades)}')
+    print(f'[norman] Data loaded: {_display("blade")}={len(blade_trades)}, '
+          f'{_display("crisp")}={len(crisp_trades)}, {_display("edge")}={len(edge_trades)}')
 
-    # Blade: real account, tradelocker balance at start unknown — use 10000 notional
-    blade_val  = validate_strategy(blade_trades,  'Blade',  starting_balance=10_000)
-    # Crisp: paper balance starts at 10000
-    crisp_val  = validate_strategy(crisp_trades,  'Crisp',  starting_balance=10_000)
-    # Edge: account is $5000
-    edge_val   = validate_strategy(
-        edge_trades, 'Edge', starting_balance=5_000, extra_context=edge_context
+    # Blade balance comes from blade_balance.json — the file blade_bot.py
+    # itself reads and writes. No hardcoded notional.
+    blade_bal, blade_bal_src = _blade_starting_balance()
+
+    blade_val = validate_strategy(
+        blade_trades, _display('blade'), starting_balance=blade_bal,
+        freshness=blade_fresh, balance_source=blade_bal_src,
+    )
+    if blade_legacy := _blade_legacy_note():
+        blade_val.setdefault('notes', []).append(blade_legacy)
+
+    crisp_val = validate_strategy(
+        crisp_trades, _display('crisp'), starting_balance=10_000,
+        freshness=crisp_fresh, balance_source='paper account notional (10,000)',
+    )
+    edge_val = validate_strategy(
+        edge_trades, _display('edge'), starting_balance=5_000,
+        extra_context=edge_context, freshness=edge_fresh,
+        balance_source='edge_portfolio.json balance (5,000)',
     )
 
     agent_validations = {
@@ -793,7 +989,7 @@ def weekly_analysis() -> dict:
         ar = claude_report['agent_reports'][agent_key]
         s  = val.get('stats', {})
         mc = val.get('monte_carlo', {})
-        sb = val.get('monte_carlo', {}).get('starting_balance', 10000)
+        sb = val.get('monte_carlo', {}).get('starting_balance')
 
         ar.update({
             'total_trades':       val.get('n', 0),
@@ -813,8 +1009,14 @@ def weekly_analysis() -> dict:
                 'double_probability': mc.get('double_probability', 0),
                 'starting_balance':  sb,
             },
-            'verdict': ar.get('verdict') or val.get('verdict', 'INSUFFICIENT_DATA'),
+            'verdict': _final_verdict(val, ar.get('verdict')),
+            'deterministic_verdict': val.get('verdict'),
+            'balance_source': val.get('balance_source', ''),
+            'freshness':      val.get('freshness'),
+            'notes':          val.get('notes', []),
         })
+        if val.get('message'):
+            ar.setdefault('data_status', val['message'])
 
     # Attach regime analysis and meta
     claude_report['_regime'] = {
@@ -829,6 +1031,7 @@ def weekly_analysis() -> dict:
         'model':         MODEL,
         'generated_at':  datetime.now(timezone.utc).isoformat(),
     }
+    claude_report['_freshness'] = summarize({k: v for k, v in sources.items() if v})
 
     # ── Save report ───────────────────────────────────────────────────────────
     _save_report(claude_report)
@@ -851,12 +1054,25 @@ def _verdict_emoji(verdict: str) -> str:
         'FAIL':              '❌',
         'MARGINAL':          '⚠️',
         'INSUFFICIENT_DATA': '📊',
+        'NO_DATA':           '🚫',
+        'STALE_DATA':        '🕰️',
+        'NO_BALANCE':        '💵',
     }.get(verdict, '❓')
 
 
 def _format_telegram(report: dict, agent_validations: dict) -> str:
     today = report.get('date', datetime.now(timezone.utc).strftime('%Y-%m-%d'))
     lines = [f"WEEKLY STRATEGY REVIEW | {today}", ""]
+
+    # Data-quality banner first. A reader must know which inputs are trustworthy
+    # before reading a single verdict.
+    fresh_meta = report.get('_freshness', {})
+    if fresh_meta and not fresh_meta.get('all_fresh', True):
+        lines.append("━━ ⚠️ DATA QUALITY ━━")
+        for label, d in sorted(fresh_meta.get('detail', {}).items()):
+            if not d.get('ok'):
+                lines.append(f"  {_display(label)}: {d.get('marker')}")
+        lines.append("")
 
     # ── Agent verdicts ────────────────────────────────────────────────────────
     lines.append("━━ AGENT VERDICTS ━━")
@@ -867,45 +1083,58 @@ def _format_telegram(report: dict, agent_validations: dict) -> str:
         ar = ar_map.get(agent, {})
         verdict = ar.get('verdict', 'INSUFFICIENT_DATA')
         emoji   = _verdict_emoji(verdict)
+        name    = _display(agent)
         n       = ar.get('total_trades', 0)
         wr      = ar.get('win_rate', 0)
         pf      = ar.get('profit_factor', 0)
         sh      = ar.get('sharpe', 0)
         ruin    = ar.get('monte_carlo', {}).get('ruin_probability', 0)
 
-        if verdict == 'INSUFFICIENT_DATA':
-            note = ar.get('note', f'{n} trades — awaiting data')
-            lines.append(f"  {agent.capitalize()}: {emoji} {verdict} — {note}")
+        if verdict in _LOCKED_VERDICTS:
+            # Ungraded: say why, in place of numbers that would imply a grade.
+            reason = ar.get('data_status') or ar.get('note') or f'{n} trades'
+            lines.append(f"  {name}: {emoji} {verdict}")
+            lines.append(f"      {reason}")
+            for note in ar.get('notes', []):
+                lines.append(f"      {note}")
         elif verdict == 'FAIL':
             lines.append(
-                f"  {agent.capitalize()}: {emoji} FAIL — "
+                f"  {name}: {emoji} FAIL — "
                 f"{wr:.0f}% WR, PF {pf:.2f}, ruin {ruin:.1f}%"
             )
         elif verdict == 'PASS':
             lines.append(
-                f"  {agent.capitalize()}: {emoji} PASS — "
+                f"  {name}: {emoji} PASS — "
                 f"{wr:.0f}% WR, PF {pf:.2f}, Sharpe {sh:.2f}"
             )
-        else:  # MARGINAL
+        else:  # MARGINAL / ABANDON / REFINE / other synthesis verdicts
             lines.append(
-                f"  {agent.capitalize()}: {emoji} MARGINAL — "
+                f"  {name}: {emoji} {verdict} — "
                 f"{wr:.0f}% WR, PF {pf:.2f}, {n} trades"
             )
     lines.append("")
 
-    # ── Best MC results (pick the agent with most trades and a verdict) ────────
+    # ── Best MC results (pick the agent with most trades and a real verdict) ───
+    # Only agents that were actually graded AND have a real starting balance
+    # qualify. A Monte Carlo needs a genuine account size; the old code
+    # defaulted to 10_000 here, which is how a fictional notional reached the
+    # report even for agents whose balance was never known.
     best_agent = None
     best_n     = 0
     for agent in agent_display_order:
         ar = ar_map.get(agent, {})
-        if ar.get('verdict') not in ('INSUFFICIENT_DATA',) and ar.get('total_trades', 0) > best_n:
+        if ar.get('verdict') in _LOCKED_VERDICTS:
+            continue
+        if not ar.get('monte_carlo', {}).get('starting_balance'):
+            continue
+        if ar.get('total_trades', 0) > best_n:
             best_n     = ar.get('total_trades', 0)
             best_agent = agent
 
     if best_agent:
         ar  = ar_map[best_agent]
         mc  = ar.get('monte_carlo', {})
-        sb  = mc.get('starting_balance', 10000)
+        sb  = mc.get('starting_balance')
         med = mc.get('median_outcome', 0) - sb
         p5  = mc.get('worst_case_5pct', 0) - sb
         p95 = mc.get('best_case_95pct', 0) - sb
@@ -915,7 +1144,7 @@ def _format_telegram(report: dict, agent_validations: dict) -> str:
             pct  = v / base * 100 if base > 0 else 0
             return f"{sign}${v:.0f} ({sign}{pct:.1f}%)"
 
-        lines.append(f"━━ MONTE CARLO ({best_agent.capitalize()}, 10K sims) ━━")
+        lines.append(f"━━ MONTE CARLO ({_display(best_agent)}, 10K sims) ━━")
         lines.append(f"  Starting: ${sb:,.0f}")
         lines.append(f"  Median:   {_fmt_delta(med, sb)}")
         lines.append(f"  Worst 5%: {_fmt_delta(p5, sb)}")

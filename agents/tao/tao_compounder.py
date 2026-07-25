@@ -13,7 +13,11 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 sys.path.insert(0, str(Path(__file__).parent))
-from tao_config import TaoConfig, DATA_DIR
+sys.path.insert(0, "/root/.openclaw/scripts")
+from tao_config import (
+    TaoConfig, DATA_DIR, TOTAL_DCA_ENTRIES, DCA_DIP_THRESHOLD_PCT,
+)
+from data_freshness import from_file, call_failed, contradicted, banner, summarize
 
 config = TaoConfig()
 
@@ -22,23 +26,76 @@ DCA_STATE_FILE     = DATA_DIR / "tao_dca_state.json"
 SUBNET_SCORES_FILE = DATA_DIR / "tao_subnet_scores.json"
 SCORE_HISTORY_FILE = DATA_DIR / "tao_score_history.json"
 PRICE_HISTORY_FILE = DATA_DIR / "tao_price_history.json"
+SUBNET_DATA_FILE   = DATA_DIR / "tao_subnet_data.json"
+WALLET_STATE_FILE  = DATA_DIR / "tao_wallet_state.json"
 
 LOW_SCORE_WARN     = 40   # warn if held subnet drops below this
 HIGH_SCORE_ADD     = 70   # suggest adding if new subnet scores this
 CONSEC_WEEKS_WARN  = 2    # weeks below LOW_SCORE_WARN before suggesting exit
+
+# The collector writes 3x/day and the scorer daily, so anything older than a
+# few days means the pipeline is broken — not merely quiet. Kept at 7d so a
+# single failed run doesn't cry wolf, but the months-long bittensor 10.2.0
+# outage is impossible to miss.
+STALE_AFTER_DAYS   = 7
+
+
+# ---------------------------------------------------------------------------
+# Source freshness
+#
+# Every one of these files is written by the data collector, which has been
+# broken since the bittensor 10.2.0 API drift. The SDK migration is parked —
+# this does NOT fix the collector, it just makes the breakage visible instead
+# of letting April data render as current.
+# ---------------------------------------------------------------------------
+
+def assess_sources() -> dict:
+    """Freshness of every file feeding the weekly report."""
+    return {
+        "portfolio":     from_file(PORTFOLIO_FILE,     STALE_AFTER_DAYS, ts_fields=("updated",)),
+        "wallet_state":  from_file(WALLET_STATE_FILE,  STALE_AFTER_DAYS, ts_fields=("last_updated",)),
+        "dca_state":     from_file(DCA_STATE_FILE,     STALE_AFTER_DAYS, ts_fields=("last_entry_time",)),
+        "subnet_data":   from_file(SUBNET_DATA_FILE,   STALE_AFTER_DAYS),
+        "subnet_scores": from_file(SUBNET_SCORES_FILE, STALE_AFTER_DAYS, ts_fields=("scored_at",)),
+        "score_history": from_file(SCORE_HISTORY_FILE, STALE_AFTER_DAYS),
+        "price_history": from_file(PRICE_HISTORY_FILE, STALE_AFTER_DAYS, ts_fields=("last_updated",)),
+    }
 
 
 # ---------------------------------------------------------------------------
 # Emissions check
 # ---------------------------------------------------------------------------
 
-def check_emissions(portfolio: dict) -> tuple[float, float]:
+def _recorded_root_stake() -> float:
+    """Root stake this wallet's own DCA history says was staked.
+
+    Used only as a contradiction check against the live chain query — never as
+    a substitute for it. If the chain says nothing and this says something, we
+    report 'unverified', not either number.
+    """
+    dca = config.load_json(str(DCA_STATE_FILE)) or {}
+    return sum(
+        float(e.get("root_staked", 0) or 0)
+        for e in dca.get("entry_history", [])
+        if isinstance(e, dict)
+    )
+
+
+def check_emissions(portfolio: dict, portfolio_freshness=None) -> tuple[float, float, object]:
     """
     Compare on-chain root stake to last stored value → estimate weekly emissions.
     Root emissions compound automatically on-chain.
-    Returns (current_root_tao, estimated_emissions_tao).
+
+    Returns (current_root_tao, estimated_emissions_tao, freshness).
+
+    The third element is the whole point. This call has been failing since the
+    bittensor 10.2.0 drift, and the previous version returned `stored_root`
+    bare — so an April snapshot rendered as a live number with no indicator.
+    On failure the fallback value still comes back (callers need something to
+    print) but it arrives tagged, and the report marks it.
     """
     stored_root = portfolio.get("root_staked_tao", 0.0)
+    stored_as_of = portfolio.get("updated")
     try:
         sub          = config.get_subtensor()
         wallet       = config.get_wallet()
@@ -51,15 +108,52 @@ def check_emissions(portfolio: dict) -> tuple[float, float]:
                 if getattr(s, "netuid", -1) == 0:
                     current_root += float(s.stake.tao) if hasattr(s, "stake") else 0.0
 
+        # An EMPTY response is not the same as a verified zero.
+        #
+        # Under the bittensor 10.2.0 drift this query returns [] for a coldkey
+        # whose own DCA history records root stake being funded. We cannot tell
+        # "genuinely unstaked" from "this accessor no longer returns what it
+        # used to" without the parked SDK migration — so we refuse to publish
+        # 0.000000 as fact when recorded history disagrees.
+        recorded_root = _recorded_root_stake()
+        if not stake_info and recorded_root > 0:
+            config.log(
+                f"WARN: compounder — chain returned NO stake positions, but DCA "
+                f"history records {recorded_root:.6f} τ staked to root. Reporting "
+                f"root stake as UNVERIFIED rather than 0."
+            )
+            return (
+                current_root,
+                0.0,
+                contradicted(
+                    "on-chain root stake (get_stake_info_for_coldkey)",
+                    f"chain returned 0 stake positions; DCA history records "
+                    f"{recorded_root:.6f} τ staked to root. Cannot distinguish a real "
+                    f"unstake from bittensor 10.2.0 accessor drift without the parked "
+                    f"SDK migration.",
+                    stale_after_days=STALE_AFTER_DAYS,
+                ),
+            )
+
         emissions = max(0.0, current_root - stored_root)
         config.log(
             f"compounder — root: stored={stored_root:.6f} τ "
             f"current={current_root:.6f} τ  emissions≈{emissions:.6f} τ"
         )
-        return current_root, emissions
+        fresh = from_file(PORTFOLIO_FILE, STALE_AFTER_DAYS, ts_fields=("updated",))
+        # Live call succeeded AND returned positions — value is live regardless
+        # of how old the portfolio file on disk is.
+        fresh.ok, fresh.reason, fresh.basis = True, "fresh", "live_chain_query"
+        return current_root, emissions, fresh
     except Exception as e:
-        config.log(f"WARN: compounder — emissions check failed: {e}")
-        return stored_root, 0.0
+        config.log(f"WARN: compounder — emissions check FAILED (value below is STALE): {e}")
+        return (
+            stored_root,
+            0.0,
+            call_failed("on-chain root stake (get_stake_info_for_coldkey)", e,
+                        fallback_as_of=stored_as_of,
+                        stale_after_days=STALE_AFTER_DAYS),
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -170,9 +264,17 @@ def analyze_scores(portfolio: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def generate_report(portfolio: dict, analysis: dict, current_root: float,
-                    emissions: float, tao_price: float) -> str:
+                    emissions: float, tao_price: float,
+                    sources: dict, root_freshness=None) -> str:
     now      = datetime.now(timezone.utc)
     date_str = now.strftime("%b %-d, %Y")
+
+    pf_fresh    = sources.get("portfolio")
+    dca_fresh   = sources.get("dca_state")
+    score_fresh = sources.get("subnet_scores")
+
+    def mark(fr) -> str:
+        return f"  {fr.marker()}" if fr is not None and fr.stale else ""
 
     # Totals
     positions   = portfolio.get("subnet_positions", [])
@@ -192,15 +294,42 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
     per_entry   = dca_state.get("tao_per_entry", 0.0) if dca_state else 0.0
     rem_tao     = round(per_entry * dca_rem, 4)
 
-    lines = [
-        f"📊 TAO WEEKLY REPORT | {date_str}",
-        f"Portfolio Value: {total_tao:.4f} τ (${total_usd:,.2f})",
-        f"Cost Basis: {cost_tao:.3f} τ (${cost_usd:,.2f})",
-        f"Total Return: {ret_sign}{ret_pct:.1f}%",
+    lines = [f"📊 TAO WEEKLY REPORT | {date_str}"]
+
+    # Freshness banner first — a reader must know the report is partly historical
+    # BEFORE reading any number in it.
+    warn = banner(sources, "SOURCE DATA NOT CURRENT")
+    if warn:
+        lines += ["", warn,
+                  "   Cause: data collector down (bittensor 10.2.0 API drift; SDK migration parked).",
+                  "   Numbers marked ⚠️ below are last-known values, NOT current.", ""]
+
+    lines += [
+        f"Portfolio Value: {total_tao:.4f} τ (${total_usd:,.2f}){mark(pf_fresh)}",
+        f"Cost Basis: {cost_tao:.3f} τ (${cost_usd:,.2f}){mark(pf_fresh)}",
+        f"Total Return: {ret_sign}{ret_pct:.1f}%{mark(pf_fresh)}",
         f"",
-        f"Root Stake: {current_root:.6f} τ (+{emissions:.6f} τ emissions this week)",
+    ]
+
+    # Root stake gets its own treatment: when the chain response is
+    # contradicted, printing "0.000000 τ" is worse than printing nothing —
+    # it reads as a verified zero. Say what we actually know instead.
+    if root_freshness is not None and root_freshness.reason == "contradicted":
+        lines += [
+            f"Root Stake: {root_freshness.marker()}",
+            f"   Chain returned no stake positions; DCA history records "
+            f"{_recorded_root_stake():.6f} τ staked to root.",
+            f"   Treat as unknown, not zero. Emissions cannot be computed.",
+        ]
+    else:
+        lines.append(
+            f"Root Stake: {current_root:.6f} τ "
+            f"(+{emissions:.6f} τ emissions this week){mark(root_freshness)}"
+        )
+
+    lines += [
         f"",
-        f"Subnet Positions:",
+        f"Subnet Positions:{mark(pf_fresh)}",
     ]
 
     for pos in positions:
@@ -214,11 +343,16 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
             f"SN{pos['netuid']} {pos.get('name','')}: "
             f"{cur:.4f} τ ({sign}{pnl:.1f}%){tier_tag}"
         )
+    if positions and pf_fresh is not None and pf_fresh.stale:
+        lines.append(
+            f"  ↑ {len(positions)} position(s) above are an "
+            f"{pf_fresh.as_of_str()} snapshot — current on-chain set may differ."
+        )
 
     # Score changes
     sc = analysis.get("score_changes", [])
     if sc:
-        lines += ["", "Score Changes:"]
+        lines += ["", f"Score Changes:{mark(score_fresh)}"]
         for c in sc:
             lines.append(
                 f"SN{c['netuid']} {c['name']}: "
@@ -245,11 +379,33 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
         if tiers_triggered else "None triggered yet"
     )
 
+    # Derive the next-entry line from actual state. This was previously the
+    # hardcoded string "Entry 2 triggers when..." which contradicted the
+    # "Entry 5/5 used" line printed directly above it — two numbers, one of
+    # them a literal, disagreeing inside the same report.
+    executed = dca_state.get("entries_executed") if dca_state else None
+    planned  = dca_state.get("total_entries_planned", TOTAL_DCA_ENTRIES) if dca_state else TOTAL_DCA_ENTRIES
+    if executed is None:
+        next_line = "Next: DCA state unavailable — cannot determine next entry."
+    elif executed >= planned:
+        next_line = (
+            f"Next: All {planned} DCA entries executed — no further entries pending. "
+            f"Monitoring only."
+        )
+    else:
+        next_line = (
+            f"Next: Entry {executed + 1} of {planned} triggers when TAO drops "
+            f"{DCA_DIP_THRESHOLD_PCT:.0f}%+ below the 7d MA."
+        )
+    if dca_fresh is not None and dca_fresh.stale:
+        next_line += f"  {dca_fresh.marker()}"
+
     lines += [
         "",
-        f"DCA Status: Entry {dca_used}/5 used | {rem_tao:.3f} τ remaining",
-        f"Profit Tiers: {tier_summary}",
-        f"Next: Monitoring continues. Entry 2 triggers when TAO drops 2%+ below 7d MA.",
+        f"DCA Status: Entry {dca_used}/{planned} used | "
+        f"{rem_tao:.3f} τ remaining{mark(dca_fresh)}",
+        f"Profit Tiers: {tier_summary}{mark(pf_fresh)}",
+        next_line,
     ]
 
     return "\n".join(lines)
@@ -260,15 +416,25 @@ def generate_report(portfolio: dict, analysis: dict, current_root: float,
 # ---------------------------------------------------------------------------
 
 def sync_dashboard(portfolio: dict, current_root: float,
-                   analysis: dict, tao_price: float):
-    portfolio["root_staked_tao"]      = current_root
-    portfolio["tao_price_usd"]        = tao_price
-    portfolio["last_weekly_report"]   = datetime.now(timezone.utc).isoformat()
+                   analysis: dict, tao_price: float, sources: dict = None,
+                   root_freshness=None):
+    # Only advance root_staked_tao when the chain query actually succeeded.
+    # Writing the fallback back over itself is harmless arithmetically but it
+    # launders a stale number into looking like a fresh write.
+    if root_freshness is None or root_freshness.ok:
+        portfolio["root_staked_tao"] = current_root
+    portfolio["tao_price_usd"]      = tao_price   # CoinGecko — independent of the chain
+    portfolio["last_weekly_report"] = datetime.now(timezone.utc).isoformat()
 
     cs = analysis.get("current_scores", {})
     for pos in portfolio.get("subnet_positions", []):
         if pos["netuid"] in cs:
             pos["score"] = cs[pos["netuid"]].get("score", pos.get("score", 0))
+
+    # Publish provenance so the dashboard can render the same warnings the
+    # Telegram report carries, instead of re-deriving freshness from mtime.
+    if sources:
+        portfolio["_freshness"] = summarize(sources)
 
     config.save_json(str(PORTFOLIO_FILE), portfolio)
     config.log("compounder — dashboard synced")
@@ -289,8 +455,20 @@ def main():
     tao_price = config.get_tao_price_usd() or portfolio.get("tao_price_usd", 0.0)
     config.log(f"compounder — TAO price: ${tao_price:.2f}")
 
-    current_root, emissions = check_emissions(portfolio)
-    analysis                = analyze_scores(portfolio)
+    sources = assess_sources()
+    stale   = [k for k, v in sources.items() if v.stale]
+    if stale:
+        config.log(
+            f"compounder — {len(stale)}/{len(sources)} sources STALE: {', '.join(sorted(stale))}"
+        )
+        for label in sorted(stale):
+            config.log(f"compounder —   {label}: {sources[label].marker()}")
+    else:
+        config.log("compounder — all sources fresh")
+
+    current_root, emissions, root_freshness = check_emissions(portfolio, sources.get("portfolio"))
+    sources["root_stake_live"] = root_freshness
+    analysis                   = analyze_scores(portfolio)
 
     warnings    = analysis.get("warnings", [])
     suggestions = analysis.get("suggestions", [])
@@ -300,7 +478,8 @@ def main():
     if suggestions:
         config.log(f"compounder — {len(suggestions)} add suggestion(s)")
 
-    report = generate_report(portfolio, analysis, current_root, emissions, tao_price)
+    report = generate_report(portfolio, analysis, current_root, emissions, tao_price,
+                             sources, root_freshness)
 
     print("\n" + "=" * 65)
     print("WEEKLY REPORT")
@@ -330,7 +509,7 @@ def main():
             f"→ Consider adding to portfolio. Your call, Jase."
         )
 
-    sync_dashboard(portfolio, current_root, analysis, tao_price)
+    sync_dashboard(portfolio, current_root, analysis, tao_price, sources, root_freshness)
 
     config.log("=== Tao Compounder Complete ===")
 

@@ -31,6 +31,8 @@ dashboard/hq_userdata.json
 openclaw.json
 openclaw.json.bak*
 openclaw.json.last-good
+openclaw.json.pre-update
+openclaw.json.*
 
 # Logs and build artifacts
 logs/

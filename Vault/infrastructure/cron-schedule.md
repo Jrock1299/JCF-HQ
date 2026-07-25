@@ -1,6 +1,30 @@
 # Cron Schedule
 
-All times UTC. `* * 1-5` = weekdays only.
+> ⚠️ **Timezone (updated 2026-07-25).** This build (vixie-cron 3.0pl1) schedules
+> **only in UTC**. `TZ=` is inert for scheduling (man page LIMITATIONS) and
+> `CRON_TZ=` **is not supported here at all** — it's a cronie feature, absent
+> from this binary; a live probe never fired. The old two-line `TZ=` block was
+> removed as misleading.
+>
+> Jobs holding an ET wall-clock time schedule **both** candidate UTC hours with
+> an ET guard, so DST needs no edit:
+> ```cron
+> 0 12,13 * * *  [ "$(TZ=America/New_York date +\%H:\%M)" = "08:00" ] && cmd
+> ```
+> Regenerate with `scripts/apply_cron_standardization.py`.
+> Full rationale: [[data-freshness]] · [[../decisions/decision-log]]
+
+**Standardized ET slots (2026-07-25):**
+
+| Job | Slot |
+|---|---|
+| Victoria daily · Tao daily scorer | 8:00 AM ET |
+| daily_briefing (HELD) | 8:00 PM ET |
+| Victoria weekly · Norman · Lens thesis · Tao compounder · Lucy | Sunday 8:00 AM ET |
+| Council | Sunday 9:00 AM ET |
+| Sentinel | unchanged (UTC) — separate decision |
+
+All other times UTC. `* * 1-5` = weekdays only.
 
 ## Always-on heartbeat
 ```

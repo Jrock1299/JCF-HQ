@@ -414,6 +414,54 @@ to Jase in the final report.
 
 ---
 
+## 2026-07-25 — Silent fallbacks banned; cron moved to ET wall-clock
+
+**Decision:** (1) Any value that could not be refreshed must carry its
+provenance — renderers mark it, graders refuse it (`CLAUDE.md` Critical Rule
+#9, `scripts/data_freshness.py`). (2) A deterministic gate outranks an LLM's
+narrative verdict, enforced in code after synthesis returns, not by prompt
+alone (Rule #10). (3) ET-scheduled cron jobs use a dual-hour + ET-guard
+pattern rather than a fixed UTC hour.
+
+**Why (1):** Two silent failures ran for months. Tao's `check_emissions()`
+caught the bittensor error and returned the stored value bare, so an April 15
+root-stake snapshot printed as live. Norman graded 330 TradeLocker trades whose
+newest close was 2026-05-27 — a broker Blade left when it moved to OANDA —
+producing confident FAIL verdicts about a dormant account. Neither errored;
+both looked normal. The pattern, not the instances, was the bug.
+
+**Why (2):** `_determine_verdict()` correctly returned `INSUFFICIENT_DATA`
+below 20 trades, but the merge line read `ar.get('verdict') or val.get(...)` —
+the model's answer first. So Edge shipped a substantive verdict off **0
+trades**. A prompt instruction is not a gate; the override is now code.
+
+**Why (3):** The earlier standardization prompt never executed (no commit, no
+crontab change, no Sunday variant in any backup). Re-doing it surfaced that the
+specified mechanism does not work here: `TZ=` is inert for scheduling on
+vixie-cron 3.0pl1, and `CRON_TZ=` — the documented fix — **is not supported on
+this build at all** (absent from binary and man page; a live probe never
+fired). Adopted the pattern `man 5 crontab` itself recommends: schedule both
+candidate UTC hours, guard on ET. Verified live before adoption. Survives the
+November DST shift with no edit.
+
+**Also decided:** *not* to rename `agents/crisp/` → `agents/chad/`. Commit
+`0e94cec` deliberately aliased display-name-only, matching the documented
+`strategist → JARVIS` convention (Critical Rule #7). Norman now renders "Chad"
+via `AGENT_DISPLAY` while internal keys stay `crisp` — fixing the reported
+symptom without a 124-file migration that would orphan historical JSON keyed
+`crisp` and touch live sync crons. Flagged to Jase as his call.
+
+**Open:** Blade has **no OANDA trade record yet** — `agent_trades.json` holds
+zero `agent='blade'` rows, so Norman reports `NO_DATA` rather than grading the
+legacy feed. Blade's authoritative balance (`blade_balance.json`) is `0`
+pending Jase's edit-mode entry, so Monte Carlo is skipped rather than run
+against the old invented 10,000 notional.
+
+**See:** [[../infrastructure/data-freshness]] · [[../infrastructure/cron-schedule]]
+· [[../agents/norman]] · [[../agents/tao]] · [[../sessions/2026-07-25]]
+
+---
+
 ## Earlier history
 For decisions made before 2026-06-01, see git log on the repo and the
 prior `CLAUDE.md` history. Not all earlier decisions are documented here —
