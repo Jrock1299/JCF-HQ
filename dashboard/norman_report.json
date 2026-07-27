@@ -1,121 +1,16 @@
 {
-  "date": "2026-06-01",
-  "agent_reports": {
-    "blade": {
-      "total_trades": 330,
-      "win_rate": 53.3,
-      "profit_factor": 1.114,
-      "sharpe": 0.012,
-      "max_drawdown_pct": 72.9,
-      "monte_carlo": {
-        "median_outcome": 10319.72,
-        "worst_case_5pct": 6534.37,
-        "best_case_95pct": 16818.05,
-        "ruin_probability": 0.2,
-        "double_probability": 1.53,
-        "starting_balance": 10000
-      },
-      "verdict": "FAIL",
-      "recommendation": "330 trades is a statistically meaningful sample. The data is not lying to you \u2014 this strategy is broken. Profit factor of 1.114 is below the 1.2 marginal threshold. Sharpe of 0.012 is effectively zero \u2014 there is no risk-adjusted return here, this is random noise with transaction costs subtracted. The 72.9% max drawdown is catastrophic and disqualifying on its own. Average loss ($43.05) exceeds average win ($37.87), meaning the strategy needs to win more than 53% just to break even, and it is barely clearing that bar with $0.11 expectancy per trade. One bad streak \u2014 already demonstrated with 10 consecutive losses \u2014 and the account bleeds severely. The ruin probability of 0.2% sounds safe but is almost certainly understated given the drawdown profile. Positive: no recent divergence (z=0.24), Mon/6UTC edge worth isolating. Action: suspend live trading immediately. Audit the avg win/loss asymmetry \u2014 either tighten stops, extend targets, or both. Do not resume until profit factor exceeds 1.3 in backtesting with realistic slippage.",
-      "sortino": 0.039,
-      "total_pnl": 680.57,
-      "expectancy": 0.11,
-      "max_consec_losses": 10
-    },
-    "crisp": {
-      "total_trades": 6,
-      "win_rate": 33.3,
-      "profit_factor": 0.357,
-      "sharpe": -0.441,
-      "max_drawdown_pct": 468.0,
-      "monte_carlo": {
-        "median_outcome": 9793.89,
-        "worst_case_5pct": 9550.2,
-        "best_case_95pct": 10108.21,
-        "ruin_probability": 0.0,
-        "double_probability": 0.0,
-        "starting_balance": 10000
-      },
-      "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "6 trades. I will not pretend this is an analysis \u2014 it is not. What I can tell you is that every single number visible here is alarming. Profit factor of 0.357 means for every dollar made, $2.80 is lost. Sharpe of -0.441 is negative. A 468% max drawdown figure is either a data pipeline error or evidence of catastrophic position sizing on the few trades that have occurred. The Monte Carlo output is compressed into a tiny band ($9550-$10108) with 0% ruin and 0% 2x probability \u2014 this tells me the MC engine has insufficient data to model anything meaningful and is defaulting to near-flat projections. Do not draw any conclusions from CRISP's numbers yet. Place this strategy in observation-only mode. Require minimum 20 trades before any capital allocation. Investigate the 468% drawdown figure immediately \u2014 if that is real and not a calculation artifact, this strategy must be halted.",
-      "sortino": -0.83,
-      "total_pnl": -206.11,
-      "expectancy": -34.35,
-      "max_consec_losses": 3
-    },
-    "edge": {
-      "total_trades": 0,
-      "win_rate": 0,
-      "profit_factor": 0,
-      "sharpe": 0,
-      "max_drawdown_pct": 0,
-      "monte_carlo": {
-        "median_outcome": 0,
-        "worst_case_5pct": 0,
-        "best_case_95pct": 0,
-        "ruin_probability": 0,
-        "double_probability": 0,
-        "starting_balance": 10000
-      },
-      "verdict": "INSUFFICIENT_DATA",
-      "recommendation": "Zero trades executed. No analysis is possible. Determine whether EDGE failed to deploy due to a technical fault, unfavorable market conditions, or a strategy logic error. If this agent has been live for more than one week with zero executions, something is wrong with the signal generation or order routing. Investigate before next review cycle.",
-      "sortino": 0,
-      "total_pnl": 0,
-      "expectancy": 0,
-      "max_consec_losses": 0
-    }
-  },
-  "portfolio_summary": {
-    "total_pnl": 474.46,
-    "correlation_risk": "low",
-    "overall_assessment": "The portfolio is effectively running on one agent \u2014 BLADE \u2014 and BLADE is failing by every metric that matters. Total portfolio PnL of $474.46 across what is likely weeks of live trading is not a business. The Sharpe of 0.012 on the only active strategy means the portfolio-level risk-adjusted return is functionally zero. Correlation risk is low because CRISP has no meaningful activity and EDGE has none at all, but that is not a positive \u2014 it means there is no diversification providing any benefit. The portfolio is overexposed to a single broken strategy. This is a critical state."
-  },
-  "recommendations": [
-    "Suspend BLADE from live trading immediately. The profit factor, Sharpe, and max drawdown figures are all disqualifying. $0.11 expectancy per trade is not scalable and will not survive increased position sizing.",
-    "Investigate BLADE's avg loss to avg win ratio as the primary fix target. The strategy wins more than it loses but still barely profits \u2014 this is a reward/risk structure problem, not a signal problem. Adjust stop placement or take-profit targets.",
-    "Backtest BLADE filtered to Monday entries at 6:00 UTC only. A time-of-day and day-of-week edge exists in the data \u2014 isolate it and determine if the strategy is viable in that window specifically.",
-    "Audit CRISP's 468% max drawdown figure immediately. If real, halt all capital allocation. If a calculation error, fix the data pipeline before next review.",
-    "Do not allocate any capital to CRISP until minimum 20 trades are recorded. Current sample is statistically worthless.",
-    "Diagnose EDGE's failure to execute any trades. Determine root cause: signal logic, order routing, or market condition mismatch.",
-    "Until at least one strategy achieves PASS status, keep total portfolio risk at minimum allocation levels. Do not scale into broken systems."
+  "date": null,
+  "agent_reports": {},
+  "portfolio_summary": {},
+  "recommendations": [],
+  "alerts": [],
+  "_QUARANTINED": true,
+  "_quarantined_at": "2026-07-27T17:28:02.651842+00:00",
+  "_reason": "Written 2026-07-25 by Norman, retired the same day. Contained a phantom Blade grade off 330 dormant TradeLocker trades and an impossible 468.0% max drawdown for Chad (internal id `crisp`). Quarantined 2026-07-27 at Jase's direction.",
+  "_superseded_by": [
+    "dashboard/lens_validation.json (Blade, Edge)",
+    "dashboard/victoria_validation.json (Jerry, Chad)"
   ],
-  "alerts": [
-    "CRITICAL \u2014 BLADE: Max drawdown of 72.9% is catastrophically high and disqualifying. This strategy has demonstrated the ability to destroy 73% of capital in a single drawdown event.",
-    "CRITICAL \u2014 BLADE: Sharpe of 0.012 over 330 trades confirms there is no risk-adjusted edge. This is not a small sample noise issue \u2014 330 trades is definitive.",
-    "CRITICAL \u2014 BLADE: Profit factor of 1.114 is below the 1.2 marginal threshold. Strategy is FAIL status.",
-    "WARNING \u2014 CRISP: 468% max drawdown figure recorded on only 6 trades. This number must be investigated immediately \u2014 it suggests either a data error or a position sizing catastrophe.",
-    "WARNING \u2014 CRISP: All performance metrics are negative or near-zero. Negative Sharpe, profit factor below 0.4, negative total PnL. No capital should be allocated.",
-    "WARNING \u2014 EDGE: Zero trades executed. Agent is non-functional or non-deploying. Root cause investigation required.",
-    "INFO \u2014 PORTFOLIO: No active strategy currently meets minimum PASS criteria. The entire portfolio is in a failing state as of 2026-06-01."
-  ],
-  "_regime": {
-    "blade": {
-      "best_hour_utc": 6,
-      "worst_hour_utc": 14,
-      "best_day_of_week": "Mon",
-      "worst_day_of_week": "Fri",
-      "overall_mean_pnl": 2.06,
-      "recent_mean_pnl": -40.6,
-      "divergence_z": 0.24,
-      "recent_divergence": false
-    },
-    "crisp": {
-      "best_hour_utc": 15,
-      "worst_hour_utc": 22,
-      "best_day_of_week": "Tue",
-      "worst_day_of_week": "Mon",
-      "overall_mean_pnl": -34.35,
-      "recent_mean_pnl": -34.35,
-      "divergence_z": 0.0,
-      "recent_divergence": false
-    },
-    "edge": {}
-  },
-  "_meta": {
-    "input_tokens": 1009,
-    "output_tokens": 1827,
-    "cost_usd": 0.030432,
-    "model": "claude-sonnet-4-6",
-    "generated_at": "2026-06-01T15:49:52.399379+00:00"
-  }
+  "_archived_original": "/root/.openclaw/dashboard/_archive/pre_reset_2026-07-27/norman_report.json",
+  "_read_this_instead": "Empty agent_reports is deliberate. Consumers default to verdict=UNKNOWN / ruin_probability=None, which is the correct state: no current validation exists until the Sunday validators run. Do not backfill this file."
 }

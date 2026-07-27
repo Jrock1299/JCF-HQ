@@ -551,6 +551,11 @@ def _tg_send_chunk(text: str) -> bool:
 
 
 def _send_telegram(text: str) -> None:
+    # --no-send regenerates a report without pushing it to Jase's phone. Needed
+    # to preview format changes and to backfill a report on demand.
+    if '--no-send' in sys.argv:
+        print(f'[{LOG}] --no-send: Telegram suppressed ({len(text)} chars)')
+        return
     if len(text) <= TG_MAX:
         if _tg_send_chunk(text):
             print(f'[{LOG}] Telegram report sent')

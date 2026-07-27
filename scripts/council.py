@@ -141,12 +141,71 @@ def run_council():
     return result
 
 
+TIER2_PATH = DASH / 'council_v2.json'
+
+
+def build_two_tier(result):
+    """Council report through the SHARED two-tier module (scripts/agent_report.py).
+
+    Was: all four full agent notes concatenated into one Telegram message —
+    the densest wall in the system, with the actual verdict buried at the
+    bottom. Now the verdict leads, each agent gets one headline, and the full
+    debate transcript moves to Tier 2 where it can be expanded per section.
+    """
+    from agent_report import Report
+
+    verdict = (result.get('verdict') or '').strip()
+    r = Report(agent='council', kind='council', date=result.get('date', ''))
+
+    # The decision is whatever the chair concluded — take its leading lines.
+    lines = [l.strip(' -•\t') for l in verdict.split('\n') if l.strip()]
+    if lines:
+        r.decide(*lines[:3])
+    else:
+        r.decide('No verdict produced — synthesis unavailable.')
+
+    # One headline per agent: their stance, not their essay. Skip markdown
+    # titles, separators and "(unavailable)" placeholders — a heading is not
+    # a position.
+    def _stance(note: str) -> str:
+        for raw in str(note).split('\n'):
+            line = raw.strip().strip('*_# ').strip()
+            if len(line) < 25:
+                continue
+            if line.startswith(('---', '===', '|')):
+                continue
+            if line.lower().startswith(('lens //', 'jarvis //', 'norman //')):
+                continue
+            if 'unavailable' in line.lower():
+                continue
+            return line
+        return ''
+
+    for agent, note in (result.get('notes') or {}).items():
+        stance = _stance(note)
+        if stance:
+            r.headline(f'{agent.capitalize()}: {stance}')
+
+    r.section('Decision', body=verdict, collapsed=False)
+    r.section('Reasoning',
+              rows=[{'agent': t.get('agent'), 'note': t.get('note')}
+                    for t in (result.get('transcript') or [])])
+    return r
+
+
 def _deliver(result):
-    body = (f"🏛️ JCF HQ COUNCIL — {result['date']}\n\n"
-            f"🌐 LENS\n{result['notes']['lens']}\n\n"
-            f"♟️ JARVIS\n{result['notes']['jarvis']}\n\n"
-            f"⚠️ NORMAN\n{result['notes']['norman']}\n\n"
-            f"⚖️ VERDICT\n{result['verdict']}")
+    try:
+        report_obj = build_two_tier(result)
+        body = report_obj.tier1()
+        report_obj.write_tier2(TIER2_PATH)
+        print(f'[council] Tier 2 written → {TIER2_PATH}')
+    except Exception as e:
+        print(f'[council] two-tier build failed ({e}); falling back to long form')
+        body = (f"🏛️ JCF HQ COUNCIL — {result['date']}\n\n"
+                f"🌐 LENS\n{result['notes']['lens']}\n\n"
+                f"♟️ JARVIS\n{result['notes']['jarvis']}\n\n"
+                f"⚠️ NORMAN\n{result['notes']['norman']}\n\n"
+                f"⚖️ VERDICT\n{result['verdict']}")
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
         import requests
         for i in range(0, len(body), TG_MAX):

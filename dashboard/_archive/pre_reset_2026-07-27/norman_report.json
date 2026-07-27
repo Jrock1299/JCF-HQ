@@ -1,0 +1,117 @@
+{
+  "date": "2026-07-25",
+  "agent_reports": {
+    "blade": {
+      "total_trades": 330,
+      "win_rate": 53.3,
+      "profit_factor": 1.114,
+      "sharpe": 0.012,
+      "max_drawdown_pct": 72.9,
+      "monte_carlo": {
+        "median_outcome": 10319.72,
+        "worst_case_5pct": 6534.37,
+        "best_case_95pct": 16818.05,
+        "ruin_probability": 0.2,
+        "double_probability": 1.53,
+        "starting_balance": 10000
+      },
+      "verdict": "ABANDON",
+      "recommendation": "Large sample confirms the current live implementation has no deployable edge: PF is marginal-to-failing, Sharpe is effectively zero, expectancy is only $0.11/trade, and 72.9% max drawdown is unacceptable. Ruin probability is low only because sizing/path assumptions mask severe drawdown risk. Halt scaling, reduce risk to <=1% per trade, and rebuild with codified rules, 5+ years across regimes, friction stressed 1.5-2x, parameter sweeps, and walk-forward validation. Do not redeploy unless PF exceeds 1.5, Sharpe exceeds 0.5, drawdown is controlled, and the parameter surface is stable.",
+      "sortino": 0.039,
+      "total_pnl": 680.57,
+      "expectancy": 0.11,
+      "max_consec_losses": 10
+    },
+    "crisp": {
+      "total_trades": 6,
+      "win_rate": 33.3,
+      "profit_factor": 0.357,
+      "sharpe": -0.441,
+      "max_drawdown_pct": 468.0,
+      "monte_carlo": {
+        "median_outcome": 9793.89,
+        "worst_case_5pct": 9550.2,
+        "best_case_95pct": 10108.21,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "starting_balance": 10000
+      },
+      "verdict": "REFINE",
+      "recommendation": "Six trades are noise; no edge conclusion is possible. However, current realized metrics are decisively negative and 468% max drawdown indicates a sizing, equity-accounting, or leverage-control failure that must be audited immediately. Keep the strategy in paper or minimum-size mode only. Require 20 trades before preliminary review and robust multi-regime backtest/walk-forward evidence before deployment. Use ATR-aware stops and risk <=1% per trade; never use full Kelly.",
+      "sortino": -0.83,
+      "total_pnl": -206.11,
+      "expectancy": -34.35,
+      "max_consec_losses": 3
+    },
+    "edge": {
+      "total_trades": 0,
+      "win_rate": 0,
+      "profit_factor": 0,
+      "sharpe": 0,
+      "max_drawdown_pct": 0,
+      "monte_carlo": {
+        "median_outcome": 0,
+        "worst_case_5pct": 0,
+        "best_case_95pct": 0,
+        "ruin_probability": 0,
+        "double_probability": 0,
+        "starting_balance": 10000
+      },
+      "verdict": "REFINE",
+      "recommendation": "No trades and no validation evidence. Strategy is not eligible for any conclusion or capital allocation. Complete rule codification, multi-regime backtest, sensitivity analysis, execution-friction stress test, and out-of-sample walk-forward validation before paper trading.",
+      "sortino": 0,
+      "total_pnl": 0,
+      "expectancy": 0,
+      "max_consec_losses": 0
+    }
+  },
+  "portfolio_summary": {
+    "total_pnl": 474.46,
+    "correlation_risk": "unknown",
+    "overall_assessment": "Portfolio is not deployable. Blade has enough data to show an economically weak, high-drawdown strategy; Crisp and Edge lack sufficient evidence. Correlation cannot be assessed from aggregate statistics, so portfolio heat must be treated conservatively and remain below 6% total open risk."
+  },
+  "recommendations": [
+    "Disable Blade scaling and conduct a full strategy rebuild; its apparent profitability is not a statistically meaningful risk-adjusted edge.",
+    "Audit Crisp's 468% drawdown immediately before taking another live-sized position.",
+    "Cap every agent at <=1% fixed-fractional risk per trade unless a documented, validated exception exists; prefer ATR-based sizing in changing volatility.",
+    "Enforce total portfolio open risk <=6%, with a practical target below that until independent strategy edges are proven.",
+    "For every agent, require all six validation phases: codified hypothesis, 5+ year multi-regime test, parameter sweep, 1.5-2x friction stress, walk-forward replication, and five-dimension scoring.",
+    "Collect trade-level timestamps, instruments, exposure, and returns to calculate correlation, portfolio heat, and recent-ten-trade divergence properly next week."
+  ],
+  "alerts": [
+    "BLADE FAIL: Sharpe 0.012, PF 1.114, and 72.9% max drawdown fail risk-adjusted deployment standards despite 330 trades.",
+    "CRISP CRITICAL: 468.0% max drawdown is incompatible with capital preservation and likely indicates broken sizing or accounting controls.",
+    "No strategy currently qualifies for DEPLOY.",
+    "Monte Carlo ruin figures should not override realized drawdown or execution-risk evidence."
+  ],
+  "_regime": {
+    "blade": {
+      "best_hour_utc": 6,
+      "worst_hour_utc": 14,
+      "best_day_of_week": "Mon",
+      "worst_day_of_week": "Fri",
+      "overall_mean_pnl": 2.06,
+      "recent_mean_pnl": -40.6,
+      "divergence_z": 0.24,
+      "recent_divergence": false
+    },
+    "crisp": {
+      "best_hour_utc": 15,
+      "worst_hour_utc": 22,
+      "best_day_of_week": "Tue",
+      "worst_day_of_week": "Mon",
+      "overall_mean_pnl": -34.35,
+      "recent_mean_pnl": -34.35,
+      "divergence_z": 0.0,
+      "recent_divergence": false
+    },
+    "edge": {}
+  },
+  "_meta": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "model": "openai/gpt-5.6-terra",
+    "generated_at": "2026-07-25T10:00:39.961129+00:00"
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "schema": "jcf.agent_report/v1",
+  "agent": "victoria",
+  "kind": "daily",
+  "date": "2026-07-27",
+  "generated_at": "2026-07-27T17:47:34.156141+00:00",
+  "tier1_text": "\ud83e\udddb\u200d\u2640\ufe0f VICTORIA \u2014 DAILY 2026-07-27\n\nPAUSE JERRY IMMEDIATELY. Expectancy is -$5.17 per trade across 116 trades \u2014 this is not noise, it is structural failure.\nRestore OANDA trade export pipeline for Blade before running any further sessions.\nResync Edge portfolio data. The $5,000 balance is 61 days stale \u2014 do not treat it as deployable capital or configure position\u2026\n\n\u2022 Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Jerry: FAIL on 116 trades \u2014 not deployable as-is\n\u2022 Chad: no verdict \u2014 feed is out of date \u2014 cannot judge\n\u2022 Net worth $38,578\n\n\u26a0\ufe0f Not current: Blade, Chad, Edge \u2014 no verdict issued on these.\n\nFull breakdown on the dashboard \u2192",
+  "decision": [
+    "PAUSE JERRY IMMEDIATELY. Expectancy is -$5.17 per trade across 116 trades \u2014 this is not noise, it is structural failure. Every trade Jerry executes is statistically expected to lose money. Do not allow Jerry to continue running without a fundamental strategy overhaul.",
+    "Restore OANDA trade export pipeline for Blade before running any further sessions. The July 17 reset is meaningless if performance cannot be tracked and the validator cannot grade it.",
+    "Resync Edge portfolio data. The $5,000 balance is 61 days stale \u2014 do not treat it as deployable capital or configure position sizing against it until current data is confirmed."
+  ],
+  "headlines": [
+    "Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded",
+    "Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded",
+    "Jerry: FAIL on 116 trades \u2014 not deployable as-is",
+    "Chad: no verdict \u2014 feed is out of date \u2014 cannot judge",
+    "Net worth $38,578"
+  ],
+  "metrics": [
+    {
+      "term": "profit_factor",
+      "label": "Profit factor",
+      "value": 0.972,
+      "subject": "Jerry",
+      "display": "0.972",
+      "plain": "losing \u2014 under $1 won per $1 lost",
+      "rendered": "Jerry profit factor 0.972 (losing \u2014 under $1 won per $1 lost)"
+    },
+    {
+      "term": "sharpe",
+      "label": "Sharpe",
+      "value": -0.005,
+      "subject": "Jerry",
+      "display": "-0.005",
+      "plain": "losing money after you account for risk",
+      "rendered": "Jerry sharpe -0.005 (losing money after you account for risk)"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Decision",
+      "body": "PAUSE JERRY IMMEDIATELY. Expectancy is -$5.17 per trade across 116 trades \u2014 this is not noise, it is structural failure. Every trade Jerry executes is statistically expected to lose money. Do not allow Jerry to continue running without a fundamental strategy overhaul.\nRestore OANDA trade export pipeline for Blade before running any further sessions. The July 17 reset is meaningless if performance cannot be tracked and the validator cannot grade it.\nResync Edge portfolio data. The $5,000 balance is 61 days stale \u2014 do not treat it as deployable capital or configure position sizing against it until current data is confirmed.\nConsider manual entries on UUUU, IREN, or USAR given Sentinel strong buy signals and the broader risk-on macro pivot. SPX bullish bias at 62% supports tactical long exposure.\nTao DCA: 5 entries available, TAO at $190.11. If you have conviction on the asset, the macro neutral-to-risk-on environment is not unfavorable for a first entry. No urgency but the entries are sitting idle.\nBuild Crisp's repurpose plan into a concrete spec. With Blade, Edge, and Jerry all non-operational or failing, Crisp represents the next potential revenue source. Define the new strategy before the week is out.",
+      "rows": [],
+      "collapsed": false
+    },
+    {
+      "title": "Holdings",
+      "body": "",
+      "rows": [
+        {
+          "agent": "lens",
+          "status": "Ran today \u2014 macro bias delivered. SPX500 BULLISH 62%, US OIL BEARISH 72%, BTC/XAU/US100 all NEUTRAL. API cost $0.4289 today."
+        },
+        {
+          "agent": "blade",
+          "status": "No verdict \u2014 zero trades since July 17 clean-slate reset. OANDA feed not restored. No grading possible. Service status unknown."
+        },
+        {
+          "agent": "crisp",
+          "status": "Intentionally stopped. Being repurposed. 3 sessions logged historically. Not a fault."
+        },
+        {
+          "agent": "edge",
+          "status": "Service inactive. Portfolio data stale by 61 days (last sync May 27, 2026). $5,000 balance shown is not confirmed deployable capital. No trades. No grading possible."
+        },
+        {
+          "agent": "jerry",
+          "status": "FAIL \u2014 116 trades, WR 35.3%, PF 0.972, Sharpe -0.005, MaxDD 13.4%, Expectancy -$5.17/trade. Active bleed confirmed."
+        },
+        {
+          "agent": "chad",
+          "status": "No verdict \u2014 only 6 usable trades. Stale data. Cannot be graded."
+        },
+        {
+          "agent": "tao",
+          "status": "Zero TAO staked. Zero invested. 5 DCA entries unused. Dormant."
+        },
+        {
+          "agent": "sentinel",
+          "status": "Active \u2014 11 tickers on watchlist. Strong buy signals: UUUU, IREN, USAR. Buy signal: IONQ."
+        }
+      ],
+      "collapsed": true
+    },
+    {
+      "title": "New Ideas",
+      "body": "",
+      "rows": [
+        {
+          "severity": "critical",
+          "problem": "Jerry is a confirmed FAIL: 116 trades, WR 35.3%, PF 0.972, Expectancy -$5.17/trade, MaxDD 13.4%",
+          "fix": ""
+        },
+        {
+          "severity": "high",
+          "problem": "Edge portfolio data is 61 days stale (last sync May 27, 2026) \u2014 $5,000 balance unverified, service inactive",
+          "fix": ""
+        },
+        {
+          "severity": "high",
+          "problem": "Blade has zero trades since July 17 clean-slate reset \u2014 OANDA feed not restored, validator cannot grade",
+          "fix": ""
+        },
+        {
+          "severity": "medium",
+          "problem": "Chad has only 6 usable trades \u2014 stale data, cannot be graded, data pipeline not current",
+          "fix": ""
+        }
+      ],
+      "collapsed": true
+    },
+    {
+      "title": "Risk Notes",
+      "body": "",
+      "rows": [
+        {
+          "alert": "CRITICAL: Jerry is a confirmed statistical FAIL \u2014 116-trade sample, negative expectancy -$5.17/trade. Must be paused."
+        },
+        {
+          "alert": "WARNING: Edge portfolio data is 61 days stale. Do not deploy capital against this account without resync."
+        },
+        {
+          "alert": "WARNING: Blade has zero post-reset trades. OANDA feed restoration is a prerequisite for any performance accountability."
+        },
+        {
+          "alert": "INFO: Chad has only 6 usable trades \u2014 insufficient for grading. Data pipeline needs attention."
+        },
+        {
+          "alert": "INFO: Zero trading P&L MTD. Operation is generating API costs with no revenue offset."
+        }
+      ],
+      "collapsed": true
+    },
+    {
+      "title": "Reasoning",
+      "body": "Sunday July 27. The operation is effectively at a standstill on the trading side. No trades executed today across any agent or manual account. Lens ran at some point before 17:42 UTC and produced a macro bias report \u2014 that was the only productive agent activity. The bias is notable: SPX500 bullish at 62%, US OIL sharply bearish at 72% on the back of a US-Iran military pause collapsing WTI ~6%. BTC and gold are both sitting at neutral. Sentinel is flashing strong buy signals on UUUU, IREN, and USAR (4-5 buy signals each) and a regular buy on IONQ \u2014 these are worth monitoring for manual entries given the risk-on pivot. Crisp-v5 is intentionally stopped and being repurposed \u2014 not an error. Edge service is inactive; its portfolio data is 61 days stale as of today (last sync May 27). Blade has zero trades since the July 17 clean-slate reset and no usable data for grading. Jerry has been formally graded a FAIL by the validator: 116 trades, 35.3% win rate, profit factor 0.972, negative expectancy of -$5.17 per trade, max drawdown 13.4%. Jerry is bleeding. Chad cannot be graded \u2014 only 6 usable trades. Net worth snapshot: checking $676.95, Truist MMA $9,500, Robinhood $12,953.70, Kraken crypto $13,446.40 (XRP/ETH/SOL/LINK), TrustWallet $1.20. Total approximately $38,578. Tao staking: zero TAO staked, zero invested, 5 DCA entries available. The week opens with macro tailwinds for equities but the trading infrastructure is not positioned to capture any of it.",
+      "rows": [],
+      "collapsed": true
+    }
+  ],
+  "provenance": {
+    "Blade": {
+      "source": "/root/.openclaw/dashboard/agent_trades.json",
+      "ok": false,
+      "reason": "empty",
+      "as_of": null,
+      "age_days": null,
+      "stale_after_days": 14,
+      "basis": "",
+      "detail": "",
+      "marker": "\u26a0\ufe0f NO DATA \u2014 source empty"
+    },
+    "Edge": {
+      "source": "/root/.openclaw/dashboard/edge_portfolio.json",
+      "ok": false,
+      "reason": "stale",
+      "as_of": "2026-05-27T17:18:17.942549+00:00",
+      "age_days": 61.01,
+      "stale_after_days": 14,
+      "basis": "field:updated",
+      "detail": "",
+      "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (61d ago)"
+    },
+    "Jerry": {
+      "source": "/root/.openclaw/agents/jerry/data/trade_history.json",
+      "ok": true,
+      "reason": "fresh",
+      "as_of": "2026-07-24T18:54:42.756839+00:00",
+      "age_days": 2.95,
+      "stale_after_days": 14,
+      "basis": "newest_record:timestamp",
+      "detail": "",
+      "marker": ""
+    },
+    "Chad": {
+      "source": "/root/.openclaw/agents/crisp/data/trade_history.json",
+      "ok": false,
+      "reason": "stale",
+      "as_of": "2026-04-14T22:34:09.772855+00:00",
+      "age_days": 103.8,
+      "stale_after_days": 14,
+      "basis": "newest_record:timestamp",
+      "detail": "",
+      "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (104d ago)"
+    }
+  },
+  "degraded_sources": [
+    "Blade",
+    "Chad",
+    "Edge"
+  ],
+  "glossary_used": [
+    "profit_factor",
+    "sharpe"
+  ]
+}

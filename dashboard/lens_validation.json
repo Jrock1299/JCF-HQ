@@ -1,0 +1,149 @@
+{
+  "date": "2026-07-27",
+  "agent_reports": {
+    "blade": {
+      "total_trades": 0,
+      "win_rate": 0,
+      "profit_factor": 0,
+      "sharpe": 0,
+      "max_drawdown_pct": 0,
+      "monte_carlo": {
+        "median_outcome": 0,
+        "worst_case_5pct": 0,
+        "best_case_95pct": 0,
+        "ruin_probability": 0,
+        "double_probability": 0,
+        "starting_balance": null
+      },
+      "verdict": "NO_DATA",
+      "recommendation": "Blade cannot be assessed. agent_trades.json and the pre-migration TradeLocker feed contain zero trades, and blade_balance.json is $0 after the July 17 clean-slate reset. Set the Round 2 starting balance, restore a reliable OANDA trade export into the dashboard pipeline, and collect at least 20 closed trades before any statistical conclusion.",
+      "sortino": 0,
+      "total_pnl": 0,
+      "expectancy": 0,
+      "max_consec_losses": 0,
+      "deterministic_verdict": "NO_DATA",
+      "balance_source": "blade_balance.json balance=0 \u2014 Reset to clean slate 2026-07-17 (Round 2). Jase sets a fresh starting number via edit mode.",
+      "freshness": {
+        "source": "/root/.openclaw/dashboard/agent_trades.json",
+        "ok": false,
+        "reason": "empty",
+        "as_of": null,
+        "age_days": null,
+        "stale_after_days": 14,
+        "basis": "",
+        "detail": "",
+        "marker": "\u26a0\ufe0f NO DATA \u2014 source empty"
+      },
+      "notes": [
+        "0 trades exist in the pre-migration TradeLocker feed (tradelocker_trades.json), newest unknown \u2014 not graded: Blade trades OANDA now."
+      ],
+      "data_status": "Source contains no trades (/root/.openclaw/dashboard/agent_trades.json)"
+    },
+    "edge": {
+      "total_trades": 0,
+      "win_rate": 0,
+      "profit_factor": 0,
+      "sharpe": 0,
+      "max_drawdown_pct": 0,
+      "monte_carlo": {
+        "median_outcome": 0,
+        "worst_case_5pct": 0,
+        "best_case_95pct": 0,
+        "ruin_probability": 0,
+        "double_probability": 0,
+        "starting_balance": null
+      },
+      "verdict": "NO_DATA",
+      "recommendation": "Edge cannot be assessed. There is no P&L sample, and edge_portfolio.json is stale by 61 days despite showing a $5,000 balance. Restore current portfolio synchronization and closed-trade logging; do not treat the May 27 balance as deployable capital or run Monte Carlo until the source is current and at least 20 trades exist.",
+      "sortino": 0,
+      "total_pnl": 0,
+      "expectancy": 0,
+      "max_consec_losses": 0,
+      "deterministic_verdict": "NO_DATA",
+      "balance_source": "edge_portfolio.json balance (5,000)",
+      "freshness": {
+        "source": "/root/.openclaw/dashboard/edge_portfolio.json",
+        "ok": false,
+        "reason": "stale",
+        "as_of": "2026-05-27T17:18:17.942549+00:00",
+        "age_days": 61.01,
+        "stale_after_days": 14,
+        "basis": "field:updated",
+        "detail": "",
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (61d ago)"
+      },
+      "notes": [],
+      "data_status": "No P&L data available"
+    }
+  },
+  "portfolio_summary": {
+    "total_pnl": 0.0,
+    "correlation_risk": "unknown",
+    "overall_assessment": "There is no validated portfolio. Both agents are locked at NO_DATA, so total P&L, correlation, drawdown, Sharpe, profit factor, and ruin probability are unknown\u2014not zero. Any claim of edge, safety, or readiness would be fabricated."
+  },
+  "recommendations": [
+    "Do not allocate new live capital to Blade or Edge until their respective data pipelines produce current, closed-trade P&L records.",
+    "Set Blade's explicit Round 2 starting balance and ingest OANDA executions, fills, fees, stops, and realized P&L into /root/.openclaw/dashboard/agent_trades.json.",
+    "Repair Edge's portfolio and trade synchronization; replace the May 27 stale snapshot with current timestamped balance, positions, and closed-trade data.",
+    "After 20 closed trades per agent, run the full review: five-year multi-regime backtest, parameter sensitivity sweep, 1.5-2x execution-friction stress test, and out-of-sample walk-forward validation.",
+    "When trading resumes, enforce risk at or below 1% per trade and total combined Blade-plus-Edge open risk below 6%."
+  ],
+  "alerts": [
+    "BLADE DATA FAILURE: agent_trades.json is empty; no OANDA trade evidence is available for review.",
+    "BLADE BALANCE UNSET: blade_balance.json reports $0 after the July 17 Round 2 reset.",
+    "EDGE DATA FAILURE: no P&L records are available.",
+    "EDGE STALE DATA: edge_portfolio.json was last updated May 27, 2026, 61 days ago.",
+    "Neither agent meets the 20-trade minimum. No statistical verdict beyond NO_DATA is permitted."
+  ],
+  "_regime": {
+    "blade": {},
+    "edge": {}
+  },
+  "_meta": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "model": "openai/gpt-5.6-terra",
+    "generated_at": "2026-07-27T17:31:01.636269+00:00",
+    "validator": "lens",
+    "covers": [
+      "blade",
+      "edge"
+    ],
+    "absorbed_from": "norman (retired 2026-07-25)",
+    "min_trades_for_verdict": 20
+  },
+  "_freshness": {
+    "all_fresh": false,
+    "stale_count": 2,
+    "total": 2,
+    "stale_labels": [
+      "blade",
+      "edge"
+    ],
+    "detail": {
+      "blade": {
+        "source": "/root/.openclaw/dashboard/agent_trades.json",
+        "ok": false,
+        "reason": "empty",
+        "as_of": null,
+        "age_days": null,
+        "stale_after_days": 14,
+        "basis": "",
+        "detail": "",
+        "marker": "\u26a0\ufe0f NO DATA \u2014 source empty"
+      },
+      "edge": {
+        "source": "/root/.openclaw/dashboard/edge_portfolio.json",
+        "ok": false,
+        "reason": "stale",
+        "as_of": "2026-05-27T17:18:17.942549+00:00",
+        "age_days": 61.01,
+        "stale_after_days": 14,
+        "basis": "field:updated",
+        "detail": "",
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (61d ago)"
+      }
+    }
+  }
+}

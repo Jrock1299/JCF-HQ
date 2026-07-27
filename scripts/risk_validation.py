@@ -71,7 +71,8 @@ def display(agent_key: str) -> str:
 # STATISTICS ENGINE
 # ══════════════════════════════════════════════════════════════════════════════
 
-def calculate_stats(trades: list[dict], strategy_name: str = '') -> dict:
+def calculate_stats(trades: list[dict], strategy_name: str = '',
+                    starting_balance: float | None = None) -> dict:
     """
     Calculate comprehensive trading statistics from a list of trade dicts.
     Each trade must have a 'pnl' field (float).
@@ -112,13 +113,43 @@ def calculate_stats(trades: list[dict], strategy_name: str = '') -> dict:
     )
     sortino = (mean_pnl / downside_std) if downside_std > 0 else 0.0
 
-    # Max drawdown (on cumulative equity curve)
-    equity     = np.cumsum([0.0] + pnls)
+    # Max drawdown, measured against ACCOUNT EQUITY.
+    #
+    # This used to anchor the equity curve at 0.0 — i.e. cumulative P&L, not
+    # equity — and then divide the drawdown by the peak of that curve. The
+    # denominator was therefore "peak cumulative profit", which early in a
+    # track record is a tiny number. That is what produced Chad's 468.0% max
+    # drawdown (an impossible figure for a percentage that is bounded by 100)
+    # and Jerry's 107.8%. Both were relayed to Jase as real risk findings.
+    #
+    # Anchoring at the real starting balance bounds the ratio correctly: you
+    # cannot draw down more than the peak equity you reached.
+    equity_base = float(starting_balance) if (starting_balance or 0) > 0 else None
+    equity      = np.cumsum([0.0] + pnls) + (equity_base or 0.0)
     running_max = np.maximum.accumulate(equity)
     drawdowns   = equity - running_max
     max_dd_abs  = float(np.min(drawdowns))
     peak_before_dd = float(running_max[np.argmin(drawdowns)])
-    max_dd_pct  = (max_dd_abs / peak_before_dd * 100) if peak_before_dd > 0 else 0.0
+
+    account_wiped = False
+    if equity_base is None:
+        # Without a real account size a drawdown PERCENTAGE is not defined.
+        # Report the dollar figure and say so, rather than emitting a ratio
+        # against peak cumulative profit that reads like a percentage but is
+        # not one (Rule #9 — never substitute a fabricated value).
+        max_dd_pct   = None
+        max_dd_basis = 'undefined_no_starting_balance'
+    else:
+        max_dd_pct   = (max_dd_abs / peak_before_dd * 100) if peak_before_dd > 0 else 0.0
+        max_dd_basis = 'account_equity'
+        # A drawdown cannot exceed the peak equity that preceded it: past 100%
+        # the account is gone and the remaining losses could not have been
+        # taken. Arithmetic beyond 100 means the modelled curve went negative,
+        # so report ruin rather than an impossible percentage.
+        if abs(max_dd_pct) > 100.0:
+            max_dd_pct    = 100.0
+            account_wiped = True
+            max_dd_basis  = 'account_equity_capped_at_ruin'
 
     # Max consecutive losses
     max_consec_loss = 0
@@ -148,7 +179,9 @@ def calculate_stats(trades: list[dict], strategy_name: str = '') -> dict:
         'sharpe':             round(sharpe, 3),
         'sortino':            round(sortino, 3),
         'max_drawdown_abs':   round(max_dd_abs, 2),
-        'max_drawdown_pct':   round(abs(max_dd_pct), 1),
+        'max_drawdown_pct':   (round(abs(max_dd_pct), 1) if max_dd_pct is not None else None),
+        'max_drawdown_basis': max_dd_basis,
+        'account_wiped':      account_wiped,
         'max_consec_losses':  max_consec_loss,
     }
 
@@ -413,7 +446,7 @@ def validate_strategy(
     # substituted a 10_000 notional that was never tied to any real account,
     # so ruin/double probabilities were computed against a fiction.
     if starting_balance is None or starting_balance <= 0:
-        stats = calculate_stats(trade_history, strategy_name)
+        stats = calculate_stats(trade_history, strategy_name, starting_balance)
         return {
             **base,
             'n': len(pnls),
@@ -425,7 +458,7 @@ def validate_strategy(
             'regime': regime_analysis(trade_history),
         }
 
-    stats  = calculate_stats(trade_history, strategy_name)
+    stats  = calculate_stats(trade_history, strategy_name, starting_balance)
     mc     = monte_carlo_simulation(pnls, starting_balance=starting_balance)
     regime = regime_analysis(trade_history)
 
@@ -582,6 +615,11 @@ def merge_validation_into_report(report: dict, validations: dict,
             'sharpe':             s.get('sharpe', 0),
             'sortino':            s.get('sortino', 0),
             'max_drawdown_pct':   s.get('max_drawdown_pct', 0),
+            # Carry the drawdown's provenance, so a reader can tell a real
+            # percentage from one that is undefined or capped at ruin.
+            'max_drawdown_abs':   s.get('max_drawdown_abs'),
+            'max_drawdown_basis': s.get('max_drawdown_basis'),
+            'account_wiped':      s.get('account_wiped', False),
             'total_pnl':          s.get('total_pnl', 0),
             'expectancy':         s.get('expectancy', 0),
             'max_consec_losses':  s.get('max_consec_losses', 0),

@@ -31,7 +31,21 @@ REPORT_PATH   = DASHBOARD / 'victoria_report.json'
 HISTORY_PATH  = LOGS / 'victoria_history.json'
 COST_LOG_PATH = LOGS / 'victoria_api_costs.json'
 VICTORIA_LOG  = LOGS / 'victoria.log'
-NORMAN_PATH   = DASHBOARD / 'norman_report.json'
+
+# ── Validation sources (repointed 2026-07-27) ─────────────────────────────────
+# Victoria used to read dashboard/norman_report.json. Norman was retired
+# 2026-07-25 and his last report — still on disk, still being read every
+# morning — graded Blade off 330 dormant TradeLocker trades and carried an
+# impossible 468% max drawdown for Chad. That is what reached Jase's phone as
+# "BLADE FAIL: 330 trades" and "CRISP CRITICAL: 468.0% maximum drawdown".
+#
+# The consolidation replaced Norman with two validators that already refuse to
+# grade dead feeds. Victoria's briefings now read THOSE, the same corrected
+# sources scripts/risk_validation.py drives:
+LENS_VALIDATION_PATH     = DASHBOARD / 'lens_validation.json'      # Blade, Edge
+VICTORIA_VALIDATION_PATH = DASHBOARD / 'victoria_validation.json'  # Jerry, Chad
+# norman_report.json is quarantined (dashboard/_archive/pre_reset_2026-07-27/).
+# Do not re-add it here.
 
 # Migrated 2026-07-24 off the Anthropic SDK to Codex via the openclaw gateway
 # (Lucy's subprocess pattern). Tier: GPT-5.6 Terra (balanced everyday tier,
@@ -45,6 +59,41 @@ MAX_TOKENS = 8192
 
 TELEGRAM_TOKEN   = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CHAT_ID')
+
+
+def _llm_fallback(system_prompt: str, user_message: str) -> str | None:
+    """Opt-in Anthropic fallback when the Codex route is unavailable.
+
+    OFF BY DEFAULT — set VICTORIA_LLM_FALLBACK=anthropic to enable. This is a
+    billing decision, not a technical one: CLAUDE.md records Lens as the only
+    Anthropic-billed cron agent, and silently moving Victoria there would
+    change Jase's spend without him choosing it.
+
+    Why it exists: on 2026-07-27 the Codex subscription hit its usage limit
+    ("next reset Aug 23"), so Victoria's synthesis returned nothing. Her
+    deterministic sections still render — but the narrative is empty for 27
+    days unless something else can answer.
+    """
+    if os.getenv('VICTORIA_LLM_FALLBACK', '').lower() != 'anthropic':
+        return None
+    try:
+        import anthropic
+    except ImportError:
+        print('[victoria] fallback requested but anthropic SDK not installed')
+        return None
+    try:
+        print('[victoria] Codex unavailable — falling back to Anthropic (opt-in)')
+        client = anthropic.Anthropic()
+        resp = client.messages.create(
+            model='claude-sonnet-4-6',
+            max_tokens=MAX_TOKENS,
+            system=system_prompt,
+            messages=[{'role': 'user', 'content': user_message}],
+        )
+        return resp.content[0].text if resp.content else None
+    except Exception as e:
+        print(f'[victoria] Anthropic fallback failed: {e}')
+        return None
 
 
 def _run_codex(system_prompt: str, user_message: str, timeout: int = 300) -> str | None:
@@ -76,10 +125,11 @@ def _run_codex(system_prompt: str, user_message: str, timeout: int = 300) -> str
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 60)
         if proc.returncode != 0:
             print(f'[victoria] Codex call failed: {proc.stderr[:300]}')
-            return None
+            return _llm_fallback(system_prompt, user_message)
         data = json.loads(proc.stdout)
         payloads = data.get('result', {}).get('payloads', [])
-        return payloads[0].get('text', '') if payloads else None
+        text = payloads[0].get('text', '') if payloads else None
+        return text or _llm_fallback(system_prompt, user_message)
     except subprocess.TimeoutExpired:
         print('[victoria] Codex call timed out')
         return None
@@ -232,9 +282,23 @@ def check_service_statuses() -> dict:
 # ─── Data loaders ───────────────────────────────────────────────────────────────
 
 def _f(val, default=0.0) -> float:
-    """Safe float conversion."""
+    """Safe float conversion.
+
+    Handles percent/currency STRINGS. Feeds store win_rate as "53.3%"; the old
+    version could not parse that and silently returned 0.0, which is why
+    Victoria reported "0.0% win rate" in the same breath as "176W / 139L".
+    Coercing a value we cannot read to 0.0 is exactly the failure Rule #9 is
+    about — an unparseable number is unknown, not zero.
+    """
+    if val is None:
+        return default
     try:
-        return float(val) if val is not None else default
+        return float(val)
+    except (TypeError, ValueError):
+        pass
+    try:
+        cleaned = str(val).strip().replace('%', '').replace('$', '').replace(',', '')
+        return float(cleaned)
     except (TypeError, ValueError):
         return default
 
@@ -359,34 +423,85 @@ def _format_sentinel(data: dict) -> str:
     return '\n'.join(lines)
 
 
-def _format_norman(data: dict) -> str:
-    if not data:
-        return 'Norman Report: not available'
-    lines = [f"Norman Statistical Analysis ({data.get('date', '?')}):"]
-    for agent, report in data.get('agent_reports', {}).items():
-        verdict = report.get('verdict', '?')
-        lines.append(
-            f"  {agent.capitalize()}: verdict={verdict} | "
-            f"WR={report.get('win_rate', 0):.1f}% | "
-            f"PF={report.get('profit_factor', 0):.3f} | "
-            f"Sharpe={report.get('sharpe', 0):.3f} | "
-            f"MaxDD={report.get('max_drawdown_pct', 0):.1f}% | "
-            f"Trades={report.get('total_trades', 0)} | "
-            f"Expectancy=${report.get('expectancy', 0):.2f}"
-        )
-        rec = report.get('recommendation', '')
-        if rec:
-            lines.append(f"    Norman says: {rec[:300]}")
-    alerts = data.get('alerts', [])
-    if alerts:
-        lines.append('  Norman Alerts:')
-        for a in alerts:
-            lines.append(f'    ⚠ {a}')
-    recs = data.get('recommendations', [])
-    if recs:
-        lines.append('  Norman Recommendations:')
-        for r in recs[:4]:
-            lines.append(f'    • {r[:200]}')
+# Internal id -> the name Jase sees. Critical Rule #7: code/JSON keys use the
+# internal id, user-facing text uses the display name. Norman's report printed
+# `agent.capitalize()`, which is how "crisp" reached Jase's phone as "Crisp"
+# when the agent is called Chad.
+_VALIDATION_DISPLAY = {
+    'blade': 'Blade', 'edge': 'Edge', 'jerry': 'Jerry', 'crisp': 'Chad',
+}
+
+# Verdicts where the deterministic layer DECLINED to grade. Victoria may
+# describe the gap but must not issue or relay a grade (Critical Rule #10).
+_UNGRADEABLE = {'NO_DATA', 'STALE_DATA', 'INSUFFICIENT_DATA', 'NO_BALANCE', 'UNKNOWN'}
+
+
+def _format_validation(lens_data: dict, victoria_data: dict) -> str:
+    """Render the two validators' output for the briefing prompt.
+
+    Replaces _format_norman(). Three behavioural differences that matter:
+
+      1. Reads lens_validation.json + victoria_validation.json, not the
+         retired norman_report.json.
+      2. Never prints a number for an ungradeable verdict. The old version
+         formatted `report.get('win_rate', 0)` etc. unconditionally, so a
+         NO_DATA agent still rendered "WR=0.0% | PF=0.000" — numbers the model
+         then narrated as real findings.
+      3. Names agents by display name (crisp -> Chad).
+    """
+    lines = []
+    for source_name, data, covers in (
+        ('Lens validation (Blade, Edge)', lens_data, 'blade/edge'),
+        ('Victoria validation (Jerry, Chad)', victoria_data, 'jerry/chad'),
+    ):
+        if not data:
+            lines.append(f'{source_name}: NOT YET RUN — no verdicts available. '
+                         f'Do not infer performance for {covers}.')
+            continue
+        if data.get('_QUARANTINED'):
+            lines.append(f'{source_name}: QUARANTINED SOURCE — ignore entirely.')
+            continue
+
+        lines.append(f"{source_name} — generated {data.get('date', '?')}:")
+        for agent, report in (data.get('agent_reports') or {}).items():
+            shown = _VALIDATION_DISPLAY.get(agent, agent.capitalize())
+            verdict = (report.get('verdict') or 'UNKNOWN').upper()
+            n = report.get('total_trades', report.get('n', 0)) or 0
+
+            if verdict in _UNGRADEABLE:
+                # No metrics. The whole point is that there is nothing to grade.
+                lines.append(
+                    f'  {shown}: {verdict} on {n} usable trades — NOT GRADED. '
+                    f'State this as "no verdict"; do NOT report win rate, '
+                    f'profit factor, drawdown or any performance number for '
+                    f'{shown}, and do not carry one over from an older report.'
+                )
+            else:
+                lines.append(
+                    f"  {shown}: verdict={verdict} | "
+                    f"Trades={n} | "
+                    f"WR={_f(report.get('win_rate')):.1f}% | "
+                    f"PF={_f(report.get('profit_factor')):.3f} | "
+                    f"Sharpe={_f(report.get('sharpe')):.3f} | "
+                    f"MaxDD={_f(report.get('max_drawdown_pct')):.1f}% | "
+                    f"Expectancy=${_f(report.get('expectancy')):.2f}"
+                )
+            rec = report.get('recommendation', '')
+            if rec:
+                lines.append(f'    Validator says: {rec[:300]}')
+
+        fresh = (data.get('_freshness') or {})
+        stale = fresh.get('stale_labels') or []
+        if stale:
+            shown_stale = ', '.join(_VALIDATION_DISPLAY.get(s, s) for s in stale)
+            lines.append(f'  ⚠ Feeds not current: {shown_stale}. '
+                         f'No confident verdict may be issued on these.')
+
+    lines.append(
+        '  RULE: where a validator declined to grade (NO_DATA / STALE_DATA / '
+        'INSUFFICIENT_DATA), report that as the finding. Describing the gap is '
+        'correct; inventing or reusing a performance number is not.'
+    )
     return '\n'.join(lines)
 
 
@@ -514,6 +629,103 @@ def _build_telegram_report(result: dict, svc_statuses: dict) -> str:
     return wrap_message('victoria', body)
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# TWO-TIER REPORTING (2026-07-27)
+# ══════════════════════════════════════════════════════════════════════════════
+# One generation, two renderings. Tier 1 is what reaches Jase's phone: the
+# decision first, a handful of one-line headlines, every number carrying a
+# plain-language tag, under a hard length cap. Tier 2 is the full analysis,
+# sectioned and collapsible, written to a dashboard JSON.
+#
+# The builder lives in scripts/agent_report.py and is SHARED — Victoria, Lens
+# and the Council all call the same module. Do not copy this logic into
+# another agent; extend the shared module instead (same anti-drift principle
+# as scripts/risk_validation.py).
+
+TIER2_PATH = DASHBOARD / 'victoria_report_v2.json'
+TIER2_WEEKLY_PATH = DASHBOARD / 'victoria_weekly_v2.json'
+
+
+def build_two_tier(result: dict, lens_val: dict | None, vic_val: dict | None,
+                   kind: str = 'daily') -> 'object':
+    """Assemble the shared Report object from Victoria's payload.
+
+    Structure here is deterministic — it holds up even when the model returns
+    nothing, which is not hypothetical: the Codex subscription hit its usage
+    limit on 2026-07-27 and synthesis came back empty.
+    """
+    from agent_report import Report, plain_verdict, label_for, explain
+
+    today = result.get('date') or datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    r = Report(agent='victoria', kind=kind, date=today)
+
+    recs   = result.get('recommendations') or []
+    alerts = result.get('alerts') or []
+    fin    = result.get('financial_summary') or {}
+    ops    = result.get('operations_briefing') or ''
+    agents = result.get('agent_status') or {}
+
+    # ── Decision: lead with it ──────────────────────────────────────────────
+    if recs:
+        r.decide(*[str(x) for x in recs[:3]])
+    elif alerts:
+        r.decide(f'{len(alerts)} issue(s) need attention — see headlines.')
+    else:
+        r.decide('Nothing to action today. Hold everything.')
+
+    # ── Headlines from the validators, with plain tags ──────────────────────
+    ungradeable = {'NO_DATA', 'STALE_DATA', 'INSUFFICIENT_DATA', 'NO_BALANCE', 'UNKNOWN'}
+    for val, src in ((lens_val, 'lens_validation'), (vic_val, 'victoria_validation')):
+        if not val:
+            continue
+        for internal, ar in (val.get('agent_reports') or {}).items():
+            shown = _VALIDATION_DISPLAY.get(internal, internal.capitalize())
+            verdict = (ar.get('verdict') or 'UNKNOWN').upper()
+            n = ar.get('total_trades', 0) or 0
+            plain = plain_verdict(verdict)
+            if verdict in ungradeable:
+                r.headline(f'{shown}: no verdict — {plain}')
+            else:
+                r.headline(f'{shown}: {verdict} on {n} trades — {plain}')
+                for term in ('profit_factor', 'sharpe'):
+                    if ar.get(term) is not None:
+                        r.metric(term, ar[term], subject=shown)
+        for name, f in ((val.get('_freshness') or {}).get('detail') or {}).items():
+            r.source(_VALIDATION_DISPLAY.get(name, name), f)
+
+    # A money line is worth one headline slot.
+    nw = fin.get('net_worth')
+    if nw is not None:
+        try:
+            r.headline(f'Net worth ${float(nw):,.0f}')
+        except (TypeError, ValueError):
+            pass
+
+    # ── Tier 2 sections ─────────────────────────────────────────────────────
+    r.section('Decision', body='\n'.join(str(x) for x in recs) or 'No action required.',
+              collapsed=False)
+
+    holdings = [{'agent': a, 'status': str(s)} for a, s in agents.items()]
+    if holdings:
+        r.section('Holdings', rows=holdings)
+
+    fixes = result.get('fix_prompts') or []
+    if fixes:
+        r.section('New Ideas',
+                  rows=[{'severity': f.get('severity'), 'problem': f.get('problem'),
+                         'fix': f.get('prompt', '')[:2000]} for f in fixes])
+
+    if alerts:
+        r.section('Risk Notes', rows=[{'alert': str(a)} for a in alerts])
+
+    reasoning = ops
+    if fin.get('summary'):
+        reasoning = f"{fin['summary']}\n\n{reasoning}"
+    r.section('Reasoning', body=reasoning)
+
+    return r
+
+
 TG_MAX = 4000  # Telegram's limit is 4096; keep headroom
 
 
@@ -535,6 +747,10 @@ def _tg_send_chunk(text: str) -> bool:
 
 
 def _send_telegram(text: str) -> None:
+    # --no-send regenerates a report without pushing it to Jase's phone.
+    if '--no-send' in sys.argv:
+        print(f'[victoria] --no-send: Telegram suppressed ({len(text)} chars)')
+        return
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
         print('[victoria] Telegram not configured — skipping')
         return
@@ -691,12 +907,14 @@ def run_victoria() -> dict:
     nw_data     = _load_json(DASHBOARD / 'net_worth.json',          'net_worth')
     rb_data     = _load_json(DASHBOARD / 'robinhood_data.json',     'robinhood')
     tw_data     = _load_json(DASHBOARD / 'trustwallet_data.json',   'trustwallet')
-    norman_data = _load_json(NORMAN_PATH,                           'norman_report')
+    lens_val_data = _load_json(LENS_VALIDATION_PATH,     'lens_validation')
+    vic_val_data  = _load_json(VICTORIA_VALIDATION_PATH, 'victoria_validation')
 
-    if norman_data:
-        print(f'[victoria] Norman report loaded — dated {norman_data.get("date","?")}')
-    else:
-        print('[victoria] Norman report not available')
+    for label, d in (('Lens', lens_val_data), ('Victoria', vic_val_data)):
+        if d:
+            print(f'[victoria] {label} validation loaded — dated {d.get("date","?")}')
+        else:
+            print(f'[victoria] {label} validation not available — no verdicts for its agents')
 
     # ── 2. Aggregate API costs ──
     api_costs = aggregate_api_costs()
@@ -717,7 +935,7 @@ def run_victoria() -> dict:
     accts_text  = _format_accounts(plaid_data, rb_data, kraken_data, tw_data, nw_data)
     lens_text   = _format_lens_bias(lens_data)       if lens_data else 'Lens: unavailable'
     sent_text   = _format_sentinel(sent_data)        if sent_data else 'Sentinel: unavailable'
-    norman_text = _format_norman(norman_data)        if norman_data else 'Norman Report: not yet run'
+    norman_text = _format_validation(lens_val_data, vic_val_data)
 
     svc_text = (
         'Service Status (systemctl):\n'
@@ -815,8 +1033,12 @@ def run_victoria() -> dict:
         'timestamp':        now_ts,
         'api_costs':        api_costs,
         'svc_statuses':     svc_statuses,
-        'norman_available': norman_data is not None,
-        'norman_date':      (norman_data or {}).get('date'),
+        'validation_sources': {
+            'lens_validation':     {'available': lens_val_data is not None,
+                                    'date': (lens_val_data or {}).get('date')},
+            'victoria_validation': {'available': vic_val_data is not None,
+                                    'date': (vic_val_data or {}).get('date')},
+        },
         'fix_prompts_count': len(result.get('fix_prompts', [])),
     }
 
@@ -840,8 +1062,19 @@ def run_victoria() -> dict:
     except Exception as e:
         print(f'[victoria] Error updating history: {e}')
 
-    # ── 9. Send Telegram ──
-    tg_msg = _build_telegram_report(result, svc_statuses)
+    # ── 9. Two-tier output ──
+    # Tier 1 (the glance) goes to Telegram; Tier 2 (the depth) goes to the
+    # dashboard. Nothing is lost — the full prose that used to be pasted into
+    # Telegram now lives in Tier 2's Reasoning section.
+    try:
+        report_obj = build_two_tier(result, lens_val_data, vic_val_data, kind='daily')
+        tg_msg = report_obj.tier1()
+        report_obj.write_tier2(TIER2_PATH)
+        print(f'[victoria] Tier 2 written → {TIER2_PATH}')
+    except Exception as e:
+        # Never lose the report because the formatter failed.
+        print(f'[victoria] two-tier build failed ({e}); falling back to long form')
+        tg_msg = _build_telegram_report(result, svc_statuses)
     _send_telegram(tg_msg)
 
     print(
@@ -901,7 +1134,8 @@ def run_victoria_weekly(with_scout: bool = False) -> dict:
     nw_data     = _load_json(DASHBOARD / 'net_worth.json',          'net_worth')
     rb_data     = _load_json(DASHBOARD / 'robinhood_data.json',     'robinhood')
     tw_data     = _load_json(DASHBOARD / 'trustwallet_data.json',   'trustwallet')
-    norman_data = _load_json(NORMAN_PATH,                           'norman_report')
+    lens_val_data = _load_json(LENS_VALIDATION_PATH,     'lens_validation')
+    vic_val_data  = _load_json(VICTORIA_VALIDATION_PATH, 'victoria_validation')
 
     # Load Victoria's daily history for 7-day aggregation
     history = _load_json(HISTORY_PATH, 'victoria_history') or []
@@ -942,7 +1176,7 @@ def run_victoria_weekly(with_scout: bool = False) -> dict:
     tao_text    = _format_tao(tao_data)          if tao_data  else 'Tao: unavailable'
     apnl_text   = _format_agent_pnl(apnl_data)  if apnl_data else 'Blade/Crisp: unavailable'
     accts_text  = _format_accounts(plaid_data, rb_data, kraken_data, tw_data, nw_data)
-    norman_text = _format_norman(norman_data)    if norman_data else 'Norman Report: not available'
+    norman_text = _format_validation(lens_val_data, vic_val_data)
 
     daily_summaries = ''
     if recent_dailies:
@@ -1046,8 +1280,17 @@ def run_victoria_weekly(with_scout: bool = False) -> dict:
 
     tg_lines.append('— Victoria')
 
-    body = '\n'.join(tg_lines)
-    _send_telegram(wrap_message('victoria', body))
+    # Two-tier: the weekly tribunal follows the same rule as the daily —
+    # decision to the phone, depth to the dashboard.
+    try:
+        report_obj = build_two_tier(result, lens_val_data, vic_val_data, kind='weekly')
+        report_obj.write_tier2(TIER2_WEEKLY_PATH)
+        print(f'[victoria] Tier 2 written → {TIER2_WEEKLY_PATH}')
+        _send_telegram(report_obj.tier1())
+    except Exception as e:
+        print(f'[victoria] two-tier build failed ({e}); falling back to long form')
+        body = '\n'.join(tg_lines)
+        _send_telegram(wrap_message('victoria', body))
 
     # Save weekly report
     weekly_path = DASHBOARD / 'victoria_weekly.json'
@@ -1074,6 +1317,8 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Victoria — CFO & Chief of Staff')
     parser.add_argument('--weekly', action='store_true', help='Run weekly tribunal')
+    parser.add_argument('--no-send', action='store_true',
+                        help='Generate and save the report without sending to Telegram')
     parser.add_argument('--with-scout', action='store_true',
                         help='Weekly only: also run the scouting desk (absorbed from Lucy). '
                              'OFF by default — Victoria\'s weekly cron is live and the '
