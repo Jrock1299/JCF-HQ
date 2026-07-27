@@ -4,6 +4,49 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Deployment gate: annualised Sharpe, not per-trade · 2026-07-27
+**Decision:** The strategy-deployment gate reads **annualised Sharpe**, not
+per-trade Sharpe. Threshold and every other criterion (trade floor, PF, MaxDD,
+multi-regime, ruin ≤ 10%) unchanged.
+
+**Why:** Per-trade Sharpe demands a mean P&L half a standard deviation *per
+trade* — a bar essentially no strategy meets and one that structurally
+penalises high-frequency systems. It's not what the industry gates deployments
+on. Turtle_soup illustrates the mismatch: per-trade 0.11-0.14 (fails), but
+annualised 2.4-2.8 across 3,232-3,678 trades over ~8 years on four
+instruments. The prior 2026-07-27 ICT/ICC session flagged the frequency bias
+as a finding and refused to change the gate to a threshold seen after the
+results — that was correct. The change was Jase's rule, made *knowing* what
+turtle_soup produces, on the methodology and not the number. That is the
+distinction between a principled recalibration and a fitted one.
+
+**Also confirmed:** no other criterion loosened, so a strategy that fails PF,
+MaxDD, ruin, sample size or multi-regime still fails the gate under the new
+Sharpe basis. The 28-strategy regrade produced **0 PASS**, one MARGINAL
+uptier (ifvg/DE30 from FAIL). Turtle_soup PASSED the annualised Sharpe check
+on all four instruments but still FAILs on ruin (68-74%) — that is the
+compounding artifact previously flagged as "reported but not applied":
+Monte Carlo bootstraps compounded P&L against a fixed $10k start, so
+million-dollar swings from a $10M peak equity are resampled against a $10k
+account. Applying `fixed_size_pnl` to MC ruin is a separate methodology
+call and was not made in this change.
+
+**Also confirmed:** deep-validation infrastructure for turtle_soup added
+(walk-forward, parameter sensitivity, mean-reversion baseline vs.
+sweep-fade-no-ICT-filters) but not yet *run* — requires the OANDA candle
+cache on the VPS. Nothing promoted to the shared strategy library.
+
+**Result:** `scripts/risk_validation.py::calculate_stats` now emits
+`sharpe_annualised` and `annualisation_factor`. `agents/lens/ict_research.py::_verdict`
+grades on annualised. `scripts/regrade_ict_research.py` regraded the existing
+28-row output in place without re-running the backtest — a pure recompute
+that would drift from a re-run only if the trade set itself changed.
+
+**Links:** [[../infrastructure/lucid-rithmic|Lucid/Rithmic scoping]] ·
+[[../sessions/2026-07-27]]
+
+---
+
 ## Jerry's P&L: record the broker's fill, never a fabricated zero · 2026-07-27
 **Decision:** Source both entry and exit prices from Alpaca's own fill record,
 and write `pnl=None` + `pnl_status=UNVERIFIED_*` whenever a fill can't be

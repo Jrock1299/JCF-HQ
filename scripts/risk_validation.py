@@ -71,6 +71,37 @@ def display(agent_key: str) -> str:
 # STATISTICS ENGINE
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _annualisation_factor(trades: list[dict]) -> float:
+    """Trades-per-year derived from the entry-timestamp span.
+
+    A low-frequency strategy trading 20 times a year is not the same as one
+    trading 500 times a year; annualising the same per-trade Sharpe with a
+    fixed 252 would inflate the former. Compute the span from the first to
+    last usable timestamp; fall back to 252 if the span is under 30 days
+    (not enough to estimate reliably — better to under-report than fabricate).
+    """
+    ts_field_candidates = ('timestamp', 'entry_time', 'close_time', 'exit_time')
+    parsed = []
+    for t in trades:
+        raw = None
+        for f in ts_field_candidates:
+            raw = t.get(f)
+            if raw:
+                break
+        if not raw:
+            continue
+        try:
+            parsed.append(datetime.fromisoformat(str(raw).replace('Z', '+00:00')))
+        except (ValueError, TypeError):
+            continue
+    if len(parsed) < 2:
+        return 252.0
+    parsed.sort()
+    span_days = (parsed[-1] - parsed[0]).total_seconds() / 86_400.0
+    if span_days < 30:
+        return 252.0
+    return len(parsed) * 365.25 / span_days
+
 def calculate_stats(trades: list[dict], strategy_name: str = '',
                     starting_balance: float | None = None) -> dict:
     """
@@ -103,8 +134,26 @@ def calculate_stats(trades: list[dict], strategy_name: str = '',
     mean_pnl  = total_pnl / n
     std_pnl   = float(np.std(pnls, ddof=1)) if n > 1 else 0.0
 
-    # Sharpe (per-trade, not annualised)
+    # Sharpe (per-trade, not annualised) — retained for continuity + comparison.
     sharpe = (mean_pnl / std_pnl) if std_pnl > 0 else 0.0
+
+    # Sharpe (ANNUALISED) — the deployment gate uses this basis (2026-07-27).
+    #
+    # Per-trade Sharpe structurally penalises high-frequency strategies: a
+    # small mean vs. a bar-to-bar std is unusual for any real system, so a
+    # 0.5 per-trade floor is a bar essentially no strategy meets — even
+    # turtle_soup (3.2k+ trades, PF 1.5-1.9, profitable 9/9 years on 4
+    # instruments) grades per-trade 0.11-0.14. Annualising re-expresses the
+    # same information on the industry-standard basis so strategies of
+    # different frequencies compare like-for-like.
+    #
+    # Standard scaling for i.i.d. trade returns:  sharpe_ann = sharpe * sqrt(N_per_year)
+    # N_per_year derived from the trade-timestamp span so a low-frequency
+    # strategy is not over-annualised. If timestamps are missing or the span
+    # is < 30 days, fall back to a conservative 252 (roughly daily) rather
+    # than inventing a number.
+    ann_factor = _annualisation_factor(trades)
+    sharpe_annualised = float(sharpe * np.sqrt(ann_factor)) if sharpe else 0.0
 
     # Sortino (downside deviation only)
     downside = [p for p in pnls if p < 0]
@@ -162,27 +211,29 @@ def calculate_stats(trades: list[dict], strategy_name: str = '',
             curr_streak = 0
 
     return {
-        'n':                  n,
-        'total_pnl':          round(total_pnl, 2),
-        'win_rate':           round(win_rate, 1),
-        'wins':               len(wins),
-        'losses':             len(losses),
-        'breakevens':         len(bes),
-        'avg_win':            round(avg_win, 2),
-        'avg_loss':           round(avg_loss, 2),
-        'gross_win':          round(gross_win, 2),
-        'gross_loss':         round(-gross_loss, 2),
-        'profit_factor':      round(profit_factor, 3),
-        'expectancy':         round(expectancy, 2),
-        'mean_pnl':           round(mean_pnl, 2),
-        'std_pnl':            round(std_pnl, 2),
-        'sharpe':             round(sharpe, 3),
-        'sortino':            round(sortino, 3),
-        'max_drawdown_abs':   round(max_dd_abs, 2),
-        'max_drawdown_pct':   (round(abs(max_dd_pct), 1) if max_dd_pct is not None else None),
-        'max_drawdown_basis': max_dd_basis,
-        'account_wiped':      account_wiped,
-        'max_consec_losses':  max_consec_loss,
+        'n':                     n,
+        'total_pnl':             round(total_pnl, 2),
+        'win_rate':              round(win_rate, 1),
+        'wins':                  len(wins),
+        'losses':                len(losses),
+        'breakevens':            len(bes),
+        'avg_win':               round(avg_win, 2),
+        'avg_loss':              round(avg_loss, 2),
+        'gross_win':             round(gross_win, 2),
+        'gross_loss':            round(-gross_loss, 2),
+        'profit_factor':         round(profit_factor, 3),
+        'expectancy':            round(expectancy, 2),
+        'mean_pnl':              round(mean_pnl, 2),
+        'std_pnl':               round(std_pnl, 2),
+        'sharpe':                round(sharpe, 3),
+        'sharpe_annualised':     round(sharpe_annualised, 3),
+        'annualisation_factor':  round(float(ann_factor), 2),
+        'sortino':               round(sortino, 3),
+        'max_drawdown_abs':      round(max_dd_abs, 2),
+        'max_drawdown_pct':      (round(abs(max_dd_pct), 1) if max_dd_pct is not None else None),
+        'max_drawdown_basis':    max_dd_basis,
+        'account_wiped':         account_wiped,
+        'max_consec_losses':     max_consec_loss,
     }
 
 
@@ -324,18 +375,24 @@ def determine_verdict(stats: dict, mc: dict) -> str:
     Below MIN_TRADES_FOR_VERDICT there is no grade — not a lenient one, not a
     harsh one. No amount of profit factor or Sharpe can buy a verdict off a
     sample too small to mean anything.
+
+    Sharpe basis: ANNUALISED (2026-07-27). Per-trade Sharpe is retained on
+    the stats block for continuity but not gated on. Rationale in
+    Vault/decisions/decision-log.md: per-trade structurally penalises
+    high-frequency strategies and is not the industry basis for cross-
+    strategy comparison.
     """
     n = stats.get('n', 0)
     if n < MIN_TRADES_FOR_VERDICT:
         return 'INSUFFICIENT_DATA'
 
-    pf    = stats.get('profit_factor', 0)
-    sh    = stats.get('sharpe', 0)
-    ruin  = mc.get('ruin_probability', 100)
+    pf     = stats.get('profit_factor', 0)
+    sh_ann = stats.get('sharpe_annualised', 0)
+    ruin   = mc.get('ruin_probability', 100)
 
-    if ruin > 10 or sh < 0.5 or pf < 1.0:
+    if ruin > 10 or sh_ann < 0.5 or pf < 1.0:
         return 'FAIL'
-    if pf >= 1.5 and sh >= 0.5 and ruin <= 5:
+    if pf >= 1.5 and sh_ann >= 0.5 and ruin <= 5:
         return 'PASS'
     return 'MARGINAL'
 

@@ -56,7 +56,13 @@ def _regime_split(trades: list, bars: list) -> dict:
 
 
 def _verdict(stats: dict, mc: dict, n: int, regimes: dict) -> tuple[str, str]:
-    """Gated verdict. NO free-text grade below the trade floor."""
+    """Gated verdict. NO free-text grade below the trade floor.
+
+    Sharpe basis, 2026-07-27: ANNUALISED, not per-trade. Per-trade Sharpe
+    structurally penalises high-frequency models and is not the industry
+    basis for comparing strategies of different frequencies. Every other
+    gate criterion (trade floor, PF, MaxDD, multi-regime, ruin) is unchanged.
+    """
     if n == 0:
         return 'NO_DATA', 'No trades generated.'
     if n < MIN_TRADES_FOR_VERDICT:
@@ -65,7 +71,10 @@ def _verdict(stats: dict, mc: dict, n: int, regimes: dict) -> tuple[str, str]:
                 f'Not graded. Any performance figure here is descriptive only.')
 
     pf = stats.get('profit_factor', 0) or 0
-    sharpe = stats.get('sharpe', 0) or 0
+    # Annualised Sharpe is the deployment gate. Per-trade Sharpe is retained
+    # in the record for continuity but is no longer graded on.
+    sharpe_ann = stats.get('sharpe_annualised', 0) or 0
+    sharpe_pt = stats.get('sharpe', 0) or 0
     dd = stats.get('max_drawdown_pct') or 0
     ruin = mc.get('ruin_probability', 0) or 0
     profitable_years = sum(1 for r in regimes.values() if r['pnl'] > 0)
@@ -73,18 +82,21 @@ def _verdict(stats: dict, mc: dict, n: int, regimes: dict) -> tuple[str, str]:
 
     if ruin > 10:
         return 'FAIL', f'Ruin probability {ruin:.1f}% exceeds the 10% ceiling.'
-    if sharpe < 0.5:
-        return 'FAIL', f'Sharpe {sharpe:.3f} below 0.5 — no risk-adjusted edge.'
+    if sharpe_ann < 0.5:
+        return 'FAIL', (f'Annualised Sharpe {sharpe_ann:.3f} below 0.5 — no '
+                        f'risk-adjusted edge (per-trade {sharpe_pt:.3f}).')
     if pf < 1.2:
         return 'MARGINAL', f'Profit factor {pf:.3f} below 1.2.'
     if total_years >= 3 and profitable_years < max(2, total_years // 2):
         return ('MARGINAL',
                 f'Profitable in only {profitable_years}/{total_years} years — '
                 f'edge is regime-dependent, not validated across conditions.')
-    if pf >= 1.5 and sharpe >= 0.5 and dd is not None and dd < 25:
-        return 'PASS', (f'PF {pf:.3f}, Sharpe {sharpe:.3f}, max DD {dd:.1f}%, '
-                        f'profitable in {profitable_years}/{total_years} years.')
-    return 'MARGINAL', f'PF {pf:.3f}, Sharpe {sharpe:.3f} — positive but not strong.'
+    if pf >= 1.5 and sharpe_ann >= 0.5 and dd is not None and dd < 25:
+        return 'PASS', (f'PF {pf:.3f}, ann. Sharpe {sharpe_ann:.3f}, '
+                        f'max DD {dd:.1f}%, profitable in '
+                        f'{profitable_years}/{total_years} years.')
+    return 'MARGINAL', (f'PF {pf:.3f}, ann. Sharpe {sharpe_ann:.3f} — '
+                        f'positive but not strong.')
 
 
 def run_matrix(instruments=None) -> dict:
@@ -199,17 +211,18 @@ def write_library(results: dict) -> dict:
 
 def report(results: dict) -> str:
     rows = rank(results)
-    out = ['', '═' * 92,
-           'ICT / ICC RESEARCH — RANKED RESULTS', '═' * 92,
+    out = ['', '═' * 100,
+           'ICT / ICC RESEARCH — RANKED RESULTS  (gate: annualised Sharpe)', '═' * 100,
            f'{"strategy":16}{"instrument":12}{"n":>5}{"WR%":>7}{"PF":>8}'
-           f'{"Sharpe":>9}{"maxDD%":>8}{"net$":>11}  verdict']
+           f'{"Sh_pt":>8}{"Sh_ann":>8}{"maxDD%":>8}{"net$":>11}  verdict']
     for r in rows:
         s = r['stats']
         dd = s.get('max_drawdown_pct')
         out.append(
             f'{r["strategy"]:16}{r["instrument"]:12}{r["n"]:>5}'
             f'{(s.get("win_rate") or 0):>7.1f}{(s.get("profit_factor") or 0):>8.3f}'
-            f'{(s.get("sharpe") or 0):>9.3f}'
+            f'{(s.get("sharpe") or 0):>8.3f}'
+            f'{(s.get("sharpe_annualised") or 0):>8.3f}'
             f'{(dd if dd is not None else 0):>8.1f}'
             f'{(s.get("total_pnl") or 0):>11,.0f}  {r["verdict"]}')
     return '\n'.join(out)
