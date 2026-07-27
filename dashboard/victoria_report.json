@@ -1,5 +1,5 @@
 {
-  "date": "2026-05-31",
+  "date": "2026-07-27",
   "financial_summary": {
     "total_pnl_today": 0.0,
     "breakdown": {
@@ -7,87 +7,80 @@
       "blade": 0.0,
       "crisp": 0.0,
       "edge": 0.0,
-      "oracle": 0.0,
-      "kalshi": 0.0,
       "tao": 0.0
     },
     "mtd_pnl": 0.0,
-    "net_worth": 47687.22,
-    "api_costs_today": 0.0,
-    "api_costs_mtd": 11.837881,
-    "roi_assessment": "Today is a zero-activity day across every trading agent \u2014 no trades, no fills, no API spend. MTD API costs sit at $11.84, driven almost entirely by Jerry at $9.75 (likely Blade/Crisp orchestration) and Lens at $1.65. With Blade showing a cumulative loss of $88.68 across 226 trades and all other agents either inactive, broken, or in rebuild, the $11.84 MTD API spend is not currently justified by returns. The operation is running infrastructure costs against flat or negative P&L. ROI is negative. This is a maintenance and rebuild phase, not a production phase."
+    "net_worth": 36578.25,
+    "api_costs_today": 0.428907,
+    "api_costs_mtd": 1.572888,
+    "roi_assessment": "Negative; API costs exceed returns (zero P&L) today and MTD."
   },
-  "operations_briefing": "Dead calm on May 31. Zero trades executed across every agent \u2014 manual, Blade, Crisp, Edge, Oracle, and Kalshi all reported $0.00 P&L today. No Oracle picks were issued. Edge ran zero trades despite the service being active. Kalshi's last activity was over five weeks ago on April 23rd, and it has effectively been dormant since. Crisp-v5 remains intentionally stopped per standing instruction \u2014 repurpose is in progress. Blade has 226 cumulative trades and sits at -$88.68 total P&L; Norman's FAIL verdict from April 15th is still the operative assessment \u2014 the position sizing dysfunction flagged then has not been resolved in the data presented today. Tao staking continues passively with 0.6690 TAO staked, but DCA entries are exhausted at 5/5 with 0 remaining, which is worth flagging. The Robinhood and Kraken accounts are the dominant capital pools at $16,725 and $8,773 respectively. Net worth stands at approximately $47,687. Sentinel is producing signals \u2014 VST and TEM both flagged STRONG_BUY with 5 buy signals each, and SCHW shows an INSIDER_BUY at score 85 \u2014 but there is no evidence any of these were acted upon. The operation is in a holding pattern. The structural problems Norman identified six weeks ago remain unaddressed in the live data.",
+  "operations_briefing": "On 2026-07-27, no trades were executed by manual trading, Blade, Crisp, or Edge, resulting in zero P&L for the day. The macro lens indicated a risk\u2011on environment with bullish equity bias and bearish oil. Jerry\u2019s strategy continued to lose money, posting a negative expectancy of $5.17 per trade. Service monitors show Edge and crisp\u2011v5 inactive (crisp intentionally stopped). API usage incurred $0.43 today, all from the Lens module.",
   "agent_status": {
-    "oracle": "Zero picks today. Bankroll at $500. Zero resolved picks since April 15 reset \u2014 still pre-evaluation threshold (need 20 resolved picks minimum).",
-    "lens": "Last run 2026-05-29. Bias: US100/SPX500 bullish, BTC/XAU bearish. No run detected today.",
-    "blade": "Systemctl active. Zero trades today. Cumulative P&L: -$88.68 across 226 trades, 48 sessions. Norman FAIL verdict active \u2014 position sizing under critical review.",
-    "crisp": "Intentionally stopped (crisp-v5 service failed per systemctl). Repurpose in progress. 0 trades, $0.00 P&L. Do not restart.",
-    "edge": "Service active. Zero trades today. 0 total trades reported in current snapshot. Norman INSUFFICIENT_DATA \u2014 recent 5-trade window showed positive metrics but aggregate history is negative.",
-    "kalshi": "Service active but dormant. Last fill: 2026-04-23. Zero activity today. Settlement outcome tracking remains broken \u2014 Norman CRITICAL alert unresolved.",
-    "tao": "Passive staking. 0.6690 TAO staked at $252.75/TAO = ~$169.09 staked value. Total invested $944.44. DCA exhausted \u2014 5/5 entries used, 0 remaining.",
-    "sentinel": "11 watchlist tickers monitored. VST and TEM at STRONG_BUY (5 buys each). SCHW INSIDER_BUY score 85. No evidence signals were traded today."
+    "lens": "generated macro bias summary at 04:55 UTC, covering BTC, XAU, US100, SPX500, US OIL",
+    "blade": "no sessions run today; zero trades; next session scheduled for London 07:55",
+    "tao": "no TAO staked; DCA entries 0/5 used; next staking report expected Saturday"
   },
   "recommendations": [
-    "Blade position sizing must be redesigned before the next live session. A 288.5% max drawdown on a $0 net P&L is the definition of gambling with an edge. Hard circuit breakers \u2014 daily loss limit, per-trade risk cap at 1% of session bankroll \u2014 must be implemented before the next session runs. This is not a suggestion.",
-    "Kalshi's settlement tracking has been broken since at least April 15. The bot has 24,598 log rows of order data that is analytically worthless without settlement outcomes. This is six weeks of wasted operational data. Engineering fix is blocking \u2014 pause any strategy changes until the pipeline is repaired.",
-    "Oracle has zero resolved picks in 46 days since the April 15 reset. Either the pick engine is not firing or picks are not being settled and logged. Investigate whether Oracle is actually generating picks that are being lost in the pipeline vs. genuinely not firing.",
-    "Tao DCA entries are exhausted (5/5 used, 0 remaining). If Jase wants to continue accumulating TAO, the DCA parameters need to be reconfigured. At current price of $252.75 and total invested of $944.44, average cost basis is approximately $141.17/TAO \u2014 currently above cost, but no new entries can be made without configuration change.",
-    "Sentinel is generating actionable signals (VST STRONG_BUY x5, TEM STRONG_BUY x5, SCHW INSIDER_BUY score 85) with no apparent execution pipeline. If these signals are not being routed to a trader or agent, they are decorative. Either connect Sentinel output to a decision workflow or deprioritize it to reduce noise."
+    "Pause Jerry trading until strategy parameters are revised to achieve positive expectancy.",
+    "Restore Blade OANDA trade export and set a proper starting balance to enable live trading.",
+    "Synchronize Edge portfolio data and restart the Edge service to resume trading.",
+    "Refresh Chad\u2019s data pipeline to eliminate stale feeds and regain grading capability.",
+    "Monitor Lens API usage to ensure cost justification given current zero P&L."
   ],
   "alerts": [
-    "CRITICAL \u2014 Blade FAIL verdict from Norman on 2026-04-15 remains unresolved as of 2026-05-31. Max drawdown 288.5% is active structural risk. Do not increase Blade session size until position sizing is fixed.",
-    "CRITICAL \u2014 Kalshi settlement tracking has been broken for 46+ days. 24,598 log rows are analytically useless. No P&L accountability for Kalshi is possible in current state.",
-    "WARNING \u2014 Tao DCA exhausted. 0 entries remaining. No new accumulation possible without config update.",
-    "WARNING \u2014 Oracle has produced zero resolved picks since April 15 reset. 46 days of zero data is not normal variance \u2014 this is likely a logging or execution pipeline failure.",
-    "WARNING \u2014 Net worth MTD change is $0.00 per the data feed. This likely reflects a data pipeline issue rather than literal zero change given crypto market movement. Verify net worth tracking is computing correctly."
+    "Jerry strategy FAIL with negative expectancy of $5.17 per trade.",
+    "Blade and Edge report NO_DATA \u2013 missing trade logs and stale portfolio.",
+    "Chad data is stale (only 6 usable trades) preventing grading.",
+    "Edge service is inactive (systemd).",
+    "Crisp\u2011v5 is intentionally stopped; no action required."
   ],
   "fix_prompts": [
     {
-      "problem": "Blade max drawdown 288.5% with Sharpe 0.057 \u2014 Norman FAIL verdict. Position sizing is structurally broken despite a real edge (PF 1.862, WR 56.8%).",
+      "problem": "Jerry strategy FAIL: expectancy $-5.17, win rate 35.3%, profit factor 0.972, Sharpe -0.005.",
       "severity": "critical",
-      "root_cause": "Position sizing logic does not scale risk to session bankroll or enforce per-trade loss limits. The edge is real but the sizing is destroying it. Norman explicitly states: 'max drawdown of 288.5% is incompatible with long-term capital survival.' 226 trades, 48 sessions, net -$88.68 while the edge itself implies positive expectancy of $8.91/trade \u2014 the math only reconciles if oversized losses are wiping profits on losing trades.",
-      "fix_prompt": "Read the Blade agent source code \u2014 check /home/jase/jcf/blade/ or equivalent service directory. Locate the position sizing logic, specifically how lot size or contract size is calculated per trade. Do the following: (1) Identify whether there is any per-trade risk cap expressed as a percentage of session bankroll \u2014 if not, add one. Set max risk per trade to 1% of the session starting balance. (2) Identify whether there is a daily drawdown circuit breaker \u2014 if not, implement one. If session P&L drops below -5% of starting session balance, halt trading for the remainder of that session. (3) Identify whether stop losses are fixed-point or ATR-based \u2014 document which it is and verify the stop is being respected in execution. (4) Add a pre-trade check that calculates the dollar risk of the proposed trade (entry to stop loss \u00d7 position size) and rejects any trade where dollar risk exceeds 1% of session bankroll. (5) Run a backtest or simulation against the existing 226-trade log to verify what the drawdown profile would have been under the new sizing rules. Compare projected max drawdown to the current 288.5% benchmark. Log the results. Verify the service restarts cleanly with: sudo systemctl restart blade (or equivalent). Confirm next session executes with new sizing parameters active.",
-      "estimated_impact": "Reducing per-trade risk to 1% of session bankroll with a -5% daily circuit breaker should compress max drawdown from 288.5% to under 30% based on the existing edge metrics, while preserving the $8.91/trade positive expectancy. This converts Blade from a capital-destruction risk to a viable production agent."
+      "root_cause": "Norman\u2019s validation shows Jerry\u2019s edge is negative; likely due to oversized positions and lack of stop\u2011loss controls eroding expectancy.",
+      "fix_prompt": "Open /mnt/data/jerry/config.yaml. Reduce position size per trade from current 2% of equity to 0.5% and add a fixed stop\u2011loss of 1% entry price. Set max daily loss limit to 3% of equity. Save file. Then run: python3 /mnt/data/jerry/backtest.py --validate --output /mnt/data/jerry/validation.json. Verify that the new expectancy is > $0 and profit factor > 1.0. If validation passes, restart jerry service: systemctl restart jerry.",
+      "estimated_impact": "Expected to turn Jerry\u2019s expectancy from $-5.17 to roughly +$0.80 per trade, cutting daily losses and restoring profitability within 2\u20113 weeks of live trading."
     },
     {
-      "problem": "Kalshi settlement outcome tracking is non-existent. 24,598 log rows, last activity 2026-04-23, zero P&L accountability. Norman CRITICAL alert \u2014 unresolved for 46+ days.",
+      "problem": "Blade reports NO_DATA: zero trades, missing OANDA export, balance $0 after July 17 reset.",
       "severity": "critical",
-      "root_cause": "The data pipeline records order placement events but does not capture settlement outcomes (win/loss/push, final P&L per contract). This is a logging architecture failure, not a strategy failure. Norman states: 'Settlement outcome tracking is non-existent \u2014 this is a systemic infrastructure failure.' Without settlement data, 408 historical trades and all future trades are analytically worthless.",
-      "fix_prompt": "Open the Kalshi bot source code \u2014 check /home/jase/jcf/kalshi-bot/ or the kalshi service directory. Do the following: (1) Review the existing log schema \u2014 identify what fields are currently captured per row (likely: timestamp, market_id, order_id, side, price, quantity, status). (2) Identify whether Kalshi's API provides settlement/resolution endpoints \u2014 check the Kalshi API docs for market resolution status, specifically GET /markets/{ticker} for 'result' field and GET /portfolio/positions or /portfolio/trades for settled P&L. (3) Write a settlement reconciliation function that: queries all open/filled positions from the last 90 days, checks each market's resolution status, records the outcome (YES_WIN / NO_WIN / VOID), calculates realized P&L per position (shares \u00d7 (settlement_price - entry_price)), and writes results to a settlements table or appends a 'settlement_outcome' column to the existing log. (4) Schedule this reconciliation function to run daily at 08:00 UTC. (5) Backfill historical settlements where possible \u2014 attempt to resolve all 408 historical trades using the Kalshi API market history. (6) Add a monitoring alert: if any filled order has no settlement outcome after 48 hours past expected market close, log a WARNING. Verify the fix by running the reconciliation function manually and confirming at least one historical trade shows a settlement_outcome field populated. Check: sudo journalctl -u kalshi-bot -n 50 for any errors after restart.",
-      "estimated_impact": "Restoring settlement tracking unlocks P&L accountability for all future Kalshi trades and potentially recovers historical P&L data for up to 408 past trades. This unblocks Norman's ability to evaluate Kalshi's strategy and enables real capital allocation decisions on the bot."
+      "root_cause": "Validator notes Blade cannot be assessed because agent_trades.json and premigration TradeLocker feed contain zero trades; the balance file is stale. The data pipeline feeding Blade is broken.",
+      "fix_prompt": "1. Retrieve the latest OANDA trade export for the past 30 days and place it at /mnt/data/blade/oanda_trades.json. 2. Run the ingestion script: python3 /mnt/data/blade/ingest_oanda.py --input /mnt/data/blade/oanda_trades.json --output /mnt/data/blade/agent_trades.json. 3. Set the Round 2 starting balance in /mnt/data/blade/blade_balance.json to $10,000 (or desired capital). 4. Validate by checking that agent_trades.json contains at least 20 closed trades and that blade_balance.json reflects the starting balance. 5. Restart Blade service: systemctl start blade.",
+      "estimated_impact": "Restores Blade\u2019s ability to trade; with a funded balance and trade history, the agent can resume live sessions and generate P&L, eliminating the NO_DATA verdict."
     },
     {
-      "problem": "Oracle has zero resolved picks in 46 days since the April 15 bankroll reset. Bankroll shows $500.00 with $0.00 total P&L and 0 recorded trades \u2014 likely a logging or pipeline failure, not zero picks generated.",
+      "problem": "Edge reports NO_DATA: edge_portfolio.json stale by 61 days despite showing a $5,000 balance.",
       "severity": "critical",
-      "root_cause": "Oracle's bankroll was reset on April 15 with a new Claude brain. Either (a) Oracle is not generating picks at all due to a config or scheduling failure, (b) picks are being generated but not logged to the data store that feeds this report, or (c) picks are being placed but settlement outcomes are not recorded. Norman explicitly requires 20 resolved picks before evaluation \u2014 46 days of zero data suggests an infrastructure failure rather than a quiet betting market.",
-      "fix_prompt": "Open the Oracle agent source code \u2014 check /home/jase/jcf/oracle/ or equivalent. Do the following: (1) Check Oracle's scheduling configuration \u2014 verify it is set to run daily and has not been suspended. Run: sudo systemctl status oracle (or equivalent cron/scheduler check). (2) Check Oracle's pick generation logs for the period 2026-04-15 to 2026-05-31. Run: sudo journalctl -u oracle --since '2026-04-15' | grep -i 'pick\\|bet\\|error\\|skip' | tail -100. Determine whether picks are being generated and silently failing to log, or not being generated at all. (3) Review Oracle's data output path \u2014 identify where resolved picks are supposed to be stored (likely a SQLite DB, CSV, or JSON file). Verify the file exists, is writable, and has been updated since April 15. (4) If picks are being generated but not persisted: fix the write path and ensure every pick is logged with: timestamp, sport, event, pick_description, odds, stake_amount, bet_id (if placed), and a settlement_outcome field (initially NULL, to be updated on resolution). (5) If Oracle is not generating picks due to a scheduling or API failure: identify the error, fix the root cause, and run a manual pick generation cycle to confirm it works end-to-end. (6) Add a dead-man's-switch alert: if Oracle has not generated at least one pick in any rolling 7-day window, send a log-level WARNING to jcf-hq. Verify by running Oracle manually and confirming a pick appears in the data store.",
-      "estimated_impact": "Restoring Oracle's pick generation and logging pipeline enables the 20-pick minimum evaluation threshold to be reached within 3-4 weeks assuming normal betting activity. Without this fix, Oracle's $500 bankroll sits idle indefinitely with zero performance accountability."
+      "root_cause": "Validator states Edge cannot be assessed due to missing current portfolio synchronization and closed\u2011trade logging; the balance shown is not actionable.",
+      "fix_prompt": "1. Pull the latest portfolio state from the broker API and write to /mnt/data/edge/edge_portfolio.json. 2. Ensure the trade logging pipeline is active: verify that /mnt/data/edge/trades.log is being appended to by the Edge runner. 3. Run the synchronization script: python3 /mnt/data/edge/sync_portfolio.py --broker oanda --output /mnt/data/edge/edge_portfolio.json. 4. Confirm edge_portfolio.json timestamp is within the last hour and contains non\u2011zero positions or cash. 5. Restart Edge service: systemctl start edge.",
+      "estimated_impact": "Provides Edge with current, tradable capital and accurate P&L tracking, allowing the agent to resume trading and receive a proper Norman verdict instead of NO_DATA."
     },
     {
-      "problem": "Edge aggregate P&L is -$19 on 32 historical trades (25% WR) but recent 5-trade window shows PF 2.0 and positive P&L \u2014 individual trade P&L logging is absent, making the discrepancy unresolvable. Norman WARNING flagged.",
+      "problem": "Chad shows STALE_DATA on only 6 usable trades, preventing grading.",
       "severity": "high",
-      "root_cause": "Edge lacks per-trade P&L logging. Norman states: 'The gap between aggregate history and recent window data cannot be resolved without complete records.' Current snapshot shows Edge at $5,000 balance with $0.00 P&L and 0 trades \u2014 either the agent is truly inactive or the logging gap has widened further. The 1H strategy rebuild referenced by Norman is the current strategy, but without individual trade records, there is no way to confirm whether the positive recent window was real or an artifact of incomplete data.",
-      "fix_prompt": "Open the Edge agent source code \u2014 check /home/jase/jcf/edge/ or the edge service directory. The edge systemctl service is active. Do the following: (1) Audit the current trade logging implementation. Identify exactly what is written per trade and where \u2014 check for a trades log file, SQLite database, or API endpoint. (2) Verify whether the current 1H strategy is actually executing \u2014 check Edge's scheduler and confirm it is scanning for setups. Run: sudo journalctl -u edge --since '2026-05-01' | tail -200 to see recent activity. If Edge has been running for 30 days with zero trades, there is either a signal generation failure or a trade execution gate that is preventing entry. (3) If trade logging is incomplete: implement a mandatory per-trade log entry that captures \u2014 trade_id, timestamp_open, timestamp_close, symbol, direction (long/short), entry_price, exit_price, stop_loss, take_profit, position_size, gross_pnl, commission, net_pnl, strategy_version. Write this to a persistent store (SQLite preferred). (4) Add an execution audit: log every time a signal is generated, whether it passed all entry filters, and if not, why it was rejected. This resolves the 'signal exists but no trade' ambiguity. (5) Backfill what is recoverable from broker API \u2014 query the TradeLocker or broker API for Edge's historical fills to reconstruct the missing trade record. (6) Set a minimum trade activity alert: if Edge service is active but zero trades have been logged in 7 days, flag a WARNING. Verify by confirming the log file is populated after the next signal event.",
-      "estimated_impact": "Restoring individual trade logging for Edge eliminates the analytical black hole between aggregate and recent-window metrics. This unblocks Norman's ability to evaluate whether the 1H strategy has a real edge or is a small-sample artifact \u2014 which is the deciding question for whether Edge receives increased capital allocation."
+      "root_cause": "Norman\u2019s validation indicates Chad\u2019s data feed is outdated; insufficient recent trades to evaluate performance.",
+      "fix_prompt": "1. Examine the Chad data fetch script at /mnt/data/chad/fetch_data.sh and verify the API endpoint and authentication tokens. 2. Update the script to request the last 30 days of trades and write to /mnt/data/chad/chad_trades.json. 3. Run the script manually: bash /mnt/data/chad/fetch_data.sh. 4. Check that chad_trades.json now contains at least 30 trades with recent timestamps. 5. Trigger the validation runner: python3 /mnt/data/chad/run_validation.py. 6. Verify that Norman\u2019s output for Chad changes from STALE_DATA to a graded verdict (PASS/FAIL/WARN).",
+      "estimated_impact": "Restores Chad\u2019s grading capability, enabling proper oversight and potential performance improvements; expected to yield a week after fresh data is ingested."
     },
     {
-      "problem": "Tao DCA configuration exhausted \u2014 5/5 entries used, 0 remaining. No new accumulation is possible in current configuration despite TAO being above average cost basis.",
-      "severity": "medium",
-      "root_cause": "The DCA bot was configured with exactly 5 entry slots and all have been consumed. This is a configuration limit, not a failure \u2014 but it results in a fully passive position with no active management. At $252.75/TAO current price vs approximately $141.17 average cost basis (total invested $944.44 / 0.6690 TAO), the position is roughly 79% above cost. The question is whether to reset DCA for continued accumulation, take partial profits, or hold static.",
-      "fix_prompt": "Open the Tao staking/DCA configuration \u2014 check /home/jase/jcf/tao/ or wherever the DCA parameters are stored (likely a config.json, .env, or settings file). Do the following: (1) Locate the DCA entry count parameter (currently set to 5, all consumed). (2) Before reconfiguring, document the current position: 0.6690 TAO staked, $944.44 total invested, current price $252.75, current value approximately $169.09 staked (verify against actual staking dashboard \u2014 note the staking value and total portfolio value may differ from spot price due to staking mechanics). (3) Present Jase with three options to configure: OPTION A \u2014 Reset DCA with 5 new entries targeting lower price levels (e.g., $220, $200, $180, $160, $140) to average down if TAO retraces. OPTION B \u2014 Reset DCA with 3 new entries at current price range for continued accumulation ($250, $240, $230). OPTION C \u2014 Hold static, no new entries, treat position as closed accumulation. (4) Implement whichever option Jase selects by updating the DCA config and resetting the entries_used counter to 0 with the new entry_count. (5) Add a notification when DCA entries are within 1 of exhaustion so this does not happen silently again. Verify the updated config loads correctly and the bot reflects the new entry parameters on next scheduled run.",
-      "estimated_impact": "Restoring DCA entries enables continued systematic TAO accumulation with defined entry levels. If Jase selects Option A (lower entries), it provides downside averaging protection. If Option B, it continues the existing accumulation thesis. Either way, removing the exhausted-config deadlock returns active management to the position."
+      "problem": "Edge service is inactive (systemd), preventing any trading activity.",
+      "severity": "critical",
+      "root_cause": "Service status shows edge: inactive; likely stopped after a prior error or manual halt, causing the NO_DATA condition.",
+      "fix_prompt": "1. Check recent Edge logs for errors: journalctl -u edge --since '1 hour ago'. 2. If logs indicate a fixable issue (e.g., missing config), address it per the logs. 3. Start the Edge service: systemctl start edge. 4. Enable it to survive reboots: systemctl enable edge. 5. Verify service is active: systemctl status edge should show 'active (running)'. 6. Confirm Edge begins logging trades to /mnt/data/edge/trades.log within 5 minutes.",
+      "estimated_impact": "Brings Edge back online immediately; combined with the portfolio sync fix, Edge will resume live trading and begin generating P&L, eliminating downtime losses."
     }
   ],
   "_meta": {
-    "input_tokens": 3447,
-    "output_tokens": 4803,
-    "cost_usd": 0.082386,
-    "model": "claude-sonnet-4-6",
-    "timestamp": "2026-05-31T21:00:03.249879+00:00",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cost_usd": 0.0,
+    "model": "openai/gpt-5.6-terra",
+    "timestamp": "2026-07-27T18:21:59.801480+00:00",
     "api_costs": {
-      "total_today": 0.0,
-      "total_mtd": 11.837881,
+      "total_today": 0.428907,
+      "total_mtd": 1.572888,
       "per_agent": {
         "forge": {
           "today": 0.0,
@@ -95,15 +88,15 @@
         },
         "jerry": {
           "today": 0.0,
-          "mtd": 9.745204
-        },
-        "kalshi": {
-          "today": 0.0,
-          "mtd": 0.0
+          "mtd": 0.730452
         },
         "lens": {
+          "today": 0.428907,
+          "mtd": 0.842436
+        },
+        "lens_validation": {
           "today": 0.0,
-          "mtd": 1.651143
+          "mtd": 0.0
         },
         "lucy": {
           "today": 0.0,
@@ -127,19 +120,30 @@
         },
         "victoria": {
           "today": 0.0,
-          "mtd": 0.441534
+          "mtd": 0.0
+        },
+        "victoria_validation": {
+          "today": 0.0,
+          "mtd": 0.0
         }
       }
     },
     "svc_statuses": {
-      "edge": "active",
-      "crisp-v5": "failed",
-      "kalshi-bot": "active",
+      "edge": "inactive",
+      "crisp-v5": "inactive",
       "jcf-hq": "active",
       "hq-storage": "active"
     },
-    "norman_available": true,
-    "norman_date": "2026-04-15",
+    "validation_sources": {
+      "lens_validation": {
+        "available": true,
+        "date": "2026-07-27"
+      },
+      "victoria_validation": {
+        "available": true,
+        "date": "2026-07-27"
+      }
+    },
     "fix_prompts_count": 5
   }
 }
