@@ -4,6 +4,56 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Jerry's P&L: record the broker's fill, never a fabricated zero · 2026-07-27
+**Decision:** Source both entry and exit prices from Alpaca's own fill record,
+and write `pnl=None` + `pnl_status=UNVERIFIED_*` whenever a fill can't be
+established — never `0.0`.
+
+**Why:** The reported bug was "all 90 closed trades record `pnl: 0.0`". It was
+actually three defects stacked. The close path computed P&L only inside
+`if symbol not in positions:`, checked microseconds after submitting a market
+close order — Alpaca still lists the position until it fills, so it never ran.
+Bracket SL/TP orders fill server-side and never called the close path at all.
+And entry price was the pre-trade *snapshot* rather than the fill, wrong on 119
+of 126 records and understating cost basis ~$5.1k — meaning even a correct
+close computation would have produced wrong numbers. Fixing only the reported
+symptom would have produced confident, wrong P&L, which is worse than the
+obvious zeros: a visibly broken feed gets refused by the validator, a subtly
+wrong one gets graded.
+
+The `None`-not-`0.0` choice is the same principle as the 2026-07-25 NO_DATA
+call, moved upstream. An unverified close counted as a $0 trade is a phantom
+breakeven — it drags win rate, expectancy and Sharpe toward zero while looking
+like real data. Rule #9 belongs at the write side, not only at the grading side.
+
+**Also settled:** options are ×100 (per-share premium × 100 shares/contract),
+verified against Alpaca's `cost_basis` and against implied starting equity,
+which resolves to the documented $100k start only with the multiplier applied.
+
+**Result:** History backfilled from the FILL activity feed — entries corrected
+exactly by order id, exits matched lot-level FIFO, reconciling to broker cash
+flows within **$0.04**. Victoria grades Jerry for the first time: FAIL, 116
+trades, WR 35.3%, PF 0.972, net -$599.29. A real verdict on real data.
+
+**Links:** [[../agents/jerry]] · [[../agents/victoria]] · [[../sessions/2026-07-27]]
+
+---
+
+## Consolidation cron lines approved and activated · 2026-07-27
+**Decision:** Activated the four `#HOLD PENDING-APPROVAL` lines from the
+2026-07-25 consolidation at Jase's sign-off — 2× Lens regime brief, Lens
+validates Blade+Edge, Victoria validates Jerry+Chad.
+
+**Why:** They were built and manually tested on 07-25 but deliberately left
+unscheduled pending review, so that nothing started running on a schedule
+without an explicit decision. Scripts were re-checked (shell syntax + Python
+targets present) and the crontab backed up before the edit. Active non-comment
+lines 18 → 22. Lucy's scouting desk stays default OFF — unchanged by this.
+
+**Links:** [[../sessions/2026-07-27]] · [[../sessions/2026-07-25]]
+
+---
+
 ## Reporting layer consolidated: Jarvis, Norman, Lucy retired · 2026-07-25
 **Decision:** Retired three reporting agents and split their functions across the
 two that already run. **Lens** absorbed Jarvis's regime engine plus risk

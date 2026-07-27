@@ -43,10 +43,9 @@ remembering — write it down here.
 are RETIRED**, their functions absorbed by Lens and Victoria (see §3b). Live on
 cron: **Lens** (daily thesis), **Victoria** (daily+weekly), **Sentinel** (3×),
 plus the Drive-sync, agent-PnL, TradeLocker sync, dashboard mirror, API-cost,
-and **Kraken** syncs. **Tao** — all 5 jobs held. The four NEW consolidation cron
-lines (2 Lens regime briefings, 2 weekly validations) are **built, manually
-tested, and `#HOLD PENDING-APPROVAL`'d** — nothing is scheduled until Jase
-signs off. **Blade is now HELD** (all 3 sessions +
+and **Kraken** syncs. **Tao** — all 5 jobs held. The four consolidation cron
+lines (2 Lens regime briefings, 2 weekly validations) were **approved and
+activated 2026-07-27** — they are LIVE. **Blade is now HELD** (all 3 sessions +
 session support — prep pings + end reports — `#HOLD`'d at Jase's direction:
 no live strategy yet, so no reason to run paper sessions). It's code-ready to
 resume the moment it's un-held (OANDA auth restored same day). **Held:** **Jerry** (migrated to Codex 2026-07-24 but `jerry.service`
@@ -157,7 +156,22 @@ the Anthropic SDK 2026-07-24). Trade execution is deterministic Alpaca REST.
 - 20:30 — daily review
 - ~$25K safety floor (pauses if portfolio drops below 25% of starting)
 **Schedule:** Always-on via `jerry.service` (systemd).
-**Status:** Active, paper trading.
+**Status:** Paper trading; `jerry.service` still held pending go-ahead.
+
+**P&L pipeline (fixed 2026-07-27).** Entry and exit prices both come from the
+broker's fill record — `_resolve_order_fill()` polls the order and reads
+`filled_avg_price` (already VWAP across partial fills). Never from a live
+snapshot, and never defaulted to `0.0`:
+- `pnl_status` on every trade: `OPEN` → `VERIFIED`, or `UNVERIFIED_*` when a
+  fill can't be established. Downstream validators skip `pnl=None` rather than
+  counting a phantom breakeven.
+- `entry_source` / `exit_source` record where each price came from.
+- `reconcile_closed_positions()` runs at the top of every tick to close out
+  positions the broker exited server-side via bracket SL/TP — those never reach
+  `close_position()` and previously stayed `open` forever.
+- Options are ×100 (per-share premium × 100 shares/contract). `_compute_pnl()`
+  applies the multiplier off `asset_type`.
+
 **Key files:**
 - `agents/jerry/jerry_main.py` / `jerry_trader.py` / `jerry_discover.py`
 - `agents/jerry/jerry_context.py` — reads Lens/Jarvis/Norman before every entry
@@ -707,11 +721,11 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 #HOLD RETIRED 0  12 * * 1-5    strategist/run_research.sh    # -> lens/run_lens_regime.sh
 #HOLD RETIRED 0  8  * * 6      strategist/deep_backtest.py   # now imports lens_regime.py
 
-# ── CONSOLIDATION 2026-07-25 — built + tested, ALL HELD PENDING APPROVAL
-#HOLD PENDING-APPROVAL 0  6  * * 1-5   lens/run_lens_regime.sh      # pre-London regime brief
-#HOLD PENDING-APPROVAL 0  12 * * 1-5   lens/run_lens_regime.sh      # pre-NY regime brief
-#HOLD PENDING-APPROVAL 0 12,13 * * 0   [ET==08:00] lens/run_lens_validation.sh      # Lens validates Blade+Edge
-#HOLD PENDING-APPROVAL 0 12,13 * * 0   [ET==08:00] victoria/run_victoria_validation.sh  # Victoria validates Jerry+Chad
+# ── CONSOLIDATION 2026-07-25 — ✅ APPROVED + ACTIVATED 2026-07-27 by Jase
+0  6  * * 1-5   lens/run_lens_regime.sh      # pre-London regime brief
+0  12 * * 1-5   lens/run_lens_regime.sh      # pre-NY regime brief
+0 12,13 * * 0   [ET==08:00] lens/run_lens_validation.sh      # Lens validates Blade+Edge
+0 12,13 * * 0   [ET==08:00] victoria/run_victoria_validation.sh  # Victoria validates Jerry+Chad
 
 # ── Session prep pings (Huncho voice + auto 4H chart reads) — HELD 2026-07-24 with Blade
 #HOLD 40 23 * * 1-5    session_prep_ping.sh ASIA            # 10 min before ASIA
@@ -838,6 +852,9 @@ All times UTC unless noted. Mon–Fri = weekdays only.
 
 | Decision | Date | Why |
 |---|---|---|
+| **Consolidation crons approved + activated** | 2026-07-27 | The four `#HOLD PENDING-APPROVAL` lines from the 2026-07-25 consolidation (2× Lens regime brief, Lens validates Blade+Edge, Victoria validates Jerry+Chad) went live at Jase's sign-off. Active non-comment cron lines 18 → 22. Pre-approval crontab backed up before the edit. |
+| **Jerry P&L: three defects, not one — now sourced from broker fills** | 2026-07-27 | The reported bug ("pnl 0.0 on every close") was the visible third of a broken pipeline. (1) `_mark_closed` computed P&L only inside `if symbol not in positions:`, evaluated microseconds after submitting a market close order — Alpaca still lists the position until it fills, so the branch never ran. (2) Bracket SL/TP orders fill server-side and never called the close path at all, so those trades stayed `open` locally forever. (3) Entry price was the **pre-trade snapshot**, not the fill — wrong on 119 of 126 records, understating cost basis by ~$5.1k, so even a correct close computation would have produced wrong P&L. All three fixed: entry and exit prices now come from the broker's own fill record (`filled_avg_price`, VWAP across partials), with a `reconcile_closed_positions()` pass for server-side exits. Unresolvable fills record `pnl=None` + `pnl_status=UNVERIFIED_*`, never a fake $0 (Rule #9). |
+| **Jerry history backfilled from the broker fill feed** | 2026-07-27 | Leaving 90 fabricated `0.0` values in place would have kept feeding a false record into Victoria's validator. Rebuilt from Alpaca's FILL activity feed: entry prices corrected exactly by order id, exits matched lot-level FIFO. Reconciles to broker cash flows within **$0.04** across the book. 116 records now carry real P&L; 3 that could not be tied to a fill are `UNVERIFIED_NO_ENTRY_FILL`. Jerry is gradeable for the first time — Victoria returns **FAIL** (116 trades, WR 35.3%, PF 0.972, net -$599.29), a real verdict on real data instead of NO_DATA on zeros. Note: options settle ×100 (per-share premium × 100 shares/contract) — verified against Alpaca `cost_basis` and against implied starting equity, which lands on $100k only with the multiplier applied. |
 | **Reporting-layer consolidation: Jarvis/Norman/Lucy retired** | 2026-07-25 | Three reporting agents to maintain, three cron slots, three voices — for functions that map cleanly onto two agents that already run. Lens absorbed regime + Blade/Edge validation; Victoria absorbed scouting + Jerry/Chad validation. Trading infra untouched. Two premises in the brief were wrong and are corrected here: Blade has no "strategy mode selector" (it reads `strategy_recommendation.json` for observation only, and 5 consumers read that file, not 1), and the Multi-Timeframe Convergence Score had already been deleted in the 2026-06-01 trim — it was rebuilt from Jarvis's four documented components, with new weights, stated openly. |
 | **Norman's gate: one implementation, imported twice** | 2026-07-25 | The brief said duplicate the pipeline into both agents. Duplicating a *safety rail* is how rails drift — a fix to one copy silently leaves the other broken, which is the same class of failure as the stale-feed bugs. `scripts/risk_validation.py` holds the gate once; both validators import it and each is tested independently (`--test-gate`, 4 rogue-synthesis cases). |
 | **All-zero P&L treated as NO_DATA, not a grade** | 2026-07-25 | Bringing Jerry under validation exposed that all 90 of his closed trades carry `pnl: 0.0` — the field is never written on close. Without a guard that sample clears the 20-trade gate and grades FAIL (0% WR, PF 0, Sharpe 0): a real-looking verdict on a feed that reported nothing. Extends Rule #9 ("an empty success is not a verified zero") into the validator. Fixing `jerry_trader.py`'s close path is a separate task. |

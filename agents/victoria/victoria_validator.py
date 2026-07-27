@@ -24,8 +24,9 @@ The gate, preserved exactly as fixed on 2026-07-25:
 
 ⚠️  COVERAGE NOTE — Jerry is NEW to validation.
     Norman never validated Jerry; he covered blade / crisp / edge only. Jerry's
-    loader below is new code, not a port. His P&L feed is currently unpopulated
-    (see _load_jerry_trades) and the pipeline correctly refuses to grade it.
+    loader below is new code, not a port. His P&L feed was unpopulated until
+    2026-07-27, when jerry_trader.py's close path was fixed and the history
+    backfilled from the broker fill record — Jerry is now gradeable.
 
 Modes:
     python3 victoria_validator.py --weekly          # full weekly + synthesis
@@ -244,14 +245,15 @@ def _load_jerry_trades() -> tuple[list[dict], object]:
     file is a flat LIST of position dicts (not {'trades': [...]}) with
     status/pnl/closed_at fields.
 
-    ⚠️  KNOWN DATA GAP (2026-07-25): every one of Jerry's 90 closed positions
-    carries `pnl: 0.0`. The field is written at open and never updated on
-    close, so realised P&L is not recorded anywhere in this file. The shared
-    validator detects the all-zero column and returns NO_DATA rather than
-    grading it FAIL off a feed that reported nothing (CLAUDE.md Rule #9 — an
-    empty success is not a verified zero). Fixing jerry_trader.py's close path
-    to write realised P&L is a separate task; until then Jerry is correctly
-    ungradeable, and the report says exactly why.
+    ✅ DATA GAP CLOSED (2026-07-27). Previously every one of Jerry's 90 closed
+    positions carried `pnl: 0.0` — written at open, never updated on close — so
+    the shared validator correctly returned NO_DATA rather than grading a feed
+    that reported nothing (CLAUDE.md Rule #9). jerry_trader.py's close path now
+    records realised P&L from the broker's own fill record, and the history was
+    backfilled from Alpaca's FILL activity feed (reconciles to broker cash flows
+    within $0.04). Records that could not be tied to a real fill carry
+    pnl=None + pnl_status=UNVERIFIED_* and are skipped below — never counted as
+    a $0 trade, which would silently drag win rate and expectancy toward zero.
     """
     try:
         with open(JERRY_TRADES_PATH) as f:

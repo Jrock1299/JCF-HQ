@@ -316,6 +316,14 @@ def _manage_positions(watchlist: list) -> None:
     Review open positions. Close any that hit manual SL/TP thresholds
     (backup to bracket orders). Also enforce time stops from watchlist.
     """
+    # Bracket SL/TP orders fill server-side, so those exits never reach
+    # close_position() and would otherwise stay 'open' locally forever with no
+    # P&L. Reconcile against the broker before managing anything.
+    try:
+        _trader.reconcile_closed_positions()
+    except Exception as e:
+        log.error('position reconcile failed: %s', e)
+
     positions = _trader.get_positions()
     if not positions:
         return

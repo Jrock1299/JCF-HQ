@@ -8,6 +8,7 @@ Paper trading only — uses paper-api.alpaca.markets.
 
 import json
 import sys
+import time
 import requests
 import os
 from datetime import datetime, timezone
@@ -128,12 +129,24 @@ class JerryTrader:
             log.info('BUY %s x%d @ ~$%.2f | SL=%.2f TP=%.2f | %s',
                      symbol, qty, price, stop_loss or 0, take_profit or 0, strategy_name)
 
-            actual_price = price
+            # Record the BROKER's fill, not the pre-trade snapshot. The snapshot
+            # is an estimate taken before submission; using it as cost basis
+            # understated the book by ~$5.1k across 119 of 126 historical entries
+            # and made every downstream P&L wrong even once the close path worked.
+            fill_price, fill_qty = self._resolve_order_fill(getattr(order, 'id', None))
+            if fill_price is not None:
+                actual_price, entry_source = fill_price, 'order_fill'
+                if fill_qty:
+                    qty = int(fill_qty)
+            else:
+                actual_price, entry_source = price, 'pre_trade_snapshot'
+                log.warning('%s entry fill unresolved — cost basis is an estimate', symbol)
+
             trade = self._log_trade(
                 symbol=symbol, action='buy', qty=qty, price=actual_price,
                 notional=notional, stop_loss=stop_loss, take_profit=take_profit,
                 strategy_name=strategy_name, thesis=thesis, order_id=order.id,
-                asset_type='stock',
+                asset_type='stock', entry_source=entry_source,
             )
 
             self._notify_entry(trade)
@@ -159,7 +172,8 @@ class JerryTrader:
                     time_in_force='day',
                 )
             log.info('SELL %s qty=%s reason=%s', symbol, qty or 'all', reason)
-            self._mark_closed(symbol, reason)
+            self._mark_closed(symbol, reason,
+                              close_order_id=getattr(order, 'id', None))
             return {'symbol': symbol, 'action': 'sell', 'reason': reason}
         except Exception as e:
             log.error('sell_stock %s error: %s', symbol, e)
@@ -196,11 +210,20 @@ class JerryTrader:
 
             log.info('SHORT %s x%d @ ~$%.2f | %s', symbol, qty, price, strategy_name)
 
+            fill_price, fill_qty = self._resolve_order_fill(getattr(order, 'id', None))
+            if fill_price is not None:
+                entry_price, entry_source = fill_price, 'order_fill'
+                if fill_qty:
+                    qty = int(fill_qty)
+            else:
+                entry_price, entry_source = price, 'pre_trade_snapshot'
+                log.warning('%s short entry fill unresolved — cost basis is an estimate', symbol)
+
             trade = self._log_trade(
-                symbol=symbol, action='short', qty=qty, price=price,
+                symbol=symbol, action='short', qty=qty, price=entry_price,
                 notional=notional, stop_loss=stop_loss, take_profit=take_profit,
                 strategy_name=strategy_name, thesis=thesis, order_id=order.id,
-                asset_type='stock',
+                asset_type='stock', entry_source=entry_source,
             )
             self._notify_entry(trade)
             return trade
@@ -211,9 +234,10 @@ class JerryTrader:
 
     def close_position(self, symbol: str, reason: str = 'manual') -> None:
         try:
-            self._api.close_position(symbol)
+            order = self._api.close_position(symbol)
             log.info('Closed position: %s | reason: %s', symbol, reason)
-            self._mark_closed(symbol, reason)
+            self._mark_closed(symbol, reason,
+                              close_order_id=getattr(order, 'id', None))
         except Exception as e:
             log.error('close_position %s error: %s', symbol, e)
 
@@ -237,10 +261,18 @@ class JerryTrader:
             )
             log.info('BUY OPTION %s x%d | %s', occ_symbol, qty, strategy_name)
 
+            # Options were previously logged at price=0, leaving no cost basis —
+            # their P&L was unrecoverable even in principle.
+            fill_price, _ = self._resolve_order_fill(getattr(order, 'id', None))
+            entry_source = 'order_fill' if fill_price is not None else 'unresolved'
+            if fill_price is None:
+                log.warning('%s option entry fill unresolved — no cost basis', occ_symbol)
+
             trade = self._log_trade(
-                symbol=occ_symbol, action='buy_option', qty=qty, price=0,
+                symbol=occ_symbol, action='buy_option', qty=qty,
+                price=fill_price if fill_price is not None else 0,
                 strategy_name=strategy_name, thesis=thesis, order_id=order.id,
-                asset_type='option',
+                asset_type='option', entry_source=entry_source,
             )
             self._notify_entry(trade)
             return trade
@@ -265,10 +297,16 @@ class JerryTrader:
             )
             log.info('SELL OPTION %s x%d | %s', occ_symbol, qty, strategy_name)
 
+            fill_price, _ = self._resolve_order_fill(getattr(order, 'id', None))
+            entry_source = 'order_fill' if fill_price is not None else 'unresolved'
+            if fill_price is None:
+                log.warning('%s option entry fill unresolved — no cost basis', occ_symbol)
+
             trade = self._log_trade(
-                symbol=occ_symbol, action='sell_option', qty=qty, price=0,
+                symbol=occ_symbol, action='sell_option', qty=qty,
+                price=fill_price if fill_price is not None else 0,
                 strategy_name=strategy_name, thesis=thesis, order_id=order.id,
-                asset_type='option',
+                asset_type='option', entry_source=entry_source,
             )
             self._notify_entry(trade)
             return trade
@@ -417,7 +455,8 @@ class JerryTrader:
                    price: float, strategy_name: str = '',
                    thesis: str = '', notional: float = 0,
                    stop_loss: float = None, take_profit: float = None,
-                   order_id: str = '', asset_type: str = 'stock') -> dict:
+                   order_id: str = '', asset_type: str = 'stock',
+                   entry_source: str = 'pre_trade_snapshot') -> dict:
         # Phase 1: stamp team-context onto the trade. Observation only — no gating.
         try:
             ctx = load_context()
@@ -439,7 +478,9 @@ class JerryTrader:
             'strategy_name':  strategy_name,
             'thesis':         thesis,
             'status':         'open',
-            'pnl':            0.0,
+            'pnl':            None,          # unknown until close; never a fake 0
+            'pnl_status':     'OPEN',
+            'entry_source':   entry_source,
             'opened_at':      datetime.now(timezone.utc).isoformat(),
             'closed_at':      None,
             'close_reason':   None,
@@ -452,46 +493,200 @@ class JerryTrader:
         save_json(TRADE_HISTORY_PATH, history)
         return trade
 
-    def _mark_closed(self, symbol: str, reason: str) -> None:
-        """Mark the most recent open trade for a symbol as closed."""
+    # ── Fill resolution (authoritative exit price) ────────────────────────────
+    #
+    # Why this exists: the previous close path computed P&L only inside
+    # `if symbol not in positions:` — evaluated microseconds after submitting a
+    # market close order. Alpaca still lists the position until that order
+    # fills, so the branch never ran and all 90 closed trades recorded
+    # pnl: 0.0. P&L is now taken from the broker's own fill record, never from
+    # a live snapshot, and never silently defaulted to zero (Critical Rule #9:
+    # an empty success is not a verified zero).
+
+    _FILL_POLL_ATTEMPTS = 12
+    _FILL_POLL_DELAY_S  = 0.5
+
+    def _resolve_order_fill(self, order_id: str) -> tuple[float | None, float | None]:
+        """Poll an order to a terminal state and return (avg_fill_price, filled_qty).
+
+        Returns (None, None) if the order never reached a verifiable fill —
+        the caller must then record the close as UNVERIFIED rather than $0.
+        """
+        if not order_id:
+            return None, None
+        terminal = {'filled', 'canceled', 'expired', 'rejected', 'done_for_day'}
+        for _ in range(self._FILL_POLL_ATTEMPTS):
+            try:
+                o = self._api.get_order(order_id)
+            except Exception as e:
+                log.warning('get_order %s failed: %s', order_id, e)
+                return None, None
+            status     = (getattr(o, 'status', '') or '').lower()
+            filled_qty = float(getattr(o, 'filled_qty', 0) or 0)
+            avg        = getattr(o, 'filled_avg_price', None)
+            if status in terminal:
+                # filled_avg_price is already VWAP across partial fills.
+                # Terminal with nothing filled (canceled/rejected) is unverifiable.
+                if filled_qty > 0 and avg is not None:
+                    return float(avg), filled_qty
+                return None, None
+            time.sleep(self._FILL_POLL_DELAY_S)
+        log.warning('order %s did not reach terminal state within %.1fs',
+                    order_id, self._FILL_POLL_ATTEMPTS * self._FILL_POLL_DELAY_S)
+        return None, None
+
+    def _exit_from_activities(self, symbol: str, after_iso: str | None = None
+                              ) -> tuple[float | None, float | None, str | None]:
+        """Fall back to the broker FILL activity feed for a closing fill.
+
+        Used when a position was closed server-side (bracket SL/TP) so no local
+        close order id exists. Returns (vwap, qty, transaction_time_iso).
+        """
+        try:
+            acts = self._api.get_activities(activity_types='FILL')
+        except Exception as e:
+            log.warning('get_activities failed for %s: %s', symbol, e)
+            return None, None, None
+        notional = qty_tot = 0.0
+        latest_ts = None
+        target_order = None
+        for a in acts:                      # newest first
+            if getattr(a, 'symbol', None) != symbol:
+                continue
+            side = (getattr(a, 'side', '') or '').lower()
+            if not side.startswith('sell'):
+                continue
+            ts = getattr(a, 'transaction_time', None)
+            if after_iso and ts is not None and str(ts) <= after_iso:
+                continue
+            oid = getattr(a, 'order_id', None)
+            if target_order is None:
+                target_order = oid          # aggregate only the newest close order
+                latest_ts = ts
+            if oid != target_order:
+                break
+            q = float(getattr(a, 'qty', 0) or 0)
+            p = float(getattr(a, 'price', 0) or 0)
+            notional += q * p
+            qty_tot  += q
+        if qty_tot <= 0:
+            return None, None, None
+        return round(notional / qty_tot, 4), qty_tot, (str(latest_ts) if latest_ts else None)
+
+    @staticmethod
+    def _compute_pnl(action: str, entry: float, exit_price: float,
+                     qty: float, asset_type: str) -> float | None:
+        """Realized P&L in dollars, or None if the direction is unmapped."""
+        mult = 100.0 if asset_type == 'option' else 1.0   # options are per-100-share contracts
+        a = (action or '').lower()
+        if a in ('buy', 'buy_option'):
+            return round((exit_price - entry) * qty * mult, 2)
+        if a in ('short', 'sell_option'):
+            return round((entry - exit_price) * qty * mult, 2)
+        return None
+
+    def _mark_closed(self, symbol: str, reason: str,
+                     close_order_id: str | None = None) -> None:
+        """Mark the most recent open trade for a symbol as closed, with real P&L.
+
+        P&L comes from the broker's fill record for the closing order. If that
+        cannot be established the trade is recorded with pnl=None and an
+        explicit pnl_status, so downstream validators refuse to grade it rather
+        than reading a fabricated $0.
+        """
         history = load_json(TRADE_HISTORY_PATH, [])
         if not isinstance(history, list):
             return
         now = datetime.now(timezone.utc).isoformat()
-        closed_trade = None
-        exit_price   = 0.0
-        for trade in reversed(history):
-            if trade.get('symbol') == symbol and trade.get('status') == 'open':
-                entry = float(trade.get('price', 0))
-                exit_price = entry
-                try:
-                    positions = {p['symbol']: p for p in self.get_positions()}
-                    if symbol not in positions:
-                        snap = self.get_snapshot(symbol)
-                        current = snap.get('price', entry)
-                        exit_price = current or entry
-                        qty = float(trade.get('qty', 0))
-                        if trade.get('action') in ('buy',):
-                            trade['pnl'] = round((current - entry) * qty, 2)
-                        elif trade.get('action') == 'short':
-                            trade['pnl'] = round((entry - current) * qty, 2)
-                except Exception:
-                    pass
-                trade['status']       = 'closed'
-                trade['closed_at']    = now
-                trade['close_reason'] = reason
-                closed_trade = trade
+
+        trade = None
+        for t in reversed(history):
+            if t.get('symbol') == symbol and t.get('status') == 'open':
+                trade = t
                 break
+        if trade is None:
+            log.warning('_mark_closed: no open trade found for %s', symbol)
+            return
+
+        entry      = float(trade.get('price', 0) or 0)
+        qty        = float(trade.get('qty', 0) or 0)
+        asset_type = trade.get('asset_type', 'stock')
+
+        # 1) Preferred: the close order we just submitted.
+        exit_price, filled_qty = self._resolve_order_fill(close_order_id)
+        exit_source = 'close_order_fill' if exit_price is not None else None
+
+        # 2) Fallback: broker FILL activity feed (server-side bracket exits).
+        if exit_price is None:
+            exit_price, filled_qty, _ = self._exit_from_activities(
+                symbol, after_iso=trade.get('opened_at'))
+            if exit_price is not None:
+                exit_source = 'fill_activity'
+
+        pnl = None
+        if exit_price is None:
+            pnl_status = 'UNVERIFIED_NO_EXIT_FILL'
+        elif entry <= 0:
+            # Options are logged at price=0 on entry — no cost basis to work from.
+            pnl_status = 'UNVERIFIED_NO_ENTRY_PRICE'
+        else:
+            eff_qty = filled_qty if filled_qty else qty
+            pnl = self._compute_pnl(trade.get('action'), entry, exit_price,
+                                    eff_qty, asset_type)
+            pnl_status = 'VERIFIED' if pnl is not None else 'UNVERIFIED_UNMAPPED_ACTION'
+
+        trade['status']       = 'closed'
+        trade['closed_at']    = now
+        trade['close_reason'] = reason
+        trade['pnl']          = pnl
+        trade['pnl_status']   = pnl_status
+        trade['exit_price']   = exit_price
+        trade['exit_source']  = exit_source
+
         save_json(TRADE_HISTORY_PATH, history)
-        if closed_trade:
-            try:
-                self._notify_exit(closed_trade, exit_price)
-            except Exception as e:
-                log.error('exit notify error: %s', e)
-            try:
-                self._append_learning_log(closed_trade, exit_price, reason)
-            except Exception as e:
-                log.warning('learning-log append failed: %s', e)
+        log.info('CLOSED %s | entry=%s exit=%s qty=%s -> pnl=%s (%s)',
+                 symbol, entry, exit_price, qty, pnl, pnl_status)
+
+        try:
+            self._notify_exit(trade, exit_price)
+        except Exception as e:
+            log.error('exit notify error: %s', e)
+        try:
+            self._append_learning_log(trade, exit_price, reason)
+        except Exception as e:
+            log.warning('learning-log append failed: %s', e)
+
+    def reconcile_closed_positions(self) -> list[dict]:
+        """Close out trades the broker has already exited (bracket SL/TP fills).
+
+        Bracket stop/target orders fill server-side, so `_mark_closed` is never
+        called for them and the local record stays 'open' forever. Called at the
+        start of each trading tick; safe to run repeatedly.
+        """
+        history = load_json(TRADE_HISTORY_PATH, [])
+        if not isinstance(history, list):
+            return []
+        try:
+            broker_open = {p['symbol'] for p in self.get_positions()}
+        except Exception as e:
+            log.error('reconcile: cannot read broker positions: %s', e)
+            return []          # never reconcile against a failed read (Rule #9)
+
+        stale = {t.get('symbol') for t in history
+                 if t.get('status') == 'open' and t.get('symbol') not in broker_open}
+        closed = []
+        for symbol in sorted(s for s in stale if s):
+            before = sum(1 for t in history if t.get('symbol') == symbol
+                         and t.get('status') == 'open')
+            for _ in range(before):
+                self._mark_closed(symbol, reason='broker_exit_reconciled')
+            closed.append({'symbol': symbol, 'records': before})
+            history = load_json(TRADE_HISTORY_PATH, [])
+        if closed:
+            log.info('reconciled %d broker-side exits: %s',
+                     sum(c['records'] for c in closed),
+                     ', '.join(c['symbol'] for c in closed))
+        return closed
 
     @staticmethod
     def _append_learning_log(trade: dict, exit_price: float, reason: str) -> None:
@@ -576,13 +771,14 @@ class JerryTrader:
         ]
         send_telegram('\n'.join(lines))
 
-    def _notify_exit(self, trade: dict, exit_price: float) -> None:
+    def _notify_exit(self, trade: dict, exit_price: float | None) -> None:
         if not trade:
             return
         balance = self.get_balance()
         sym     = trade.get('symbol', '?')
         qty     = trade.get('qty', 0)
         is_opt  = trade.get('asset_type') == 'option'
+        entry   = float(trade.get('price', 0) or 0)
 
         # Closing a long = SELL, closing a short = BUY. Direction = original position side.
         _, direction = self._fill_side_and_direction(trade.get('action', ''))
@@ -590,12 +786,21 @@ class JerryTrader:
         size_str = (f"{int(qty)} contracts" if is_opt
                     else f"{int(qty)} shares")
 
+        pnl = trade.get('pnl')
+        if pnl is None:
+            pnl_line = f"P&L: unverified ({trade.get('pnl_status', 'unknown')})"
+        else:
+            pct = (pnl / (entry * qty * (100 if is_opt else 1)) * 100) if entry and qty else 0.0
+            pnl_line = f"P&L: {'+' if pnl >= 0 else '-'}${abs(pnl):,.2f} ({pct:+.2f}%)"
+
         lines = [
             f"🤖 JERRY — {side} {sym}",
             f"Type: {'Option' if is_opt else 'Stock'}",
             f"Direction: {direction}",
             f"Size: {size_str}",
-            f"Entry: ${exit_price:.2f}",
+            f"Entry: ${entry:.2f}",
+            f"Exit: {f'${exit_price:.2f}' if exit_price is not None else 'unverified'}",
+            pnl_line,
             f"Strategy signal: {trade.get('close_reason') or 'HOLD_MANAGE'}",
             f"Account balance: ${balance:,.2f}",
         ]
