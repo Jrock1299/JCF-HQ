@@ -1,0 +1,2405 @@
+{
+  "schema": "jcf.strategy_library/v1",
+  "updated_at": "2026-07-27T19:21:33.275003+00:00",
+  "written_by": "lens (ict_research.py)",
+  "readers": [
+    "blade",
+    "edge",
+    "jerry",
+    "chad"
+  ],
+  "note": "Only entries with deployable=true cleared the gate. Everything else is retained as researched-but-not-validated so the work is preserved and cannot be mistaken for approval. Jase decides what goes live; nothing here deploys itself.",
+  "validated": [],
+  "not_validated": [
+    {
+      "id": "ict.turtle_soup.DE30_EUR",
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 3282,
+      "verdict": "FAIL",
+      "why": "Ruin probability 72.1% exceeds the 10% ceiling.",
+      "stats": {
+        "win_rate": 61.7,
+        "profit_factor": 1.893,
+        "sharpe": 0.137,
+        "expectancy": 17606.66,
+        "max_drawdown_pct": 6.5,
+        "total_pnl": 57785071.61
+      },
+      "regimes": {
+        "2018": {
+          "n": 151,
+          "pnl": 5286.15,
+          "wr": 57.6
+        },
+        "2019": {
+          "n": 395,
+          "pnl": 15879.35,
+          "wr": 57.2
+        },
+        "2020": {
+          "n": 377,
+          "pnl": 53591.74,
+          "wr": 62.1
+        },
+        "2021": {
+          "n": 399,
+          "pnl": 116694.8,
+          "wr": 60.4
+        },
+        "2022": {
+          "n": 513,
+          "pnl": 576987.8,
+          "wr": 60.6
+        },
+        "2023": {
+          "n": 467,
+          "pnl": 2948349.18,
+          "wr": 66.4
+        },
+        "2024": {
+          "n": 387,
+          "pnl": 8121102.1,
+          "wr": 64.3
+        },
+        "2025": {
+          "n": 362,
+          "pnl": 22293687.55,
+          "wr": 63.8
+        },
+        "2026": {
+          "n": 231,
+          "pnl": 23653492.94,
+          "wr": 58.9
+        }
+      },
+      "rules": [
+        "1. Sweep of a 20-bar extreme that closes back inside.",
+        "2. Entry: market on close[1] confirmation of the rejection bar.",
+        "3. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "4. Target: opposing pool; RR >= 2.0.",
+        "5. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.turtle_soup.XAU_USD",
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 3678,
+      "verdict": "FAIL",
+      "why": "Ruin probability 68.0% exceeds the 10% ceiling.",
+      "stats": {
+        "win_rate": 57.9,
+        "profit_factor": 1.584,
+        "sharpe": 0.113,
+        "expectancy": 984.21,
+        "max_drawdown_pct": 5.9,
+        "total_pnl": 3619941.12
+      },
+      "regimes": {
+        "2018": {
+          "n": 217,
+          "pnl": 1227.75,
+          "wr": 51.6
+        },
+        "2019": {
+          "n": 448,
+          "pnl": 8896.48,
+          "wr": 58.3
+        },
+        "2020": {
+          "n": 447,
+          "pnl": 18998.65,
+          "wr": 60.0
+        },
+        "2021": {
+          "n": 405,
+          "pnl": 23800.04,
+          "wr": 54.6
+        },
+        "2022": {
+          "n": 474,
+          "pnl": 71784.35,
+          "wr": 55.9
+        },
+        "2023": {
+          "n": 477,
+          "pnl": 214062.7,
+          "wr": 61.0
+        },
+        "2024": {
+          "n": 515,
+          "pnl": 637355.32,
+          "wr": 60.0
+        },
+        "2025": {
+          "n": 460,
+          "pnl": 1576643.24,
+          "wr": 59.8
+        },
+        "2026": {
+          "n": 235,
+          "pnl": 1067172.59,
+          "wr": 53.6
+        }
+      },
+      "rules": [
+        "1. Sweep of a 20-bar extreme that closes back inside.",
+        "2. Entry: market on close[1] confirmation of the rejection bar.",
+        "3. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "4. Target: opposing pool; RR >= 2.0.",
+        "5. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.turtle_soup.SPX500_USD",
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 3570,
+      "verdict": "FAIL",
+      "why": "Ruin probability 74.1% exceeds the 10% ceiling.",
+      "stats": {
+        "win_rate": 58.0,
+        "profit_factor": 1.58,
+        "sharpe": 0.117,
+        "expectancy": 2532.98,
+        "max_drawdown_pct": 7.4,
+        "total_pnl": 9042740.43
+      },
+      "regimes": {
+        "2018": {
+          "n": 198,
+          "pnl": 5647.06,
+          "wr": 61.6
+        },
+        "2019": {
+          "n": 368,
+          "pnl": 10071.15,
+          "wr": 56.8
+        },
+        "2020": {
+          "n": 388,
+          "pnl": 36270.14,
+          "wr": 57.7
+        },
+        "2021": {
+          "n": 421,
+          "pnl": 72355.56,
+          "wr": 56.8
+        },
+        "2022": {
+          "n": 472,
+          "pnl": 234929.74,
+          "wr": 58.3
+        },
+        "2023": {
+          "n": 566,
+          "pnl": 831820.14,
+          "wr": 59.7
+        },
+        "2024": {
+          "n": 420,
+          "pnl": 1058401.55,
+          "wr": 55.2
+        },
+        "2025": {
+          "n": 476,
+          "pnl": 3931995.62,
+          "wr": 60.5
+        },
+        "2026": {
+          "n": 261,
+          "pnl": 2861249.47,
+          "wr": 55.6
+        }
+      },
+      "rules": [
+        "1. Sweep of a 20-bar extreme that closes back inside.",
+        "2. Entry: market on close[1] confirmation of the rejection bar.",
+        "3. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "4. Target: opposing pool; RR >= 2.0.",
+        "5. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.turtle_soup.CHF_JPY",
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 3232,
+      "verdict": "FAIL",
+      "why": "Ruin probability 13.4% exceeds the 10% ceiling.",
+      "stats": {
+        "win_rate": 60.8,
+        "profit_factor": 1.451,
+        "sharpe": 0.127,
+        "expectancy": 88.83,
+        "max_drawdown_pct": 10.7,
+        "total_pnl": 287098.53
+      },
+      "regimes": {
+        "2018": {
+          "n": 217,
+          "pnl": 3939.5,
+          "wr": 62.7
+        },
+        "2019": {
+          "n": 411,
+          "pnl": 5139.39,
+          "wr": 58.2
+        },
+        "2020": {
+          "n": 496,
+          "pnl": 9894.57,
+          "wr": 61.9
+        },
+        "2021": {
+          "n": 476,
+          "pnl": 15231.08,
+          "wr": 60.1
+        },
+        "2022": {
+          "n": 292,
+          "pnl": 15766.02,
+          "wr": 60.3
+        },
+        "2023": {
+          "n": 307,
+          "pnl": 31965.68,
+          "wr": 61.9
+        },
+        "2024": {
+          "n": 367,
+          "pnl": 48605.6,
+          "wr": 58.0
+        },
+        "2025": {
+          "n": 372,
+          "pnl": 82821.19,
+          "wr": 62.6
+        },
+        "2026": {
+          "n": 294,
+          "pnl": 73735.5,
+          "wr": 63.3
+        }
+      },
+      "rules": [
+        "1. Sweep of a 20-bar extreme that closes back inside.",
+        "2. Entry: market on close[1] confirmation of the rejection bar.",
+        "3. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "4. Target: opposing pool; RR >= 2.0.",
+        "5. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ifvg.DE30_EUR",
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 752,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.117 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 47.9,
+        "profit_factor": 1.286,
+        "sharpe": 0.117,
+        "expectancy": 18.22,
+        "max_drawdown_pct": 10.1,
+        "total_pnl": 13698.51
+      },
+      "regimes": {
+        "2018": {
+          "n": 31,
+          "pnl": 191.34,
+          "wr": 41.9
+        },
+        "2019": {
+          "n": 89,
+          "pnl": 591.64,
+          "wr": 47.2
+        },
+        "2020": {
+          "n": 80,
+          "pnl": 1736.9,
+          "wr": 51.2
+        },
+        "2021": {
+          "n": 93,
+          "pnl": 591.76,
+          "wr": 44.1
+        },
+        "2022": {
+          "n": 91,
+          "pnl": -148.78,
+          "wr": 40.7
+        },
+        "2023": {
+          "n": 112,
+          "pnl": 4302.97,
+          "wr": 54.5
+        },
+        "2024": {
+          "n": 102,
+          "pnl": 3748.92,
+          "wr": 52.0
+        },
+        "2025": {
+          "n": 91,
+          "pnl": 3647.16,
+          "wr": 51.6
+        },
+        "2026": {
+          "n": 63,
+          "pnl": -963.4,
+          "wr": 39.7
+        }
+      },
+      "rules": [
+        "1. Identify an FVG. 2. Price closes fully through it (close[1] beyond the far edge) \u2014 the gap is now inverted.",
+        "3. Entry: limit on the retest of the inverted zone.",
+        "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
+        "6. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_ob.XAU_USD",
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 119,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.097 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 47.9,
+        "profit_factor": 1.226,
+        "sharpe": 0.097,
+        "expectancy": 10.03,
+        "max_drawdown_pct": 7.1,
+        "total_pnl": 1193.58
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": 31.13,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 20,
+          "pnl": -116.62,
+          "wr": 45.0
+        },
+        "2020": {
+          "n": 10,
+          "pnl": -31.08,
+          "wr": 40.0
+        },
+        "2021": {
+          "n": 24,
+          "pnl": -45.33,
+          "wr": 41.7
+        },
+        "2022": {
+          "n": 18,
+          "pnl": 465.6,
+          "wr": 55.6
+        },
+        "2023": {
+          "n": 13,
+          "pnl": 783.8,
+          "wr": 69.2
+        },
+        "2024": {
+          "n": 13,
+          "pnl": -359.83,
+          "wr": 30.8
+        },
+        "2025": {
+          "n": 11,
+          "pnl": 216.33,
+          "wr": 54.5
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 249.58,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_core.XAU_USD",
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 118,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.071 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 42.4,
+        "profit_factor": 1.161,
+        "sharpe": 0.071,
+        "expectancy": 7.51,
+        "max_drawdown_pct": 11.2,
+        "total_pnl": 886.08
+      },
+      "regimes": {
+        "2018": {
+          "n": 3,
+          "pnl": -26.32,
+          "wr": 33.3
+        },
+        "2019": {
+          "n": 22,
+          "pnl": 179.34,
+          "wr": 45.5
+        },
+        "2020": {
+          "n": 14,
+          "pnl": -47.9,
+          "wr": 35.7
+        },
+        "2021": {
+          "n": 15,
+          "pnl": -718.65,
+          "wr": 20.0
+        },
+        "2022": {
+          "n": 16,
+          "pnl": 137.57,
+          "wr": 43.8
+        },
+        "2023": {
+          "n": 13,
+          "pnl": 637.08,
+          "wr": 61.5
+        },
+        "2024": {
+          "n": 13,
+          "pnl": 471.48,
+          "wr": 53.8
+        },
+        "2025": {
+          "n": 16,
+          "pnl": 49.74,
+          "wr": 37.5
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 203.74,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "1. HTF bias: H4 close[1] vs H4 EMA(50) \u2014 above = bullish, below = bearish.",
+        "2. Sweep: M15 bar takes out a confirmed swing pool and CLOSES back inside it.",
+        "3. Displacement: body >= 1.0 x ATR(14), closing in bias direction.",
+        "4. MSS: close[1] breaks the intervening swing in bias direction.",
+        "5. Entry: limit at the 50% level of the displacement-leg FVG.",
+        "6. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
+        "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_ob.SPX500_USD",
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 106,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.054 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 42.5,
+        "profit_factor": 1.122,
+        "sharpe": 0.054,
+        "expectancy": 6.12,
+        "max_drawdown_pct": 7.1,
+        "total_pnl": 649.09
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -80.9,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 12,
+          "pnl": 137.49,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 20,
+          "pnl": 439.66,
+          "wr": 45.0
+        },
+        "2021": {
+          "n": 6,
+          "pnl": -53.71,
+          "wr": 33.3
+        },
+        "2022": {
+          "n": 20,
+          "pnl": 100.29,
+          "wr": 40.0
+        },
+        "2023": {
+          "n": 14,
+          "pnl": 220.78,
+          "wr": 50.0
+        },
+        "2024": {
+          "n": 11,
+          "pnl": 474.74,
+          "wr": 54.5
+        },
+        "2025": {
+          "n": 15,
+          "pnl": -426.85,
+          "wr": 26.7
+        },
+        "2026": {
+          "n": 7,
+          "pnl": -162.41,
+          "wr": 42.9
+        }
+      },
+      "rules": [
+        "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ifvg.SPX500_USD",
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 967,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.040 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 46.5,
+        "profit_factor": 1.088,
+        "sharpe": 0.04,
+        "expectancy": 3.83,
+        "max_drawdown_pct": 17.9,
+        "total_pnl": 3704.54
+      },
+      "regimes": {
+        "2018": {
+          "n": 46,
+          "pnl": 1332.01,
+          "wr": 58.7
+        },
+        "2019": {
+          "n": 119,
+          "pnl": -1766.68,
+          "wr": 42.0
+        },
+        "2020": {
+          "n": 101,
+          "pnl": 828.37,
+          "wr": 47.5
+        },
+        "2021": {
+          "n": 96,
+          "pnl": 483.93,
+          "wr": 44.8
+        },
+        "2022": {
+          "n": 135,
+          "pnl": 35.06,
+          "wr": 42.2
+        },
+        "2023": {
+          "n": 146,
+          "pnl": 695.24,
+          "wr": 47.9
+        },
+        "2024": {
+          "n": 149,
+          "pnl": 239.68,
+          "wr": 47.0
+        },
+        "2025": {
+          "n": 108,
+          "pnl": 2023.62,
+          "wr": 53.7
+        },
+        "2026": {
+          "n": 67,
+          "pnl": -166.69,
+          "wr": 40.3
+        }
+      },
+      "rules": [
+        "1. Identify an FVG. 2. Price closes fully through it (close[1] beyond the far edge) \u2014 the gap is now inverted.",
+        "3. Entry: limit on the retest of the inverted zone.",
+        "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
+        "6. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ifvg.XAU_USD",
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 747,
+      "verdict": "FAIL",
+      "why": "Sharpe 0.015 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 46.3,
+        "profit_factor": 1.032,
+        "sharpe": 0.015,
+        "expectancy": 1.31,
+        "max_drawdown_pct": 25.6,
+        "total_pnl": 979.57
+      },
+      "regimes": {
+        "2018": {
+          "n": 34,
+          "pnl": -530.87,
+          "wr": 38.2
+        },
+        "2019": {
+          "n": 116,
+          "pnl": 544.71,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 87,
+          "pnl": 859.96,
+          "wr": 54.0
+        },
+        "2021": {
+          "n": 103,
+          "pnl": -1785.71,
+          "wr": 35.9
+        },
+        "2022": {
+          "n": 90,
+          "pnl": -513.71,
+          "wr": 42.2
+        },
+        "2023": {
+          "n": 90,
+          "pnl": 786.55,
+          "wr": 51.1
+        },
+        "2024": {
+          "n": 90,
+          "pnl": 485.51,
+          "wr": 48.9
+        },
+        "2025": {
+          "n": 90,
+          "pnl": 1518.42,
+          "wr": 51.1
+        },
+        "2026": {
+          "n": 47,
+          "pnl": -385.29,
+          "wr": 36.2
+        }
+      },
+      "rules": [
+        "1. Identify an FVG. 2. Price closes fully through it (close[1] beyond the far edge) \u2014 the gap is now inverted.",
+        "3. Entry: limit on the retest of the inverted zone.",
+        "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
+        "6. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_core.CHF_JPY",
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 108,
+      "verdict": "FAIL",
+      "why": "Sharpe -0.049 below 0.5 \u2014 no risk-adjusted edge.",
+      "stats": {
+        "win_rate": 39.8,
+        "profit_factor": 0.904,
+        "sharpe": -0.049,
+        "expectancy": -4.73,
+        "max_drawdown_pct": 9.5,
+        "total_pnl": -511.27
+      },
+      "regimes": {
+        "2018": {
+          "n": 5,
+          "pnl": 142.03,
+          "wr": 60.0
+        },
+        "2019": {
+          "n": 13,
+          "pnl": -123.19,
+          "wr": 38.5
+        },
+        "2020": {
+          "n": 16,
+          "pnl": -300.38,
+          "wr": 31.2
+        },
+        "2021": {
+          "n": 17,
+          "pnl": -53.08,
+          "wr": 41.2
+        },
+        "2022": {
+          "n": 16,
+          "pnl": -300.81,
+          "wr": 31.2
+        },
+        "2023": {
+          "n": 7,
+          "pnl": 191.98,
+          "wr": 57.1
+        },
+        "2024": {
+          "n": 17,
+          "pnl": 10.47,
+          "wr": 41.2
+        },
+        "2025": {
+          "n": 8,
+          "pnl": -53.49,
+          "wr": 37.5
+        },
+        "2026": {
+          "n": 9,
+          "pnl": -24.8,
+          "wr": 44.4
+        }
+      },
+      "rules": [
+        "1. HTF bias: H4 close[1] vs H4 EMA(50) \u2014 above = bullish, below = bearish.",
+        "2. Sweep: M15 bar takes out a confirmed swing pool and CLOSES back inside it.",
+        "3. Displacement: body >= 1.0 x ATR(14), closing in bias direction.",
+        "4. MSS: close[1] breaks the intervening swing in bias direction.",
+        "5. Entry: limit at the 50% level of the displacement-leg FVG.",
+        "6. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
+        "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ifvg.CHF_JPY",
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 653,
+      "verdict": "FAIL",
+      "why": "Ruin probability 78.7% exceeds the 10% ceiling.",
+      "stats": {
+        "win_rate": 41.5,
+        "profit_factor": 0.673,
+        "sharpe": -0.173,
+        "expectancy": -9.06,
+        "max_drawdown_pct": 61.5,
+        "total_pnl": -5914.55
+      },
+      "regimes": {
+        "2018": {
+          "n": 39,
+          "pnl": -688.96,
+          "wr": 35.9
+        },
+        "2019": {
+          "n": 96,
+          "pnl": -1843.75,
+          "wr": 40.6
+        },
+        "2020": {
+          "n": 82,
+          "pnl": -796.84,
+          "wr": 43.9
+        },
+        "2021": {
+          "n": 97,
+          "pnl": -1043.05,
+          "wr": 41.2
+        },
+        "2022": {
+          "n": 70,
+          "pnl": -512.85,
+          "wr": 41.4
+        },
+        "2023": {
+          "n": 74,
+          "pnl": -84.35,
+          "wr": 43.2
+        },
+        "2024": {
+          "n": 65,
+          "pnl": -456.61,
+          "wr": 36.9
+        },
+        "2025": {
+          "n": 78,
+          "pnl": -385.3,
+          "wr": 39.7
+        },
+        "2026": {
+          "n": 52,
+          "pnl": -102.84,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "1. Identify an FVG. 2. Price closes fully through it (close[1] beyond the far edge) \u2014 the gap is now inverted.",
+        "3. Entry: limit on the retest of the inverted zone.",
+        "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
+        "6. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.silver_bullet.SPX500_USD",
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 1,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "1 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 100.0,
+        "profit_factor": Infinity,
+        "sharpe": 0.0,
+        "expectancy": 55.62,
+        "max_drawdown_pct": 0.0,
+        "total_pnl": 55.62
+      },
+      "regimes": {
+        "2020": {
+          "n": 1,
+          "pnl": 55.62,
+          "wr": 100.0
+        }
+      },
+      "rules": [
+        "1. Window: NY 15:00-16:00 UTC only.",
+        "2. Displacement inside the window creates an FVG.",
+        "3. Entry: limit at FVG 50%, in the direction of the displacement.",
+        "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
+        "5. Target: next opposing pool; RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.power_of_three.XAU_USD",
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 40,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "40 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 47.5,
+        "profit_factor": 1.489,
+        "sharpe": 0.19,
+        "expectancy": 21.88,
+        "max_drawdown_pct": 4.8,
+        "total_pnl": 875.14
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -81.45,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 6,
+          "pnl": 307.82,
+          "wr": 66.7
+        },
+        "2020": {
+          "n": 5,
+          "pnl": -184.93,
+          "wr": 20.0
+        },
+        "2021": {
+          "n": 1,
+          "pnl": -91.32,
+          "wr": 0.0
+        },
+        "2022": {
+          "n": 5,
+          "pnl": 267.03,
+          "wr": 60.0
+        },
+        "2023": {
+          "n": 5,
+          "pnl": 238.78,
+          "wr": 60.0
+        },
+        "2024": {
+          "n": 8,
+          "pnl": 468.9,
+          "wr": 62.5
+        },
+        "2025": {
+          "n": 9,
+          "pnl": -49.69,
+          "wr": 33.3
+        }
+      },
+      "rules": [
+        "1. Accumulation: first 4 M15 bars of the killzone form a range.",
+        "2. Manipulation: a later bar sweeps that range and closes back inside.",
+        "3. Distribution: displacement away from the swept side.",
+        "4. Entry: FVG 50% of the distribution leg.",
+        "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_icc.SPX500_USD",
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 34,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 47.1,
+        "profit_factor": 1.365,
+        "sharpe": 0.143,
+        "expectancy": 16.18,
+        "max_drawdown_pct": 2.8,
+        "total_pnl": 550.06
+      },
+      "regimes": {
+        "2019": {
+          "n": 2,
+          "pnl": -163.98,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 4,
+          "pnl": -92.48,
+          "wr": 25.0
+        },
+        "2021": {
+          "n": 1,
+          "pnl": 138.42,
+          "wr": 100.0
+        },
+        "2022": {
+          "n": 9,
+          "pnl": -59.99,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 4,
+          "pnl": 211.58,
+          "wr": 75.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": 562.32,
+          "wr": 100.0
+        },
+        "2025": {
+          "n": 6,
+          "pnl": -128.82,
+          "wr": 33.3
+        },
+        "2026": {
+          "n": 5,
+          "pnl": 83.01,
+          "wr": 60.0
+        }
+      },
+      "rules": [
+        "1-4. As ict_core (bias, sweep, displacement, MSS).",
+        "5. Entry zone = order block that ALSO has volume >= 1.5 x mean(vol,20) AND range >= 1.0 x ATR(14).",
+        "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
+        "8. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_core.DE30_EUR",
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 96,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 40.6,
+        "profit_factor": 1.169,
+        "sharpe": 0.074,
+        "expectancy": 8.02,
+        "max_drawdown_pct": 6.8,
+        "total_pnl": 769.79
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": -91.08,
+          "wr": 25.0
+        },
+        "2019": {
+          "n": 22,
+          "pnl": 93.52,
+          "wr": 40.9
+        },
+        "2020": {
+          "n": 17,
+          "pnl": 464.57,
+          "wr": 47.1
+        },
+        "2021": {
+          "n": 9,
+          "pnl": -500.54,
+          "wr": 11.1
+        },
+        "2022": {
+          "n": 6,
+          "pnl": -25.18,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 8,
+          "pnl": 1.74,
+          "wr": 37.5
+        },
+        "2024": {
+          "n": 11,
+          "pnl": 469.5,
+          "wr": 54.5
+        },
+        "2025": {
+          "n": 7,
+          "pnl": 108.68,
+          "wr": 42.9
+        },
+        "2026": {
+          "n": 12,
+          "pnl": 248.58,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "1. HTF bias: H4 close[1] vs H4 EMA(50) \u2014 above = bullish, below = bearish.",
+        "2. Sweep: M15 bar takes out a confirmed swing pool and CLOSES back inside it.",
+        "3. Displacement: body >= 1.0 x ATR(14), closing in bias direction.",
+        "4. MSS: close[1] breaks the intervening swing in bias direction.",
+        "5. Entry: limit at the 50% level of the displacement-leg FVG.",
+        "6. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
+        "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.power_of_three.DE30_EUR",
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 24,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "24 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 37.5,
+        "profit_factor": 1.046,
+        "sharpe": 0.021,
+        "expectancy": 2.28,
+        "max_drawdown_pct": 3.3,
+        "total_pnl": 54.61
+      },
+      "regimes": {
+        "2019": {
+          "n": 8,
+          "pnl": 182.13,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 2,
+          "pnl": 63.16,
+          "wr": 50.0
+        },
+        "2021": {
+          "n": 2,
+          "pnl": -160.97,
+          "wr": 0.0
+        },
+        "2022": {
+          "n": 2,
+          "pnl": 65.85,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 1,
+          "pnl": -77.68,
+          "wr": 0.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": 208.94,
+          "wr": 66.7
+        },
+        "2025": {
+          "n": 3,
+          "pnl": -236.82,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": 10.0,
+          "wr": 33.3
+        }
+      },
+      "rules": [
+        "1. Accumulation: first 4 M15 bars of the killzone form a range.",
+        "2. Manipulation: a later bar sweeps that range and closes back inside.",
+        "3. Distribution: displacement away from the swept side.",
+        "4. Entry: FVG 50% of the distribution leg.",
+        "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_icc.XAU_USD",
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 49,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "49 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 42.9,
+        "profit_factor": 0.988,
+        "sharpe": -0.006,
+        "expectancy": -0.55,
+        "max_drawdown_pct": 9.2,
+        "total_pnl": -27.02
+      },
+      "regimes": {
+        "2019": {
+          "n": 8,
+          "pnl": 49.01,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -49.34,
+          "wr": 33.3
+        },
+        "2021": {
+          "n": 13,
+          "pnl": -517.0,
+          "wr": 23.1
+        },
+        "2022": {
+          "n": 8,
+          "pnl": 110.6,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 4,
+          "pnl": 248.06,
+          "wr": 75.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": -27.42,
+          "wr": 33.3
+        },
+        "2025": {
+          "n": 4,
+          "pnl": 167.66,
+          "wr": 75.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": -8.59,
+          "wr": 33.3
+        }
+      },
+      "rules": [
+        "1-4. As ict_core (bias, sweep, displacement, MSS).",
+        "5. Entry zone = order block that ALSO has volume >= 1.5 x mean(vol,20) AND range >= 1.0 x ATR(14).",
+        "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
+        "8. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_ob.CHF_JPY",
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 86,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "86 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 43.0,
+        "profit_factor": 0.926,
+        "sharpe": -0.037,
+        "expectancy": -3.36,
+        "max_drawdown_pct": 13.0,
+        "total_pnl": -289.18
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": -181.37,
+          "wr": 25.0
+        },
+        "2019": {
+          "n": 4,
+          "pnl": -136.8,
+          "wr": 25.0
+        },
+        "2020": {
+          "n": 14,
+          "pnl": -337.21,
+          "wr": 28.6
+        },
+        "2021": {
+          "n": 15,
+          "pnl": 94.73,
+          "wr": 53.3
+        },
+        "2022": {
+          "n": 12,
+          "pnl": -594.25,
+          "wr": 16.7
+        },
+        "2023": {
+          "n": 5,
+          "pnl": 113.04,
+          "wr": 60.0
+        },
+        "2024": {
+          "n": 14,
+          "pnl": -0.71,
+          "wr": 42.9
+        },
+        "2025": {
+          "n": 12,
+          "pnl": 190.53,
+          "wr": 50.0
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 562.86,
+          "wr": 100.0
+        }
+      },
+      "rules": [
+        "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_core.SPX500_USD",
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 96,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 33.3,
+        "profit_factor": 0.862,
+        "sharpe": -0.07,
+        "expectancy": -7.37,
+        "max_drawdown_pct": 14.1,
+        "total_pnl": -707.95
+      },
+      "regimes": {
+        "2018": {
+          "n": 2,
+          "pnl": 33.26,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 12,
+          "pnl": 222.82,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 17,
+          "pnl": -7.19,
+          "wr": 35.3
+        },
+        "2021": {
+          "n": 6,
+          "pnl": 197.01,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 14,
+          "pnl": -298.33,
+          "wr": 28.6
+        },
+        "2023": {
+          "n": 12,
+          "pnl": -1.84,
+          "wr": 33.3
+        },
+        "2024": {
+          "n": 8,
+          "pnl": -413.65,
+          "wr": 12.5
+        },
+        "2025": {
+          "n": 16,
+          "pnl": -385.99,
+          "wr": 25.0
+        },
+        "2026": {
+          "n": 9,
+          "pnl": -54.04,
+          "wr": 33.3
+        }
+      },
+      "rules": [
+        "1. HTF bias: H4 close[1] vs H4 EMA(50) \u2014 above = bullish, below = bearish.",
+        "2. Sweep: M15 bar takes out a confirmed swing pool and CLOSES back inside it.",
+        "3. Displacement: body >= 1.0 x ATR(14), closing in bias direction.",
+        "4. MSS: close[1] breaks the intervening swing in bias direction.",
+        "5. Entry: limit at the 50% level of the displacement-leg FVG.",
+        "6. Stop: beyond the sweep extreme + 0.25 x ATR.",
+        "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
+        "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.power_of_three.CHF_JPY",
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 34,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 38.2,
+        "profit_factor": 0.822,
+        "sharpe": -0.094,
+        "expectancy": -8.86,
+        "max_drawdown_pct": 7.9,
+        "total_pnl": -301.31
+      },
+      "regimes": {
+        "2018": {
+          "n": 3,
+          "pnl": -114.76,
+          "wr": 33.3
+        },
+        "2019": {
+          "n": 3,
+          "pnl": -251.98,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 2,
+          "pnl": -157.13,
+          "wr": 0.0
+        },
+        "2021": {
+          "n": 4,
+          "pnl": 36.05,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 6,
+          "pnl": -77.78,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 2,
+          "pnl": 248.48,
+          "wr": 100.0
+        },
+        "2024": {
+          "n": 6,
+          "pnl": 125.74,
+          "wr": 50.0
+        },
+        "2025": {
+          "n": 6,
+          "pnl": -85.62,
+          "wr": 33.3
+        },
+        "2026": {
+          "n": 2,
+          "pnl": -24.31,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "1. Accumulation: first 4 M15 bars of the killzone form a range.",
+        "2. Manipulation: a later bar sweeps that range and closes back inside.",
+        "3. Distribution: displacement away from the swept side.",
+        "4. Entry: FVG 50% of the distribution leg.",
+        "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.power_of_three.SPX500_USD",
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "SPX500_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 39,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "39 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 28.2,
+        "profit_factor": 0.743,
+        "sharpe": -0.138,
+        "expectancy": -14.35,
+        "max_drawdown_pct": 9.8,
+        "total_pnl": -559.83
+      },
+      "regimes": {
+        "2018": {
+          "n": 2,
+          "pnl": 33.26,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 1,
+          "pnl": -80.74,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 8,
+          "pnl": 44.02,
+          "wr": 37.5
+        },
+        "2021": {
+          "n": 2,
+          "pnl": 63.03,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 5,
+          "pnl": -391.94,
+          "wr": 0.0
+        },
+        "2023": {
+          "n": 6,
+          "pnl": 44.53,
+          "wr": 33.3
+        },
+        "2024": {
+          "n": 4,
+          "pnl": -88.6,
+          "wr": 25.0
+        },
+        "2025": {
+          "n": 8,
+          "pnl": -168.11,
+          "wr": 25.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": -15.28,
+          "wr": 33.3
+        }
+      },
+      "rules": [
+        "1. Accumulation: first 4 M15 bars of the killzone form a range.",
+        "2. Manipulation: a later bar sweeps that range and closes back inside.",
+        "3. Distribution: displacement away from the swept side.",
+        "4. Entry: FVG 50% of the distribution leg.",
+        "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_ob.DE30_EUR",
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 90,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "90 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 31.1,
+        "profit_factor": 0.652,
+        "sharpe": -0.204,
+        "expectancy": -17.47,
+        "max_drawdown_pct": 18.4,
+        "total_pnl": -1572.36
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -79.79,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 22,
+          "pnl": -158.45,
+          "wr": 40.9
+        },
+        "2020": {
+          "n": 16,
+          "pnl": -965.27,
+          "wr": 6.2
+        },
+        "2021": {
+          "n": 12,
+          "pnl": -454.06,
+          "wr": 16.7
+        },
+        "2022": {
+          "n": 6,
+          "pnl": 159.72,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 9,
+          "pnl": -341.35,
+          "wr": 22.2
+        },
+        "2024": {
+          "n": 7,
+          "pnl": 238.56,
+          "wr": 57.1
+        },
+        "2025": {
+          "n": 5,
+          "pnl": -31.02,
+          "wr": 40.0
+        },
+        "2026": {
+          "n": 12,
+          "pnl": 59.3,
+          "wr": 41.7
+        }
+      },
+      "rules": [
+        "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_icc.DE30_EUR",
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 37,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "37 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 29.7,
+        "profit_factor": 0.602,
+        "sharpe": -0.245,
+        "expectancy": -21.99,
+        "max_drawdown_pct": 9.7,
+        "total_pnl": -813.8
+      },
+      "regimes": {
+        "2019": {
+          "n": 12,
+          "pnl": -348.17,
+          "wr": 33.3
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -240.07,
+          "wr": 16.7
+        },
+        "2021": {
+          "n": 6,
+          "pnl": -255.35,
+          "wr": 16.7
+        },
+        "2022": {
+          "n": 2,
+          "pnl": 262.22,
+          "wr": 100.0
+        },
+        "2023": {
+          "n": 5,
+          "pnl": -191.26,
+          "wr": 20.0
+        },
+        "2024": {
+          "n": 2,
+          "pnl": 63.59,
+          "wr": 50.0
+        },
+        "2025": {
+          "n": 2,
+          "pnl": -149.08,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 2,
+          "pnl": 44.32,
+          "wr": 50.0
+        }
+      },
+      "rules": [
+        "1-4. As ict_core (bias, sweep, displacement, MSS).",
+        "5. Entry zone = order block that ALSO has volume >= 1.5 x mean(vol,20) AND range >= 1.0 x ATR(14).",
+        "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
+        "8. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.ict_icc.CHF_JPY",
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 33,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "33 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "win_rate": 24.2,
+        "profit_factor": 0.426,
+        "sharpe": -0.402,
+        "expectancy": -35.99,
+        "max_drawdown_pct": 14.9,
+        "total_pnl": -1187.62
+      },
+      "regimes": {
+        "2019": {
+          "n": 1,
+          "pnl": 228.94,
+          "wr": 100.0
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -294.43,
+          "wr": 16.7
+        },
+        "2021": {
+          "n": 9,
+          "pnl": -165.0,
+          "wr": 44.4
+        },
+        "2022": {
+          "n": 7,
+          "pnl": -571.26,
+          "wr": 0.0
+        },
+        "2023": {
+          "n": 4,
+          "pnl": -124.8,
+          "wr": 25.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": -215.02,
+          "wr": 0.0
+        },
+        "2025": {
+          "n": 2,
+          "pnl": -152.83,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 1,
+          "pnl": 106.78,
+          "wr": 100.0
+        }
+      },
+      "rules": [
+        "1-4. As ict_core (bias, sweep, displacement, MSS).",
+        "5. Entry zone = order block that ALSO has volume >= 1.5 x mean(vol,20) AND range >= 1.0 x ATR(14).",
+        "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
+        "8. Sessions: London + NY killzones."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.silver_bullet.DE30_EUR",
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "DE30_EUR",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "win_rate": null,
+        "profit_factor": null,
+        "sharpe": null,
+        "expectancy": null,
+        "max_drawdown_pct": null,
+        "total_pnl": null
+      },
+      "regimes": {},
+      "rules": [
+        "1. Window: NY 15:00-16:00 UTC only.",
+        "2. Displacement inside the window creates an FVG.",
+        "3. Entry: limit at FVG 50%, in the direction of the displacement.",
+        "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
+        "5. Target: next opposing pool; RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.silver_bullet.XAU_USD",
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "XAU_USD",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "win_rate": null,
+        "profit_factor": null,
+        "sharpe": null,
+        "expectancy": null,
+        "max_drawdown_pct": null,
+        "total_pnl": null
+      },
+      "regimes": {},
+      "rules": [
+        "1. Window: NY 15:00-16:00 UTC only.",
+        "2. Displacement inside the window creates an FVG.",
+        "3. Entry: limit at FVG 50%, in the direction of the displacement.",
+        "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
+        "5. Target: next opposing pool; RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    },
+    {
+      "id": "ict.silver_bullet.CHF_JPY",
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "asset_class": "cfd_index_metal_fx",
+      "instrument": "CHF_JPY",
+      "timeframe": "M15",
+      "version": 1,
+      "n_trades": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "win_rate": null,
+        "profit_factor": null,
+        "sharpe": null,
+        "expectancy": null,
+        "max_drawdown_pct": null,
+        "total_pnl": null
+      },
+      "regimes": {},
+      "rules": [
+        "1. Window: NY 15:00-16:00 UTC only.",
+        "2. Displacement inside the window creates an FVG.",
+        "3. Entry: limit at FVG 50%, in the direction of the displacement.",
+        "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
+        "5. Target: next opposing pool; RR >= 2.0."
+      ],
+      "params": {
+        "SWING_K": 2,
+        "LOOKBACK_POOLS": 50,
+        "DISPLACEMENT_ATR_MULT": 1.0,
+        "ATR_PERIOD": 14,
+        "FVG_MAX_AGE_BARS": 12,
+        "MSS_MAX_BARS_AFTER_SWEEP": 20,
+        "ENTRY_MAX_WAIT_BARS": 12,
+        "STOP_BUFFER_ATR": 0.25,
+        "MIN_STOP_ATR": 0.5,
+        "MIN_RR": 2.0,
+        "RISK_PCT": 0.0075,
+        "ICC_VOL_MULT": 1.5,
+        "ICC_RANGE_ATR_MULT": 1.0
+      },
+      "source": "agents/lens/ict_research.py",
+      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "deployable": false
+    }
+  ],
+  "methodology_notes": {
+    "compounding_artifact": "total_pnl / final_balance COMPOUND position size off a growing balance with fractional units and no liquidity cap. For high-frequency models this explodes: turtle_soup/DE30 reports $57.8M from $10k, which is arithmetic, not a forecast. Use expectancy_R and fixed_size_pnl for a realistic read \u2014 the same model at FIXED $75 risk/trade returns ~$84k over 8 years.",
+    "sharpe_frequency_bias": "The shared gate FAILs any model with per-trade Sharpe < 0.5. That is an extraordinarily high bar \u2014 mean P&L half a standard deviation PER TRADE \u2014 which essentially no real strategy meets, and it penalises high-frequency models that accumulate edge across many small trades. sharpe_annualised (per-trade Sharpe x sqrt(trades/yr)) is reported alongside: turtle_soup scores 2.4-2.8 annualised while failing the per-trade test. The gate was NOT changed after seeing these results \u2014 moving a threshold to make things pass is how backtests get talked into deployment. Flagged for Jase.",
+    "gate_unchanged": true
+  },
+  "headline": "0 of 28 model/instrument combinations cleared the gate. Nothing is marked deployable. turtle_soup is the only model with both a large sample and consistent multi-year profitability, but it fails the per-trade Sharpe test \u2014 see methodology_notes."
+}

@@ -148,3 +148,7 @@ state/gdrive_sync_manifest.json
 # Chad wallet-intel runtime data (regenerable from Helius)
 agents/crisp/data/tracked_wallets.json
 agents/crisp/data/sim_copy_trades.json
+
+# ICT research candle cache — ~90MB of OANDA history, re-downloadable
+# via agents/lens/ict_data.py --download
+agents/lens/data/candles/
