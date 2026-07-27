@@ -61,87 +61,34 @@ TELEGRAM_TOKEN   = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CHAT_ID')
 
 
-def _llm_fallback(system_prompt: str, user_message: str) -> str | None:
-    """Opt-in Anthropic fallback when the Codex route is unavailable.
-
-    OFF BY DEFAULT — set VICTORIA_LLM_FALLBACK=anthropic to enable. This is a
-    billing decision, not a technical one: CLAUDE.md records Lens as the only
-    Anthropic-billed cron agent, and silently moving Victoria there would
-    change Jase's spend without him choosing it.
-
-    Why it exists: on 2026-07-27 the Codex subscription hit its usage limit
-    ("next reset Aug 23"), so Victoria's synthesis returned nothing. Her
-    deterministic sections still render — but the narrative is empty for 27
-    days unless something else can answer.
-    """
-    if os.getenv('VICTORIA_LLM_FALLBACK', '').lower() != 'anthropic':
-        return None
-    try:
-        import anthropic
-    except ImportError:
-        print('[victoria] fallback requested but anthropic SDK not installed')
-        return None
-    try:
-        print('[victoria] Codex unavailable — falling back to Anthropic (opt-in)')
-        client = anthropic.Anthropic()
-        resp = client.messages.create(
-            model='claude-sonnet-4-6',
-            max_tokens=MAX_TOKENS,
-            system=system_prompt,
-            messages=[{'role': 'user', 'content': user_message}],
-        )
-        return resp.content[0].text if resp.content else None
-    except Exception as e:
-        print(f'[victoria] Anthropic fallback failed: {e}')
-        return None
-
-
 def _run_codex(system_prompt: str, user_message: str, timeout: int = 300) -> str | None:
-    """Route a prompt through the openclaw gateway agent (Codex).
+    """Victoria's model call, via the shared router (scripts/llm_router.py).
 
-    Mirrors Lucy's `_run_agent` subprocess pattern. The gateway agent has no
-    separate `system` slot, so the persona/system prompt is prepended into the
-    message. The (potentially large) payload is passed via --message-file to
-    avoid the ~128KB single CLI-arg limit. Returns response text, or None.
+    Name kept for call-site compatibility; the routing is no longer Codex-only.
+    Chain for the 'report_writing' job:
+
+        Codex  ->  nvidia/nemotron-3-super-120b-a12b:free  (OpenRouter)
+               ->  deepseek/deepseek-v3.2                  (OpenRouter)
+               ->  Anthropic claude-sonnet-4-6             (safety net)
+
+    Replaces the ad-hoc opt-in Anthropic fallback added earlier the same day.
+    That was the right call when Anthropic was the only alternative — routing
+    an agent to a paid provider is a spend decision. Now the first two
+    fallbacks are free-tier OpenRouter models, so the default chain costs
+    nothing and Anthropic is genuinely a last resort rather than hop two.
+
+    Which model actually served each run is logged to
+    logs/llm_router_spend.json for cost attribution.
     """
-    import tempfile
-    combined = f"{system_prompt}\n\n=== TASK ===\n\n{user_message}"
-    tmp_path = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            'w', suffix='.txt', prefix='victoria_codex_',
-            dir='/tmp', delete=False, encoding='utf-8',
-        ) as fh:
-            fh.write(combined)
-            tmp_path = fh.name
-        cmd = [
-            'openclaw', 'agent',
-            '--agent', 'main',
-            '--model', MODEL,
-            '--message-file', tmp_path,
-            '--json',
-            '--timeout', str(timeout),
-        ]
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 60)
-        if proc.returncode != 0:
-            print(f'[victoria] Codex call failed: {proc.stderr[:300]}')
-            return _llm_fallback(system_prompt, user_message)
-        data = json.loads(proc.stdout)
-        payloads = data.get('result', {}).get('payloads', [])
-        text = payloads[0].get('text', '') if payloads else None
-        return text or _llm_fallback(system_prompt, user_message)
-    except subprocess.TimeoutExpired:
-        print('[victoria] Codex call timed out')
-        return None
-    except Exception as e:
-        print(f'[victoria] Codex call error: {e}')
-        return None
-    finally:
-        if tmp_path:
-            try:
-                os.remove(tmp_path)
-            except OSError:
-                pass
+    from llm_router import route
+    text, meta = route('report_writing', system_prompt, user_message,
+                       agent='victoria', timeout=timeout)
+    if text:
+        print(f"[victoria] served by {meta.get('provider')}:"
+              f"{meta.get('model')} (hop {meta.get('hop')})")
+    else:
+        print(f"[victoria] all routing hops failed: {meta.get('error')}")
+    return text
 
 
 # ─── JSON helpers ───────────────────────────────────────────────────────────────

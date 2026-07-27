@@ -2,15 +2,19 @@
 """
 council.py — Multi-agent investment council for JCF HQ.
 
-Lens, Jarvis, and Norman each INDEPENDENTLY research and take a position on
+Lens, Victoria, and Huncho each INDEPENDENTLY research and take a position on
 (a) existing holdings — deepen conviction or flag an exit, and (b) new scouting
 — opportunities not yet held. Independent notes are written first (real debate,
 not groupthink); a synthesis pass then produces a final verdict. Output is
 written to dashboard/council.json (agent notes + verdict + full transcript) and
 delivered via Telegram + Discord (#council-theses).
 
-Weekly, same day as the Lens portfolio thesis (Sunday). Models: Lens = Anthropic
-claude-sonnet-4-6 + web search; Jarvis / Norman / synthesis = Codex gpt-5.6-terra.
+Weekly, same day as the Lens portfolio thesis (Sunday). Lens uses its own direct
+Anthropic key + web search; Victoria / Huncho / synthesis route through
+scripts/llm_router.py (Codex -> free OpenRouter picks -> Anthropic safety net).
+
+Roster rebuilt 2026-07-27: Jarvis and Norman were retired 2026-07-25 but were
+still being convened. See PERSONAS below for why Huncho took the third seat.
 """
 import json
 import os
@@ -35,37 +39,50 @@ TG_MAX = 4000
 TELEGRAM_TOKEN   = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_ALERT_CHAT_ID') or os.getenv('TELEGRAM_CHAT_ID')
 
+# ── Council roster (rebuilt 2026-07-27) ───────────────────────────────────────
+# Was: Lens + Jarvis + Norman. Jarvis and Norman were RETIRED 2026-07-25, so
+# two thirds of the council were ghosts — their personas still ran, but no
+# retired agent owns any data or duty any more, and the roster contradicted
+# the consolidation everywhere else in the system.
+#
+# Now the two live agents plus one deliberately different third seat:
+#
+#   Lens     — macro//external view, with web search. Unchanged.
+#   Victoria — CFO. Owns the books, the balances and the risk validation for
+#              Jerry + Chad, so she inherits Norman's skeptic role naturally
+#              and speaks from data she actually holds.
+#   Huncho   — the orchestrator, and the third perspective chosen on purpose.
+#              A two-agent council is a conversation, not a council: with only
+#              Lens and Victoria, macro-vs-books ties have no tiebreaker. Huncho
+#              already owns execution and sizing across the fleet, so he
+#              contributes the "can we actually run this" view neither of the
+#              other two covers — and he is live, not a revived ghost.
 PERSONAS = {
-    'lens':   "You are Lens, JCF HQ's macro analyst. Ground your view in current "
-              "facts via web search — macro regime, sector rotation, catalysts.",
-    'jarvis': "You are Jarvis, JCF HQ's calm regime/technical strategist. Judge "
-              "positioning by market regime, trend, and technical structure.",
-    'norman': "You are Norman, JCF HQ's cold, brutally honest risk validator. "
-              "Default to skepticism; your job is to flag weak positions and risk.",
+    'lens':     "You are Lens, JCF HQ's macro analyst. Ground your view in current "
+                "facts via web search — macro regime, sector rotation, catalysts.",
+    'victoria': "You are Victoria, JCF HQ's CFO and Chief of Staff — gothic-queen "
+                "energy, owns the operation, never coddles. You hold the books: "
+                "balances, realised P&L, and the risk validation for Jerry and "
+                "Chad. Judge positions on what the data actually supports, and "
+                "refuse to grade anything whose feed is stale or absent.",
+    'huncho':   "You are Huncho, JCF HQ's orchestrator — NY mob-boss energy, "
+                "terse and knowing. You own execution: position sizing, risk "
+                "rails, and whether the fleet can actually run a plan. Judge "
+                "each idea on executability and concentration, not narrative.",
 }
 
 
-def _run_codex(system, user, timeout=300):
-    combined = f"{system}\n\n=== TASK ===\n\n{user}"
-    tmp = None
-    try:
-        with tempfile.NamedTemporaryFile('w', suffix='.txt', prefix='council_',
-                                         dir='/tmp', delete=False, encoding='utf-8') as fh:
-            fh.write(combined); tmp = fh.name
-        proc = subprocess.run(
-            ['openclaw', 'agent', '--agent', 'main', '--model', CODEX_MODEL,
-             '--message-file', tmp, '--json', '--timeout', str(timeout)],
-            capture_output=True, text=True, timeout=timeout + 60)
-        if proc.returncode != 0:
-            print(f'[council] codex failed: {proc.stderr[:200]}'); return None
-        payloads = json.loads(proc.stdout).get('result', {}).get('payloads', [])
-        return payloads[0].get('text', '') if payloads else None
-    except Exception as e:
-        print(f'[council] codex error: {e}'); return None
-    finally:
-        if tmp:
-            try: os.remove(tmp)
-            except OSError: pass
+def _run_codex(system, user, timeout=300, job='report_writing', agent='council'):
+    """Council model call via the shared router (scripts/llm_router.py).
+
+    Codex -> assigned free OpenRouter model -> 2nd pick -> Anthropic.
+    Name kept for call-site compatibility.
+    """
+    from llm_router import route
+    text, meta = route(job, system, user, agent=agent, timeout=timeout)
+    if text:
+        print(f"[council] {agent} served by {meta.get('provider')}:{meta.get('model')}")
+    return text
 
 
 def _run_lens(system, user):
@@ -105,9 +122,11 @@ def run_council():
 
     # --- Independent notes (no shared context) ---
     notes = {}
-    notes['lens']   = _run_lens(PERSONAS['lens'], prompt) or '(Lens note unavailable)'
-    notes['jarvis'] = _run_codex(PERSONAS['jarvis'], prompt) or '(Jarvis note unavailable)'
-    notes['norman'] = _run_codex(PERSONAS['norman'], prompt) or '(Norman note unavailable)'
+    notes['lens']     = _run_lens(PERSONAS['lens'], prompt) or '(Lens note unavailable)'
+    notes['victoria'] = _run_codex(PERSONAS['victoria'], prompt,
+                                   agent='council:victoria') or '(Victoria note unavailable)'
+    notes['huncho']   = _run_codex(PERSONAS['huncho'], prompt,
+                                   agent='council:huncho') or '(Huncho note unavailable)'
 
     # --- Synthesis pass ---
     synth_sys = ("You are the JCF HQ Council chair. Combine three independent agent "
@@ -116,9 +135,10 @@ def run_council():
                  "clear action list: HOLD/ADD/TRIM/EXIT per relevant name, plus top "
                  "scouting picks. Plain text.")
     synth_user = (ctx + "\n\n=== INDEPENDENT NOTES ===\n\n"
-                  f"[LENS]\n{notes['lens']}\n\n[JARVIS]\n{notes['jarvis']}\n\n"
-                  f"[NORMAN]\n{notes['norman']}\n\nWrite the final Council verdict.")
-    verdict = _run_codex(synth_sys, synth_user) or '(Synthesis unavailable)'
+                  f"[LENS]\n{notes['lens']}\n\n[VICTORIA]\n{notes['victoria']}\n\n"
+                  f"[HUNCHO]\n{notes['huncho']}\n\nWrite the final Council verdict.")
+    verdict = _run_codex(synth_sys, synth_user,
+                         agent='council:synthesis') or '(Synthesis unavailable)'
 
     result = {
         'date': datetime.now(timezone.utc).strftime('%Y-%m-%d'),
@@ -127,13 +147,13 @@ def run_council():
         'verdict': verdict,                   # synthesized final call
         'transcript': [                       # ordered full debate for the expand view
             {'agent': 'lens', 'note': notes['lens']},
-            {'agent': 'jarvis', 'note': notes['jarvis']},
-            {'agent': 'norman', 'note': notes['norman']},
+            {'agent': 'victoria', 'note': notes['victoria']},
+            {'agent': 'huncho', 'note': notes['huncho']},
             {'agent': 'council', 'note': verdict},
         ],
-        '_meta': {'models': {'lens': 'claude-sonnet-4-6',
-                             'jarvis': CODEX_MODEL, 'norman': CODEX_MODEL,
-                             'synthesis': CODEX_MODEL}},
+        '_meta': {'roster': list(PERSONAS),
+                  'routing': 'scripts/llm_router.py (job=report_writing)',
+                  'models': {'lens': 'claude-sonnet-4-6 (direct, own key)'}},
     }
     OUT.write_text(json.dumps(result, indent=2))
     print(f'[council] wrote {OUT}')
@@ -174,7 +194,8 @@ def build_two_tier(result):
                 continue
             if line.startswith(('---', '===', '|')):
                 continue
-            if line.lower().startswith(('lens //', 'jarvis //', 'norman //')):
+            if line.lower().startswith(('lens //', 'victoria //', 'huncho //',
+                                        'jarvis //', 'norman //')):  # incl. archived
                 continue
             if 'unavailable' in line.lower():
                 continue
@@ -202,10 +223,8 @@ def _deliver(result):
     except Exception as e:
         print(f'[council] two-tier build failed ({e}); falling back to long form')
         body = (f"🏛️ JCF HQ COUNCIL — {result['date']}\n\n"
-                f"🌐 LENS\n{result['notes']['lens']}\n\n"
-                f"♟️ JARVIS\n{result['notes']['jarvis']}\n\n"
-                f"⚠️ NORMAN\n{result['notes']['norman']}\n\n"
-                f"⚖️ VERDICT\n{result['verdict']}")
+                + "\n\n".join(f"{a.upper()}\n{n}" for a, n in result['notes'].items())
+                + f"\n\n⚖️ VERDICT\n{result['verdict']}")
     if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
         import requests
         for i in range(0, len(body), TG_MAX):
