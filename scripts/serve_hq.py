@@ -12,7 +12,12 @@ from pathlib import Path
 DIST_DIR   = Path('/root/.openclaw/hq-app/dist')
 DATA_DIR   = Path('/root/.openclaw/dashboard')
 PROXY_HOST = 'http://localhost:8900'
-PORT       = 8899
+# 2026-07-28 fix: PORT env-overridable, default 8080 (the canonical
+# dashboard URL). The jcf-hq systemd unit previously ran
+# `python3 -m http.server 8080` from dashboard/ — that served a raw JSON
+# directory listing, not the React SPA. It's now wired to invoke this
+# script; systemd sets PORT=8080 explicitly.
+PORT       = int(os.environ.get('PORT', '8080'))
 
 # Serve any .json file from the dashboard directory
 
