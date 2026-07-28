@@ -4,6 +4,54 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Turtle Soup deployable, and it's MEAN REVERSION not ICT · 2026-07-28
+**Decision:** `turtle_soup` on SPX500 / DE30 / XAU is promoted to
+`dashboard/strategy_library.json` as `deployable=true`, labelled
+**MEAN REVERSION (post-sweep fade)** — not ICT structure. CHF/JPY held out
+(MARGINAL: PF 1.451 < 1.5 floor).
+
+**Why deployable:**
+- Walk-forward: **7/7 out-of-sample windows** across all four instruments
+  meet PF ≥ 1.2 AND Sharpe_ann ≥ 0.5. OOS numbers as strong as or stronger
+  than IS on most windows. No regime dependence, no fitting artefact.
+- Corrected ruin (MC on `r_multiple × $75`, not compounded pnl) drops from
+  68-74 % to 0.00 % on the three PASSing instruments — that was the
+  compounding artefact the previous session flagged, now fixed.
+- Parameter sensitivity is robust on DE30 / XAU / CHF/JPY across every knob
+  variant; on SPX the *default* parameters PASS cleanly (PF 1.58) but one
+  variant collapses to PF 0.58 — flagged as a real fragility, not fatal
+  at defaults.
+
+**Why MEAN REVERSION, not ICT:**
+The mean-reversion baseline (strips H4 bias + London/NY killzones, fades
+the sweep 24/7) **out-performs turtle_soup on 3 of 4 instruments** —
+higher PF, higher Sharpe, double the trade count, double the expectancy
+per trade. The ICT-inspired filters are filtering out winners, not adding
+edge. Only CHF/JPY genuinely benefits from the filters (Sharpe 2.55 vs
+1.24 baseline) and CHF/JPY does not PASS. Every library entry carries a
+`mechanism_label` reading this plainly, so nobody deploying the strategy
+downstream thinks they are running ICT structure.
+
+**Not the same as promoting the plain baseline.** The baseline is a
+separate strategy that has not been through the full gate + walk-forward
+process. Documented in the session note as future work, not slipped into
+the library.
+
+**No other criterion moved.** Every gate threshold — 100-trade floor,
+PF ≥ 1.5 for PASS, MaxDD < 25 %, multi-regime, ruin ≤ 10 %, annualised
+Sharpe — held exactly as it was 2026-07-27. Only the ruin *input*
+changed (compounded → fixed-size), which is a correctness fix on the
+same math principle as the drawdown-denominator fix on 2026-07-25.
+
+**Not deployed live.** Blade / Edge / Jerry / Chad cron untouched. The
+library entry is the record; live deployment is a separate explicit call.
+
+**Links:** [[../sessions/2026-07-28]] · [[../strategies/orb-strategy]] ·
+`dashboard/ict_research.json` · `dashboard/strategy_library.json` ·
+`dashboard/ict_turtle_validation.json`
+
+---
+
 ## Deployment gate: annualised Sharpe, not per-trade · 2026-07-27
 **Decision:** The strategy-deployment gate reads **annualised Sharpe**, not
 per-trade Sharpe. Threshold and every other criterion (trade floor, PF, MaxDD,
