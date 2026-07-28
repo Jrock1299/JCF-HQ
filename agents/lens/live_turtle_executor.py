@@ -170,13 +170,46 @@ def account_summary() -> dict:
 
 
 def place_bracket_market_order(instrument: str, units: int,
-                               stop: float, target: float,
+                               stop_distance: float, target_distance: float,
                                client_ext_id: str) -> dict:
-    """MARKET order with SL and TP as brackets. Units are signed: +ve long,
-    -ve short. OANDA holds the brackets server-side, so we don't need a
-    monitor loop to close the position."""
+    """MARKET order with SL and TP set RELATIVE TO THE ACTUAL FILL, not to a
+    stale pre-fill candle price.
+
+    2026-07-28 fix. The previous version passed absolute `stop` and `target`
+    prices computed off `bars[i]['c']` (the last closed M15 mid). By the time
+    OANDA fills the market order at bars[i+1]'s open + slippage, the price has
+    moved — sometimes by more than the intended stop distance. The strategy
+    was validated at a specific R:R (target_distance / stop_distance); if the
+    stop-to-fill distance moves but the target stays anchored to the stale
+    candle, the R:R the LIVE trade actually runs at diverges from what the
+    backtest measured.
+
+    The fix in two parts, both required:
+      1. `stopLossOnFill.distance` — OANDA v20 accepts a distance on
+         `StopLossDetails`. Submitted with the market order, this pins SL at
+         (fill ± stop_distance) automatically. No stale-price drift.
+      2. `takeProfitOnFill` — OANDA v20 does NOT support `distance` on
+         `TakeProfitDetails`; only `price`. So we submit the market order
+         with SL-distance only, read `orderFillTransaction.price` from the
+         response, compute `target_price = fill ± target_distance` in the
+         correct direction, then attach the TP via TradeCRCDO. Two atomic
+         calls; the trade is never SL-less because SL was attached at fill.
+
+    Units are signed: +ve long, -ve short. `target_distance` is always
+    positive; direction sign taken from `units`.
+    """
     from oandapyV20.endpoints.orders import OrderCreate
+    from oandapyV20.endpoints.trades import TradeCRCDO
     client, acct = _oanda()
+
+    if stop_distance <= 0 or target_distance <= 0:
+        raise ValueError(
+            f'place_bracket_market_order: distances must be > 0 '
+            f'(stop={stop_distance}, target={target_distance})'
+        )
+
+    # 1) Market order with SL-distance attached — SL is guaranteed relative
+    #    to actual fill by OANDA.
     body = {
         'order': {
             'type': 'MARKET',
@@ -189,12 +222,54 @@ def place_bracket_market_order(instrument: str, units: int,
                 'tag': 'live_turtle',
                 'comment': f'turtle_soup {instrument} entry via live_turtle_executor',
             },
-            'stopLossOnFill':   {'price': f'{stop:.5f}',   'timeInForce': 'GTC'},
-            'takeProfitOnFill': {'price': f'{target:.5f}', 'timeInForce': 'GTC'},
+            'stopLossOnFill': {
+                'distance': f'{stop_distance:.5f}',
+                'timeInForce': 'GTC',
+            },
         }
     }
-    r = OrderCreate(acct, data=body); client.request(r)
-    return r.response
+    r = OrderCreate(acct, data=body)
+    client.request(r)
+    resp = r.response
+
+    # 2) Read actual fill, attach TP relative to it. If the order did not
+    #    fill (e.g. FOK cancelled) there is no trade to attach TP to; return
+    #    the response as-is so the caller can log it.
+    fill_tx = resp.get('orderFillTransaction') or {}
+    fill_price_str = fill_tx.get('price')
+    trade_opened = fill_tx.get('tradeOpened') or {}
+    trade_id = trade_opened.get('tradeID')
+    if not fill_price_str or not trade_id:
+        resp['_tp_attach_status'] = 'skipped_no_fill'
+        return resp
+
+    fill_price = float(fill_price_str)
+    direction_sign = 1 if int(units) > 0 else -1
+    target_price = fill_price + direction_sign * float(target_distance)
+
+    tp_body = {
+        'takeProfit': {
+            'price': f'{target_price:.5f}',
+            'timeInForce': 'GTC',
+        }
+    }
+    try:
+        r2 = TradeCRCDO(acct, trade_id, data=tp_body)
+        client.request(r2)
+        resp['_tp_attach_status'] = 'attached'
+        resp['_tp_attach_response'] = r2.response
+        resp['_fill_price'] = fill_price
+        resp['_target_price'] = target_price
+        resp['_realized_rr'] = round(
+            abs(target_price - fill_price) / float(stop_distance), 3
+        )
+    except Exception as e:
+        # SL is already attached server-side; a failed TP attach means the
+        # trade will run to SL or manual exit. Log loudly, do not silently
+        # succeed.
+        resp['_tp_attach_status'] = f'FAILED: {type(e).__name__}: {e}'
+        log.error(f'TP attach failed for trade {trade_id}: {e}')
+    return resp
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -366,33 +441,62 @@ def tick_one(entry: dict, dry_run: bool = False) -> TickResult:
                           detail='no valid setup on close[1]' if not sig
                                  else 'setup rejected on RR floor')
 
-    # 6) sizing. Turtle_soup enters MARKET on close, so use the current mid
-    #    as the intended fill; OANDA's market slippage models the rest.
-    entry_px = float(bars[i]['c'])
-    stop_px  = float(sig['stop'])
-    target_px = float(sig['target'])
+    # 6) DISTANCES from the signal. The R:R the strategy was validated on
+    #    is target_distance / stop_distance; we preserve BOTH as distances
+    #    and apply them relative to the actual fill (see
+    #    place_bracket_market_order for the OANDA-side mechanism).
+    reference_px = float(bars[i]['c'])              # last M15 close, for pre-fill sizing only
+    stop_px_ref   = float(sig['stop'])
+    target_px_ref = float(sig['target'])
+    stop_distance   = abs(reference_px - stop_px_ref)
+    target_distance = abs(target_px_ref - reference_px)
+    validated_rr = round(target_distance / stop_distance, 3) if stop_distance > 0 else 0
     direction = sig['direction']
     risk_pct = float((entry.get('params') or {}).get('RISK_PCT', PARAMS['RISK_PCT']))
-    units = _size_units(balance, entry_px, stop_px, risk_pct, instrument)
+    units = _size_units(balance, reference_px, stop_px_ref, risk_pct, instrument)
     if units <= 0:
         return TickResult(instrument, 'SIZING_ZERO',
-                          detail=f'entry={entry_px} stop={stop_px} risk_pct={risk_pct}')
+                          detail=f'ref={reference_px} stop_dist={stop_distance} risk_pct={risk_pct}')
     signed_units = units if direction == 'long' else -units
 
     if dry_run:
+        # In dry-run we cannot know the actual fill price. Estimate as
+        # (reference + typical M1 spread/2) for reporting, but LABEL it as
+        # estimate so it's not misread as guaranteed. What matters here is
+        # that the distances are what OANDA will use at fill time.
+        est_fill = reference_px
+        est_stop = est_fill - stop_distance if direction == 'long' else est_fill + stop_distance
+        est_target = est_fill + target_distance if direction == 'long' else est_fill - target_distance
         return TickResult(instrument, 'DRY_RUN_SIGNAL', signal={
-            'direction': direction, 'entry': entry_px,
-            'stop': stop_px, 'target': target_px, 'units': signed_units,
-            'risk_pct': risk_pct, 'balance': balance,
+            'direction': direction,
+            'reference_close': reference_px,
+            'stop_distance': round(stop_distance, 5),
+            'target_distance': round(target_distance, 5),
+            'validated_rr': validated_rr,
+            'estimated_fill': est_fill,
+            'estimated_stop': round(est_stop, 5),
+            'estimated_target': round(est_target, 5),
+            'units': signed_units,
+            'risk_pct': risk_pct,
+            'balance': balance,
+            'oanda_mechanism': 'stopLossOnFill.distance + post-fill TradeCRCDO takeProfit',
         })
 
     # 7) fire.
     client_ext_id = f'{CLIENT_ID_PREFIX}_{strategy}_{instrument}_{uuid.uuid4().hex[:8]}'
     resp = place_bracket_market_order(instrument, signed_units,
-                                      stop_px, target_px, client_ext_id)
+                                      stop_distance, target_distance, client_ext_id)
     return TickResult(instrument, 'SIGNAL_FIRED', signal={
-        'direction': direction, 'entry': entry_px,
-        'stop': stop_px, 'target': target_px, 'units': signed_units,
+        'direction': direction,
+        'reference_close': reference_px,
+        'stop_distance': round(stop_distance, 5),
+        'target_distance': round(target_distance, 5),
+        'validated_rr': validated_rr,
+        'fill_price': resp.get('_fill_price'),
+        'target_price_at_fill': resp.get('_target_price'),
+        'realized_rr': resp.get('_realized_rr'),
+        'tp_attach_status': resp.get('_tp_attach_status'),
+        'units': signed_units,
         'client_id': client_ext_id, 'risk_pct': risk_pct,
         'library_content_hash': entry.get('content_hash'),
     }, order_response=resp)
@@ -503,8 +607,20 @@ def main() -> int:
         line = f'[live_turtle] {r.instrument:12} {r.status:22} {r.detail or ""}'
         if r.signal:
             s = r.signal
-            line += (f' | {s.get("direction","")} entry={s.get("entry")} '
-                     f'stop={s.get("stop")} target={s.get("target")} units={s.get("units")}')
+            if s.get('stop_distance') is not None:
+                line += (f' | {s.get("direction","")} '
+                         f'stop_dist={s.get("stop_distance")} '
+                         f'tgt_dist={s.get("target_distance")} '
+                         f'RR={s.get("validated_rr")} '
+                         f'units={s.get("units")}')
+                if s.get('estimated_fill') is not None:
+                    line += (f' | est: fill≈{s.get("estimated_fill")} '
+                             f'SL≈{s.get("estimated_stop")} TP≈{s.get("estimated_target")}')
+                if s.get('fill_price') is not None:
+                    line += (f' | FILLED @ {s.get("fill_price")} '
+                             f'TP@{s.get("target_price_at_fill")} '
+                             f'realized_RR={s.get("realized_rr")} '
+                             f'({s.get("tp_attach_status")})')
         print(line)
     return 0
 
