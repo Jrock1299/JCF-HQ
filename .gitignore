@@ -152,3 +152,4 @@ agents/crisp/data/sim_copy_trades.json
 # ICT research candle cache — ~90MB of OANDA history, re-downloadable
 # via agents/lens/ict_data.py --download
 agents/lens/data/candles/
+agents/lens/data/futures_candles/

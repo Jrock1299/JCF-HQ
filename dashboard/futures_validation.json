@@ -1,0 +1,613 @@
+{
+  "generated_at": "2026-07-28T15:02:38.657412+00:00",
+  "gate_basis": "same as ict_research: annualised Sharpe, 100-trade floor, PF>=1.5 for PASS, MaxDD<25, ruin<=10 on fixed-size MC.",
+  "data_source": "yfinance (see futures_data.py caveats)",
+  "results": [
+    {
+      "n": 140,
+      "verdict": "MARGINAL",
+      "why": "PF 1.280, ann. Sharpe 3.131 \u2014 positive but not strong.",
+      "stats": {
+        "n": 140,
+        "total_pnl": 1639.48,
+        "win_rate": 50.7,
+        "wins": 71,
+        "losses": 69,
+        "breakevens": 0,
+        "avg_win": 105.47,
+        "avg_loss": -84.77,
+        "gross_win": 7488.43,
+        "gross_loss": -5848.95,
+        "profit_factor": 1.28,
+        "expectancy": 11.71,
+        "mean_pnl": 11.71,
+        "std_pnl": 100.92,
+        "sharpe": 0.116,
+        "sharpe_annualised": 3.131,
+        "annualisation_factor": 727.79,
+        "sortino": 1.815,
+        "max_drawdown_abs": -1061.18,
+        "max_drawdown_pct": 9.1,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "expectancy_R": 0.1547,
+        "fixed_size_pnl": 1624.05,
+        "trades_per_year": 727.79
+      },
+      "mc": {
+        "median_final": 11620.71,
+        "p5_final": 9754.64,
+        "p95_final": 13506.43,
+        "mean_final": 11624.78,
+        "median_max_drawdown": -770.06,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 140,
+          "pnl": 1639.48,
+          "wr": 50.7
+        }
+      },
+      "instrument": "ES",
+      "yf_ticker": "ES=F",
+      "oanda_analog": "SPX500_USD",
+      "interval": "15m",
+      "contract_spec": {
+        "point_value_usd": 50.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:45:00",
+        "n_bars": 4508
+      }
+    },
+    {
+      "n": 117,
+      "verdict": "MARGINAL",
+      "why": "PF 1.273, ann. Sharpe 2.814 \u2014 positive but not strong.",
+      "stats": {
+        "n": 117,
+        "total_pnl": 1370.86,
+        "win_rate": 49.6,
+        "wins": 58,
+        "losses": 59,
+        "breakevens": 0,
+        "avg_win": 110.17,
+        "avg_loss": -85.07,
+        "gross_win": 6389.89,
+        "gross_loss": -5019.03,
+        "profit_factor": 1.273,
+        "expectancy": 11.72,
+        "mean_pnl": 11.72,
+        "std_pnl": 103.41,
+        "sharpe": 0.113,
+        "sharpe_annualised": 2.814,
+        "annualisation_factor": 616.92,
+        "sortino": 3.081,
+        "max_drawdown_abs": -884.63,
+        "max_drawdown_pct": 7.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 6,
+        "expectancy_R": 0.1542,
+        "fixed_size_pnl": 1353.38,
+        "trades_per_year": 616.92
+      },
+      "mc": {
+        "median_final": 11358.81,
+        "p5_final": 9644.41,
+        "p95_final": 13083.09,
+        "mean_final": 11360.06,
+        "median_max_drawdown": -722.66,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 117,
+          "pnl": 1370.86,
+          "wr": 49.6
+        }
+      },
+      "instrument": "NQ",
+      "yf_ticker": "NQ=F",
+      "oanda_analog": "none",
+      "interval": "15m",
+      "contract_spec": {
+        "point_value_usd": 20.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:45:00",
+        "n_bars": 4508
+      }
+    },
+    {
+      "n": 121,
+      "verdict": "MARGINAL",
+      "why": "PF 1.217, ann. Sharpe 2.405 \u2014 positive but not strong.",
+      "stats": {
+        "n": 121,
+        "total_pnl": 1108.47,
+        "win_rate": 50.4,
+        "wins": 61,
+        "losses": 60,
+        "breakevens": 0,
+        "avg_win": 101.79,
+        "avg_loss": -85.01,
+        "gross_win": 6209.35,
+        "gross_loss": -5100.88,
+        "profit_factor": 1.217,
+        "expectancy": 9.16,
+        "mean_pnl": 9.16,
+        "std_pnl": 98.33,
+        "sharpe": 0.093,
+        "sharpe_annualised": 2.405,
+        "annualisation_factor": 666.36,
+        "sortino": 1.992,
+        "max_drawdown_abs": -654.59,
+        "max_drawdown_pct": 5.7,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 4,
+        "expectancy_R": 0.1223,
+        "fixed_size_pnl": 1109.78,
+        "trades_per_year": 666.36
+      },
+      "mc": {
+        "median_final": 11095.9,
+        "p5_final": 9441.26,
+        "p95_final": 12774.03,
+        "mean_final": 11104.25,
+        "median_max_drawdown": -741.26,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 121,
+          "pnl": 1108.47,
+          "wr": 50.4
+        }
+      },
+      "instrument": "GC",
+      "yf_ticker": "GC=F",
+      "oanda_analog": "XAU_USD",
+      "interval": "15m",
+      "contract_spec": {
+        "point_value_usd": 100.0,
+        "tick_size": 0.1
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:45:00",
+        "n_bars": 4508
+      }
+    },
+    {
+      "n": 55,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "55 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 55,
+        "total_pnl": 517.51,
+        "win_rate": 40.0,
+        "wins": 22,
+        "losses": 33,
+        "breakevens": 0,
+        "avg_win": 145.89,
+        "avg_loss": -81.58,
+        "gross_win": 3209.55,
+        "gross_loss": -2692.04,
+        "profit_factor": 1.192,
+        "expectancy": 9.41,
+        "mean_pnl": 9.41,
+        "std_pnl": 126.08,
+        "sharpe": 0.075,
+        "sharpe_annualised": 1.265,
+        "annualisation_factor": 287.15,
+        "sortino": 2.438,
+        "max_drawdown_abs": -737.47,
+        "max_drawdown_pct": 6.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 9,
+        "expectancy_R": 0.1334,
+        "fixed_size_pnl": 550.2,
+        "trades_per_year": 287.15
+      },
+      "mc": {
+        "median_final": 10538.88,
+        "p5_final": 9065.92,
+        "p95_final": 12131.47,
+        "mean_final": 10558.76,
+        "median_max_drawdown": -700.73,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 55,
+          "pnl": 517.51,
+          "wr": 40.0
+        }
+      },
+      "instrument": "ES",
+      "yf_ticker": "ES=F",
+      "oanda_analog": "SPX500_USD",
+      "interval": "30m",
+      "contract_spec": {
+        "point_value_usd": 50.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:30:00",
+        "n_bars": 2254
+      }
+    },
+    {
+      "n": 66,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "66 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 66,
+        "total_pnl": -551.24,
+        "win_rate": 37.9,
+        "wins": 25,
+        "losses": 41,
+        "breakevens": 0,
+        "avg_win": 102.45,
+        "avg_loss": -75.91,
+        "gross_win": 2561.24,
+        "gross_loss": -3112.48,
+        "profit_factor": 0.823,
+        "expectancy": -8.35,
+        "mean_pnl": -8.35,
+        "std_pnl": 91.72,
+        "sharpe": -0.091,
+        "sharpe_annualised": -1.702,
+        "annualisation_factor": 349.37,
+        "sortino": -2.817,
+        "max_drawdown_abs": -1025.69,
+        "max_drawdown_pct": 10.3,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "expectancy_R": -0.1084,
+        "fixed_size_pnl": -536.4,
+        "trades_per_year": 349.37
+      },
+      "mc": {
+        "median_final": 9442.0,
+        "p5_final": 8185.09,
+        "p95_final": 10813.95,
+        "mean_final": 9463.19,
+        "median_max_drawdown": -1098.23,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 66,
+          "pnl": -551.24,
+          "wr": 37.9
+        }
+      },
+      "instrument": "NQ",
+      "yf_ticker": "NQ=F",
+      "oanda_analog": "none",
+      "interval": "30m",
+      "contract_spec": {
+        "point_value_usd": 20.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:30:00",
+        "n_bars": 2254
+      }
+    },
+    {
+      "n": 47,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "47 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 47,
+        "total_pnl": 612.61,
+        "win_rate": 48.9,
+        "wins": 23,
+        "losses": 24,
+        "breakevens": 0,
+        "avg_win": 112.23,
+        "avg_loss": -82.03,
+        "gross_win": 2581.38,
+        "gross_loss": -1968.77,
+        "profit_factor": 1.311,
+        "expectancy": 13.03,
+        "mean_pnl": 13.03,
+        "std_pnl": 104.31,
+        "sharpe": 0.125,
+        "sharpe_annualised": 2.079,
+        "annualisation_factor": 276.88,
+        "sortino": 4.405,
+        "max_drawdown_abs": -356.03,
+        "max_drawdown_pct": 3.5,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 4,
+        "expectancy_R": 0.1758,
+        "fixed_size_pnl": 619.73,
+        "trades_per_year": 276.88
+      },
+      "mc": {
+        "median_final": 10604.35,
+        "p5_final": 9498.27,
+        "p95_final": 11759.24,
+        "mean_final": 10614.75,
+        "median_max_drawdown": -487.8,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2026": {
+          "n": 47,
+          "pnl": 612.61,
+          "wr": 48.9
+        }
+      },
+      "instrument": "GC",
+      "yf_ticker": "GC=F",
+      "oanda_analog": "XAU_USD",
+      "interval": "30m",
+      "contract_spec": {
+        "point_value_usd": 100.0,
+        "tick_size": 0.1
+      },
+      "span": {
+        "first_bar": "2026-05-17T22:00:00",
+        "last_bar": "2026-07-28T14:30:00",
+        "n_bars": 2254
+      }
+    },
+    {
+      "n": 637,
+      "verdict": "PASS",
+      "why": "PF 1.694, ann. Sharpe 3.652, max DD 8.7%, profitable in 3/3 years.",
+      "stats": {
+        "n": 637,
+        "total_pnl": 40063.93,
+        "win_rate": 57.8,
+        "wins": 368,
+        "losses": 269,
+        "breakevens": 0,
+        "avg_win": 265.72,
+        "avg_loss": -214.58,
+        "gross_win": 97786.04,
+        "gross_loss": -57722.11,
+        "profit_factor": 1.694,
+        "expectancy": 62.89,
+        "mean_pnl": 62.89,
+        "std_pnl": 282.32,
+        "sharpe": 0.223,
+        "sharpe_annualised": 3.652,
+        "annualisation_factor": 268.67,
+        "sortino": 0.606,
+        "max_drawdown_abs": -4787.52,
+        "max_drawdown_pct": 8.7,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 10,
+        "expectancy_R": 0.3535,
+        "fixed_size_pnl": 16888.8,
+        "trades_per_year": 268.67
+      },
+      "mc": {
+        "median_final": 26861.09,
+        "p5_final": 22709.0,
+        "p95_final": 30879.49,
+        "mean_final": 26856.97,
+        "median_max_drawdown": -752.92,
+        "ruin_probability": 0.0,
+        "double_probability": 99.81,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2024": {
+          "n": 211,
+          "pnl": 8372.88,
+          "wr": 60.7
+        },
+        "2025": {
+          "n": 316,
+          "pnl": 23388.68,
+          "wr": 58.2
+        },
+        "2026": {
+          "n": 110,
+          "pnl": 8302.37,
+          "wr": 50.9
+        }
+      },
+      "instrument": "ES",
+      "yf_ticker": "ES=F",
+      "oanda_analog": "SPX500_USD",
+      "interval": "1h",
+      "contract_spec": {
+        "point_value_usd": 50.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2024-03-05T05:00:00",
+        "last_bar": "2026-07-28T14:00:00",
+        "n_bars": 13718
+      }
+    },
+    {
+      "n": 676,
+      "verdict": "PASS",
+      "why": "PF 1.636, ann. Sharpe 3.464, max DD 7.3%, profitable in 3/3 years.",
+      "stats": {
+        "n": 676,
+        "total_pnl": 39288.19,
+        "win_rate": 57.4,
+        "wins": 388,
+        "losses": 288,
+        "breakevens": 0,
+        "avg_win": 260.55,
+        "avg_loss": -214.6,
+        "gross_win": 101092.69,
+        "gross_loss": -61804.5,
+        "profit_factor": 1.636,
+        "expectancy": 58.12,
+        "mean_pnl": 58.12,
+        "std_pnl": 283.31,
+        "sharpe": 0.205,
+        "sharpe_annualised": 3.464,
+        "annualisation_factor": 285.2,
+        "sortino": 0.601,
+        "max_drawdown_abs": -3793.69,
+        "max_drawdown_pct": 7.3,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 10,
+        "expectancy_R": 0.3284,
+        "fixed_size_pnl": 16648.5,
+        "trades_per_year": 285.2
+      },
+      "mc": {
+        "median_final": 26658.96,
+        "p5_final": 22571.05,
+        "p95_final": 30849.77,
+        "mean_final": 26680.99,
+        "median_max_drawdown": -786.04,
+        "ruin_probability": 0.0,
+        "double_probability": 99.75,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2024": {
+          "n": 212,
+          "pnl": 9313.08,
+          "wr": 61.3
+        },
+        "2025": {
+          "n": 346,
+          "pnl": 22527.32,
+          "wr": 57.8
+        },
+        "2026": {
+          "n": 118,
+          "pnl": 7447.79,
+          "wr": 49.2
+        }
+      },
+      "instrument": "NQ",
+      "yf_ticker": "NQ=F",
+      "oanda_analog": "none",
+      "interval": "1h",
+      "contract_spec": {
+        "point_value_usd": 20.0,
+        "tick_size": 0.25
+      },
+      "span": {
+        "first_bar": "2024-03-05T05:00:00",
+        "last_bar": "2026-07-28T14:00:00",
+        "n_bars": 13717
+      }
+    },
+    {
+      "n": 500,
+      "verdict": "PASS",
+      "why": "PF 1.714, ann. Sharpe 3.370, max DD 9.7%, profitable in 3/3 years.",
+      "stats": {
+        "n": 500,
+        "total_pnl": 19721.4,
+        "win_rate": 57.4,
+        "wins": 287,
+        "losses": 213,
+        "breakevens": 0,
+        "avg_win": 165.01,
+        "avg_loss": -129.75,
+        "gross_win": 47357.14,
+        "gross_loss": -27635.74,
+        "profit_factor": 1.714,
+        "expectancy": 39.44,
+        "mean_pnl": 39.44,
+        "std_pnl": 169.95,
+        "sharpe": 0.232,
+        "sharpe_annualised": 3.37,
+        "annualisation_factor": 210.86,
+        "sortino": 0.86,
+        "max_drawdown_abs": -2857.48,
+        "max_drawdown_pct": 9.7,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 12,
+        "expectancy_R": 0.3017,
+        "fixed_size_pnl": 11315.33,
+        "trades_per_year": 210.86
+      },
+      "mc": {
+        "median_final": 21317.16,
+        "p5_final": 17866.51,
+        "p95_final": 24926.77,
+        "mean_final": 21360.39,
+        "median_max_drawdown": -751.54,
+        "ruin_probability": 0.0,
+        "double_probability": 76.41,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2024": {
+          "n": 149,
+          "pnl": 1853.31,
+          "wr": 49.0
+        },
+        "2025": {
+          "n": 264,
+          "pnl": 12125.2,
+          "wr": 62.9
+        },
+        "2026": {
+          "n": 87,
+          "pnl": 5742.89,
+          "wr": 55.2
+        }
+      },
+      "instrument": "GC",
+      "yf_ticker": "GC=F",
+      "oanda_analog": "XAU_USD",
+      "interval": "1h",
+      "contract_spec": {
+        "point_value_usd": 100.0,
+        "tick_size": 0.1
+      },
+      "span": {
+        "first_bar": "2024-03-05T05:00:00",
+        "last_bar": "2026-07-28T14:00:00",
+        "n_bars": 13757
+      }
+    }
+  ]
+}
