@@ -211,13 +211,48 @@ def rank(results: dict) -> list:
     return rows
 
 
-def write_library(results: dict) -> dict:
+def _mechanism_label(strategy: str, validation: dict | None) -> str:
+    """Honest label for what a strategy's edge actually is.
+
+    Uses the mean-reversion baseline result if present: if turtle_soup's
+    numbers are indistinguishable from the "fade the sweep, no killzone,
+    no HTF bias" baseline, the ICT-specific filters aren't earning any of
+    the edge and the strategy is mean reversion. Say so plainly on the
+    library entry so anyone reading it knows what they're actually
+    deploying.
+    """
+    if strategy != 'turtle_soup':
+        return f'ICT: {strategy}'
+    if not validation or 'baseline' not in validation:
+        return 'turtle_soup — mechanism not yet validated (walk-forward + baseline pending)'
+    baseline = validation.get('baseline') or []
+    if not baseline:
+        return 'turtle_soup — baseline result missing'
+    same = sum(1 for b in baseline if b.get('same_edge'))
+    total = len(baseline)
+    if same >= max(2, total * 3 // 4):
+        return ('MEAN REVERSION (post-sweep fade). '
+                f'{same}/{total} instruments show no measurable edge from H4 bias + '
+                'killzone filters over the plain sweep-fade baseline.')
+    if same == 0:
+        return ('ICT structure. Killzone + H4 bias contribute measurable edge on '
+                f'{total}/{total} instruments vs. the plain sweep-fade baseline.')
+    return (f'MIXED. On {total-same}/{total} instruments the ICT filters help; on '
+            f'{same}/{total} the edge is indistinguishable from mean reversion.')
+
+
+def write_library(results: dict, turtle_validation: dict | None = None) -> dict:
     """Write ONLY gate-cleared models to the shared strategy library.
 
     Feeds the next build (shared library + Jerry crypto). Nothing that failed
     the trade floor or the verdict gate is written as deployable — the library
     records those as researched-but-not-validated so the work is not lost and
     cannot be mistaken for a green light.
+
+    If a `ict_turtle_validation.json` output is present, its mean-reversion-
+    baseline result is used to label turtle_soup entries with what the edge
+    actually is (structural ICT vs. plain post-sweep mean reversion), so a
+    downstream reader is never misled about what they are deploying.
     """
     from ict_strategies import BY_KEY
     validated, rejected = [], []
@@ -230,8 +265,14 @@ def write_library(results: dict) -> dict:
             'version': 1,
             'n_trades': r['n'], 'verdict': r['verdict'], 'why': r['why'],
             'stats': {k: r['stats'].get(k) for k in
-                      ('win_rate', 'profit_factor', 'sharpe', 'expectancy',
-                       'max_drawdown_pct', 'total_pnl')},
+                      ('win_rate', 'profit_factor', 'sharpe', 'sharpe_annualised',
+                       'expectancy', 'expectancy_R',
+                       'max_drawdown_pct', 'total_pnl', 'fixed_size_pnl')},
+            'monte_carlo': {k: (r.get('monte_carlo') or {}).get(k) for k in
+                            ('ruin_probability', 'double_probability',
+                             'median_final', 'p5_final')},
+            'mc_basis': r.get('mc_basis'),
+            'mechanism_label': _mechanism_label(r['strategy'], turtle_validation),
             'regimes': r['regimes'],
             'rules': BY_KEY[r['strategy']].rules,
             'params': PARAMS,
@@ -282,12 +323,22 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument('--run', action='store_true')
     ap.add_argument('--report', action='store_true')
+    ap.add_argument('--rewrite-library', action='store_true',
+                    help='regenerate strategy_library.json from existing '
+                         'ict_research.json + ict_turtle_validation.json '
+                         'without re-running the backtest')
     ap.add_argument('--instrument')
     a = ap.parse_args()
 
     if a.run:
         res = run_matrix([a.instrument] if a.instrument else None)
-        write_library(res)
+        turtle_val = _load_turtle_validation()
+        write_library(res, turtle_val)
+        print(report(res))
+    elif a.rewrite_library:
+        res = json.loads(RESULTS_PATH.read_text())
+        turtle_val = _load_turtle_validation()
+        write_library(res, turtle_val)
         print(report(res))
     elif a.report:
         res = json.loads(RESULTS_PATH.read_text())
@@ -295,6 +346,20 @@ def main() -> int:
     else:
         ap.print_help()
     return 0
+
+
+def _load_turtle_validation() -> dict | None:
+    """Read the ict_turtle_validation.json produced by the deep-validation
+    script, if present, so write_library can label turtle_soup honestly with
+    what its edge actually is. Missing file is silent — the library entry
+    just says 'validation pending' rather than pretending to know."""
+    p = Path('/root/.openclaw/dashboard/ict_turtle_validation.json')
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text())
+    except json.JSONDecodeError:
+        return None
 
 
 if __name__ == '__main__':
