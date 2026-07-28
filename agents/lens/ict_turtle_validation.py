@@ -55,6 +55,9 @@ sys.path.insert(0, '/root/.openclaw/scripts')
 
 from ict_backtest import run as bt_run, load_bars, STARTING_BALANCE   # noqa: E402
 from ict_strategies import STRATEGIES, PARAMS, BY_KEY, StrategySpec, KILLZONES  # noqa: E402
+from ict_research import (                                                     # noqa: E402
+    FIXED_RISK_PER_TRADE, _augment_stats,
+)
 
 # Same gate the live pipeline uses, so validation reports and the deployment
 # gate can never diverge on Sharpe basis or thresholds.
@@ -77,7 +80,13 @@ def _bars_or_die(inst: str) -> tuple:
 
 def _trades_to_records(trades: list) -> list[dict]:
     return [{'pnl': t.pnl, 'timestamp': t.entry_time,
-             'direction': t.direction} for t in trades]
+             'direction': t.direction, 'r_multiple': t.r_multiple}
+            for t in trades]
+
+
+def _fixed_size_series(recs: list[dict]) -> list[float]:
+    """Fixed-size P&L per trade for MC ruin. See ict_research.FIXED_RISK_PER_TRADE."""
+    return [r['r_multiple'] * FIXED_RISK_PER_TRADE for r in recs]
 
 
 def _year_of(ts: str) -> int:
@@ -120,7 +129,8 @@ def walkforward_one(inst: str, in_years: int = 2, out_years: int = 1) -> dict:
         def _stat(trades: list) -> dict:
             recs = _trades_to_records(trades)
             s = calculate_stats(recs, TURTLE.key, starting_balance=STARTING_BALANCE)
-            mc = (monte_carlo_simulation([r['pnl'] for r in recs],
+            _augment_stats(s, recs)
+            mc = (monte_carlo_simulation(_fixed_size_series(recs),
                                          starting_balance=STARTING_BALANCE)
                   if len(recs) >= 30 else {})
             return {'n': len(recs), 'wr': s.get('win_rate'), 'pf': s.get('profit_factor'),
@@ -128,6 +138,7 @@ def walkforward_one(inst: str, in_years: int = 2, out_years: int = 1) -> dict:
                     'sharpe_ann': s.get('sharpe_annualised'),
                     'max_dd_pct': s.get('max_drawdown_pct'),
                     'expectancy': s.get('expectancy'),
+                    'expectancy_R': s.get('expectancy_R'),
                     'ruin': mc.get('ruin_probability')}
 
         windows.append({
@@ -188,10 +199,12 @@ def _run_variant(inst: str, param_overrides: dict, kz=None) -> dict:
     if not recs:
         return {'n': 0}
     s = calculate_stats(recs, TURTLE.key, starting_balance=STARTING_BALANCE)
+    _augment_stats(s, recs)
     return {'n': len(recs), 'wr': s.get('win_rate'), 'pf': s.get('profit_factor'),
             'sharpe_ann': s.get('sharpe_annualised'),
             'max_dd_pct': s.get('max_drawdown_pct'),
-            'expectancy': s.get('expectancy')}
+            'expectancy': s.get('expectancy'),
+            'expectancy_R': s.get('expectancy_R')}
 
 
 def sensitivity_one(inst: str) -> dict:
@@ -241,12 +254,14 @@ def baseline_one(inst: str) -> dict:
         if not recs:
             return {'n': 0}
         s = calculate_stats(recs, res.strategy, starting_balance=STARTING_BALANCE)
-        mc = (monte_carlo_simulation([r['pnl'] for r in recs],
+        _augment_stats(s, recs)
+        mc = (monte_carlo_simulation(_fixed_size_series(recs),
                                      starting_balance=STARTING_BALANCE)
               if len(recs) >= 30 else {})
         return {'n': len(recs), 'wr': s.get('win_rate'), 'pf': s.get('profit_factor'),
                 'sharpe_ann': s.get('sharpe_annualised'),
                 'expectancy': s.get('expectancy'),
+                'expectancy_R': s.get('expectancy_R'),
                 'max_dd_pct': s.get('max_drawdown_pct'),
                 'ruin': mc.get('ruin_probability')}
 

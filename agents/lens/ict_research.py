@@ -28,6 +28,35 @@ from risk_validation import calculate_stats, monte_carlo_simulation   # noqa: E4
 RESULTS_PATH = Path('/root/.openclaw/dashboard/ict_research.json')
 LIBRARY_PATH = Path('/root/.openclaw/dashboard/strategy_library.json')
 
+# Fixed-dollar risk per trade for MC ruin. RISK_PCT (0.75%) of the $10k
+# starting balance = $75 per trade — the same risk_amt every trade, always.
+# Passing THIS series to monte_carlo_simulation resolves the compounding
+# artefact that produced 68-74% ruin figures against $10k starts while the
+# backtest itself grew to $7-53M peak equity (2026-07-28 fix).
+FIXED_RISK_PER_TRADE = STARTING_BALANCE * PARAMS['RISK_PCT']
+
+
+def _augment_stats(stats: dict, trades: list) -> dict:
+    """Add ICT-specific fields the shared calculate_stats does not know about.
+
+    - expectancy_R:      mean R-multiple per trade (position-size-invariant)
+    - fixed_size_pnl:    total $ at FIXED_RISK_PER_TRADE per trade
+    - trades_per_year:   real trades-per-year from the timestamp span
+                         (matches the shared stats' annualisation_factor)
+
+    These make the report meaningful independently of the compounding balance:
+    two rows with wildly different total_pnl but identical R distributions read
+    as the same edge under expectancy_R + fixed_size_pnl.
+    """
+    if not trades:
+        return stats
+    rms = [t.get('r_multiple', 0) or 0 for t in trades]
+    n = len(rms)
+    stats['expectancy_R'] = round(sum(rms) / n, 4) if n else 0.0
+    stats['fixed_size_pnl'] = round(sum(rms) * FIXED_RISK_PER_TRADE, 2)
+    stats['trades_per_year'] = float(stats.get('annualisation_factor') or 252.0)
+    return stats
+
 # Blade's book per Jase's brief. NOTE: the brief lists XAU as Blade's third
 # instrument while CLAUDE.md §2 lists CHF_JPY. Both are tested and the
 # discrepancy is reported rather than silently resolved.
@@ -121,14 +150,31 @@ def run_matrix(instruments=None) -> dict:
         for spec in STRATEGIES:
             res = bt_run(spec, bars, h4, inst)
             trades = [{'pnl': t.pnl, 'timestamp': t.entry_time,
-                       'direction': t.direction, 'result': 'W' if t.pnl > 0 else 'L'}
+                       'direction': t.direction,
+                       'r_multiple': t.r_multiple,
+                       'result': 'W' if t.pnl > 0 else 'L'}
                       for t in res.trades]
             n = len(trades)
             stats = calculate_stats(trades, spec.key,
                                     starting_balance=STARTING_BALANCE) if n else {'n': 0}
-            mc = (monte_carlo_simulation([t['pnl'] for t in trades],
+            if n:
+                _augment_stats(stats, trades)
+            # MC RUIN on FIXED-SIZE P&L (2026-07-28 fix). Bootstrapping the raw
+            # `pnl` series against a $10k start is the compounding artefact —
+            # trades sized off a $50M peak resampled against $10k wipe by
+            # construction. r_multiple is position-size-invariant; scaling it
+            # by the same FIXED_RISK_PER_TRADE every trade produces a fixed-
+            # size P&L distribution that the bootstrap can meaningfully test.
+            fixed_pnl_series = [t['r_multiple'] * FIXED_RISK_PER_TRADE
+                                for t in trades]
+            mc = (monte_carlo_simulation(fixed_pnl_series,
                                          starting_balance=STARTING_BALANCE)
                   if n >= 10 else {})
+            # Also record the OLD compounded MC for transparency — same input
+            # the previous gate saw, so before/after is visible in one file.
+            mc_compounded = (monte_carlo_simulation([t['pnl'] for t in trades],
+                                                    starting_balance=STARTING_BALANCE)
+                             if n >= 10 else {})
             regimes = _regime_split(res.trades, bars)
             verdict, why = _verdict(stats, mc, n, regimes)
 
@@ -136,7 +182,11 @@ def run_matrix(instruments=None) -> dict:
                 'strategy': spec.key, 'name': spec.name, 'family': spec.family,
                 'instrument': inst, 'n': n,
                 'verdict': verdict, 'why': why,
-                'stats': stats, 'monte_carlo': mc, 'regimes': regimes,
+                'stats': stats,
+                'monte_carlo': mc,
+                'monte_carlo_compounded': mc_compounded,
+                'mc_basis': 'fixed_size_pnl (r_multiple * $75 per trade)',
+                'regimes': regimes,
                 'final_balance': res.final_balance,
                 'skipped_low_rr': res.skipped_rr,
             }
