@@ -95,6 +95,24 @@ class JerryTrader:
         Buy stock with optional bracket SL/TP.
         notional = dollar amount to spend.
         """
+        # LIBRARY GATE (2026-07-28). Jerry does not trade a symbol unless a
+        # deployable strategy exists in dashboard/strategy_library.json under
+        # one of Jerry's authorised asset-classes (equity, options,
+        # crypto_spot). The failed equity strategy that produced -$599 / 35% WR
+        # is not deployable; therefore every equity buy is currently GATED_OUT
+        # and Jerry idles. When Lens or Victoria promotes a strategy the gate
+        # opens automatically — no Jerry code change required.
+        try:
+            from jerry_library_gate import gate_or_refuse
+            allowed, reason = gate_or_refuse(symbol, action='buy', log=log)
+            if not allowed:
+                log.info('gate refuse %s: %s', symbol, reason)
+                return None
+        except ImportError:
+            log.warning('library gate missing — refusing buy for safety '
+                        '(fail-closed policy)')
+            return None
+
         try:
             # Get current price to calculate qty for bracket support
             snapshot = self.get_snapshot(symbol)

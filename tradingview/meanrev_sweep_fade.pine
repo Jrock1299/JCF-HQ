@@ -1,0 +1,263 @@
+//@version=5
+//
+// meanrev_sweep_fade.pine
+//
+// Faithful port of the VALIDATED mean-reversion / post-sweep-fade strategy
+// from dashboard/strategy_library.json (id: ict.turtle_soup.{SPX500_USD,
+// DE30_EUR, XAU_USD}, deployable=true as of 2026-07-28).
+//
+// The strategy_library labels this MEAN REVERSION (post-sweep fade), not
+// ICT — the mean-reversion baseline test showed the killzone + H4 bias
+// filters actively LOSE edge on 3/4 instruments (the plain 24/7 sweep-fade
+// baseline out-performs). Both filters are exposed here as inputs so a
+// Jase-facing chart can toggle between the gated "turtle_soup" mode and
+// the plain baseline mode. Default = gated (matches what actually shipped
+// to Blade + Edge).
+//
+// MUST STAY IN SYNC WITH strategy_library.json. If the Python-side rules
+// change, this file changes too. The Python source of truth lives at:
+//   agents/lens/ict_strategies.py     (StrategySpec 'turtle_soup')
+//   agents/lens/ict_backtest.py       (_detect function)
+//   scripts/risk_validation.py        (deployment gate)
+//
+// ─────────────────────────────────────────────────────────────────────────
+// NO REPAINT — how this indicator avoids the #1 way TV indicators lie
+// ─────────────────────────────────────────────────────────────────────────
+// 1. Signals evaluate ONLY on `barstate.isconfirmed`. On the currently-
+//    forming bar `isconfirmed` is false, so no signal prints. On a
+//    historical bar `isconfirmed` is always true. Result: a printed signal
+//    is ALWAYS at a fully-closed bar, matching the Python `close[1]`
+//    contract (never `close[0]`, never a still-forming bar).
+// 2. Pivots use `ta.pivothigh(k, k)` — this function returns a value only
+//    at bar (current - k) once k bars have passed. It cannot see the
+//    future by construction.
+// 3. H4 bias via `request.security` uses `barmerge.lookahead_off` (the
+//    non-lookahead variant) — the HTF EMA seen at a bar is the value at
+//    the last H4 bar that had CLOSED at or before this bar's timestamp.
+// 4. Sweep detection compares `high > pool_high AND close < pool_high` on
+//    the just-closed bar. Both terms are `close[0]`-safe: `high` is the
+//    completed high, `close` is the completed close. No forward peek.
+// 5. Sessions checked via `time(timeframe.period, session, "UTC")` — the
+//    time function returns na outside the session; killzone-gating is a
+//    pure lookup on the current bar's timestamp, not something a later
+//    bar can alter.
+// If any of these break in a future Pine version, the signals will start
+// repainting. Test by comparing a signal printed on the live bar with the
+// same signal 10 bars later — they must match, byte-for-byte.
+//
+// ─────────────────────────────────────────────────────────────────────────
+// TradingView symbol mapping (validated OANDA instrument → TV symbol)
+// ─────────────────────────────────────────────────────────────────────────
+//   OANDA SPX500_USD   → TV OANDA:SPX500USD          (best fidelity; matches
+//                        the same feed the Python backtest used)
+//                        Alternates:  SP:SPX  CBOE:SPX  TVC:SPX  US500
+//                        Note: US500 CFDs across brokers differ slightly on
+//                        M15 wicks — signals will be within 1-2 ticks of
+//                        the OANDA truth, occasionally off by one.
+//   OANDA DE30_EUR     → TV OANDA:DE30EUR            (best fidelity)
+//                        Alternates:  XETR:DAX  TVC:DEU30  GER30  DE40
+//                        Note: DE30 and DE40 are the same index; DAX
+//                        constituents changed in Sep 2021 but the index
+//                        is continuous. TV shows it as DEU30/DE40.
+//   OANDA XAU_USD      → TV OANDA:XAUUSD             (best fidelity)
+//                        Alternates:  TVC:GOLD  OANDA:XAUUSD  FX:XAUUSD
+//
+// The strategy VALIDATED on OANDA data. Charts on non-OANDA feeds are
+// close enough for the signal to be actionable, but the fine-grained tick
+// timing (and therefore the exact bar a signal prints on) can shift by
+// one bar in the worst case. If you want the ground truth, chart the
+// OANDA symbol.
+//
+// ─────────────────────────────────────────────────────────────────────────
+// EXTRACTED RULES (from strategy_library.json → ict.turtle_soup.*)
+// ─────────────────────────────────────────────────────────────────────────
+//   1. Sweep of a 20-bar extreme that closes back inside.
+//   2. Entry: market on close[1] confirmation of the rejection bar.
+//   3. Stop: beyond the sweep extreme + 0.25 × ATR(14).
+//   4. Target: opposing pool; RR ≥ 2.0.
+//   5. Sessions: London + NY killzones (LONDON 07:00-10:00 UTC,
+//      NY 12:00-15:00 UTC).
+//   + Execution flags from library.execution:
+//       reverse_on_sweep = true    → market entry on the confirmation bar
+//                                    (not a limit at the FVG midpoint)
+//       htf_bias_required = true   → H4 EMA-50 filter: only shorts if
+//                                    H4 close[1] < H4 EMA-50, only longs
+//                                    if H4 close[1] > H4 EMA-50
+//       require_mss = false        → no MSS confirmation needed
+//       require_displacement=false → no displacement threshold needed
+//
+// ─────────────────────────────────────────────────────────────────────────
+
+indicator("JCF Mean-Reversion Sweep Fade (validated turtle_soup)",
+          shorttitle="MR Sweep Fade", overlay=true,
+          max_labels_count=500, max_lines_count=500)
+
+// ═════ INPUTS (defaults mirror strategy_library params) ══════════════════
+
+grp_core = "Strategy — mirror of strategy_library.json PARAMS"
+swing_k         = input.int(2,   "Swing pivot K",         minval=1, group=grp_core,
+    tooltip="ict_strategies.PARAMS.SWING_K — fractal lookback each side")
+lookback_pools  = input.int(50,  "Lookback (pools)",       minval=5,  group=grp_core,
+    tooltip="ict_strategies.PARAMS.LOOKBACK_POOLS — how many swings to remember")
+atr_period      = input.int(14,  "ATR period",             minval=2,  group=grp_core)
+stop_buffer_atr = input.float(0.25, "Stop buffer × ATR",   minval=0, step=0.05, group=grp_core,
+    tooltip="ict_strategies.PARAMS.STOP_BUFFER_ATR — beyond the sweep extreme")
+min_stop_atr    = input.float(0.5, "Min stop distance × ATR", minval=0, step=0.1, group=grp_core,
+    tooltip="ict_strategies.PARAMS.MIN_STOP_ATR — reject sub-0.5-ATR stops")
+min_rr          = input.float(2.0, "Min R:R",              minval=1.0, step=0.1, group=grp_core,
+    tooltip="ict_strategies.PARAMS.MIN_RR")
+
+grp_filters = "Filters — toggle to compare gated vs plain baseline"
+use_htf_bias    = input.bool(true, "Use H4 EMA-50 bias filter",   group=grp_filters,
+    tooltip="Library execution.htf_bias_required=true for turtle_soup. "
+          + "Uncheck to see the plain sweep-fade baseline that BEAT the "
+          + "gated strategy on 3/4 instruments (see decision-log 2026-07-28).")
+use_killzone    = input.bool(true, "Use London + NY killzone filter", group=grp_filters,
+    tooltip="Library execution.killzones=['LONDON','NY'] for turtle_soup. "
+          + "Uncheck for the 24/7 baseline.")
+london_session  = input.session("0700-1000", "London killzone (UTC)", group=grp_filters)
+ny_session      = input.session("1200-1500", "NY killzone (UTC)",     group=grp_filters)
+
+grp_visual = "Visuals"
+show_stop_target = input.bool(true, "Draw stop / target lines on signal", group=grp_visual)
+lines_extend_bars = input.int(30, "Bars to extend stop/target lines", minval=5, group=grp_visual)
+
+// ═════ H4 EMA-50 BIAS (no lookahead) ═════════════════════════════════════
+
+// Fetch the H4 EMA-50 series with lookahead_off — the value seen on this
+// bar is the EMA at the LAST H4 bar that had already closed. This matches
+// the Python `_htf_bias` which reads close[1] on the H4 series.
+[h4_close_prev, h4_ema50] = request.security(syminfo.tickerid, "240",
+    [close[1], ta.ema(close, 50)], barmerge.gaps_off, barmerge.lookahead_off)
+
+h4_bull = not na(h4_close_prev) and not na(h4_ema50) and h4_close_prev > h4_ema50
+h4_bear = not na(h4_close_prev) and not na(h4_ema50) and h4_close_prev < h4_ema50
+
+// ═════ SWING PIVOTS + POOL MEMORY (no lookahead) ═════════════════════════
+
+ph = ta.pivothigh(high, swing_k, swing_k)   // reports at bar (idx - k), confirmed
+pl = ta.pivotlow(low,  swing_k, swing_k)
+
+var array<float> pool_highs = array.new_float(0)
+var array<float> pool_lows  = array.new_float(0)
+
+if not na(ph)
+    array.push(pool_highs, ph)
+    if array.size(pool_highs) > lookback_pools
+        array.shift(pool_highs)
+if not na(pl)
+    array.push(pool_lows, pl)
+    if array.size(pool_lows) > lookback_pools
+        array.shift(pool_lows)
+
+// Nearest recent pool prices (top-of-book for sweep test)
+pool_high_now = array.size(pool_highs) > 0 ?
+     array.get(pool_highs, array.size(pool_highs) - 1) : na
+pool_low_now  = array.size(pool_lows) > 0 ?
+     array.get(pool_lows,  array.size(pool_lows) - 1) : na
+
+// ═════ SESSION GATE (UTC, using time()) ══════════════════════════════════
+
+in_london = not na(time(timeframe.period, london_session, "UTC"))
+in_ny     = not na(time(timeframe.period, ny_session,     "UTC"))
+in_killzone = in_london or in_ny
+kz_ok = not use_killzone or in_killzone
+
+// ═════ SWEEP DETECTION + SIGNAL (no repaint) ═════════════════════════════
+
+atr_v = ta.atr(atr_period)
+
+// Buy-side sweep → SHORT signal:  high[0] takes pool_high AND close[0] < pool_high
+// Sell-side sweep → LONG signal:  low[0] takes pool_low AND close[0] > pool_low
+buy_side_sweep  = not na(pool_high_now) and high > pool_high_now and close < pool_high_now
+sell_side_sweep = not na(pool_low_now)  and low  < pool_low_now  and close > pool_low_now
+
+// HTF bias gate — same directional check as Python:
+//   short OK only if bias is bear (or bias check disabled)
+//   long  OK only if bias is bull (or bias check disabled)
+short_ok = not use_htf_bias or h4_bear
+long_ok  = not use_htf_bias or h4_bull
+
+sell_signal = barstate.isconfirmed and kz_ok and buy_side_sweep  and short_ok
+buy_signal  = barstate.isconfirmed and kz_ok and sell_side_sweep and long_ok
+
+// ═════ STOPS + TARGETS (only meaningful on a signal bar) ═════════════════
+
+// Stop: beyond the sweep extreme + STOP_BUFFER_ATR × ATR
+stop_for_short = high + stop_buffer_atr * atr_v
+stop_for_long  = low  - stop_buffer_atr * atr_v
+
+// Reject degenerate stops (matches Python MIN_STOP_ATR rail)
+short_stop_ok = (stop_for_short - close) >= min_stop_atr * atr_v
+long_stop_ok  = (close - stop_for_long)  >= min_stop_atr * atr_v
+
+// Target: walk outward to the first opposing pool that clears MIN_RR;
+// fall back to a clean MIN_RR multiple if no pool is far enough.
+target_for_long(entry, stop) =>
+    risk = entry - stop
+    var float found = na
+    found := na
+    if array.size(pool_highs) > 0
+        for i = array.size(pool_highs) - 1 to 0
+            p = array.get(pool_highs, i)
+            if p > entry and (p - entry) >= min_rr * risk
+                found := p
+                break
+    na(found) ? entry + min_rr * risk : found
+
+target_for_short(entry, stop) =>
+    risk = stop - entry
+    var float found = na
+    found := na
+    if array.size(pool_lows) > 0
+        for i = array.size(pool_lows) - 1 to 0
+            p = array.get(pool_lows, i)
+            if p < entry and (entry - p) >= min_rr * risk
+                found := p
+                break
+    na(found) ? entry - min_rr * risk : found
+
+// Fold the stop-quality rail into the final signal — no signal if the
+// stop is too tight (Python rejects the setup at that point too).
+final_sell = sell_signal and short_stop_ok
+final_buy  = buy_signal  and long_stop_ok
+
+// ═════ PLOT SIGNALS ═════════════════════════════════════════════════════
+
+plotshape(final_buy,  title="BUY",  style=shape.triangleup,
+          location=location.belowbar, color=color.new(color.green, 0), size=size.small)
+plotshape(final_sell, title="SELL", style=shape.triangledown,
+          location=location.abovebar, color=color.new(color.red,   0), size=size.small)
+
+// Optional stop / target lines around the latest signal
+var line stop_line   = na
+var line target_line = na
+var label sig_label  = na
+
+f_draw_bracket(is_long, entry, stop, target) =>
+    line.delete(stop_line)
+    line.delete(target_line)
+    label.delete(sig_label)
+    stop_line   := line.new(bar_index, stop,   bar_index + lines_extend_bars, stop,
+                            color=color.new(color.red,   0), style=line.style_dashed, width=1)
+    target_line := line.new(bar_index, target, bar_index + lines_extend_bars, target,
+                            color=color.new(color.green, 0), style=line.style_dashed, width=1)
+    label_txt = is_long ? str.format("LONG @ {0}\nSL {1} | TP {2}", entry, stop, target)
+                        : str.format("SHORT @ {0}\nSL {1} | TP {2}", entry, stop, target)
+    sig_label := label.new(bar_index, is_long ? stop : target, label_txt,
+                           style=is_long ? label.style_label_up : label.style_label_down,
+                           color=color.new(color.gray, 60), textcolor=color.white, size=size.small)
+
+if show_stop_target and final_buy
+    f_draw_bracket(true, close, stop_for_long, target_for_long(close, stop_for_long))
+if show_stop_target and final_sell
+    f_draw_bracket(false, close, stop_for_short, target_for_short(close, stop_for_short))
+
+// ═════ ALERT CONDITIONS (Jase can wire TV push alerts) ═══════════════════
+
+alertcondition(final_buy,  title="Mean-Rev BUY",
+    message="MR Sweep Fade LONG on {{ticker}} {{interval}} @ {{close}} — SL/TP on chart. See mechanism_label in strategy_library.json.")
+alertcondition(final_sell, title="Mean-Rev SELL",
+    message="MR Sweep Fade SHORT on {{ticker}} {{interval}} @ {{close}} — SL/TP on chart. See mechanism_label in strategy_library.json.")
+
+// ═════ END ══════════════════════════════════════════════════════════════
