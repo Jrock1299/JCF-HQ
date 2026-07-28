@@ -8,6 +8,7 @@ import { useTheme } from '../hooks/useTheme'
 import { useDirection } from '../hooks/useDirection'
 import { useEditMode } from '../edit/EditModeContext'
 import { liveCount } from '../data/agentConfig'
+import { EtherNav } from '../directions/shared'
 
 function ControlCluster() {
   const { theme, toggle } = useTheme()
@@ -32,11 +33,11 @@ function ControlCluster() {
       <button
         className="control-btn"
         onClick={toggleDirection}
-        title={direction === 'onyx-gold' ? 'Switch to Aurora Cartography' : 'Switch to Onyx-Gold'}
+        title={direction === 'command' ? 'Switch to Ether Ledger' : 'Switch to Command Grid'}
         aria-label="Toggle design direction"
-        aria-pressed={direction === 'aurora'}
+        aria-pressed={direction === 'ether'}
       >
-        {direction === 'onyx-gold' ? '◈' : '◇'}
+        {direction === 'command' ? '⌗' : '◍'}
       </button>
       <button className="control-btn" onClick={toggle} title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'} aria-label="Toggle theme">
         {theme === 'dark' ? '☀' : '☾'}
@@ -138,15 +139,24 @@ function Sidebar() {
   )
 }
 
+// Routes rebuilt in the two-direction system. Under direction=ether these
+// swap the sidebar for the floating pill top-nav — a real structural
+// difference between the directions, not a reskin. Non-rebuilt routes
+// (finances, hub, agents) keep the sidebar under BOTH directions so
+// navigation never breaks.
+const ETHER_REBUILT = new Set(['/', '/trading', '/intelligence'])
+
 export default function Layout({ children }: { children: ReactNode }) {
   const location = useLocation()
+  const { direction } = useDirection()
+  const etherMode = direction === 'ether' && ETHER_REBUILT.has(location.pathname)
   return (
     <>
       <BackgroundOrbs />
       <ControlCluster />
       <HunchoAssistant />
-      <div className="app-shell">
-        <Sidebar />
+      <div className={`app-shell${etherMode ? ' app-shell-ether' : ''}`}>
+        {etherMode ? <EtherNav /> : <Sidebar />}
         <main className="main-scroll">
           <AnimatePresence mode="wait">
             <motion.div

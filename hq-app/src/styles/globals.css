@@ -136,11 +136,10 @@ input { font-family: var(--font-body); }
   letter-spacing: 0.02em;
 }
 
+/* Impeccable fix 2026-07-28 [gradient-text]: was a background-clip gradient
+   (decorative AI tell). Solid accent colour carries the same hierarchy. */
 .gold-text {
-  background: linear-gradient(90deg, #d4a843, #f0c060);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--dir-accent-hi, var(--gold-hi));
 }
 
 .hero-num {
@@ -293,11 +292,16 @@ input { font-family: var(--font-body); }
   border-radius: 999px;
   overflow: hidden;
 }
+/* Impeccable fix 2026-07-28 [layout-transition]: the fill previously
+   animated its horizontal size (layout thrash). Now it animates on the
+   compositor via transform/scaleX from the left edge; callers may still set
+   a static inline size for position. */
 .bar-fill {
   height: 100%;
   border-radius: 999px;
   box-shadow: 0 0 10px 0 rgba(212, 168, 67, 0.4);
-  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: left center;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ═══════════ TERMINAL CURSOR ═══════════ */

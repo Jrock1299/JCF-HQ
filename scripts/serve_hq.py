@@ -47,6 +47,14 @@ class HQHandler(http.server.BaseHTTPRequestHandler):
     def _handle(self):
         path = self.path.split('?')[0].lstrip('/')
 
+        # 0. Desktop-app compatibility (2026-07-28). The Chrome PWA shortcut
+        #    ("JCF HQ - Mission Control.app") hardcodes /jcf_hq.html from an
+        #    older build. Serve the SPA index for it so the installed app
+        #    renders instead of blanking on a 404.
+        if path == 'jcf_hq.html':
+            self._serve_file(DIST_DIR / 'index.html')
+            return
+
         # 1. Proxy /hq/* → localhost:8900
         if self.path.startswith('/hq/') or self.path == '/hq':
             self._proxy()
@@ -159,9 +167,23 @@ class HQHandler(http.server.BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    import threading
+
+    # Primary listener (default 8080 — the canonical dashboard URL).
     server = http.server.ThreadingHTTPServer(('0.0.0.0', PORT), HQHandler)
     print(f'JCF HQ serving on http://0.0.0.0:{PORT}')
     print(f'  Static: {DIST_DIR}')
     print(f'  Proxy /hq/* → {PROXY_HOST}')
     print(f'  Data:   {DATA_DIR}')
+
+    # Legacy desktop-app listener (2026-07-28). The installed Chrome PWA
+    # points at :8899/jcf_hq.html from before the port change. Bind 8899 too
+    # (same handler) so the desktop app works without reinstalling it. Env
+    # LEGACY_PORT=0 disables.
+    legacy = int(os.environ.get('LEGACY_PORT', '8899'))
+    if legacy and legacy != PORT:
+        legacy_server = http.server.ThreadingHTTPServer(('0.0.0.0', legacy), HQHandler)
+        threading.Thread(target=legacy_server.serve_forever, daemon=True).start()
+        print(f'  Legacy desktop-app listener on http://0.0.0.0:{legacy}')
+
     server.serve_forever()

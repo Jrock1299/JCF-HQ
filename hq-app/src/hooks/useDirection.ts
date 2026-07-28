@@ -1,24 +1,32 @@
 import { useEffect, useState, useCallback } from 'react'
 
-export type Direction = 'onyx-gold' | 'aurora'
+// 2026-07-28 rebuild: the earlier 'onyx-gold' | 'aurora' pass was a token-only
+// swap and did not change layout. The real directions are:
+//   'command' — Command Grid: status-bar header (no hero), horizontal KPI
+//               rail, dense 12-col, mono-forward numerals, glow-line charts,
+//               left sidebar. Sharp 10px radii.
+//   'ether'   — Ether Ledger: floating pill top-nav (sidebar hidden on the
+//               rebuilt pages), big gradient feature card, tinted stat
+//               cards, sans-forward type, chunky rounded bars. 20px radii.
+export type Direction = 'command' | 'ether'
 const KEY = 'jcf-direction'
 
 function initialDirection(): Direction {
-  // URL override (?dir=onyx-gold|aurora) — shareable forced direction, and lets
+  // URL override (?dir=command|ether) — shareable forced direction, and lets
   // headless / screenshot passes pin a direction without touching storage.
   try {
     const q = new URLSearchParams(window.location.search).get('dir')
-    if (q === 'onyx-gold' || q === 'aurora') return q
+    if (q === 'command' || q === 'ether') return q
   } catch {
     /* no window/URL */
   }
   try {
     const stored = localStorage.getItem(KEY)
-    if (stored === 'onyx-gold' || stored === 'aurora') return stored
+    if (stored === 'command' || stored === 'ether') return stored
   } catch {
     /* localStorage unavailable */
   }
-  return 'onyx-gold' // default — the current identity, refined
+  return 'command' // default
 }
 
 /** Applies `data-direction` to <html>, persists to localStorage. Composes
@@ -38,7 +46,7 @@ export function useDirection(): { direction: Direction; toggle: () => void; set:
   }, [direction])
 
   const toggle = useCallback(
-    () => setDirection((d) => (d === 'onyx-gold' ? 'aurora' : 'onyx-gold')),
+    () => setDirection((d) => (d === 'command' ? 'ether' : 'command')),
     []
   )
   return { direction, toggle, set: setDirection }

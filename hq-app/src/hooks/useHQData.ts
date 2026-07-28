@@ -24,9 +24,37 @@ export const ENDPOINTS: Record<string, string> = {
   'norman-report': '/norman_report.json',
   'agent-hub': '/hq/hub',
   'agent-hub-file': '/agent_hub.json',
+  // NOTE 2026-07-28: 'morning-report' removed from the Intelligence page —
+  // /morning_report.json fossilised at 2026-04-15 (pre-Oracle-retirement) and
+  // its generating cron is #HOLD. Endpoint retained here for any legacy
+  // consumer, but nothing in the rebuilt pages reads it.
   'morning-report': '/morning_report.json',
   'sentinel-data': '/sentinel_data.json',
   'api-costs': '/api_costs.json',
+  // Two-tier validation feeds (post 2026-07-25 fleet reorg):
+  // Lens validates Blade + Edge, Victoria validates Jerry + Chad.
+  'lens-validation': '/lens_validation.json',
+  'victoria-validation': '/victoria_validation.json',
+  'strategy-library': '/strategy_library.json',
+}
+
+// ── Feed freshness ────────────────────────────────────────────────────
+// A feed whose newest timestamp is older than this is rendered as OFFLINE
+// rather than shown as if it were current. Same discipline as the backend's
+// risk_validation.STALE_AFTER_DAYS — real-looking numbers describing a
+// period that has ended are worse than an honest "offline".
+export const FEED_STALE_DAYS = 7
+
+export function feedAgeDays(iso: string | null | undefined): number | null {
+  if (!iso) return null
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return null
+  return (Date.now() - t) / 86_400_000
+}
+
+export function feedIsStale(iso: string | null | undefined): boolean {
+  const d = feedAgeDays(iso)
+  return d == null || d > FEED_STALE_DAYS
 }
 
 async function fetchWithTimeout(url: string, ms = 2500): Promise<any> {
