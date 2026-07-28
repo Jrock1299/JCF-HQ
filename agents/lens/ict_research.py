@@ -211,34 +211,86 @@ def rank(results: dict) -> list:
     return rows
 
 
-def _mechanism_label(strategy: str, validation: dict | None) -> str:
+def _mechanism_label(strategy: str, validation: dict | None,
+                     instrument: str | None = None) -> str:
     """Honest label for what a strategy's edge actually is.
 
-    Uses the mean-reversion baseline result if present: if turtle_soup's
-    numbers are indistinguishable from the "fade the sweep, no killzone,
-    no HTF bias" baseline, the ICT-specific filters aren't earning any of
-    the edge and the strategy is mean reversion. Say so plainly on the
-    library entry so anyone reading it knows what they're actually
-    deploying.
+    Uses the mean-reversion baseline result to differentiate three cases:
+      SAME magnitudes           → mean reversion, ICT filters redundant
+      turtle > baseline         → ICT filters ADD edge (real ICT)
+      baseline > turtle         → mean reversion IS the edge; ICT filters HURT
+
+    The third case is the one the previous version incorrectly folded into
+    "filters are earning some of the edge" — if the baseline wins, the
+    filters are filtering out winning trades, not earning edge. Say so.
     """
     if strategy != 'turtle_soup':
         return f'ICT: {strategy}'
     if not validation or 'baseline' not in validation:
-        return 'turtle_soup — mechanism not yet validated (walk-forward + baseline pending)'
+        return 'turtle_soup — mechanism not yet validated (baseline pending)'
     baseline = validation.get('baseline') or []
     if not baseline:
         return 'turtle_soup — baseline result missing'
-    same = sum(1 for b in baseline if b.get('same_edge'))
+
+    def _direction(b: dict) -> str:
+        # Compare turtle vs baseline on the two headline metrics. sharpe_ann is
+        # the deployment-gate basis; PF is what MC ruin ultimately reflects.
+        t = b.get('turtle_soup', {}); bl = b.get('sweep_fade_baseline', {})
+        sh_delta = (t.get('sharpe_ann') or 0) - (bl.get('sharpe_ann') or 0)
+        pf_ratio = (t.get('pf') or 0) / (bl.get('pf') or 1) if bl.get('pf') else 0
+        if abs(sh_delta) < 0.30 and 0.85 <= pf_ratio <= 1.15:
+            return 'same'
+        if sh_delta > 0 and pf_ratio > 1.0:
+            return 'turtle_wins'
+        if sh_delta < 0 and pf_ratio < 1.0:
+            return 'baseline_wins'
+        return 'mixed'      # metrics disagree with each other
+
+    counts = {'same': 0, 'turtle_wins': 0, 'baseline_wins': 0, 'mixed': 0}
+    per_inst = {}
+    for b in baseline:
+        d = _direction(b)
+        counts[d] += 1
+        per_inst[b.get('instrument')] = d
+
     total = len(baseline)
-    if same >= max(2, total * 3 // 4):
-        return ('MEAN REVERSION (post-sweep fade). '
-                f'{same}/{total} instruments show no measurable edge from H4 bias + '
-                'killzone filters over the plain sweep-fade baseline.')
-    if same == 0:
-        return ('ICT structure. Killzone + H4 bias contribute measurable edge on '
-                f'{total}/{total} instruments vs. the plain sweep-fade baseline.')
-    return (f'MIXED. On {total-same}/{total} instruments the ICT filters help; on '
-            f'{same}/{total} the edge is indistinguishable from mean reversion.')
+
+    # If we have an instrument, give the per-instrument label — a library
+    # entry is per-instrument, and the mechanism can differ across them.
+    if instrument and instrument in per_inst:
+        d = per_inst[instrument]
+        if d == 'baseline_wins':
+            return ('MEAN REVERSION (post-sweep fade). The ICT filters (H4 bias + '
+                    'London/NY killzones) filter out winning trades — the plain '
+                    'sweep-fade 24/7 baseline out-performs on all headline metrics '
+                    'on this instrument. Deployed as-configured, but the edge is '
+                    'not ICT structure.')
+        if d == 'turtle_wins':
+            return ('ICT structure. Killzone + H4 bias contribute measurable edge '
+                    'over the plain sweep-fade baseline on this instrument.')
+        if d == 'same':
+            return ('MEAN REVERSION (post-sweep fade). ICT filters produce no '
+                    'measurable edge over the plain sweep-fade baseline; the '
+                    'filters are redundant, not harmful.')
+        return ('MIXED. Turtle vs baseline metrics disagree — one metric favours '
+                'the ICT filters, another does not.')
+
+    # Fleet-wide summary (used when instrument is not provided).
+    if counts['baseline_wins'] >= max(2, total * 3 // 4):
+        return (f'MEAN REVERSION (post-sweep fade). On {counts["baseline_wins"]}/{total} '
+                'instruments the plain sweep-fade baseline out-performs turtle_soup — '
+                'the ICT filters filter out winning trades. This is mean reversion, '
+                'not ICT structure. Deploy is defensible, but do not label it ICT.')
+    if counts['same'] >= max(2, total * 3 // 4):
+        return (f'MEAN REVERSION. On {counts["same"]}/{total} instruments turtle_soup '
+                'and plain sweep-fade produce indistinguishable numbers — the ICT '
+                'filters are redundant.')
+    if counts['turtle_wins'] >= max(2, total * 3 // 4):
+        return (f'ICT structure. On {counts["turtle_wins"]}/{total} instruments the '
+                'ICT filters add measurable edge over the plain baseline.')
+    return (f'MIXED. turtle_wins={counts["turtle_wins"]} baseline_wins='
+            f'{counts["baseline_wins"]} same={counts["same"]} mixed={counts["mixed"]} '
+            f'across {total} instruments.')
 
 
 def write_library(results: dict, turtle_validation: dict | None = None) -> dict:
@@ -272,7 +324,8 @@ def write_library(results: dict, turtle_validation: dict | None = None) -> dict:
                             ('ruin_probability', 'double_probability',
                              'median_final', 'p5_final')},
             'mc_basis': r.get('mc_basis'),
-            'mechanism_label': _mechanism_label(r['strategy'], turtle_validation),
+            'mechanism_label': _mechanism_label(r['strategy'], turtle_validation,
+                                                r['instrument']),
             'regimes': r['regimes'],
             'rules': BY_KEY[r['strategy']].rules,
             'params': PARAMS,
