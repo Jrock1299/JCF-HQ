@@ -307,8 +307,26 @@ def write_library(results: dict, turtle_validation: dict | None = None) -> dict:
     downstream reader is never misled about what they are deploying.
     """
     from ict_strategies import BY_KEY
+    import hashlib
     validated, rejected = [], []
     for r in rank(results):
+        spec = BY_KEY[r['strategy']]
+        # Executor contract — the fields a live executor needs to run this
+        # strategy without importing ict_strategies. Kept here so the library
+        # is self-sufficient and a downstream (Blade, Edge, Pine port) has
+        # everything it needs from one JSON.
+        execution = {
+            'entry_zone':          spec.entry_zone,
+            'reverse_on_sweep':    spec.reverse_on_sweep,
+            'require_sweep':       spec.require_sweep,
+            'require_mss':         spec.require_mss,
+            'require_displacement':spec.require_displacement,
+            'require_amd':         spec.require_amd,
+            'icc_filter':          spec.icc_filter,
+            'htf_bias_required':   spec.htf_bias_required,
+            'killzones':           list(spec.killzones),
+            'entry_type':          'MARKET_ON_CLOSE' if spec.reverse_on_sweep else 'LIMIT_AT_ZONE_50',
+        }
         entry = {
             'id': f"ict.{r['strategy']}.{r['instrument']}",
             'strategy': r['strategy'], 'name': r['name'],
@@ -327,12 +345,26 @@ def write_library(results: dict, turtle_validation: dict | None = None) -> dict:
             'mechanism_label': _mechanism_label(r['strategy'], turtle_validation,
                                                 r['instrument']),
             'regimes': r['regimes'],
-            'rules': BY_KEY[r['strategy']].rules,
+            'rules': spec.rules,
+            'execution': execution,
             'params': PARAMS,
             'source': 'agents/lens/ict_research.py',
             'researched_at': results['generated_at'],
             'deployable': r['verdict'] == 'PASS',
         }
+        # Content hash for change-detection by consumers. Excludes fields that
+        # change on every regenerate (researched_at, mechanism_label narrative,
+        # stats which vary run-to-run by MC seed). Hash covers the DECISION-
+        # SURFACE fields: rules, execution contract, params, verdict — anything
+        # that would materially change what a live executor does.
+        surface = {
+            'rules': spec.rules, 'execution': execution, 'params': PARAMS,
+            'verdict': r['verdict'], 'deployable': r['verdict'] == 'PASS',
+            'strategy': r['strategy'], 'instrument': r['instrument'],
+        }
+        entry['content_hash'] = hashlib.sha1(
+            json.dumps(surface, sort_keys=True, default=str).encode()
+        ).hexdigest()[:12]
         (validated if r['verdict'] == 'PASS' else rejected).append(entry)
 
     lib = {

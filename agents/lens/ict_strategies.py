@@ -93,6 +93,7 @@ KILLZONES = {
     'LONDON': (7, 10),
     'NY':     (12, 15),
     'NY_SB':  (15, 16),      # Silver Bullet's own hour
+    'ALL':    (0, 24),       # sweep_fade_baseline uses no session filter
 }
 
 
@@ -265,6 +266,48 @@ STRATEGIES: list[StrategySpec] = [
             'AND range >= 1.0 x ATR(14).',
             '6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.',
             '8. Sessions: London + NY killzones.',
+        ],
+    ),
+
+    # ── Sweep-fade baseline: formalised for the gate ─────────────────────────
+    #
+    # 2026-07-28: ict_turtle_validation.py showed the plain 24/7 sweep-fade
+    # (no killzone, no HTF bias) OUT-PERFORMS turtle_soup on 3 of 4
+    # instruments. That was an in-line spec inside the validation script; add
+    # it here so the next `ict_research.py --run` grades it through the same
+    # 100-trade / annualised-Sharpe / MC-ruin gate as everything else, and
+    # `write_library` promotes it if it clears.
+    #
+    # Deliberately does NOT reuse the killzone tuple mechanism from
+    # turtle_soup — the whole point of the baseline is that killzones and
+    # HTF bias are stripped. `htf_bias_required=False` and killzones=('ALL',)
+    # (0-24 UTC) makes the strategy 24/7. Every other rule is turtle_soup:
+    # same sweep detection, market-on-close entry, same stop/target math.
+    StrategySpec(
+        key='sweep_fade_baseline',
+        name='Sweep-fade baseline (24/7, no killzone, no HTF bias)',
+        family='mean_reversion',
+        hypothesis=('The post-sweep rejection alone is the edge; killzone and '
+                    'HTF bias filters remove winning trades. Baseline strips '
+                    'both and fades the sweep unconditionally.'),
+        entry_zone='OB',
+        require_mss=False,
+        require_displacement=False,
+        reverse_on_sweep=True,
+        htf_bias_required=False,
+        killzones=('ALL',),
+        notes=('Ran as an ad-hoc control inside ict_turtle_validation.py in '
+               'the 2026-07-28 baseline test; on SPX / DE30 / XAU it beat '
+               'turtle_soup on PF, Sharpe, and R-per-trade with 4-5x the '
+               'trade count. Promoted to a formal StrategySpec so the same '
+               'gate that graded turtle_soup grades this too — no separate '
+               'unvetted deploy path.'),
+        rules=[
+            '1. Sweep of a 20-bar extreme that closes back inside.',
+            '2. Entry: market on close[1] confirmation of the rejection bar.',
+            '3. Stop: beyond the sweep extreme + 0.25 x ATR.',
+            '4. Target: opposing pool; RR >= 2.0.',
+            '5. NO session filter. NO HTF bias filter. Fires 24/7.',
         ],
     ),
 ]
