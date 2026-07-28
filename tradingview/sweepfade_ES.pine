@@ -1,0 +1,208 @@
+//@version=5
+//
+// ⚠️ BETA — RESEARCH / WATCH ONLY. DO NOT TRADE THESE SIGNALS.
+// Sweep-fade rules, same as the validated OANDA turtle_soup port.
+// Grade: MARGINAL at M15 (validated basis) — PF 1.22-1.28 vs
+//   the 1.5 PASS floor, on 60 days of FREE yfinance data.
+// H1 "passes" are at the WRONG timeframe and do not count.
+// This edge is NOT proven on futures. It may be real (weak
+//   data) or genuinely weak — unknown until confirmed on paid
+//   CME M15 tick data.
+// Purpose: observe whether signals print where price actually
+//   reverses. Gather eyeball evidence. TRADE NOTHING off these
+//   on the live Lucid eval until validated.
+//
+// ─────────────────────────────────────────────────────────────────────────
+// sweepfade_ES.pine — E-mini S&P 500 futures
+// ─────────────────────────────────────────────────────────────────────────
+// Target TradingView symbol:   CME_MINI:ES1!  (front-month continuous)
+// Intended timeframe:          M15 (matches the OANDA validation basis).
+//                              H1 chart will "look better" — that reading
+//                              is at the wrong timeframe. Stay on M15.
+// Sibling files:               sweepfade_NQ.pine, sweepfade_GC.pine
+// Validated cousin:            tradingview/meanrev_sweep_fade.pine
+//                              (OANDA SPX500USD/DE30EUR/XAUUSD — those
+//                              DO have library-PASS status and are the
+//                              actual green-lit signals.)
+// Grade evidence:              dashboard/futures_validation.json
+// Rules source of truth:       agents/lens/ict_strategies.py (turtle_soup)
+// MUST STAY IN SYNC with the Python side. If the strategy changes, this
+// file changes too, in the same PR.
+//
+// ─────────────────────────────────────────────────────────────────────────
+// NO REPAINT — same discipline as the validated port
+// ─────────────────────────────────────────────────────────────────────────
+// 1. `barstate.isconfirmed` gates every signal. On the currently-forming
+//    bar `isconfirmed` is false → no signal print. On any historical bar
+//    it is always true. A printed signal is always at a fully-closed bar
+//    — matches the Python close[1] contract.
+// 2. `ta.pivothigh(k, k)` / `ta.pivotlow(k, k)` return a value only at
+//    bar (current - k), once k bars have passed. Cannot see the future.
+// 3. H4 bias via `request.security(..., barmerge.lookahead_off)` — the
+//    HTF EMA value on this bar is the EMA at the last H4 bar that had
+//    CLOSED at or before this bar's timestamp.
+// 4. Sweep detection compares `high > pool_high AND close < pool_high`
+//    on the just-closed bar. Both terms are close[0]-safe.
+// 5. Sessions via `time(timeframe.period, session, "UTC")` — session
+//    membership is a pure lookup on the current bar's timestamp.
+//
+
+indicator("JCF Sweep-Fade BETA — ES1! (research/watch only)",
+          shorttitle="SF-ES BETA", overlay=true,
+          max_labels_count=500, max_lines_count=500)
+
+// ═════ INPUTS (defaults mirror strategy_library.json PARAMS) ═════════════
+
+grp_core = "Strategy — mirror of validated turtle_soup PARAMS"
+swing_k         = input.int(2,   "Swing pivot K",         minval=1, group=grp_core)
+lookback_pools  = input.int(50,  "Lookback (pools)",       minval=5,  group=grp_core)
+atr_period      = input.int(14,  "ATR period",             minval=2,  group=grp_core)
+stop_buffer_atr = input.float(0.25, "Stop buffer × ATR",   minval=0, step=0.05, group=grp_core)
+min_stop_atr    = input.float(0.5,  "Min stop distance × ATR", minval=0, step=0.1, group=grp_core)
+min_rr          = input.float(2.0,  "Min R:R",             minval=1.0, step=0.1, group=grp_core)
+
+grp_filters = "Filters"
+use_htf_bias    = input.bool(true, "Use H4 EMA-50 bias filter", group=grp_filters)
+use_killzone    = input.bool(true, "Use London + NY killzone filter", group=grp_filters,
+    tooltip="OANDA turtle_soup uses London 07:00-10:00 + NY 12:00-15:00 UTC. "
+          + "For CME futures the NY window is the primary useful session; "
+          + "London is less relevant for equity-index futures. Try both.")
+london_session  = input.session("0700-1000", "London killzone (UTC)", group=grp_filters)
+ny_session      = input.session("1200-1500", "NY killzone (UTC)",     group=grp_filters)
+
+grp_visual = "Visuals"
+show_stop_target  = input.bool(true, "Draw stop / target lines on signal", group=grp_visual)
+lines_extend_bars = input.int(30, "Bars to extend stop/target lines", minval=5, group=grp_visual)
+
+// ═════ H4 EMA-50 BIAS (no lookahead) ═════════════════════════════════════
+
+[h4_close_prev, h4_ema50] = request.security(syminfo.tickerid, "240",
+    [close[1], ta.ema(close, 50)], barmerge.gaps_off, barmerge.lookahead_off)
+
+h4_bull = not na(h4_close_prev) and not na(h4_ema50) and h4_close_prev > h4_ema50
+h4_bear = not na(h4_close_prev) and not na(h4_ema50) and h4_close_prev < h4_ema50
+
+// ═════ SWING PIVOTS + POOL MEMORY (no lookahead) ═════════════════════════
+
+ph = ta.pivothigh(high, swing_k, swing_k)
+pl = ta.pivotlow(low,  swing_k, swing_k)
+
+var array<float> pool_highs = array.new_float(0)
+var array<float> pool_lows  = array.new_float(0)
+
+if not na(ph)
+    array.push(pool_highs, ph)
+    if array.size(pool_highs) > lookback_pools
+        array.shift(pool_highs)
+if not na(pl)
+    array.push(pool_lows, pl)
+    if array.size(pool_lows) > lookback_pools
+        array.shift(pool_lows)
+
+pool_high_now = array.size(pool_highs) > 0 ?
+     array.get(pool_highs, array.size(pool_highs) - 1) : na
+pool_low_now  = array.size(pool_lows) > 0 ?
+     array.get(pool_lows,  array.size(pool_lows) - 1) : na
+
+// ═════ SESSION GATE (UTC) ══════════════════════════════════════════════
+
+in_london = not na(time(timeframe.period, london_session, "UTC"))
+in_ny     = not na(time(timeframe.period, ny_session,     "UTC"))
+in_killzone = in_london or in_ny
+kz_ok = not use_killzone or in_killzone
+
+// ═════ SWEEP DETECTION + SIGNAL (no repaint) ═════════════════════════════
+
+atr_v = ta.atr(atr_period)
+
+buy_side_sweep  = not na(pool_high_now) and high > pool_high_now and close < pool_high_now
+sell_side_sweep = not na(pool_low_now)  and low  < pool_low_now  and close > pool_low_now
+
+short_ok = not use_htf_bias or h4_bear
+long_ok  = not use_htf_bias or h4_bull
+
+sell_signal = barstate.isconfirmed and kz_ok and buy_side_sweep  and short_ok
+buy_signal  = barstate.isconfirmed and kz_ok and sell_side_sweep and long_ok
+
+// ═════ STOPS + TARGETS ═════════════════════════════════════════════════
+
+stop_for_short = high + stop_buffer_atr * atr_v
+stop_for_long  = low  - stop_buffer_atr * atr_v
+
+short_stop_ok = (stop_for_short - close) >= min_stop_atr * atr_v
+long_stop_ok  = (close - stop_for_long)  >= min_stop_atr * atr_v
+
+target_for_long(entry, stop) =>
+    risk = entry - stop
+    var float found = na
+    found := na
+    if array.size(pool_highs) > 0
+        for i = array.size(pool_highs) - 1 to 0
+            p = array.get(pool_highs, i)
+            if p > entry and (p - entry) >= min_rr * risk
+                found := p
+                break
+    na(found) ? entry + min_rr * risk : found
+
+target_for_short(entry, stop) =>
+    risk = stop - entry
+    var float found = na
+    found := na
+    if array.size(pool_lows) > 0
+        for i = array.size(pool_lows) - 1 to 0
+            p = array.get(pool_lows, i)
+            if p < entry and (entry - p) >= min_rr * risk
+                found := p
+                break
+    na(found) ? entry - min_rr * risk : found
+
+final_sell = sell_signal and short_stop_ok
+final_buy  = buy_signal  and long_stop_ok
+
+// ═════ PLOT SIGNALS ════════════════════════════════════════════════════
+
+plotshape(final_buy,  title="BETA BUY",  style=shape.triangleup,
+          location=location.belowbar, color=color.new(color.orange, 0), size=size.small)
+plotshape(final_sell, title="BETA SELL", style=shape.triangledown,
+          location=location.abovebar, color=color.new(color.orange, 0), size=size.small)
+
+// Static beta banner at top of pane so no one confuses this with the
+// green-lit OANDA indicator by mistake.
+var table beta_banner = table.new(position.top_right, 1, 1)
+if barstate.islast
+    table.cell(beta_banner, 0, 0,
+               "SWEEP-FADE ES BETA — RESEARCH ONLY. DO NOT TRADE.",
+               bgcolor=color.new(color.orange, 20), text_color=color.white,
+               text_size=size.small)
+
+var line stop_line   = na
+var line target_line = na
+var label sig_label  = na
+
+f_draw_bracket(is_long, entry, stop, target) =>
+    line.delete(stop_line)
+    line.delete(target_line)
+    label.delete(sig_label)
+    stop_line   := line.new(bar_index, stop,   bar_index + lines_extend_bars, stop,
+                            color=color.new(color.red,   0), style=line.style_dashed, width=1)
+    target_line := line.new(bar_index, target, bar_index + lines_extend_bars, target,
+                            color=color.new(color.green, 0), style=line.style_dashed, width=1)
+    label_txt = is_long ? str.format("BETA LONG @ {0}\nSL {1} | TP {2}", entry, stop, target)
+                        : str.format("BETA SHORT @ {0}\nSL {1} | TP {2}", entry, stop, target)
+    sig_label := label.new(bar_index, is_long ? stop : target, label_txt,
+                           style=is_long ? label.style_label_up : label.style_label_down,
+                           color=color.new(color.orange, 40), textcolor=color.white, size=size.small)
+
+if show_stop_target and final_buy
+    f_draw_bracket(true, close, stop_for_long, target_for_long(close, stop_for_long))
+if show_stop_target and final_sell
+    f_draw_bracket(false, close, stop_for_short, target_for_short(close, stop_for_short))
+
+// ═════ ALERT CONDITIONS ════════════════════════════════════════════════
+
+alertcondition(final_buy,  title="SweepFade ES BETA BUY (research only)",
+    message="BETA — research only. Sweep-fade LONG on ES {{interval}} @ {{close}}. NOT a validated signal — do NOT trade the Lucid eval on this.")
+alertcondition(final_sell, title="SweepFade ES BETA SELL (research only)",
+    message="BETA — research only. Sweep-fade SHORT on ES {{interval}} @ {{close}}. NOT a validated signal — do NOT trade the Lucid eval on this.")
+
+// ═════ END ═════════════════════════════════════════════════════════════
