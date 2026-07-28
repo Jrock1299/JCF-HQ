@@ -5,11 +5,13 @@ import BackgroundOrbs from './BackgroundOrbs'
 import HunchoAssistant from './HunchoAssistant'
 import { useLiveClock } from '../hooks/useLiveClock'
 import { useTheme } from '../hooks/useTheme'
+import { useDirection } from '../hooks/useDirection'
 import { useEditMode } from '../edit/EditModeContext'
 import { liveCount } from '../data/agentConfig'
 
 function ControlCluster() {
   const { theme, toggle } = useTheme()
+  const { direction, toggle: toggleDirection } = useDirection()
   const { editing, toggle: toggleEdit } = useEditMode()
   return (
     <div className="control-cluster">
@@ -26,6 +28,15 @@ function ControlCluster() {
         }
       >
         {editing ? '✓' : '✎'}
+      </button>
+      <button
+        className="control-btn"
+        onClick={toggleDirection}
+        title={direction === 'onyx-gold' ? 'Switch to Aurora Cartography' : 'Switch to Onyx-Gold'}
+        aria-label="Toggle design direction"
+        aria-pressed={direction === 'aurora'}
+      >
+        {direction === 'onyx-gold' ? '◈' : '◇'}
       </button>
       <button className="control-btn" onClick={toggle} title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'} aria-label="Toggle theme">
         {theme === 'dark' ? '☀' : '☾'}

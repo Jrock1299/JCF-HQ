@@ -1,0 +1,190 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   JCF HQ — Two design directions.
+
+   Scoped by `[data-direction]` on <html>. The theme selector
+   (`[data-theme]`) still operates INSIDE each direction — so there are
+   four skin combinations:  A-dark, A-light, B-dark, B-light.
+
+   Direction A = ONYX-GOLD (evolution of the current identity).
+   Direction B = AURORA CARTOGRAPHY (matte-plate + cast shadow, no blur).
+
+   Written 2026-07-28 as part of the redesign proposal
+   (see hq-app/DESIGN_REDESIGN.md). This file is CSS-only; no
+   component-level code was rewritten in the same pass. That's
+   intentional — the tokens layer is portable, the components come next.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+/* ── Direction A — ONYX-GOLD (evolution) ─────────────────────────────── */
+
+:root,
+:root[data-direction='onyx-gold'] {
+    /* Accents (theme-independent under Direction A) */
+    --dir-accent:        var(--gold);
+    --dir-accent-hi:     var(--gold-hi);
+    --dir-accent-border: rgba(212, 168, 67, 0.28);
+    --dir-accent-glow:   rgba(212, 168, 67, 0.14);
+
+    /* Hero depth signal */
+    --dir-hero-depth: backdrop-filter;
+
+    /* Motion */
+    --dir-num-entry: tick-up;         /* consumed by components; string sentinel */
+    --dir-table-stagger: 24ms;
+
+    /* Chart palette */
+    --dir-chart-1: var(--gold);
+    --dir-chart-2: #f0c060;
+    --dir-chart-3: #e8b046;
+    --dir-chart-4: #b98a30;
+    --dir-chart-5: #8a651c;
+    --dir-chart-grid: rgba(255, 255, 255, 0.04);
+
+    /* Radii + spacing rhythm (unchanged from current identity) */
+    --dir-radius-hero: 18px;
+    --dir-radius-card: 14px;
+    --dir-radius-inline: 8px;
+}
+
+
+/* Direction A — dark refinements */
+:root[data-direction='onyx-gold'][data-theme='dark'],
+:root[data-direction='onyx-gold']:not([data-theme]) {
+    --bg-deep:       #060710;    /* one notch deeper than current #07080f */
+    --bg-mid:        #0b0d18;
+    --surface:       rgba(20, 22, 34, 0.85);
+    --surface-solid: #14161f;
+    --surface-quiet: #10131c;    /* new — tables/lists sit visually flatter than KPI */
+    --surface-border: rgba(255, 255, 255, 0.10);
+}
+
+
+/* Direction A — light refinements */
+:root[data-direction='onyx-gold'][data-theme='light'] {
+    --bg-deep:       #eef0f5;
+    --bg-mid:        #e3e7f0;
+    --surface:       #ffffff;
+    --surface-solid: #ffffff;
+    --surface-quiet: #f5f6fa;
+    --surface-border: rgba(28, 38, 66, 0.10);
+}
+
+
+/* ── Direction B — AURORA CARTOGRAPHY (rethink) ──────────────────────── */
+
+:root[data-direction='aurora'] {
+    /* Accent — cool cyan-teal, single strong hue */
+    --dir-accent:        #4dd0e1;
+    --dir-accent-hi:     #7feaf5;
+    --dir-accent-border: rgba(77, 208, 225, 0.28);
+    --dir-accent-glow:   rgba(77, 208, 225, 0.16);
+
+    /* Hero depth signal — NO blur, cast shadow instead */
+    --dir-hero-depth: shadow;
+
+    /* Motion — quieter than Direction A */
+    --dir-num-entry: cross-fade;
+    --dir-table-stagger: 18ms;
+
+    /* Chart palette — single-hue with saturation ramp */
+    --dir-chart-1: #4dd0e1;
+    --dir-chart-2: #7feaf5;
+    --dir-chart-3: #2c98a5;
+    --dir-chart-4: #196a76;
+    --dir-chart-5: #b39ddb;   /* one purple accent for contrast in categorical charts */
+    --dir-chart-grid: rgba(255, 255, 255, 0.05);
+
+    /* Radii — slightly softer, more paper-like */
+    --dir-radius-hero: 20px;
+    --dir-radius-card: 12px;
+    --dir-radius-inline: 6px;
+}
+
+
+/* Direction B — dark theme (warm ink over cool paper) */
+:root[data-direction='aurora'][data-theme='dark'] {
+    --bg-deep:       #0c1220;
+    --bg-mid:        #131a2a;
+    --surface:       #1a2236;
+    --surface-solid: #1a2236;
+    --surface-quiet: #141a2b;
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --card-shadow:   0 8px 32px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+
+    --panel-bg:      rgba(26, 34, 54, 0.94);
+    --input-bg:      rgba(255, 255, 255, 0.04);
+
+    --text-hi:       #e8ecf5;
+    --text-dim:      rgba(232, 236, 245, 0.60);
+    --text-mute:     rgba(232, 236, 245, 0.42);
+
+    --moonlight:     rgba(77, 208, 225, 0.05);
+    --orb-opacity:   0.28;
+
+    --dir-chart-grid: rgba(255, 255, 255, 0.04);
+}
+
+
+/* Direction B — light theme (warm paper + deep ink) */
+:root[data-direction='aurora'][data-theme='light'] {
+    --bg-deep:       #f5f2e9;
+    --bg-mid:        #ede9dc;
+    --surface:       #ffffff;
+    --surface-solid: #ffffff;
+    --surface-quiet: #faf7ef;
+    --surface-border: rgba(60, 70, 100, 0.10);
+    --card-shadow:   0 6px 22px rgba(60, 70, 100, 0.10), 0 1px 0 rgba(255, 255, 255, 0.60) inset;
+
+    --panel-bg:      rgba(255, 255, 255, 0.92);
+    --input-bg:      rgba(60, 70, 100, 0.04);
+
+    --text-hi:       #1a2236;
+    --text-dim:      rgba(30, 40, 65, 0.72);
+    --text-mute:     rgba(30, 40, 65, 0.48);
+
+    /* Deeper teal in light mode for contrast */
+    --dir-accent:        #17828e;
+    --dir-accent-hi:     #29a3af;
+    --dir-accent-border: rgba(23, 130, 142, 0.22);
+    --dir-accent-glow:   rgba(23, 130, 142, 0.10);
+
+    --moonlight:     rgba(23, 130, 142, 0.06);
+    --orb-opacity:   0.22;
+
+    --dir-chart-1: #17828e;
+    --dir-chart-2: #29a3af;
+    --dir-chart-3: #4dd0e1;
+    --dir-chart-4: #0a4c56;
+    --dir-chart-5: #7b56b8;
+}
+
+
+/* ── Direction B — remove backdrop-blur where present ───────────────────
+   Direction B's "vellum" and "elevated plates" both use cast shadow +
+   gradient, never backdrop-filter blur. Existing components that
+   apply blur inline should degrade gracefully by respecting this
+   attribute-scoped opt-out — no component rewrite needed for the
+   direction to visibly differ.
+   ─────────────────────────────────────────────────────────────────── */
+
+:root[data-direction='aurora'] .glass-card,
+:root[data-direction='aurora'] [class*='glass'] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--surface-solid);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--surface-border);
+}
+
+
+/* Accent-token compatibility for direction-aware components.
+   Components can reference `--gold` / `--gold-hi` for backwards compat
+   AND `--dir-accent` for direction-aware code. Under Direction A they
+   collapse to the same value; under Direction B `--dir-accent` shifts
+   to teal while gold references (like the .gold-text helper, if used
+   for direction A styling only) still resolve. */
+:root[data-direction='aurora'] {
+    --gold: var(--dir-accent);
+    --gold-hi: var(--dir-accent-hi);
+    --gold-border: var(--dir-accent-border);
+}

@@ -4,7 +4,13 @@
    League Spartan (everything else non-mono) ·
    JetBrains Mono (// labels, badges, timestamps).
    Solid panels · light+dark.
+
+   Two-direction skin layer imported first (2026-07-28); see
+   DESIGN_REDESIGN.md. `[data-direction="onyx-gold"|"aurora"]`
+   swaps colour/motion/depth tokens without touching component code.
    ═══════════════════════════════════════════════════════════ */
+
+@import './directions.css';
 
 :root {
   /* Fonts */
