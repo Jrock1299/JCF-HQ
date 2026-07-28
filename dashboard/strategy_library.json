@@ -1,6 +1,6 @@
 {
   "schema": "jcf.strategy_library/v1",
-  "updated_at": "2026-07-27T19:21:33.275003+00:00",
+  "updated_at": "2026-07-28T08:59:56.212013+00:00",
   "written_by": "lens (ict_research.py)",
   "readers": [
     "blade",
@@ -9,8 +9,7 @@
     "chad"
   ],
   "note": "Only entries with deployable=true cleared the gate. Everything else is retained as researched-but-not-validated so the work is preserved and cannot be mistaken for approval. Jase decides what goes live; nothing here deploys itself.",
-  "validated": [],
-  "not_validated": [
+  "validated": [
     {
       "id": "ict.turtle_soup.DE30_EUR",
       "strategy": "turtle_soup",
@@ -21,16 +20,27 @@
       "timeframe": "M15",
       "version": 1,
       "n_trades": 3282,
-      "verdict": "FAIL",
-      "why": "Ruin probability 72.1% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.893, ann. Sharpe 2.780, max DD 6.5%, profitable in 9/9 years.",
       "stats": {
         "win_rate": 61.7,
         "profit_factor": 1.893,
         "sharpe": 0.137,
+        "sharpe_annualised": 2.78,
         "expectancy": 17606.66,
+        "expectancy_R": 0.3826,
         "max_drawdown_pct": 6.5,
-        "total_pnl": 57785071.61
+        "total_pnl": 57785071.61,
+        "fixed_size_pnl": 94184.7
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "median_final": 104128.04,
+        "p5_final": 95462.12
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "MEAN REVERSION (post-sweep fade). The ICT filters (H4 bias + London/NY killzones) filter out winning trades \u2014 the plain sweep-fade 24/7 baseline out-performs on all headline metrics on this instrument. Deployed as-configured, but the edge is not ICT structure.",
       "regimes": {
         "2018": {
           "n": 151,
@@ -101,8 +111,8 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
-      "deployable": false
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
+      "deployable": true
     },
     {
       "id": "ict.turtle_soup.XAU_USD",
@@ -114,16 +124,27 @@
       "timeframe": "M15",
       "version": 1,
       "n_trades": 3678,
-      "verdict": "FAIL",
-      "why": "Ruin probability 68.0% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.584, ann. Sharpe 2.417, max DD 5.9%, profitable in 9/9 years.",
       "stats": {
         "win_rate": 57.9,
         "profit_factor": 1.584,
         "sharpe": 0.113,
+        "sharpe_annualised": 2.417,
         "expectancy": 984.21,
+        "expectancy_R": 0.2515,
         "max_drawdown_pct": 5.9,
-        "total_pnl": 3619941.12
+        "total_pnl": 3619941.12,
+        "fixed_size_pnl": 69375.75
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "median_final": 79446.51,
+        "p5_final": 69862.12
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "MEAN REVERSION (post-sweep fade). The ICT filters (H4 bias + London/NY killzones) filter out winning trades \u2014 the plain sweep-fade 24/7 baseline out-performs on all headline metrics on this instrument. Deployed as-configured, but the edge is not ICT structure.",
       "regimes": {
         "2018": {
           "n": 217,
@@ -194,8 +215,8 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
-      "deployable": false
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
+      "deployable": true
     },
     {
       "id": "ict.turtle_soup.SPX500_USD",
@@ -207,16 +228,27 @@
       "timeframe": "M15",
       "version": 1,
       "n_trades": 3570,
-      "verdict": "FAIL",
-      "why": "Ruin probability 74.1% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.580, ann. Sharpe 2.482, max DD 7.4%, profitable in 9/9 years.",
       "stats": {
         "win_rate": 58.0,
         "profit_factor": 1.58,
         "sharpe": 0.117,
+        "sharpe_annualised": 2.482,
         "expectancy": 2532.98,
+        "expectancy_R": 0.2973,
         "max_drawdown_pct": 7.4,
-        "total_pnl": 9042740.43
+        "total_pnl": 9042740.43,
+        "fixed_size_pnl": 79602.38
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "median_final": 89546.69,
+        "p5_final": 80154.02
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "MEAN REVERSION (post-sweep fade). The ICT filters (H4 bias + London/NY killzones) filter out winning trades \u2014 the plain sweep-fade 24/7 baseline out-performs on all headline metrics on this instrument. Deployed as-configured, but the edge is not ICT structure.",
       "regimes": {
         "2018": {
           "n": 198,
@@ -287,9 +319,11 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
-      "deployable": false
-    },
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
+      "deployable": true
+    }
+  ],
+  "not_validated": [
     {
       "id": "ict.turtle_soup.CHF_JPY",
       "strategy": "turtle_soup",
@@ -300,16 +334,27 @@
       "timeframe": "M15",
       "version": 1,
       "n_trades": 3232,
-      "verdict": "FAIL",
-      "why": "Ruin probability 13.4% exceeds the 10% ceiling.",
+      "verdict": "MARGINAL",
+      "why": "PF 1.451, ann. Sharpe 2.552 \u2014 positive but not strong.",
       "stats": {
         "win_rate": 60.8,
         "profit_factor": 1.451,
         "sharpe": 0.127,
+        "sharpe_annualised": 2.552,
         "expectancy": 88.83,
+        "expectancy_R": 0.1934,
         "max_drawdown_pct": 10.7,
-        "total_pnl": 287098.53
+        "total_pnl": 287098.53,
+        "fixed_size_pnl": 46869.75
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "median_final": 56849.88,
+        "p5_final": 48513.64
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT structure. Killzone + H4 bias contribute measurable edge over the plain sweep-fade baseline on this instrument.",
       "regimes": {
         "2018": {
           "n": 217,
@@ -380,7 +425,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -393,16 +438,27 @@
       "timeframe": "M15",
       "version": 1,
       "n_trades": 752,
-      "verdict": "FAIL",
-      "why": "Sharpe 0.117 below 0.5 \u2014 no risk-adjusted edge.",
+      "verdict": "MARGINAL",
+      "why": "PF 1.286, ann. Sharpe 1.132 \u2014 positive but not strong.",
       "stats": {
         "win_rate": 47.9,
         "profit_factor": 1.286,
         "sharpe": 0.117,
+        "sharpe_annualised": 1.132,
         "expectancy": 18.22,
+        "expectancy_R": 0.1728,
         "max_drawdown_pct": 10.1,
-        "total_pnl": 13698.51
+        "total_pnl": 13698.51,
+        "fixed_size_pnl": 9744.45
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 51.5,
+        "median_final": 19739.28,
+        "p5_final": 15022.9
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ifvg",
       "regimes": {
         "2018": {
           "n": 31,
@@ -472,7 +528,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -486,15 +542,26 @@
       "version": 1,
       "n_trades": 119,
       "verdict": "FAIL",
-      "why": "Sharpe 0.097 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe 0.376 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.097).",
       "stats": {
         "win_rate": 47.9,
         "profit_factor": 1.226,
         "sharpe": 0.097,
+        "sharpe_annualised": 0.376,
         "expectancy": 10.03,
+        "expectancy_R": 0.1363,
         "max_drawdown_pct": 7.1,
-        "total_pnl": 1193.58
+        "total_pnl": 1193.58,
+        "fixed_size_pnl": 1216.65
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 11216.2,
+        "p5_final": 9405.4
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_ob",
       "regimes": {
         "2018": {
           "n": 4,
@@ -561,7 +628,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -575,15 +642,26 @@
       "version": 1,
       "n_trades": 118,
       "verdict": "FAIL",
-      "why": "Sharpe 0.071 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe 0.275 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.071).",
       "stats": {
         "win_rate": 42.4,
         "profit_factor": 1.161,
         "sharpe": 0.071,
+        "sharpe_annualised": 0.275,
         "expectancy": 7.51,
+        "expectancy_R": 0.1054,
         "max_drawdown_pct": 11.2,
-        "total_pnl": 886.08
+        "total_pnl": 886.08,
+        "fixed_size_pnl": 933.0
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10922.54,
+        "p5_final": 9072.37
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_core",
       "regimes": {
         "2018": {
           "n": 3,
@@ -657,7 +735,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -671,15 +749,26 @@
       "version": 1,
       "n_trades": 106,
       "verdict": "FAIL",
-      "why": "Sharpe 0.054 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe 0.202 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.054).",
       "stats": {
         "win_rate": 42.5,
         "profit_factor": 1.122,
         "sharpe": 0.054,
+        "sharpe_annualised": 0.202,
         "expectancy": 6.12,
+        "expectancy_R": 0.0866,
         "max_drawdown_pct": 7.1,
-        "total_pnl": 649.09
+        "total_pnl": 649.09,
+        "fixed_size_pnl": 688.27
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10670.76,
+        "p5_final": 8910.93
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_ob",
       "regimes": {
         "2018": {
           "n": 1,
@@ -746,7 +835,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -760,15 +849,26 @@
       "version": 1,
       "n_trades": 967,
       "verdict": "FAIL",
-      "why": "Sharpe 0.040 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe 0.441 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.040).",
       "stats": {
         "win_rate": 46.5,
         "profit_factor": 1.088,
         "sharpe": 0.04,
+        "sharpe_annualised": 0.441,
         "expectancy": 3.83,
+        "expectancy_R": 0.0631,
         "max_drawdown_pct": 17.9,
-        "total_pnl": 3704.54
+        "total_pnl": 3704.54,
+        "fixed_size_pnl": 4573.8
       },
+      "monte_carlo": {
+        "ruin_probability": 0.6,
+        "double_probability": 6.66,
+        "median_final": 14631.18,
+        "p5_final": 9321.02
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ifvg",
       "regimes": {
         "2018": {
           "n": 46,
@@ -838,7 +938,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -852,15 +952,26 @@
       "version": 1,
       "n_trades": 747,
       "verdict": "FAIL",
-      "why": "Sharpe 0.015 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe 0.142 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.015).",
       "stats": {
         "win_rate": 46.3,
         "profit_factor": 1.032,
         "sharpe": 0.015,
+        "sharpe_annualised": 0.142,
         "expectancy": 1.31,
+        "expectancy_R": 0.0296,
         "max_drawdown_pct": 25.6,
-        "total_pnl": 979.57
+        "total_pnl": 979.57,
+        "fixed_size_pnl": 1658.47
       },
+      "monte_carlo": {
+        "ruin_probability": 2.51,
+        "double_probability": 0.27,
+        "median_final": 11686.3,
+        "p5_final": 6954.62
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ifvg",
       "regimes": {
         "2018": {
           "n": 34,
@@ -930,7 +1041,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -944,15 +1055,26 @@
       "version": 1,
       "n_trades": 108,
       "verdict": "FAIL",
-      "why": "Sharpe -0.049 below 0.5 \u2014 no risk-adjusted edge.",
+      "why": "Annualised Sharpe -0.181 below 0.5 \u2014 no risk-adjusted edge (per-trade -0.049).",
       "stats": {
         "win_rate": 39.8,
         "profit_factor": 0.904,
         "sharpe": -0.049,
+        "sharpe_annualised": -0.181,
         "expectancy": -4.73,
+        "expectancy_R": -0.0588,
         "max_drawdown_pct": 9.5,
-        "total_pnl": -511.27
+        "total_pnl": -511.27,
+        "fixed_size_pnl": -476.03
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9493.04,
+        "p5_final": 7770.58
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_core",
       "regimes": {
         "2018": {
           "n": 5,
@@ -1026,7 +1148,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1040,15 +1162,26 @@
       "version": 1,
       "n_trades": 653,
       "verdict": "FAIL",
-      "why": "Ruin probability 78.7% exceeds the 10% ceiling.",
+      "why": "Ruin probability 99.4% exceeds the 10% ceiling.",
       "stats": {
         "win_rate": 41.5,
         "profit_factor": 0.673,
         "sharpe": -0.173,
+        "sharpe_annualised": -1.564,
         "expectancy": -9.06,
+        "expectancy_R": -0.2229,
         "max_drawdown_pct": 61.5,
-        "total_pnl": -5914.55
+        "total_pnl": -5914.55,
+        "fixed_size_pnl": -10914.9
       },
+      "monte_carlo": {
+        "ruin_probability": 99.43,
+        "double_probability": 0.0,
+        "median_final": -955.1,
+        "p5_final": -4868.6
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ifvg",
       "regimes": {
         "2018": {
           "n": 39,
@@ -1118,7 +1251,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1137,10 +1270,21 @@
         "win_rate": 100.0,
         "profit_factor": Infinity,
         "sharpe": 0.0,
+        "sharpe_annualised": 0.0,
         "expectancy": 55.62,
+        "expectancy_R": 0.742,
         "max_drawdown_pct": 0.0,
-        "total_pnl": 55.62
+        "total_pnl": 55.62,
+        "fixed_size_pnl": 55.65
       },
+      "monte_carlo": {
+        "ruin_probability": null,
+        "double_probability": null,
+        "median_final": null,
+        "p5_final": null
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: silver_bullet",
       "regimes": {
         "2020": {
           "n": 1,
@@ -1171,7 +1315,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1190,10 +1334,21 @@
         "win_rate": 47.5,
         "profit_factor": 1.489,
         "sharpe": 0.19,
+        "sharpe_annualised": 0.441,
         "expectancy": 21.88,
+        "expectancy_R": 0.289,
         "max_drawdown_pct": 4.8,
-        "total_pnl": 875.14
+        "total_pnl": 875.14,
+        "fixed_size_pnl": 867.08
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10871.46,
+        "p5_final": 9731.46
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: power_of_three",
       "regimes": {
         "2018": {
           "n": 1,
@@ -1259,7 +1414,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1278,10 +1433,21 @@
         "win_rate": 47.1,
         "profit_factor": 1.365,
         "sharpe": 0.143,
+        "sharpe_annualised": 0.317,
         "expectancy": 16.18,
+        "expectancy_R": 0.2194,
         "max_drawdown_pct": 2.8,
-        "total_pnl": 550.06
+        "total_pnl": 550.06,
+        "fixed_size_pnl": 559.58
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10555.45,
+        "p5_final": 9506.18
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_icc",
       "regimes": {
         "2019": {
           "n": 2,
@@ -1346,7 +1512,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1365,10 +1531,21 @@
         "win_rate": 40.6,
         "profit_factor": 1.169,
         "sharpe": 0.074,
+        "sharpe_annualised": 0.258,
         "expectancy": 8.02,
+        "expectancy_R": 0.1115,
         "max_drawdown_pct": 6.8,
-        "total_pnl": 769.79
+        "total_pnl": 769.79,
+        "fixed_size_pnl": 802.58
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10801.26,
+        "p5_final": 9066.25
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_core",
       "regimes": {
         "2018": {
           "n": 4,
@@ -1442,7 +1619,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1461,10 +1638,21 @@
         "win_rate": 37.5,
         "profit_factor": 1.046,
         "sharpe": 0.021,
+        "sharpe_annualised": 0.038,
         "expectancy": 2.28,
+        "expectancy_R": 0.0377,
         "max_drawdown_pct": 3.3,
-        "total_pnl": 54.61
+        "total_pnl": 54.61,
+        "fixed_size_pnl": 67.8
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 10055.05,
+        "p5_final": 9226.15
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: power_of_three",
       "regimes": {
         "2019": {
           "n": 8,
@@ -1530,7 +1718,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1549,10 +1737,21 @@
         "win_rate": 42.9,
         "profit_factor": 0.988,
         "sharpe": -0.006,
+        "sharpe_annualised": -0.014,
         "expectancy": -0.55,
+        "expectancy_R": 0.0001,
         "max_drawdown_pct": 9.2,
-        "total_pnl": -27.02
+        "total_pnl": -27.02,
+        "fixed_size_pnl": 0.3
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9995.54,
+        "p5_final": 8872.83
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_icc",
       "regimes": {
         "2019": {
           "n": 8,
@@ -1617,7 +1816,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1636,10 +1835,21 @@
         "win_rate": 43.0,
         "profit_factor": 0.926,
         "sharpe": -0.037,
+        "sharpe_annualised": -0.124,
         "expectancy": -3.36,
+        "expectancy_R": -0.0362,
         "max_drawdown_pct": 13.0,
-        "total_pnl": -289.18
+        "total_pnl": -289.18,
+        "fixed_size_pnl": -233.63
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9728.2,
+        "p5_final": 8237.85
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_ob",
       "regimes": {
         "2018": {
           "n": 4,
@@ -1706,7 +1916,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1725,10 +1935,21 @@
         "win_rate": 33.3,
         "profit_factor": 0.862,
         "sharpe": -0.07,
+        "sharpe_annualised": -0.248,
         "expectancy": -7.37,
+        "expectancy_R": -0.0964,
         "max_drawdown_pct": 14.1,
-        "total_pnl": -707.95
+        "total_pnl": -707.95,
+        "fixed_size_pnl": -694.35
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9291.33,
+        "p5_final": 7592.77
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_core",
       "regimes": {
         "2018": {
           "n": 2,
@@ -1802,7 +2023,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1821,10 +2042,21 @@
         "win_rate": 38.2,
         "profit_factor": 0.822,
         "sharpe": -0.094,
+        "sharpe_annualised": -0.199,
         "expectancy": -8.86,
+        "expectancy_R": -0.1135,
         "max_drawdown_pct": 7.9,
-        "total_pnl": -301.31
+        "total_pnl": -301.31,
+        "fixed_size_pnl": -289.5
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9704.09,
+        "p5_final": 8795.95
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: power_of_three",
       "regimes": {
         "2018": {
           "n": 3,
@@ -1895,7 +2127,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -1914,10 +2146,21 @@
         "win_rate": 28.2,
         "profit_factor": 0.743,
         "sharpe": -0.138,
+        "sharpe_annualised": -0.312,
         "expectancy": -14.35,
+        "expectancy_R": -0.19,
         "max_drawdown_pct": 9.8,
-        "total_pnl": -559.83
+        "total_pnl": -559.83,
+        "fixed_size_pnl": -555.75
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9418.11,
+        "p5_final": 8382.27
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: power_of_three",
       "regimes": {
         "2018": {
           "n": 2,
@@ -1988,7 +2231,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2007,10 +2250,21 @@
         "win_rate": 31.1,
         "profit_factor": 0.652,
         "sharpe": -0.204,
+        "sharpe_annualised": -0.704,
         "expectancy": -17.47,
+        "expectancy_R": -0.2483,
         "max_drawdown_pct": 18.4,
-        "total_pnl": -1572.36
+        "total_pnl": -1572.36,
+        "fixed_size_pnl": -1676.32
       },
+      "monte_carlo": {
+        "ruin_probability": 0.01,
+        "double_probability": 0.0,
+        "median_final": 8326.11,
+        "p5_final": 6841.12
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_ob",
       "regimes": {
         "2018": {
           "n": 1,
@@ -2077,7 +2331,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2096,10 +2350,21 @@
         "win_rate": 29.7,
         "profit_factor": 0.602,
         "sharpe": -0.245,
+        "sharpe_annualised": -0.548,
         "expectancy": -21.99,
+        "expectancy_R": -0.3004,
         "max_drawdown_pct": 9.7,
-        "total_pnl": -813.8
+        "total_pnl": -813.8,
+        "fixed_size_pnl": -833.47
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 9149.12,
+        "p5_final": 8231.5
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_icc",
       "regimes": {
         "2019": {
           "n": 12,
@@ -2164,7 +2429,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2183,10 +2448,21 @@
         "win_rate": 24.2,
         "profit_factor": 0.426,
         "sharpe": -0.402,
+        "sharpe_annualised": -0.879,
         "expectancy": -35.99,
+        "expectancy_R": -0.5091,
         "max_drawdown_pct": 14.9,
-        "total_pnl": -1187.62
+        "total_pnl": -1187.62,
+        "fixed_size_pnl": -1259.92
       },
+      "monte_carlo": {
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "median_final": 8711.16,
+        "p5_final": 7918.6
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: ict_icc",
       "regimes": {
         "2019": {
           "n": 1,
@@ -2251,7 +2527,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2270,10 +2546,21 @@
         "win_rate": null,
         "profit_factor": null,
         "sharpe": null,
+        "sharpe_annualised": null,
         "expectancy": null,
+        "expectancy_R": null,
         "max_drawdown_pct": null,
-        "total_pnl": null
+        "total_pnl": null,
+        "fixed_size_pnl": null
       },
+      "monte_carlo": {
+        "ruin_probability": null,
+        "double_probability": null,
+        "median_final": null,
+        "p5_final": null
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: silver_bullet",
       "regimes": {},
       "rules": [
         "1. Window: NY 15:00-16:00 UTC only.",
@@ -2298,7 +2585,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2317,10 +2604,21 @@
         "win_rate": null,
         "profit_factor": null,
         "sharpe": null,
+        "sharpe_annualised": null,
         "expectancy": null,
+        "expectancy_R": null,
         "max_drawdown_pct": null,
-        "total_pnl": null
+        "total_pnl": null,
+        "fixed_size_pnl": null
       },
+      "monte_carlo": {
+        "ruin_probability": null,
+        "double_probability": null,
+        "median_final": null,
+        "p5_final": null
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: silver_bullet",
       "regimes": {},
       "rules": [
         "1. Window: NY 15:00-16:00 UTC only.",
@@ -2345,7 +2643,7 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     },
     {
@@ -2364,10 +2662,21 @@
         "win_rate": null,
         "profit_factor": null,
         "sharpe": null,
+        "sharpe_annualised": null,
         "expectancy": null,
+        "expectancy_R": null,
         "max_drawdown_pct": null,
-        "total_pnl": null
+        "total_pnl": null,
+        "fixed_size_pnl": null
       },
+      "monte_carlo": {
+        "ruin_probability": null,
+        "double_probability": null,
+        "median_final": null,
+        "p5_final": null
+      },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
+      "mechanism_label": "ICT: silver_bullet",
       "regimes": {},
       "rules": [
         "1. Window: NY 15:00-16:00 UTC only.",
@@ -2392,14 +2701,8 @@
         "ICC_RANGE_ATR_MULT": 1.0
       },
       "source": "agents/lens/ict_research.py",
-      "researched_at": "2026-07-27T18:47:12.882559+00:00",
+      "researched_at": "2026-07-28T05:21:58.338166+00:00",
       "deployable": false
     }
-  ],
-  "methodology_notes": {
-    "compounding_artifact": "total_pnl / final_balance COMPOUND position size off a growing balance with fractional units and no liquidity cap. For high-frequency models this explodes: turtle_soup/DE30 reports $57.8M from $10k, which is arithmetic, not a forecast. Use expectancy_R and fixed_size_pnl for a realistic read \u2014 the same model at FIXED $75 risk/trade returns ~$84k over 8 years.",
-    "sharpe_frequency_bias": "The shared gate FAILs any model with per-trade Sharpe < 0.5. That is an extraordinarily high bar \u2014 mean P&L half a standard deviation PER TRADE \u2014 which essentially no real strategy meets, and it penalises high-frequency models that accumulate edge across many small trades. sharpe_annualised (per-trade Sharpe x sqrt(trades/yr)) is reported alongside: turtle_soup scores 2.4-2.8 annualised while failing the per-trade test. The gate was NOT changed after seeing these results \u2014 moving a threshold to make things pass is how backtests get talked into deployment. Flagged for Jase.",
-    "gate_unchanged": true
-  },
-  "headline": "0 of 28 model/instrument combinations cleared the gate. Nothing is marked deployable. turtle_soup is the only model with both a large sample and consistent multi-year profitability, but it fails the per-trade Sharpe test \u2014 see methodology_notes."
+  ]
 }

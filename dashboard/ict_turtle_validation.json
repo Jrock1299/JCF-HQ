@@ -1,0 +1,2101 @@
+{
+  "generated_at": "2026-07-28T05:22:09.200762+00:00",
+  "gate_basis": "annualised Sharpe (per-trade retained as reference)",
+  "note": "Walk-forward has no parameters to fit \u2014 turtle_soup is a rule set with fixed knobs. The window structure is honest: prove IS stats also hold on the untouched OOS window.",
+  "instruments": [
+    "SPX500_USD",
+    "DE30_EUR",
+    "XAU_USD",
+    "CHF_JPY"
+  ],
+  "walkforward": [
+    {
+      "instrument": "SPX500_USD",
+      "in_years": 2,
+      "out_years": 1,
+      "windows": [
+        {
+          "in_sample": {
+            "years": [
+              2018,
+              2019
+            ],
+            "n": 566,
+            "wr": 58.5,
+            "pf": 1.465,
+            "sharpe_pt": 0.177,
+            "sharpe_ann": 3.576,
+            "max_dd_pct": 8.0,
+            "expectancy": 27.77,
+            "expectancy_R": 0.2434,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2020
+            ],
+            "n": 388,
+            "wr": 57.7,
+            "pf": 1.635,
+            "sharpe_pt": 0.222,
+            "sharpe_ann": 4.387,
+            "max_dd_pct": 11.5,
+            "expectancy": 93.48,
+            "expectancy_R": 0.3431,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2019,
+              2020
+            ],
+            "n": 756,
+            "wr": 57.3,
+            "pf": 1.559,
+            "sharpe_pt": 0.187,
+            "sharpe_ann": 3.65,
+            "max_dd_pct": 8.7,
+            "expectancy": 61.3,
+            "expectancy_R": 0.2749,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2021
+            ],
+            "n": 421,
+            "wr": 56.8,
+            "pf": 1.702,
+            "sharpe_pt": 0.239,
+            "sharpe_ann": 4.946,
+            "max_dd_pct": 100.0,
+            "expectancy": 171.87,
+            "expectancy_R": 0.2904,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2020,
+              2021
+            ],
+            "n": 809,
+            "wr": 57.2,
+            "pf": 1.678,
+            "sharpe_pt": 0.225,
+            "sharpe_ann": 4.538,
+            "max_dd_pct": 27.7,
+            "expectancy": 134.27,
+            "expectancy_R": 0.3157,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2022
+            ],
+            "n": 472,
+            "wr": 58.3,
+            "pf": 1.671,
+            "sharpe_pt": 0.23,
+            "sharpe_ann": 5.06,
+            "max_dd_pct": 7.4,
+            "expectancy": 497.73,
+            "expectancy_R": 0.3266,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2021,
+              2022
+            ],
+            "n": 893,
+            "wr": 57.6,
+            "pf": 1.678,
+            "sharpe_pt": 0.208,
+            "sharpe_ann": 4.421,
+            "max_dd_pct": 5.7,
+            "expectancy": 344.1,
+            "expectancy_R": 0.3095,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2023
+            ],
+            "n": 566,
+            "wr": 59.7,
+            "pf": 1.68,
+            "sharpe_pt": 0.229,
+            "sharpe_ann": 5.503,
+            "max_dd_pct": 11.1,
+            "expectancy": 1469.65,
+            "expectancy_R": 0.3224,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2022,
+              2023
+            ],
+            "n": 1038,
+            "wr": 59.1,
+            "pf": 1.678,
+            "sharpe_pt": 0.207,
+            "sharpe_ann": 4.737,
+            "max_dd_pct": 8.8,
+            "expectancy": 1027.7,
+            "expectancy_R": 0.3243,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2024
+            ],
+            "n": 420,
+            "wr": 55.2,
+            "pf": 1.438,
+            "sharpe_pt": 0.152,
+            "sharpe_ann": 3.11,
+            "max_dd_pct": 21.0,
+            "expectancy": 2520.0,
+            "expectancy_R": 0.2473,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2023,
+              2024
+            ],
+            "n": 986,
+            "wr": 57.8,
+            "pf": 1.519,
+            "sharpe_pt": 0.161,
+            "sharpe_ann": 3.587,
+            "max_dd_pct": 12.7,
+            "expectancy": 1917.06,
+            "expectancy_R": 0.2904,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2025
+            ],
+            "n": 476,
+            "wr": 60.5,
+            "pf": 1.739,
+            "sharpe_pt": 0.25,
+            "sharpe_ann": 5.46,
+            "max_dd_pct": 10.4,
+            "expectancy": 8260.49,
+            "expectancy_R": 0.3457,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2024,
+              2025
+            ],
+            "n": 896,
+            "wr": 58.0,
+            "pf": 1.645,
+            "sharpe_pt": 0.208,
+            "sharpe_ann": 4.4,
+            "max_dd_pct": 7.7,
+            "expectancy": 5569.64,
+            "expectancy_R": 0.2996,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2026
+            ],
+            "n": 261,
+            "wr": 55.6,
+            "pf": 1.469,
+            "sharpe_pt": 0.181,
+            "sharpe_ann": 3.893,
+            "max_dd_pct": 21.9,
+            "expectancy": 10962.64,
+            "expectancy_R": 0.2419,
+            "ruin": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "instrument": "DE30_EUR",
+      "in_years": 2,
+      "out_years": 1,
+      "windows": [
+        {
+          "in_sample": {
+            "years": [
+              2018,
+              2019
+            ],
+            "n": 546,
+            "wr": 57.3,
+            "pf": 1.596,
+            "sharpe_pt": 0.216,
+            "sharpe_ann": 4.233,
+            "max_dd_pct": 7.7,
+            "expectancy": 38.76,
+            "expectancy_R": 0.2954,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2020
+            ],
+            "n": 377,
+            "wr": 62.1,
+            "pf": 1.766,
+            "sharpe_pt": 0.263,
+            "sharpe_ann": 5.155,
+            "max_dd_pct": 8.2,
+            "expectancy": 142.15,
+            "expectancy_R": 0.382,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2019,
+              2020
+            ],
+            "n": 772,
+            "wr": 59.6,
+            "pf": 1.702,
+            "sharpe_pt": 0.222,
+            "sharpe_ann": 4.367,
+            "max_dd_pct": 6.6,
+            "expectancy": 89.99,
+            "expectancy_R": 0.3196,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2021
+            ],
+            "n": 399,
+            "wr": 60.4,
+            "pf": 1.837,
+            "sharpe_pt": 0.275,
+            "sharpe_ann": 5.54,
+            "max_dd_pct": 14.0,
+            "expectancy": 292.47,
+            "expectancy_R": 0.3194,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2020,
+              2021
+            ],
+            "n": 776,
+            "wr": 61.2,
+            "pf": 1.813,
+            "sharpe_pt": 0.257,
+            "sharpe_ann": 5.09,
+            "max_dd_pct": 9.2,
+            "expectancy": 219.44,
+            "expectancy_R": 0.3498,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2022
+            ],
+            "n": 513,
+            "wr": 60.6,
+            "pf": 1.835,
+            "sharpe_pt": 0.273,
+            "sharpe_ann": 6.299,
+            "max_dd_pct": 13.2,
+            "expectancy": 1124.73,
+            "expectancy_R": 0.3807,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2021,
+              2022
+            ],
+            "n": 912,
+            "wr": 60.5,
+            "pf": 1.835,
+            "sharpe_pt": 0.238,
+            "sharpe_ann": 5.13,
+            "max_dd_pct": 9.6,
+            "expectancy": 760.62,
+            "expectancy_R": 0.3538,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2023
+            ],
+            "n": 467,
+            "wr": 66.4,
+            "pf": 2.287,
+            "sharpe_pt": 0.353,
+            "sharpe_ann": 7.702,
+            "max_dd_pct": 5.7,
+            "expectancy": 6313.38,
+            "expectancy_R": 0.485,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2022,
+              2023
+            ],
+            "n": 980,
+            "wr": 63.4,
+            "pf": 2.182,
+            "sharpe_pt": 0.277,
+            "sharpe_ann": 6.173,
+            "max_dd_pct": 4.6,
+            "expectancy": 3597.28,
+            "expectancy_R": 0.4304,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2024
+            ],
+            "n": 387,
+            "wr": 64.3,
+            "pf": 2.363,
+            "sharpe_pt": 0.377,
+            "sharpe_ann": 7.472,
+            "max_dd_pct": 35.7,
+            "expectancy": 20984.76,
+            "expectancy_R": 0.4405,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2023,
+              2024
+            ],
+            "n": 854,
+            "wr": 65.5,
+            "pf": 2.342,
+            "sharpe_pt": 0.321,
+            "sharpe_ann": 6.672,
+            "max_dd_pct": 10.9,
+            "expectancy": 12961.89,
+            "expectancy_R": 0.4648,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2025
+            ],
+            "n": 362,
+            "wr": 63.8,
+            "pf": 1.932,
+            "sharpe_pt": 0.3,
+            "sharpe_ann": 5.731,
+            "max_dd_pct": 6.1,
+            "expectancy": 61584.77,
+            "expectancy_R": 0.4233,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2024,
+              2025
+            ],
+            "n": 749,
+            "wr": 64.1,
+            "pf": 2.018,
+            "sharpe_pt": 0.271,
+            "sharpe_ann": 5.261,
+            "max_dd_pct": 4.5,
+            "expectancy": 40607.2,
+            "expectancy_R": 0.4321,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2026
+            ],
+            "n": 231,
+            "wr": 58.9,
+            "pf": 1.748,
+            "sharpe_pt": 0.264,
+            "sharpe_ann": 5.384,
+            "max_dd_pct": 49.2,
+            "expectancy": 102396.07,
+            "expectancy_R": 0.3361,
+            "ruin": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "instrument": "XAU_USD",
+      "in_years": 2,
+      "out_years": 1,
+      "windows": [
+        {
+          "in_sample": {
+            "years": [
+              2018,
+              2019
+            ],
+            "n": 665,
+            "wr": 56.1,
+            "pf": 1.315,
+            "sharpe_pt": 0.124,
+            "sharpe_ann": 2.704,
+            "max_dd_pct": 14.9,
+            "expectancy": 15.22,
+            "expectancy_R": 0.1628,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2020
+            ],
+            "n": 447,
+            "wr": 60.0,
+            "pf": 1.52,
+            "sharpe_pt": 0.196,
+            "sharpe_ann": 4.189,
+            "max_dd_pct": 30.7,
+            "expectancy": 42.5,
+            "expectancy_R": 0.2384,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2019,
+              2020
+            ],
+            "n": 895,
+            "wr": 59.1,
+            "pf": 1.474,
+            "sharpe_pt": 0.174,
+            "sharpe_ann": 3.684,
+            "max_dd_pct": 20.8,
+            "expectancy": 31.17,
+            "expectancy_R": 0.2211,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2021
+            ],
+            "n": 405,
+            "wr": 54.6,
+            "pf": 1.418,
+            "sharpe_pt": 0.164,
+            "sharpe_ann": 3.327,
+            "max_dd_pct": 39.6,
+            "expectancy": 58.77,
+            "expectancy_R": 0.1913,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2020,
+              2021
+            ],
+            "n": 852,
+            "wr": 57.4,
+            "pf": 1.458,
+            "sharpe_pt": 0.171,
+            "sharpe_ann": 3.557,
+            "max_dd_pct": 30.7,
+            "expectancy": 50.23,
+            "expectancy_R": 0.216,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2022
+            ],
+            "n": 474,
+            "wr": 55.9,
+            "pf": 1.462,
+            "sharpe_pt": 0.175,
+            "sharpe_ann": 3.831,
+            "max_dd_pct": 14.0,
+            "expectancy": 151.44,
+            "expectancy_R": 0.2525,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2021,
+              2022
+            ],
+            "n": 879,
+            "wr": 55.3,
+            "pf": 1.45,
+            "sharpe_pt": 0.159,
+            "sharpe_ann": 3.361,
+            "max_dd_pct": 11.0,
+            "expectancy": 108.74,
+            "expectancy_R": 0.2243,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2023
+            ],
+            "n": 477,
+            "wr": 61.0,
+            "pf": 1.661,
+            "sharpe_pt": 0.204,
+            "sharpe_ann": 4.51,
+            "max_dd_pct": 20.8,
+            "expectancy": 448.77,
+            "expectancy_R": 0.3167,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2022,
+              2023
+            ],
+            "n": 951,
+            "wr": 58.5,
+            "pf": 1.596,
+            "sharpe_pt": 0.179,
+            "sharpe_ann": 3.921,
+            "max_dd_pct": 13.9,
+            "expectancy": 300.58,
+            "expectancy_R": 0.2847,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2024
+            ],
+            "n": 515,
+            "wr": 60.0,
+            "pf": 1.688,
+            "sharpe_pt": 0.234,
+            "sharpe_ann": 5.346,
+            "max_dd_pct": 11.6,
+            "expectancy": 1237.58,
+            "expectancy_R": 0.3157,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2023,
+              2024
+            ],
+            "n": 992,
+            "wr": 60.5,
+            "pf": 1.681,
+            "sharpe_pt": 0.208,
+            "sharpe_ann": 4.662,
+            "max_dd_pct": 8.3,
+            "expectancy": 858.28,
+            "expectancy_R": 0.3162,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2025
+            ],
+            "n": 460,
+            "wr": 59.8,
+            "pf": 1.695,
+            "sharpe_pt": 0.235,
+            "sharpe_ann": 5.062,
+            "max_dd_pct": 13.3,
+            "expectancy": 3427.49,
+            "expectancy_R": 0.3179,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2024,
+              2025
+            ],
+            "n": 975,
+            "wr": 59.9,
+            "pf": 1.693,
+            "sharpe_pt": 0.211,
+            "sharpe_ann": 4.656,
+            "max_dd_pct": 9.6,
+            "expectancy": 2270.77,
+            "expectancy_R": 0.3167,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2026
+            ],
+            "n": 235,
+            "wr": 53.6,
+            "pf": 1.445,
+            "sharpe_pt": 0.175,
+            "sharpe_ann": 3.562,
+            "max_dd_pct": 17.9,
+            "expectancy": 4541.16,
+            "expectancy_R": 0.2261,
+            "ruin": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "instrument": "CHF_JPY",
+      "in_years": 2,
+      "out_years": 1,
+      "windows": [
+        {
+          "in_sample": {
+            "years": [
+              2018,
+              2019
+            ],
+            "n": 628,
+            "wr": 59.7,
+            "pf": 1.299,
+            "sharpe_pt": 0.123,
+            "sharpe_ann": 2.577,
+            "max_dd_pct": 10.1,
+            "expectancy": 14.46,
+            "expectancy_R": 0.1569,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2020
+            ],
+            "n": 496,
+            "wr": 61.9,
+            "pf": 1.418,
+            "sharpe_pt": 0.163,
+            "sharpe_ann": 3.636,
+            "max_dd_pct": 32.4,
+            "expectancy": 19.95,
+            "expectancy_R": 0.17,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2019,
+              2020
+            ],
+            "n": 907,
+            "wr": 60.2,
+            "pf": 1.334,
+            "sharpe_pt": 0.135,
+            "sharpe_ann": 2.872,
+            "max_dd_pct": 25.6,
+            "expectancy": 16.58,
+            "expectancy_R": 0.1495,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2021
+            ],
+            "n": 476,
+            "wr": 60.1,
+            "pf": 1.316,
+            "sharpe_pt": 0.125,
+            "sharpe_ann": 2.749,
+            "max_dd_pct": 15.8,
+            "expectancy": 32.0,
+            "expectancy_R": 0.1708,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2020,
+              2021
+            ],
+            "n": 972,
+            "wr": 61.0,
+            "pf": 1.349,
+            "sharpe_pt": 0.13,
+            "sharpe_ann": 2.863,
+            "max_dd_pct": 11.9,
+            "expectancy": 25.85,
+            "expectancy_R": 0.1704,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2022
+            ],
+            "n": 292,
+            "wr": 60.3,
+            "pf": 1.431,
+            "sharpe_pt": 0.167,
+            "sharpe_ann": 3.383,
+            "max_dd_pct": 16.1,
+            "expectancy": 53.99,
+            "expectancy_R": 0.21,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2021,
+              2022
+            ],
+            "n": 768,
+            "wr": 60.2,
+            "pf": 1.365,
+            "sharpe_pt": 0.142,
+            "sharpe_ann": 3.016,
+            "max_dd_pct": 18.0,
+            "expectancy": 40.36,
+            "expectancy_R": 0.1857,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2023
+            ],
+            "n": 307,
+            "wr": 61.9,
+            "pf": 1.529,
+            "sharpe_pt": 0.202,
+            "sharpe_ann": 4.357,
+            "max_dd_pct": 16.1,
+            "expectancy": 104.12,
+            "expectancy_R": 0.259,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2022,
+              2023
+            ],
+            "n": 599,
+            "wr": 61.1,
+            "pf": 1.492,
+            "sharpe_pt": 0.184,
+            "sharpe_ann": 3.216,
+            "max_dd_pct": 11.7,
+            "expectancy": 79.69,
+            "expectancy_R": 0.2351,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2024
+            ],
+            "n": 367,
+            "wr": 58.0,
+            "pf": 1.408,
+            "sharpe_pt": 0.155,
+            "sharpe_ann": 2.972,
+            "max_dd_pct": 20.3,
+            "expectancy": 132.44,
+            "expectancy_R": 0.2151,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2023,
+              2024
+            ],
+            "n": 674,
+            "wr": 59.8,
+            "pf": 1.449,
+            "sharpe_pt": 0.166,
+            "sharpe_ann": 3.316,
+            "max_dd_pct": 13.1,
+            "expectancy": 119.54,
+            "expectancy_R": 0.2351,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2025
+            ],
+            "n": 372,
+            "wr": 62.6,
+            "pf": 1.595,
+            "sharpe_pt": 0.212,
+            "sharpe_ann": 4.106,
+            "max_dd_pct": 87.0,
+            "expectancy": 222.64,
+            "expectancy_R": 0.236,
+            "ruin": 0.0
+          }
+        },
+        {
+          "in_sample": {
+            "years": [
+              2024,
+              2025
+            ],
+            "n": 739,
+            "wr": 60.4,
+            "pf": 1.509,
+            "sharpe_pt": 0.185,
+            "sharpe_ann": 3.567,
+            "max_dd_pct": 23.9,
+            "expectancy": 177.84,
+            "expectancy_R": 0.2256,
+            "ruin": 0.0
+          },
+          "out_of_sample": {
+            "years": [
+              2026
+            ],
+            "n": 294,
+            "wr": 63.3,
+            "pf": 1.412,
+            "sharpe_pt": 0.16,
+            "sharpe_ann": 3.7,
+            "max_dd_pct": 15.5,
+            "expectancy": 250.8,
+            "expectancy_R": 0.181,
+            "ruin": 0.0
+          }
+        }
+      ]
+    }
+  ],
+  "sensitivity": [
+    {
+      "instrument": "SPX500_USD",
+      "baseline": {
+        "n": 3570,
+        "wr": 58.0,
+        "pf": 1.58,
+        "sharpe_ann": 2.482,
+        "max_dd_pct": 7.4,
+        "expectancy": 2532.98,
+        "expectancy_R": 0.2973
+      },
+      "sweeps": {
+        "LOOKBACK_POOLS": [
+          {
+            "value": 25,
+            "n": 3566,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.481,
+            "max_dd_pct": 7.4,
+            "expectancy": 2564.41,
+            "expectancy_R": 0.298
+          },
+          {
+            "value": 50,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 75,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 100,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          }
+        ],
+        "MSS_MAX_BARS_AFTER_SWEEP": [
+          {
+            "value": 10,
+            "n": 2862,
+            "wr": 53.8,
+            "pf": 1.381,
+            "sharpe_ann": 1.965,
+            "max_dd_pct": 7.9,
+            "expectancy": 258.72,
+            "expectancy_R": 0.2402
+          },
+          {
+            "value": 20,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 40,
+            "n": 3943,
+            "wr": 59.3,
+            "pf": 1.647,
+            "sharpe_ann": 2.535,
+            "max_dd_pct": 7.5,
+            "expectancy": 8984.03,
+            "expectancy_R": 0.3202
+          },
+          {
+            "value": 60,
+            "n": 3850,
+            "wr": 61.1,
+            "pf": 1.653,
+            "sharpe_ann": 2.458,
+            "max_dd_pct": 8.4,
+            "expectancy": 19774.94,
+            "expectancy_R": 0.3518
+          }
+        ],
+        "STOP_BUFFER_ATR": [
+          {
+            "value": 0.1,
+            "n": 3758,
+            "wr": 59.7,
+            "pf": 1.619,
+            "sharpe_ann": 2.526,
+            "max_dd_pct": 8.1,
+            "expectancy": 5195.11,
+            "expectancy_R": 0.3128
+          },
+          {
+            "value": 0.25,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 0.5,
+            "n": 3235,
+            "wr": 44.3,
+            "pf": 0.582,
+            "sharpe_ann": -2.316,
+            "max_dd_pct": 100.0,
+            "expectancy": -335103.34,
+            "expectancy_R": -0.1445
+          },
+          {
+            "value": 1.0,
+            "n": 2623,
+            "wr": 52.2,
+            "pf": 1.481,
+            "sharpe_ann": 2.274,
+            "max_dd_pct": 6.1,
+            "expectancy": 214.45,
+            "expectancy_R": 0.2401
+          }
+        ],
+        "MIN_STOP_ATR": [
+          {
+            "value": 0.25,
+            "n": 4053,
+            "wr": 56.9,
+            "pf": 0.938,
+            "sharpe_ann": -0.114,
+            "max_dd_pct": 100.0,
+            "expectancy": -389.0,
+            "expectancy_R": 0.2831
+          },
+          {
+            "value": 0.5,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 1.0,
+            "n": 2630,
+            "wr": 56.6,
+            "pf": 1.57,
+            "sharpe_ann": 2.392,
+            "max_dd_pct": 10.6,
+            "expectancy": 749.48,
+            "expectancy_R": 0.2992
+          },
+          {
+            "value": 1.5,
+            "n": 1864,
+            "wr": 54.9,
+            "pf": 1.545,
+            "sharpe_ann": 2.227,
+            "max_dd_pct": 9.9,
+            "expectancy": 223.97,
+            "expectancy_R": 0.2923
+          }
+        ],
+        "MIN_RR": [
+          {
+            "value": 1.5,
+            "n": 3915,
+            "wr": 60.8,
+            "pf": 1.526,
+            "sharpe_ann": 2.623,
+            "max_dd_pct": 6.6,
+            "expectancy": 1280.13,
+            "expectancy_R": 0.2526
+          },
+          {
+            "value": 2.0,
+            "n": 3570,
+            "wr": 58.0,
+            "pf": 1.58,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.4,
+            "expectancy": 2532.98,
+            "expectancy_R": 0.2973
+          },
+          {
+            "value": 3.0,
+            "n": 2891,
+            "wr": 54.4,
+            "pf": 1.619,
+            "sharpe_ann": 2.242,
+            "max_dd_pct": 6.1,
+            "expectancy": 3729.05,
+            "expectancy_R": 0.3685
+          },
+          {
+            "value": 4.0,
+            "n": 2636,
+            "wr": 50.9,
+            "pf": 1.516,
+            "sharpe_ann": 1.748,
+            "max_dd_pct": 11.5,
+            "expectancy": 1805.19,
+            "expectancy_R": 0.3598
+          }
+        ]
+      },
+      "killzones": [
+        {
+          "variant": "default_LDN_NY",
+          "n": 3570,
+          "wr": 58.0,
+          "pf": 1.58,
+          "sharpe_ann": 2.482,
+          "max_dd_pct": 7.4,
+          "expectancy": 2532.98,
+          "expectancy_R": 0.2973
+        },
+        {
+          "variant": "london_only",
+          "n": 1423,
+          "wr": 57.8,
+          "pf": 1.473,
+          "sharpe_ann": 2.131,
+          "max_dd_pct": 9.4,
+          "expectancy": 55.06,
+          "expectancy_R": 0.24
+        },
+        {
+          "variant": "ny_only",
+          "n": 2361,
+          "wr": 57.1,
+          "pf": 1.606,
+          "sharpe_ann": 2.446,
+          "max_dd_pct": 6.3,
+          "expectancy": 556.3,
+          "expectancy_R": 0.3132
+        },
+        {
+          "variant": "all_hours",
+          "n": 6619,
+          "wr": 64.6,
+          "pf": 1.89,
+          "sharpe_ann": 2.869,
+          "max_dd_pct": 5.0,
+          "expectancy": 42549745.58,
+          "expectancy_R": 0.3893
+        }
+      ]
+    },
+    {
+      "instrument": "DE30_EUR",
+      "baseline": {
+        "n": 3974,
+        "wr": 62.3,
+        "pf": 1.681,
+        "sharpe_ann": 2.472,
+        "max_dd_pct": 6.6,
+        "expectancy": 48487.97,
+        "expectancy_R": 0.3608
+      },
+      "sweeps": {
+        "LOOKBACK_POOLS": [
+          {
+            "value": 25,
+            "n": 3285,
+            "wr": 61.6,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17163.39,
+            "expectancy_R": 0.3813
+          },
+          {
+            "value": 50,
+            "n": 3282,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17606.66,
+            "expectancy_R": 0.3826
+          },
+          {
+            "value": 75,
+            "n": 3280,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17919.32,
+            "expectancy_R": 0.3835
+          },
+          {
+            "value": 100,
+            "n": 3280,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17919.32,
+            "expectancy_R": 0.3835
+          }
+        ],
+        "MSS_MAX_BARS_AFTER_SWEEP": [
+          {
+            "value": 10,
+            "n": 2624,
+            "wr": 56.6,
+            "pf": 1.63,
+            "sharpe_ann": 2.404,
+            "max_dd_pct": 6.4,
+            "expectancy": 926.22,
+            "expectancy_R": 0.3098
+          },
+          {
+            "value": 20,
+            "n": 3282,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17606.66,
+            "expectancy_R": 0.3826
+          },
+          {
+            "value": 40,
+            "n": 3671,
+            "wr": 64.5,
+            "pf": 2.05,
+            "sharpe_ann": 2.957,
+            "max_dd_pct": 3.2,
+            "expectancy": 163047.89,
+            "expectancy_R": 0.4308
+          },
+          {
+            "value": 60,
+            "n": 3762,
+            "wr": 65.4,
+            "pf": 2.029,
+            "sharpe_ann": 2.969,
+            "max_dd_pct": 3.2,
+            "expectancy": 271772.46,
+            "expectancy_R": 0.4392
+          }
+        ],
+        "STOP_BUFFER_ATR": [
+          {
+            "value": 0.1,
+            "n": 3500,
+            "wr": 62.7,
+            "pf": 1.928,
+            "sharpe_ann": 2.804,
+            "max_dd_pct": 4.4,
+            "expectancy": 39620.77,
+            "expectancy_R": 0.3955
+          },
+          {
+            "value": 0.25,
+            "n": 3282,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17606.66,
+            "expectancy_R": 0.3826
+          },
+          {
+            "value": 0.5,
+            "n": 2892,
+            "wr": 59.1,
+            "pf": 1.759,
+            "sharpe_ann": 2.577,
+            "max_dd_pct": 5.4,
+            "expectancy": 3221.01,
+            "expectancy_R": 0.3438
+          },
+          {
+            "value": 1.0,
+            "n": 2326,
+            "wr": 54.5,
+            "pf": 1.629,
+            "sharpe_ann": 2.38,
+            "max_dd_pct": 8.2,
+            "expectancy": 401.22,
+            "expectancy_R": 0.2869
+          }
+        ],
+        "MIN_STOP_ATR": [
+          {
+            "value": 0.25,
+            "n": 3783,
+            "wr": 62.1,
+            "pf": 1.723,
+            "sharpe_ann": 2.423,
+            "max_dd_pct": 20.5,
+            "expectancy": 21143.86,
+            "expectancy_R": 0.3586
+          },
+          {
+            "value": 0.5,
+            "n": 3282,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17606.66,
+            "expectancy_R": 0.3826
+          },
+          {
+            "value": 1.0,
+            "n": 2407,
+            "wr": 61.2,
+            "pf": 2.154,
+            "sharpe_ann": 3.061,
+            "max_dd_pct": 4.5,
+            "expectancy": 4818.56,
+            "expectancy_R": 0.4151
+          },
+          {
+            "value": 1.5,
+            "n": 1710,
+            "wr": 60.1,
+            "pf": 2.192,
+            "sharpe_ann": 3.002,
+            "max_dd_pct": 7.8,
+            "expectancy": 987.9,
+            "expectancy_R": 0.4204
+          }
+        ],
+        "MIN_RR": [
+          {
+            "value": 1.5,
+            "n": 3593,
+            "wr": 63.9,
+            "pf": 1.875,
+            "sharpe_ann": 2.977,
+            "max_dd_pct": 4.9,
+            "expectancy": 9736.74,
+            "expectancy_R": 0.3321
+          },
+          {
+            "value": 2.0,
+            "n": 3282,
+            "wr": 61.7,
+            "pf": 1.893,
+            "sharpe_ann": 2.78,
+            "max_dd_pct": 6.5,
+            "expectancy": 17606.66,
+            "expectancy_R": 0.3826
+          },
+          {
+            "value": 3.0,
+            "n": 2831,
+            "wr": 58.0,
+            "pf": 1.932,
+            "sharpe_ann": 2.445,
+            "max_dd_pct": 4.9,
+            "expectancy": 13447.93,
+            "expectancy_R": 0.4219
+          },
+          {
+            "value": 4.0,
+            "n": 2630,
+            "wr": 55.0,
+            "pf": 1.829,
+            "sharpe_ann": 2.189,
+            "max_dd_pct": 4.9,
+            "expectancy": 8823.01,
+            "expectancy_R": 0.429
+          }
+        ]
+      },
+      "killzones": [
+        {
+          "variant": "default_LDN_NY",
+          "n": 3282,
+          "wr": 61.7,
+          "pf": 1.893,
+          "sharpe_ann": 2.78,
+          "max_dd_pct": 6.5,
+          "expectancy": 17606.66,
+          "expectancy_R": 0.3826
+        },
+        {
+          "variant": "london_only",
+          "n": 2004,
+          "wr": 59.5,
+          "pf": 1.911,
+          "sharpe_ann": 2.911,
+          "max_dd_pct": 5.8,
+          "expectancy": 543.48,
+          "expectancy_R": 0.3421
+        },
+        {
+          "variant": "ny_only",
+          "n": 1651,
+          "wr": 61.2,
+          "pf": 1.864,
+          "sharpe_ann": 2.667,
+          "max_dd_pct": 5.5,
+          "expectancy": 482.85,
+          "expectancy_R": 0.3811
+        },
+        {
+          "variant": "all_hours",
+          "n": 6788,
+          "wr": 65.7,
+          "pf": 2.224,
+          "sharpe_ann": 3.35,
+          "max_dd_pct": 6.2,
+          "expectancy": 86583079.95,
+          "expectancy_R": 0.3907
+        }
+      ]
+    },
+    {
+      "instrument": "XAU_USD",
+      "baseline": {
+        "n": 5187,
+        "wr": 60.7,
+        "pf": 1.514,
+        "sharpe_ann": 2.435,
+        "max_dd_pct": 9.0,
+        "expectancy": 9198.29,
+        "expectancy_R": 0.2545
+      },
+      "sweeps": {
+        "LOOKBACK_POOLS": [
+          {
+            "value": 25,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.37,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 50,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 75,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 100,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          }
+        ],
+        "MSS_MAX_BARS_AFTER_SWEEP": [
+          {
+            "value": 10,
+            "n": 3056,
+            "wr": 53.8,
+            "pf": 1.384,
+            "sharpe_ann": 2.041,
+            "max_dd_pct": 10.3,
+            "expectancy": 103.62,
+            "expectancy_R": 0.1881
+          },
+          {
+            "value": 20,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 40,
+            "n": 4304,
+            "wr": 61.2,
+            "pf": 1.829,
+            "sharpe_ann": 2.84,
+            "max_dd_pct": 4.8,
+            "expectancy": 12337.94,
+            "expectancy_R": 0.3039
+          },
+          {
+            "value": 60,
+            "n": 4235,
+            "wr": 61.6,
+            "pf": 1.838,
+            "sharpe_ann": 2.862,
+            "max_dd_pct": 4.8,
+            "expectancy": 12701.92,
+            "expectancy_R": 0.308
+          }
+        ],
+        "STOP_BUFFER_ATR": [
+          {
+            "value": 0.1,
+            "n": 3908,
+            "wr": 59.7,
+            "pf": 1.642,
+            "sharpe_ann": 2.566,
+            "max_dd_pct": 8.7,
+            "expectancy": 3701.72,
+            "expectancy_R": 0.2857
+          },
+          {
+            "value": 0.25,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 0.5,
+            "n": 3253,
+            "wr": 55.7,
+            "pf": 1.569,
+            "sharpe_ann": 2.482,
+            "max_dd_pct": 7.0,
+            "expectancy": 430.65,
+            "expectancy_R": 0.2367
+          },
+          {
+            "value": 1.0,
+            "n": 2621,
+            "wr": 50.1,
+            "pf": 1.313,
+            "sharpe_ann": 1.873,
+            "max_dd_pct": 9.8,
+            "expectancy": 39.87,
+            "expectancy_R": 0.1513
+          }
+        ],
+        "MIN_STOP_ATR": [
+          {
+            "value": 0.25,
+            "n": 4191,
+            "wr": 57.8,
+            "pf": 1.492,
+            "sharpe_ann": 2.332,
+            "max_dd_pct": 7.1,
+            "expectancy": 145.92,
+            "expectancy_R": 0.1968
+          },
+          {
+            "value": 0.5,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 1.0,
+            "n": 2705,
+            "wr": 56.4,
+            "pf": 1.602,
+            "sharpe_ann": 2.386,
+            "max_dd_pct": 5.7,
+            "expectancy": 566.51,
+            "expectancy_R": 0.2748
+          },
+          {
+            "value": 1.5,
+            "n": 1854,
+            "wr": 55.2,
+            "pf": 1.663,
+            "sharpe_ann": 2.474,
+            "max_dd_pct": 5.3,
+            "expectancy": 213.98,
+            "expectancy_R": 0.2879
+          }
+        ],
+        "MIN_RR": [
+          {
+            "value": 1.5,
+            "n": 4084,
+            "wr": 61.0,
+            "pf": 1.525,
+            "sharpe_ann": 2.549,
+            "max_dd_pct": 8.0,
+            "expectancy": 596.37,
+            "expectancy_R": 0.2152
+          },
+          {
+            "value": 2.0,
+            "n": 3678,
+            "wr": 57.9,
+            "pf": 1.584,
+            "sharpe_ann": 2.417,
+            "max_dd_pct": 5.9,
+            "expectancy": 984.21,
+            "expectancy_R": 0.2515
+          },
+          {
+            "value": 3.0,
+            "n": 3051,
+            "wr": 53.4,
+            "pf": 1.571,
+            "sharpe_ann": 2.102,
+            "max_dd_pct": 10.8,
+            "expectancy": 809.5,
+            "expectancy_R": 0.2797
+          },
+          {
+            "value": 4.0,
+            "n": 2936,
+            "wr": 50.3,
+            "pf": 1.67,
+            "sharpe_ann": 2.075,
+            "max_dd_pct": 9.7,
+            "expectancy": 879.28,
+            "expectancy_R": 0.2945
+          }
+        ]
+      },
+      "killzones": [
+        {
+          "variant": "default_LDN_NY",
+          "n": 3678,
+          "wr": 57.9,
+          "pf": 1.584,
+          "sharpe_ann": 2.417,
+          "max_dd_pct": 5.9,
+          "expectancy": 984.21,
+          "expectancy_R": 0.2515
+        },
+        {
+          "variant": "london_only",
+          "n": 1914,
+          "wr": 58.3,
+          "pf": 1.474,
+          "sharpe_ann": 2.209,
+          "max_dd_pct": 9.8,
+          "expectancy": 64.95,
+          "expectancy_R": 0.2173
+        },
+        {
+          "variant": "ny_only",
+          "n": 2161,
+          "wr": 55.4,
+          "pf": 1.553,
+          "sharpe_ann": 2.422,
+          "max_dd_pct": 3.6,
+          "expectancy": 139.03,
+          "expectancy_R": 0.243
+        },
+        {
+          "variant": "all_hours",
+          "n": 7551,
+          "wr": 63.3,
+          "pf": 1.879,
+          "sharpe_ann": 2.887,
+          "max_dd_pct": 7.3,
+          "expectancy": 2910006.23,
+          "expectancy_R": 0.3018
+        }
+      ]
+    },
+    {
+      "instrument": "CHF_JPY",
+      "baseline": {
+        "n": 4765,
+        "wr": 61.7,
+        "pf": 1.32,
+        "sharpe_ann": 2.479,
+        "max_dd_pct": 7.7,
+        "expectancy": 65.84,
+        "expectancy_R": 0.1501
+      },
+      "sweeps": {
+        "LOOKBACK_POOLS": [
+          {
+            "value": 25,
+            "n": 3243,
+            "wr": 60.9,
+            "pf": 1.451,
+            "sharpe_ann": 2.553,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.51,
+            "expectancy_R": 0.193
+          },
+          {
+            "value": 50,
+            "n": 3232,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.552,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.83,
+            "expectancy_R": 0.1934
+          },
+          {
+            "value": 75,
+            "n": 3229,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.551,
+            "max_dd_pct": 10.7,
+            "expectancy": 87.14,
+            "expectancy_R": 0.1927
+          },
+          {
+            "value": 100,
+            "n": 3229,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.551,
+            "max_dd_pct": 10.7,
+            "expectancy": 87.14,
+            "expectancy_R": 0.1927
+          }
+        ],
+        "MSS_MAX_BARS_AFTER_SWEEP": [
+          {
+            "value": 10,
+            "n": 2570,
+            "wr": 56.2,
+            "pf": 1.2,
+            "sharpe_ann": 1.47,
+            "max_dd_pct": 25.3,
+            "expectancy": 11.19,
+            "expectancy_R": 0.1099
+          },
+          {
+            "value": 20,
+            "n": 3232,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.552,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.83,
+            "expectancy_R": 0.1934
+          },
+          {
+            "value": 40,
+            "n": 3663,
+            "wr": 65.6,
+            "pf": 1.84,
+            "sharpe_ann": 3.139,
+            "max_dd_pct": 5.7,
+            "expectancy": 1306.24,
+            "expectancy_R": 0.2819
+          },
+          {
+            "value": 60,
+            "n": 3744,
+            "wr": 66.2,
+            "pf": 1.83,
+            "sharpe_ann": 3.103,
+            "max_dd_pct": 6.5,
+            "expectancy": 1965.54,
+            "expectancy_R": 0.2918
+          }
+        ],
+        "STOP_BUFFER_ATR": [
+          {
+            "value": 0.1,
+            "n": 3398,
+            "wr": 61.9,
+            "pf": 1.433,
+            "sharpe_ann": 2.51,
+            "max_dd_pct": 10.6,
+            "expectancy": 90.67,
+            "expectancy_R": 0.1907
+          },
+          {
+            "value": 0.25,
+            "n": 3232,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.552,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.83,
+            "expectancy_R": 0.1934
+          },
+          {
+            "value": 0.5,
+            "n": 2850,
+            "wr": 58.9,
+            "pf": 1.369,
+            "sharpe_ann": 2.079,
+            "max_dd_pct": 12.1,
+            "expectancy": 60.85,
+            "expectancy_R": 0.1825
+          },
+          {
+            "value": 1.0,
+            "n": 2392,
+            "wr": 54.8,
+            "pf": 1.317,
+            "sharpe_ann": 1.021,
+            "max_dd_pct": 15.7,
+            "expectancy": 33.46,
+            "expectancy_R": 0.1727
+          }
+        ],
+        "MIN_STOP_ATR": [
+          {
+            "value": 0.25,
+            "n": 3702,
+            "wr": 57.7,
+            "pf": 1.069,
+            "sharpe_ann": 0.375,
+            "max_dd_pct": 36.3,
+            "expectancy": 1.05,
+            "expectancy_R": 0.0686
+          },
+          {
+            "value": 0.5,
+            "n": 3232,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.552,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.83,
+            "expectancy_R": 0.1934
+          },
+          {
+            "value": 1.0,
+            "n": 2338,
+            "wr": 61.2,
+            "pf": 1.669,
+            "sharpe_ann": 2.742,
+            "max_dd_pct": 5.3,
+            "expectancy": 264.2,
+            "expectancy_R": 0.2751
+          },
+          {
+            "value": 1.5,
+            "n": 1648,
+            "wr": 62.1,
+            "pf": 1.868,
+            "sharpe_ann": 2.972,
+            "max_dd_pct": 3.9,
+            "expectancy": 259.81,
+            "expectancy_R": 0.3373
+          }
+        ],
+        "MIN_RR": [
+          {
+            "value": 1.5,
+            "n": 3581,
+            "wr": 63.6,
+            "pf": 1.397,
+            "sharpe_ann": 2.61,
+            "max_dd_pct": 10.6,
+            "expectancy": 56.66,
+            "expectancy_R": 0.1634
+          },
+          {
+            "value": 2.0,
+            "n": 3232,
+            "wr": 60.8,
+            "pf": 1.451,
+            "sharpe_ann": 2.552,
+            "max_dd_pct": 10.7,
+            "expectancy": 88.83,
+            "expectancy_R": 0.1934
+          },
+          {
+            "value": 3.0,
+            "n": 2742,
+            "wr": 56.4,
+            "pf": 1.386,
+            "sharpe_ann": 2.066,
+            "max_dd_pct": 15.6,
+            "expectancy": 72.98,
+            "expectancy_R": 0.2017
+          },
+          {
+            "value": 4.0,
+            "n": 2545,
+            "wr": 54.0,
+            "pf": 1.35,
+            "sharpe_ann": 1.803,
+            "max_dd_pct": 7.9,
+            "expectancy": 63.72,
+            "expectancy_R": 0.2032
+          }
+        ]
+      },
+      "killzones": [
+        {
+          "variant": "default_LDN_NY",
+          "n": 3232,
+          "wr": 60.8,
+          "pf": 1.451,
+          "sharpe_ann": 2.552,
+          "max_dd_pct": 10.7,
+          "expectancy": 88.83,
+          "expectancy_R": 0.1934
+        },
+        {
+          "variant": "london_only",
+          "n": 2028,
+          "wr": 59.4,
+          "pf": 1.33,
+          "sharpe_ann": 1.995,
+          "max_dd_pct": 22.1,
+          "expectancy": 20.74,
+          "expectancy_R": 0.1534
+        },
+        {
+          "variant": "ny_only",
+          "n": 1680,
+          "wr": 60.0,
+          "pf": 1.45,
+          "sharpe_ann": 2.147,
+          "max_dd_pct": 11.2,
+          "expectancy": 44.24,
+          "expectancy_R": 0.2102
+        },
+        {
+          "variant": "all_hours",
+          "n": 7295,
+          "wr": 61.3,
+          "pf": 1.186,
+          "sharpe_ann": 1.809,
+          "max_dd_pct": 27.8,
+          "expectancy": 3.29,
+          "expectancy_R": 0.0907
+        }
+      ]
+    }
+  ],
+  "baseline": [
+    {
+      "instrument": "SPX500_USD",
+      "turtle_soup": {
+        "n": 4483,
+        "wr": 59.3,
+        "pf": 1.552,
+        "sharpe_ann": 2.369,
+        "expectancy": 4384.31,
+        "expectancy_R": 0.2727,
+        "max_dd_pct": 5.1,
+        "ruin": 0.0
+      },
+      "sweep_fade_baseline": {
+        "n": 19074,
+        "wr": 74.8,
+        "pf": 2.533,
+        "sharpe_ann": 3.746,
+        "expectancy": 1.236401309483659e+28,
+        "expectancy_R": 0.5035,
+        "max_dd_pct": 6.0,
+        "ruin": 0.0
+      },
+      "diff": {
+        "n_delta": -14591,
+        "pf_ratio": 0.613,
+        "sharpe_ann_delta": -1.377,
+        "expectancy_delta_pct": -100.0
+      },
+      "finding": "DIFFERENT. Killzone + HTF bias measurably move the numbers \u2014 the ICT-specific filters are earning some of the edge.",
+      "same_edge": false
+    },
+    {
+      "instrument": "DE30_EUR",
+      "turtle_soup": {
+        "n": 3282,
+        "wr": 61.7,
+        "pf": 1.893,
+        "sharpe_ann": 2.78,
+        "expectancy": 17606.66,
+        "expectancy_R": 0.3826,
+        "max_dd_pct": 6.5,
+        "ruin": 0.0
+      },
+      "sweep_fade_baseline": {
+        "n": 17555,
+        "wr": 74.7,
+        "pf": 2.438,
+        "sharpe_ann": 2.815,
+        "expectancy": 1.414776762331709e+26,
+        "expectancy_R": 0.499,
+        "max_dd_pct": 7.7,
+        "ruin": 0.0
+      },
+      "diff": {
+        "n_delta": -14273,
+        "pf_ratio": 0.776,
+        "sharpe_ann_delta": -0.035,
+        "expectancy_delta_pct": -100.0
+      },
+      "finding": "DIFFERENT. Killzone + HTF bias measurably move the numbers \u2014 the ICT-specific filters are earning some of the edge.",
+      "same_edge": false
+    },
+    {
+      "instrument": "XAU_USD",
+      "turtle_soup": {
+        "n": 3678,
+        "wr": 57.9,
+        "pf": 1.584,
+        "sharpe_ann": 2.417,
+        "expectancy": 984.21,
+        "expectancy_R": 0.2515,
+        "max_dd_pct": 5.9,
+        "ruin": 0.0
+      },
+      "sweep_fade_baseline": {
+        "n": 19071,
+        "wr": 71.5,
+        "pf": 2.24,
+        "sharpe_ann": 3.229,
+        "expectancy": 3.3139549220393015e+22,
+        "expectancy_R": 0.4072,
+        "max_dd_pct": 7.5,
+        "ruin": 0.0
+      },
+      "diff": {
+        "n_delta": -15393,
+        "pf_ratio": 0.707,
+        "sharpe_ann_delta": -0.812,
+        "expectancy_delta_pct": -100.0
+      },
+      "finding": "DIFFERENT. Killzone + HTF bias measurably move the numbers \u2014 the ICT-specific filters are earning some of the edge.",
+      "same_edge": false
+    },
+    {
+      "instrument": "CHF_JPY",
+      "turtle_soup": {
+        "n": 3232,
+        "wr": 60.8,
+        "pf": 1.451,
+        "sharpe_ann": 2.552,
+        "expectancy": 88.83,
+        "expectancy_R": 0.1934,
+        "max_dd_pct": 10.7,
+        "ruin": 0.0
+      },
+      "sweep_fade_baseline": {
+        "n": 18698,
+        "wr": 68.2,
+        "pf": 1.355,
+        "sharpe_ann": 1.24,
+        "expectancy": 804357.69,
+        "expectancy_R": 0.1829,
+        "max_dd_pct": 67.3,
+        "ruin": 0.98
+      },
+      "diff": {
+        "n_delta": -15466,
+        "pf_ratio": 1.071,
+        "sharpe_ann_delta": 1.312,
+        "expectancy_delta_pct": -100.0
+      },
+      "finding": "DIFFERENT. Killzone + HTF bias measurably move the numbers \u2014 the ICT-specific filters are earning some of the edge.",
+      "same_edge": false
+    }
+  ]
+}

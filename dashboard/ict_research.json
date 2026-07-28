@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-27T18:47:12.882559+00:00",
+  "generated_at": "2026-07-28T05:21:58.338166+00:00",
   "starting_balance": 10000.0,
   "min_trades_for_verdict": 100,
   "params": {
@@ -42,19 +42,30 @@
         "mean_pnl": -7.37,
         "std_pnl": 105.11,
         "sharpe": -0.07,
+        "sharpe_annualised": -0.248,
+        "annualisation_factor": 12.52,
         "sortino": -1.47,
         "max_drawdown_abs": -1499.34,
         "max_drawdown_pct": 14.1,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 6,
-        "trades_per_year": 12.0,
-        "sharpe_annualised": -0.242,
-        "expectancy_R": -0.0926,
-        "fixed_size_pnl": -667.0,
-        "annualisation_factor": 12.0
+        "expectancy_R": -0.0964,
+        "fixed_size_pnl": -694.35,
+        "trades_per_year": 12.52
       },
       "monte_carlo": {
+        "median_final": 9291.33,
+        "p5_final": 7592.77,
+        "p95_final": 11050.84,
+        "mean_final": 9300.03,
+        "median_max_drawdown": -1450.24,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9279.92,
         "p5_final": 7584.82,
         "p95_final": 11016.73,
@@ -65,6 +76,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 2,
@@ -113,15 +125,7 @@
         }
       },
       "final_balance": 9112.56,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "silver_bullet",
@@ -147,16 +151,21 @@
         "mean_pnl": 55.62,
         "std_pnl": 0.0,
         "sharpe": 0.0,
+        "sharpe_annualised": 0.0,
+        "annualisation_factor": 252.0,
         "sortino": 0.0,
         "max_drawdown_abs": 0.0,
         "max_drawdown_pct": 0.0,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 0,
-        "sharpe_annualised": 0.0,
-        "annualisation_factor": 0.11
+        "expectancy_R": 0.742,
+        "fixed_size_pnl": 55.65,
+        "trades_per_year": 252.0
       },
       "monte_carlo": {},
+      "monte_carlo_compounded": {},
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2020": {
           "n": 1,
@@ -165,15 +174,7 @@
         }
       },
       "final_balance": 10050.09,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "1 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ifvg",
@@ -182,7 +183,7 @@
       "instrument": "SPX500_USD",
       "n": 967,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe 0.440 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.040).",
+      "why": "Annualised Sharpe 0.441 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.040).",
       "stats": {
         "n": 967,
         "total_pnl": 3704.54,
@@ -199,19 +200,30 @@
         "mean_pnl": 3.83,
         "std_pnl": 95.49,
         "sharpe": 0.04,
+        "sharpe_annualised": 0.441,
+        "annualisation_factor": 121.05,
         "sortino": 0.406,
         "max_drawdown_abs": -2040.14,
         "max_drawdown_pct": 17.9,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 16,
-        "trades_per_year": 120.9,
-        "sharpe_annualised": 0.44,
-        "expectancy_R": 0.046,
-        "fixed_size_pnl": 3336.0,
-        "annualisation_factor": 120.9
+        "expectancy_R": 0.0631,
+        "fixed_size_pnl": 4573.8,
+        "trades_per_year": 121.05
       },
       "monte_carlo": {
+        "median_final": 14631.18,
+        "p5_final": 9321.02,
+        "p95_final": 19948.75,
+        "mean_final": 14627.73,
+        "median_max_drawdown": -2341.46,
+        "ruin_probability": 0.6,
+        "double_probability": 6.66,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 13746.74,
         "p5_final": 8853.93,
         "p95_final": 18623.16,
@@ -222,6 +234,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 46,
@@ -270,15 +283,7 @@
         }
       },
       "final_balance": 9550.83,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.040 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "turtle_soup",
@@ -286,8 +291,8 @@
       "family": "ICT",
       "instrument": "SPX500_USD",
       "n": 3570,
-      "verdict": "FAIL",
-      "why": "Ruin probability 74.1% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.580, ann. Sharpe 2.482, max DD 7.4%, profitable in 9/9 years.",
       "stats": {
         "n": 3570,
         "total_pnl": 9042740.43,
@@ -304,19 +309,30 @@
         "mean_pnl": 2532.98,
         "std_pnl": 21576.1,
         "sharpe": 0.117,
+        "sharpe_annualised": 2.482,
+        "annualisation_factor": 446.86,
         "sortino": 0.161,
         "max_drawdown_abs": -684688.89,
         "max_drawdown_pct": 7.4,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 14,
-        "trades_per_year": 446.2,
-        "sharpe_annualised": 2.472,
-        "expectancy_R": 0.2423,
-        "fixed_size_pnl": 64883.0,
-        "annualisation_factor": 446.2
+        "expectancy_R": 0.2973,
+        "fixed_size_pnl": 79602.38,
+        "trades_per_year": 446.86
       },
       "monte_carlo": {
+        "median_final": 89546.69,
+        "p5_final": 80154.02,
+        "p95_final": 99167.81,
+        "mean_final": 89605.4,
+        "median_max_drawdown": -1202.4,
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9049599.52,
         "p5_final": 6965834.06,
         "p95_final": 11167849.56,
@@ -327,6 +343,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 198,
@@ -375,15 +392,7 @@
         }
       },
       "final_balance": 7472780.78,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Ruin probability 74.1% exceeds the 10% ceiling."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "power_of_three",
@@ -409,19 +418,30 @@
         "mean_pnl": -14.35,
         "std_pnl": 103.67,
         "sharpe": -0.138,
+        "sharpe_annualised": -0.312,
+        "annualisation_factor": 5.09,
         "sortino": -4.433,
         "max_drawdown_abs": -1012.01,
         "max_drawdown_pct": 9.8,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 9,
-        "trades_per_year": 4.9,
-        "sharpe_annualised": -0.305,
-        "expectancy_R": -0.1845,
-        "fixed_size_pnl": -540.0,
-        "annualisation_factor": 4.9
+        "expectancy_R": -0.19,
+        "fixed_size_pnl": -555.75,
+        "trades_per_year": 5.09
       },
       "monte_carlo": {
+        "median_final": 9418.11,
+        "p5_final": 8382.27,
+        "p95_final": 10577.59,
+        "mean_final": 9441.02,
+        "median_max_drawdown": -983.02,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9413.75,
         "p5_final": 8404.92,
         "p95_final": 10536.59,
@@ -432,6 +452,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 2,
@@ -480,15 +501,7 @@
         }
       },
       "final_balance": 9378.91,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "39 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_ob",
@@ -497,7 +510,7 @@
       "instrument": "SPX500_USD",
       "n": 106,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe 0.197 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.054).",
+      "why": "Annualised Sharpe 0.202 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.054).",
       "stats": {
         "n": 106,
         "total_pnl": 649.09,
@@ -514,19 +527,30 @@
         "mean_pnl": 6.12,
         "std_pnl": 112.68,
         "sharpe": 0.054,
+        "sharpe_annualised": 0.202,
+        "annualisation_factor": 13.83,
         "sortino": 0.857,
         "max_drawdown_abs": -816.6,
         "max_drawdown_pct": 7.1,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 13.2,
-        "sharpe_annualised": 0.197,
-        "expectancy_R": 0.0714,
-        "fixed_size_pnl": 568.0,
-        "annualisation_factor": 13.2
+        "expectancy_R": 0.0866,
+        "fixed_size_pnl": 688.27,
+        "trades_per_year": 13.83
       },
       "monte_carlo": {
+        "median_final": 10670.76,
+        "p5_final": 8910.93,
+        "p95_final": 12512.56,
+        "mean_final": 10689.88,
+        "median_max_drawdown": -932.66,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10631.47,
         "p5_final": 8792.15,
         "p95_final": 12558.24,
@@ -537,6 +561,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 1,
@@ -585,15 +610,7 @@
         }
       },
       "final_balance": 10353.87,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.054 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_icc",
@@ -619,19 +636,30 @@
         "mean_pnl": 16.18,
         "std_pnl": 112.84,
         "sharpe": 0.143,
+        "sharpe_annualised": 0.317,
+        "annualisation_factor": 4.9,
         "sortino": 1.942,
         "max_drawdown_abs": -282.75,
         "max_drawdown_pct": 2.8,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 3,
-        "trades_per_year": 4.2,
-        "sharpe_annualised": 0.295,
-        "expectancy_R": 0.1943,
-        "fixed_size_pnl": 496.0,
-        "annualisation_factor": 4.2
+        "expectancy_R": 0.2194,
+        "fixed_size_pnl": 559.58,
+        "trades_per_year": 4.9
       },
       "monte_carlo": {
+        "median_final": 10555.45,
+        "p5_final": 9506.18,
+        "p95_final": 11623.24,
+        "mean_final": 10565.02,
+        "median_max_drawdown": -447.0,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10545.81,
         "p5_final": 9489.97,
         "p95_final": 11619.74,
@@ -642,6 +670,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2019": {
           "n": 2,
@@ -685,15 +714,7 @@
         }
       },
       "final_balance": 10457.27,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_core",
@@ -719,19 +740,30 @@
         "mean_pnl": 8.02,
         "std_pnl": 108.03,
         "sharpe": 0.074,
+        "sharpe_annualised": 0.258,
+        "annualisation_factor": 12.07,
         "sortino": 2.42,
         "max_drawdown_abs": -709.44,
         "max_drawdown_pct": 6.8,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 12.0,
-        "sharpe_annualised": 0.256,
-        "expectancy_R": 0.0997,
-        "fixed_size_pnl": 718.0,
-        "annualisation_factor": 12.0
+        "expectancy_R": 0.1115,
+        "fixed_size_pnl": 802.58,
+        "trades_per_year": 12.07
       },
       "monte_carlo": {
+        "median_final": 10801.26,
+        "p5_final": 9066.25,
+        "p95_final": 12551.54,
+        "mean_final": 10796.9,
+        "median_max_drawdown": -828.49,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10768.05,
         "p5_final": 9018.8,
         "p95_final": 12529.34,
@@ -742,6 +774,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 4,
@@ -790,15 +823,7 @@
         }
       },
       "final_balance": 10649.58,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "silver_bullet",
@@ -809,22 +834,14 @@
       "verdict": "NO_DATA",
       "why": "No trades generated.",
       "stats": {
-        "n": 0,
-        "sharpe_annualised": 0.0,
-        "annualisation_factor": 252.0
+        "n": 0
       },
       "monte_carlo": {},
+      "monte_carlo_compounded": {},
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {},
       "final_balance": 10000.0,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "NO_DATA",
-          "to": "NO_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "No trades generated."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ifvg",
@@ -833,7 +850,7 @@
       "instrument": "DE30_EUR",
       "n": 752,
       "verdict": "MARGINAL",
-      "why": "PF 1.286, ann. Sharpe 1.134 \u2014 positive but not strong.",
+      "why": "PF 1.286, ann. Sharpe 1.132 \u2014 positive but not strong.",
       "stats": {
         "n": 752,
         "total_pnl": 13698.51,
@@ -850,19 +867,30 @@
         "mean_pnl": 18.22,
         "std_pnl": 156.1,
         "sharpe": 0.117,
+        "sharpe_annualised": 1.132,
+        "annualisation_factor": 94.13,
         "sortino": 0.521,
         "max_drawdown_abs": -2584.57,
         "max_drawdown_pct": 10.1,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 94.0,
-        "sharpe_annualised": 1.134,
-        "expectancy_R": 0.1497,
-        "fixed_size_pnl": 8445.0,
-        "annualisation_factor": 94.0
+        "expectancy_R": 0.1728,
+        "fixed_size_pnl": 9744.45,
+        "trades_per_year": 94.13
       },
       "monte_carlo": {
+        "median_final": 19739.28,
+        "p5_final": 15022.9,
+        "p95_final": 24327.73,
+        "mean_final": 19723.85,
+        "median_max_drawdown": -1387.35,
+        "ruin_probability": 0.0,
+        "double_probability": 51.5,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 23685.44,
         "p5_final": 16647.92,
         "p95_final": 30629.54,
@@ -873,6 +901,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 31,
@@ -921,15 +950,7 @@
         }
       },
       "final_balance": 20564.86,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "MARGINAL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.117 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "turtle_soup",
@@ -937,8 +958,8 @@
       "family": "ICT",
       "instrument": "DE30_EUR",
       "n": 3282,
-      "verdict": "FAIL",
-      "why": "Ruin probability 72.1% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.893, ann. Sharpe 2.780, max DD 6.5%, profitable in 9/9 years.",
       "stats": {
         "n": 3282,
         "total_pnl": 57785071.61,
@@ -955,19 +976,30 @@
         "mean_pnl": 17606.66,
         "std_pnl": 128437.35,
         "sharpe": 0.137,
+        "sharpe_annualised": 2.78,
+        "annualisation_factor": 411.22,
         "sortino": 0.175,
         "max_drawdown_abs": -2559260.99,
         "max_drawdown_pct": 6.5,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 12,
-        "trades_per_year": 410.2,
-        "sharpe_annualised": 2.775,
-        "expectancy_R": 0.3419,
-        "fixed_size_pnl": 84163.0,
-        "annualisation_factor": 410.2
+        "expectancy_R": 0.3826,
+        "fixed_size_pnl": 94184.7,
+        "trades_per_year": 411.22
       },
       "monte_carlo": {
+        "median_final": 104128.04,
+        "p5_final": 95462.12,
+        "p95_final": 112808.91,
+        "mean_final": 104144.21,
+        "median_max_drawdown": -919.61,
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 57664952.99,
         "p5_final": 46093063.9,
         "p95_final": 69819398.57,
@@ -978,6 +1010,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 151,
@@ -1026,15 +1059,7 @@
         }
       },
       "final_balance": 53332333.98,
-      "skipped_low_rr": 1,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Ruin probability 72.1% exceeds the 10% ceiling."
-        }
-      ]
+      "skipped_low_rr": 1
     },
     {
       "strategy": "power_of_three",
@@ -1060,19 +1085,30 @@
         "mean_pnl": 2.28,
         "std_pnl": 108.91,
         "sharpe": 0.021,
+        "sharpe_annualised": 0.038,
+        "annualisation_factor": 3.35,
         "sortino": 1.182,
         "max_drawdown_abs": -336.61,
         "max_drawdown_pct": 3.3,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 4,
-        "trades_per_year": 3.0,
-        "sharpe_annualised": 0.036,
-        "expectancy_R": 0.0287,
-        "fixed_size_pnl": 52.0,
-        "annualisation_factor": 3.0
+        "expectancy_R": 0.0377,
+        "fixed_size_pnl": 67.8,
+        "trades_per_year": 3.35
       },
       "monte_carlo": {
+        "median_final": 10055.05,
+        "p5_final": 9226.15,
+        "p95_final": 10960.39,
+        "mean_final": 10068.14,
+        "median_max_drawdown": -478.16,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10041.96,
         "p5_final": 9210.76,
         "p95_final": 10951.32,
@@ -1083,6 +1119,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2019": {
           "n": 8,
@@ -1126,15 +1163,7 @@
         }
       },
       "final_balance": 10031.72,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "24 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_ob",
@@ -1160,19 +1189,30 @@
         "mean_pnl": -17.47,
         "std_pnl": 85.67,
         "sharpe": -0.204,
+        "sharpe_annualised": -0.704,
+        "annualisation_factor": 11.9,
         "sortino": -2.048,
         "max_drawdown_abs": -1841.48,
         "max_drawdown_pct": 18.4,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 19,
-        "trades_per_year": 11.2,
-        "sharpe_annualised": -0.684,
-        "expectancy_R": -0.2399,
-        "fixed_size_pnl": -1620.0,
-        "annualisation_factor": 11.2
+        "expectancy_R": -0.2483,
+        "fixed_size_pnl": -1676.32,
+        "trades_per_year": 11.9
       },
       "monte_carlo": {
+        "median_final": 8326.11,
+        "p5_final": 6841.12,
+        "p95_final": 9877.99,
+        "mean_final": 8336.8,
+        "median_max_drawdown": -2057.59,
+        "ruin_probability": 0.01,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 8428.42,
         "p5_final": 7124.99,
         "p95_final": 9786.66,
@@ -1183,6 +1223,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 1,
@@ -1231,15 +1272,7 @@
         }
       },
       "final_balance": 8265.97,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "90 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_icc",
@@ -1265,19 +1298,30 @@
         "mean_pnl": -21.99,
         "std_pnl": 89.89,
         "sharpe": -0.245,
+        "sharpe_annualised": -0.548,
+        "annualisation_factor": 5.01,
         "sortino": -3.284,
         "max_drawdown_abs": -972.11,
         "max_drawdown_pct": 9.7,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 7,
-        "trades_per_year": 4.6,
-        "sharpe_annualised": -0.527,
-        "expectancy_R": -0.2804,
-        "fixed_size_pnl": -778.0,
-        "annualisation_factor": 4.6
+        "expectancy_R": -0.3004,
+        "fixed_size_pnl": -833.47,
+        "trades_per_year": 5.01
       },
       "monte_carlo": {
+        "median_final": 9149.12,
+        "p5_final": 8231.5,
+        "p95_final": 10143.35,
+        "mean_final": 9169.28,
+        "median_max_drawdown": -1094.66,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9171.36,
         "p5_final": 8310.53,
         "p95_final": 10097.67,
@@ -1288,6 +1332,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2019": {
           "n": 12,
@@ -1331,15 +1376,7 @@
         }
       },
       "final_balance": 9114.04,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "37 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_core",
@@ -1348,7 +1385,7 @@
       "instrument": "XAU_USD",
       "n": 118,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe 0.273 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.071).",
+      "why": "Annualised Sharpe 0.275 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.071).",
       "stats": {
         "n": 118,
         "total_pnl": 886.08,
@@ -1365,19 +1402,30 @@
         "mean_pnl": 7.51,
         "std_pnl": 105.42,
         "sharpe": 0.071,
+        "sharpe_annualised": 0.275,
+        "annualisation_factor": 14.88,
         "sortino": 1.464,
         "max_drawdown_abs": -1146.29,
         "max_drawdown_pct": 11.2,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 14.8,
-        "sharpe_annualised": 0.273,
-        "expectancy_R": 0.0932,
-        "fixed_size_pnl": 825.0,
-        "annualisation_factor": 14.8
+        "expectancy_R": 0.1054,
+        "fixed_size_pnl": 933.0,
+        "trades_per_year": 14.88
       },
       "monte_carlo": {
+        "median_final": 10922.54,
+        "p5_final": 9072.37,
+        "p95_final": 12814.63,
+        "mean_final": 10933.58,
+        "median_max_drawdown": -917.25,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10875.99,
         "p5_final": 9035.84,
         "p95_final": 12763.31,
@@ -1388,6 +1436,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 3,
@@ -1436,15 +1485,7 @@
         }
       },
       "final_balance": 10682.21,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.071 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "silver_bullet",
@@ -1455,22 +1496,14 @@
       "verdict": "NO_DATA",
       "why": "No trades generated.",
       "stats": {
-        "n": 0,
-        "sharpe_annualised": 0.0,
-        "annualisation_factor": 252.0
+        "n": 0
       },
       "monte_carlo": {},
+      "monte_carlo_compounded": {},
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {},
       "final_balance": 10000.0,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "NO_DATA",
-          "to": "NO_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "No trades generated."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ifvg",
@@ -1479,7 +1512,7 @@
       "instrument": "XAU_USD",
       "n": 747,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe 0.145 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.015).",
+      "why": "Annualised Sharpe 0.142 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.015).",
       "stats": {
         "n": 747,
         "total_pnl": 979.57,
@@ -1496,19 +1529,30 @@
         "mean_pnl": 1.31,
         "std_pnl": 89.53,
         "sharpe": 0.015,
+        "sharpe_annualised": 0.142,
+        "annualisation_factor": 94.14,
         "sortino": 0.047,
         "max_drawdown_abs": -2848.56,
         "max_drawdown_pct": 25.6,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 7,
-        "trades_per_year": 93.4,
-        "sharpe_annualised": 0.145,
-        "expectancy_R": 0.0166,
-        "fixed_size_pnl": 932.0,
-        "annualisation_factor": 93.4
+        "expectancy_R": 0.0296,
+        "fixed_size_pnl": 1658.47,
+        "trades_per_year": 94.14
       },
       "monte_carlo": {
+        "median_final": 11686.3,
+        "p5_final": 6954.62,
+        "p95_final": 16357.16,
+        "mean_final": 11692.82,
+        "median_max_drawdown": -2541.22,
+        "ruin_probability": 2.51,
+        "double_probability": 0.27,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10984.37,
         "p5_final": 6881.3,
         "p95_final": 15057.72,
@@ -1519,6 +1563,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 34,
@@ -1567,15 +1612,7 @@
         }
       },
       "final_balance": 8869.19,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.015 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "turtle_soup",
@@ -1583,8 +1620,8 @@
       "family": "ICT",
       "instrument": "XAU_USD",
       "n": 3678,
-      "verdict": "FAIL",
-      "why": "Ruin probability 68.0% exceeds the 10% ceiling.",
+      "verdict": "PASS",
+      "why": "PF 1.584, ann. Sharpe 2.417, max DD 5.9%, profitable in 9/9 years.",
       "stats": {
         "n": 3678,
         "total_pnl": 3619941.12,
@@ -1601,19 +1638,30 @@
         "mean_pnl": 984.21,
         "std_pnl": 8735.72,
         "sharpe": 0.113,
+        "sharpe_annualised": 2.417,
+        "annualisation_factor": 460.33,
         "sortino": 0.15,
         "max_drawdown_abs": -226049.98,
         "max_drawdown_pct": 5.9,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 13,
-        "trades_per_year": 459.8,
-        "sharpe_annualised": 2.423,
-        "expectancy_R": 0.2471,
-        "fixed_size_pnl": 68162.0,
-        "annualisation_factor": 459.8
+        "expectancy_R": 0.2515,
+        "fixed_size_pnl": 69375.75,
+        "trades_per_year": 460.33
       },
       "monte_carlo": {
+        "median_final": 79446.51,
+        "p5_final": 69862.12,
+        "p95_final": 88908.42,
+        "mean_final": 79409.76,
+        "median_max_drawdown": -1498.8,
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 3637711.16,
         "p5_final": 2766853.42,
         "p95_final": 4505611.54,
@@ -1624,6 +1672,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 217,
@@ -1672,15 +1721,7 @@
         }
       },
       "final_balance": 3273813.41,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Ruin probability 68.0% exceeds the 10% ceiling."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "power_of_three",
@@ -1706,19 +1747,30 @@
         "mean_pnl": 21.88,
         "std_pnl": 115.21,
         "sharpe": 0.19,
+        "sharpe_annualised": 0.441,
+        "annualisation_factor": 5.39,
         "sortino": 3.485,
         "max_drawdown_abs": -500.2,
         "max_drawdown_pct": 4.8,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 6,
-        "trades_per_year": 5.0,
-        "sharpe_annualised": 0.425,
-        "expectancy_R": 0.2568,
-        "fixed_size_pnl": 770.0,
-        "annualisation_factor": 5.0
+        "expectancy_R": 0.289,
+        "fixed_size_pnl": 867.08,
+        "trades_per_year": 5.39
       },
       "monte_carlo": {
+        "median_final": 10871.46,
+        "p5_final": 9731.46,
+        "p95_final": 12041.59,
+        "mean_final": 10873.98,
+        "median_max_drawdown": -437.89,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 10876.56,
         "p5_final": 9697.43,
         "p95_final": 12088.54,
@@ -1729,6 +1781,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 1,
@@ -1772,15 +1825,7 @@
         }
       },
       "final_balance": 10808.11,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "40 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_ob",
@@ -1789,7 +1834,7 @@
       "instrument": "XAU_USD",
       "n": 119,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe 0.374 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.097).",
+      "why": "Annualised Sharpe 0.376 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.097).",
       "stats": {
         "n": 119,
         "total_pnl": 1193.58,
@@ -1806,19 +1851,30 @@
         "mean_pnl": 10.03,
         "std_pnl": 103.6,
         "sharpe": 0.097,
+        "sharpe_annualised": 0.376,
+        "annualisation_factor": 15.08,
         "sortino": 1.629,
         "max_drawdown_abs": -735.18,
         "max_drawdown_pct": 7.1,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 5,
-        "trades_per_year": 14.9,
-        "sharpe_annualised": 0.374,
-        "expectancy_R": 0.1176,
-        "fixed_size_pnl": 1049.0,
-        "annualisation_factor": 14.9
+        "expectancy_R": 0.1363,
+        "fixed_size_pnl": 1216.65,
+        "trades_per_year": 15.08
       },
       "monte_carlo": {
+        "median_final": 11216.2,
+        "p5_final": 9405.4,
+        "p95_final": 13067.91,
+        "mean_final": 11219.61,
+        "median_max_drawdown": -818.85,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 11190.47,
         "p5_final": 9360.73,
         "p95_final": 13075.49,
@@ -1829,6 +1885,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 4,
@@ -1877,15 +1934,7 @@
         }
       },
       "final_balance": 10863.51,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe 0.097 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_icc",
@@ -1911,19 +1960,30 @@
         "mean_pnl": -0.55,
         "std_pnl": 98.83,
         "sharpe": -0.006,
+        "sharpe_annualised": -0.014,
+        "annualisation_factor": 6.68,
         "sortino": -0.114,
         "max_drawdown_abs": -943.37,
         "max_drawdown_pct": 9.2,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 6.1,
-        "sharpe_annualised": -0.015,
-        "expectancy_R": -0.0057,
-        "fixed_size_pnl": -21.0,
-        "annualisation_factor": 6.1
+        "expectancy_R": 0.0001,
+        "fixed_size_pnl": 0.3,
+        "trades_per_year": 6.68
       },
       "monte_carlo": {
+        "median_final": 9995.54,
+        "p5_final": 8872.83,
+        "p95_final": 11168.23,
+        "mean_final": 10005.11,
+        "median_max_drawdown": -719.74,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9964.96,
         "p5_final": 8881.7,
         "p95_final": 11104.09,
@@ -1934,6 +1994,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2019": {
           "n": 8,
@@ -1977,15 +2038,7 @@
         }
       },
       "final_balance": 9854.23,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "49 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_core",
@@ -1994,7 +2047,7 @@
       "instrument": "CHF_JPY",
       "n": 108,
       "verdict": "FAIL",
-      "why": "Annualised Sharpe -0.180 below 0.5 \u2014 no risk-adjusted edge (per-trade -0.049).",
+      "why": "Annualised Sharpe -0.181 below 0.5 \u2014 no risk-adjusted edge (per-trade -0.049).",
       "stats": {
         "n": 108,
         "total_pnl": -511.27,
@@ -2011,19 +2064,30 @@
         "mean_pnl": -4.73,
         "std_pnl": 96.88,
         "sharpe": -0.049,
+        "sharpe_annualised": -0.181,
+        "annualisation_factor": 13.66,
         "sortino": -0.603,
         "max_drawdown_abs": -972.8,
         "max_drawdown_pct": 9.5,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 7,
-        "trades_per_year": 13.5,
-        "sharpe_annualised": -0.18,
-        "expectancy_R": -0.058,
-        "fixed_size_pnl": -470.0,
-        "annualisation_factor": 13.5
+        "expectancy_R": -0.0588,
+        "fixed_size_pnl": -476.03,
+        "trades_per_year": 13.66
       },
       "monte_carlo": {
+        "median_final": 9493.04,
+        "p5_final": 7770.58,
+        "p95_final": 11247.41,
+        "mean_final": 9502.7,
+        "median_max_drawdown": -1359.15,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9463.08,
         "p5_final": 7820.47,
         "p95_final": 11129.29,
@@ -2034,6 +2098,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 5,
@@ -2082,15 +2147,7 @@
         }
       },
       "final_balance": 9187.86,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Sharpe -0.049 below 0.5 \u2014 no risk-adjusted edge."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "silver_bullet",
@@ -2101,22 +2158,14 @@
       "verdict": "NO_DATA",
       "why": "No trades generated.",
       "stats": {
-        "n": 0,
-        "sharpe_annualised": 0.0,
-        "annualisation_factor": 252.0
+        "n": 0
       },
       "monte_carlo": {},
+      "monte_carlo_compounded": {},
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {},
       "final_balance": 10000.0,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "NO_DATA",
-          "to": "NO_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "No trades generated."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ifvg",
@@ -2125,7 +2174,7 @@
       "instrument": "CHF_JPY",
       "n": 653,
       "verdict": "FAIL",
-      "why": "Ruin probability 78.7% exceeds the 10% ceiling.",
+      "why": "Ruin probability 99.4% exceeds the 10% ceiling.",
       "stats": {
         "n": 653,
         "total_pnl": -5914.55,
@@ -2142,19 +2191,30 @@
         "mean_pnl": -9.06,
         "std_pnl": 52.43,
         "sharpe": -0.173,
+        "sharpe_annualised": -1.564,
+        "annualisation_factor": 81.91,
         "sortino": -0.404,
         "max_drawdown_abs": -6423.09,
         "max_drawdown_pct": 61.5,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 8,
-        "trades_per_year": 81.6,
-        "sharpe_annualised": -1.563,
-        "expectancy_R": -0.1914,
-        "fixed_size_pnl": -9374.0,
-        "annualisation_factor": 81.6
+        "expectancy_R": -0.2229,
+        "fixed_size_pnl": -10914.9,
+        "trades_per_year": 81.91
       },
       "monte_carlo": {
+        "median_final": -955.1,
+        "p5_final": -4868.6,
+        "p95_final": 3114.13,
+        "mean_final": -930.8,
+        "median_max_drawdown": -11431.01,
+        "ruin_probability": 99.43,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 4072.37,
         "p5_final": 1918.34,
         "p95_final": 6281.69,
@@ -2165,6 +2225,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 39,
@@ -2213,15 +2274,7 @@
         }
       },
       "final_balance": 2275.34,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Ruin probability 78.7% exceeds the 10% ceiling."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "turtle_soup",
@@ -2229,8 +2282,8 @@
       "family": "ICT",
       "instrument": "CHF_JPY",
       "n": 3232,
-      "verdict": "FAIL",
-      "why": "Ruin probability 13.4% exceeds the 10% ceiling.",
+      "verdict": "MARGINAL",
+      "why": "PF 1.451, ann. Sharpe 2.552 \u2014 positive but not strong.",
       "stats": {
         "n": 3232,
         "total_pnl": 287098.53,
@@ -2247,19 +2300,30 @@
         "mean_pnl": 88.83,
         "std_pnl": 699.92,
         "sharpe": 0.127,
+        "sharpe_annualised": 2.552,
+        "annualisation_factor": 404.45,
         "sortino": 0.18,
         "max_drawdown_abs": -15921.13,
         "max_drawdown_pct": 10.7,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 12,
-        "trades_per_year": 404.0,
-        "sharpe_annualised": 2.553,
-        "expectancy_R": 0.1762,
-        "fixed_size_pnl": 42703.0,
-        "annualisation_factor": 404.0
+        "expectancy_R": 0.1934,
+        "fixed_size_pnl": 46869.75,
+        "trades_per_year": 404.45
       },
       "monte_carlo": {
+        "median_final": 56849.88,
+        "p5_final": 48513.64,
+        "p95_final": 65139.38,
+        "mean_final": 56827.2,
+        "median_max_drawdown": -1421.03,
+        "ruin_probability": 0.0,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 297120.91,
         "p5_final": 231309.34,
         "p95_final": 363252.52,
@@ -2270,6 +2334,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 217,
@@ -2318,15 +2383,7 @@
         }
       },
       "final_balance": 208397.9,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "FAIL",
-          "to": "FAIL",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "Ruin probability 13.4% exceeds the 10% ceiling."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "power_of_three",
@@ -2352,19 +2409,30 @@
         "mean_pnl": -8.86,
         "std_pnl": 93.87,
         "sharpe": -0.094,
+        "sharpe_annualised": -0.199,
+        "annualisation_factor": 4.46,
         "sortino": -1.692,
         "max_drawdown_abs": -793.88,
         "max_drawdown_pct": 7.9,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 5,
-        "trades_per_year": 4.2,
-        "sharpe_annualised": -0.194,
-        "expectancy_R": -0.1107,
-        "fixed_size_pnl": -282.0,
-        "annualisation_factor": 4.2
+        "expectancy_R": -0.1135,
+        "fixed_size_pnl": -289.5,
+        "trades_per_year": 4.46
       },
       "monte_carlo": {
+        "median_final": 9704.09,
+        "p5_final": 8795.95,
+        "p95_final": 10654.85,
+        "mean_final": 9714.89,
+        "median_max_drawdown": -705.0,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9694.21,
         "p5_final": 8824.56,
         "p95_final": 10596.97,
@@ -2375,6 +2443,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 3,
@@ -2423,15 +2492,7 @@
         }
       },
       "final_balance": 9614.4,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_ob",
@@ -2457,19 +2518,30 @@
         "mean_pnl": -3.36,
         "std_pnl": 90.91,
         "sharpe": -0.037,
+        "sharpe_annualised": -0.124,
+        "annualisation_factor": 11.3,
         "sortino": -0.497,
         "max_drawdown_abs": -1301.72,
         "max_drawdown_pct": 13.0,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 10,
-        "trades_per_year": 10.8,
-        "sharpe_annualised": -0.121,
-        "expectancy_R": -0.0427,
-        "fixed_size_pnl": -276.0,
-        "annualisation_factor": 10.8
+        "expectancy_R": -0.0362,
+        "fixed_size_pnl": -233.63,
+        "trades_per_year": 11.3
       },
       "monte_carlo": {
+        "median_final": 9728.2,
+        "p5_final": 8237.85,
+        "p95_final": 11294.05,
+        "mean_final": 9749.19,
+        "median_max_drawdown": -1078.5,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 9680.17,
         "p5_final": 8323.07,
         "p95_final": 11093.49,
@@ -2480,6 +2552,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2018": {
           "n": 4,
@@ -2528,15 +2601,7 @@
         }
       },
       "final_balance": 9424.31,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "86 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     },
     {
       "strategy": "ict_icc",
@@ -2562,19 +2627,30 @@
         "mean_pnl": -35.99,
         "std_pnl": 89.58,
         "sharpe": -0.402,
+        "sharpe_annualised": -0.879,
+        "annualisation_factor": 4.78,
         "sortino": -3.961,
         "max_drawdown_abs": -1523.34,
         "max_drawdown_pct": 14.9,
         "max_drawdown_basis": "account_equity",
         "account_wiped": false,
         "max_consec_losses": 10,
-        "trades_per_year": 4.1,
-        "sharpe_annualised": -0.816,
-        "expectancy_R": -0.4356,
-        "fixed_size_pnl": -1078.0,
-        "annualisation_factor": 4.1
+        "expectancy_R": -0.5091,
+        "fixed_size_pnl": -1259.92,
+        "trades_per_year": 4.78
       },
       "monte_carlo": {
+        "median_final": 8711.16,
+        "p5_final": 7918.6,
+        "p95_final": 9640.12,
+        "mean_final": 8737.87,
+        "median_max_drawdown": -1437.34,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "monte_carlo_compounded": {
         "median_final": 8782.81,
         "p5_final": 8024.13,
         "p95_final": 9675.27,
@@ -2585,6 +2661,7 @@
         "simulations": 10000,
         "starting_balance": 10000.0
       },
+      "mc_basis": "fixed_size_pnl (r_multiple * $75 per trade)",
       "regimes": {
         "2019": {
           "n": 1,
@@ -2628,22 +2705,7 @@
         }
       },
       "final_balance": 8687.93,
-      "skipped_low_rr": 0,
-      "verdict_history": [
-        {
-          "from": "INSUFFICIENT_DATA",
-          "to": "INSUFFICIENT_DATA",
-          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
-          "old_why": "33 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
-        }
-      ]
+      "skipped_low_rr": 0
     }
-  ],
-  "methodology_notes": {
-    "compounding_artifact": "total_pnl / final_balance COMPOUND position size off a growing balance with fractional units and no liquidity cap. For high-frequency models this explodes: turtle_soup/DE30 reports $57.8M from $10k, which is arithmetic, not a forecast. Use expectancy_R and fixed_size_pnl for a realistic read \u2014 the same model at FIXED $75 risk/trade returns ~$84k over 8 years.",
-    "sharpe_frequency_bias": "The shared gate FAILs any model with per-trade Sharpe < 0.5. That is an extraordinarily high bar \u2014 mean P&L half a standard deviation PER TRADE \u2014 which essentially no real strategy meets, and it penalises high-frequency models that accumulate edge across many small trades. sharpe_annualised (per-trade Sharpe x sqrt(trades/yr)) is reported alongside: turtle_soup scores 2.4-2.8 annualised while failing the per-trade test. The gate was NOT changed after seeing these results \u2014 moving a threshold to make things pass is how backtests get talked into deployment. Flagged for Jase.",
-    "gate_unchanged": true
-  },
-  "regraded_at": "2026-07-27T20:19:20.055684+00:00",
-  "gate_note": "Verdicts regraded 2026-07-27 under ANNUALISED Sharpe. Trade statistics unchanged; only the Sharpe basis and therefore the verdict re-tier are recomputed. See scripts/regrade_ict_research.py."
+  ]
 }
