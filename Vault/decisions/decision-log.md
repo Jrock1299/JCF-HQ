@@ -4,6 +4,58 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Blade + Edge live-paper crons ACTIVATED, first-fire monitor armed · 2026-07-28
+**Decision:** `*/15 7-9,12-14 * * 1-5` cron for both Blade + Edge live
+turtle executors on their respective OANDA practice accounts. Every 15 min
+during London + NY killzones on weekdays. `*/5 7-9,12-14 * * 1-5` for the
+first-fire Telegram monitor (fires once per agent on the first real
+`SIGNAL_FIRED`, no-op after).
+
+**Why:** two watched dry-runs at 14:20 and 14:43 UTC confirmed the exec
+loop end-to-end — library read (`status=ok validated=3`), killzone check,
+idempotency via `openTrades` + `clientExtensions.id` filter, balance rail,
+detection on `close[1]`, fill-relative SL (`stopLossOnFill.distance`) +
+post-fill TP via `TradeCRCDO` preserving the exact validated R:R. Rails
+verified in cron context: 0.75% risk sizing, $100 balance floor, -4%
+daily-DD halt via `/tmp/live_turtle_dd_YYYYMMDD.json` per-UTC-day.
+
+**Not shipped:** anything trading live capital. OANDA practice accounts
+only (Blade `-001` @ $2k, Edge `-002` @ $5k). Old Blade ORB `#HOLD` lines
+untouched — the new executor is the deploy path, ORB stays parked.
+
+**Links:** commits `1e569be`, `ab009e9`, `649c3ce` · [[../sessions/2026-07-28]]
+
+---
+
+## Futures (ES/NQ/GC): edge visible, same-basis validation deferred · 2026-07-28
+**Decision:** No Pine indicator ships for ES/NQ/GC. Sweep-fade tested
+against yfinance futures data — same gate as OANDA turtle_soup, same 100-
+trade floor, same annualised-Sharpe basis, same fixed-size MC ruin.
+
+**Results, honestly:**
+- **M15 (validated basis):** ES/NQ/GC all **MARGINAL**. PF 1.22-1.28
+  under the 1.5 PASS floor. Sh_ann 2.4-3.1, MaxDD <10%, ruin 0 — edge
+  is visible. 60d/71d sample is too short to clear PF 1.5 confidently
+  (OANDA turtle_soup needed 8yr / ~190k bars to hit PF 1.5+).
+- **H1 (timeframe-shifted, 2yr):** ES/NQ/GC all **PASS** cleanly
+  (PF 1.64-1.71, Sh_ann 3.37-3.65). Strong evidence the mechanism
+  transfers, but wrong basis — the strategy was validated on M15.
+
+**Why no Pine:** the deploy brief was explicit: "do NOT generate an
+indicator for an instrument that failed validation." MARGINAL is not PASS
+at the strategy's validated timeframe; the H1 PASS is at wrong timeframe.
+A signal indicator for an unvalidated edge in front of Jase's live eval is
+worse than no indicator.
+
+**Path forward:** M15 futures history beyond 60d needs a paid feed
+(Databento ~$100/mo, Polygon.io, or Rithmic once the Lucid API integration
+scoped in `Vault/infrastructure/lucid-rithmic.md` is built). Until then
+the futures edge remains "likely real, not confirmed at same basis."
+
+**Links:** commits `676dd27`, `8d437a0` · `dashboard/futures_validation.json`
+
+---
+
 ## Turtle Soup deployable, and it's MEAN REVERSION not ICT · 2026-07-28
 **Decision:** `turtle_soup` on SPX500 / DE30 / XAU is promoted to
 `dashboard/strategy_library.json` as `deployable=true`, labelled
