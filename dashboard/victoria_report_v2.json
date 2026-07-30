@@ -2,13 +2,13 @@
   "schema": "jcf.agent_report/v1",
   "agent": "victoria",
   "kind": "daily",
-  "date": "2026-07-27",
-  "generated_at": "2026-07-27T18:23:19.601848+00:00",
-  "tier1_text": "\ud83e\udddb\u200d\u2640\ufe0f VICTORIA \u2014 DAILY 2026-07-27\n\nPause Jerry trading until strategy parameters are revised to achieve positive expectancy.\nRestore Blade OANDA trade export and set a proper starting balance to enable live trading.\nSynchronize Edge portfolio data and restart the Edge service to resume trading.\n\n\u2022 Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Jerry: FAIL on 116 trades \u2014 not deployable as-is\n\u2022 Chad: no verdict \u2014 feed is out of date \u2014 cannot judge\n\u2022 Net worth $36,578\n\n\u26a0\ufe0f Not current: Blade, Chad, Edge \u2014 no verdict issued on these.\n\nFull breakdown on the dashboard \u2192",
+  "date": "2026-07-30",
+  "generated_at": "2026-07-30T12:01:47.838789+00:00",
+  "tier1_text": "\ud83e\udddb\u200d\u2640\ufe0f VICTORIA \u2014 DAILY 2026-07-30\n\nRestore Blade's OANDA trade export pipeline and populate agent_trades.json with at least 20 recent trades before enabling live\u2026\nRefresh Edge's portfolio synchronization and closed-trade logging; verify edge_portfolio.json reflects current balance and\u2026\n\n\u2022 Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Jerry: FAIL on 116 trades \u2014 not deployable as-is\n\u2022 Chad: no verdict \u2014 feed is out of date \u2014 cannot judge\n\u2022 Net worth $36,578\n\n\u26a0\ufe0f Not current: Blade, Chad, Edge \u2014 no verdict issued on these.\n\nFull breakdown on the dashboard \u2192",
   "decision": [
-    "Pause Jerry trading until strategy parameters are revised to achieve positive expectancy.",
-    "Restore Blade OANDA trade export and set a proper starting balance to enable live trading.",
-    "Synchronize Edge portfolio data and restart the Edge service to resume trading."
+    "Restore Blade's OANDA trade export pipeline and populate agent_trades.json with at least 20 recent trades before enabling live trading.",
+    "Refresh Edge's portfolio synchronization and closed-trade logging; verify edge_portfolio.json reflects current balance and positions.",
+    "Pause Jerry's live trading until its strategy is revised to achieve positive expectancy; reduce position size to 20% of current allocation pending review."
   ],
   "headlines": [
     "Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded",
@@ -40,7 +40,7 @@
   "sections": [
     {
       "title": "Decision",
-      "body": "Pause Jerry trading until strategy parameters are revised to achieve positive expectancy.\nRestore Blade OANDA trade export and set a proper starting balance to enable live trading.\nSynchronize Edge portfolio data and restart the Edge service to resume trading.\nRefresh Chad\u2019s data pipeline to eliminate stale feeds and regain grading capability.\nMonitor Lens API usage to ensure cost justification given current zero P&L.",
+      "body": "Restore Blade's OANDA trade export pipeline and populate agent_trades.json with at least 20 recent trades before enabling live trading.\nRefresh Edge's portfolio synchronization and closed-trade logging; verify edge_portfolio.json reflects current balance and positions.\nPause Jerry's live trading until its strategy is revised to achieve positive expectancy; reduce position size to 20% of current allocation pending review.\nUpdate Chad's data feed to eliminate stale data; ensure real-time market data is ingested and validated.\nMonitor API costs; consider caching Lens validation results to reduce daily expense if no new signals are generated.",
       "rows": [],
       "collapsed": false
     },
@@ -50,15 +50,15 @@
       "rows": [
         {
           "agent": "lens",
-          "status": "generated macro bias summary at 04:55 UTC, covering BTC, XAU, US100, SPX500, US OIL"
+          "status": "ran at 04:55, all instruments covered"
         },
         {
           "agent": "blade",
-          "status": "no sessions run today; zero trades; next session scheduled for London 07:55"
+          "status": "next session: London 07:55"
         },
         {
           "agent": "tao",
-          "status": "no TAO staked; DCA entries 0/5 used; next staking report expected Saturday"
+          "status": "staking, next report Saturday"
         }
       ],
       "collapsed": true
@@ -69,27 +69,22 @@
       "rows": [
         {
           "severity": "critical",
-          "problem": "Jerry strategy FAIL: expectancy $-5.17, win rate 35.3%, profit factor 0.972, Sharpe -0.005.",
+          "problem": "Blade shows zero trades and zero balance after July 17 clean-slate reset; cannot be graded (NO_DATA).",
           "fix": ""
         },
         {
           "severity": "critical",
-          "problem": "Blade reports NO_DATA: zero trades, missing OANDA export, balance $0 after July 17 reset.",
+          "problem": "Edge's portfolio data is stale by 61 days despite showing a $5,000 balance; Edge cannot be graded (NO_DATA) and service is inactive.",
           "fix": ""
         },
         {
           "severity": "critical",
-          "problem": "Edge reports NO_DATA: edge_portfolio.json stale by 61 days despite showing a $5,000 balance.",
+          "problem": "Jerry strategy FAIL: 116 trades, win rate 35.3%, profit factor 0.972, Sharpe -0.005, expectancy -$5.17, max drawdown 13.4%.",
           "fix": ""
         },
         {
           "severity": "high",
-          "problem": "Chad shows STALE_DATA on only 6 usable trades, preventing grading.",
-          "fix": ""
-        },
-        {
-          "severity": "critical",
-          "problem": "Edge service is inactive (systemd), preventing any trading activity.",
+          "problem": "Chad shows STALE_DATA with only 6 usable trades; data feed not current, preventing confident grading.",
           "fix": ""
         }
       ],
@@ -100,26 +95,23 @@
       "body": "",
       "rows": [
         {
-          "alert": "Jerry strategy FAIL with negative expectancy of $5.17 per trade."
+          "alert": "Jerry strategy FAIL: expectancy -$5.17, win rate 35.3%, profit factor 0.972."
         },
         {
-          "alert": "Blade and Edge report NO_DATA \u2013 missing trade logs and stale portfolio."
+          "alert": "Blade NO_DATA: zero trades after July 17 reset; cannot be graded."
         },
         {
-          "alert": "Chad data is stale (only 6 usable trades) preventing grading."
+          "alert": "Edge NO_DATA: portfolio stale 61 days; cannot be graded."
         },
         {
-          "alert": "Edge service is inactive (systemd)."
-        },
-        {
-          "alert": "Crisp\u2011v5 is intentionally stopped; no action required."
+          "alert": "Chad STALE_DATA: only 6 usable trades; data feed not current."
         }
       ],
       "collapsed": true
     },
     {
       "title": "Reasoning",
-      "body": "On 2026-07-27, no trades were executed by manual trading, Blade, Crisp, or Edge, resulting in zero P&L for the day. The macro lens indicated a risk\u2011on environment with bullish equity bias and bearish oil. Jerry\u2019s strategy continued to lose money, posting a negative expectancy of $5.17 per trade. Service monitors show Edge and crisp\u2011v5 inactive (crisp intentionally stopped). API usage incurred $0.43 today, all from the Lens module.",
+      "body": "Today the system generated no trading P&L across all agents. Manual trading, Blade, Crisp, and Edge all recorded zero trades and zero profit/loss. The Lens agent ran and incurred API costs of $0.61, producing its macro bias report. Edge service is inactive, and its portfolio data is stale by 61 days. Crisp-v5 is intentionally stopped for repurposing. Jerry's strategy continues to fail with negative expectancy, while Chad lacks current data. No manual trades were executed in TradeLocker. The only activity was Lens validation and API usage.",
       "rows": [],
       "collapsed": true
     }
@@ -178,5 +170,12 @@
   "glossary_used": [
     "profit_factor",
     "sharpe"
-  ]
+  ],
+  "_meta": {
+    "net_worth_corrected": {
+      "was": "$41,578",
+      "now": "$36,578",
+      "reason": "model-computed value replaced by deterministic sum (2026-07-30 fix)"
+    }
+  }
 }

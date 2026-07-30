@@ -90,3 +90,30 @@ currently unpopulated (all closed positions report 0.00), so the validator
 correctly returns `NO_DATA` rather than grading a FAIL off nothing.
 
 ⚠️ The validation cron line is `#HOLD PENDING-APPROVAL` as of 2026-07-25.
+
+## Net worth is computed in code, not by the model — 2026-07-30
+
+Victoria's reported net worth drifted across runs — $36,578 → $38,578 →
+$41,578 — because **there was no net-worth computation anywhere**. `net_worth`
+was a field in the JSON *output template*, so the model was handed a list of
+balances and asked to total them. The drift decoded exactly: +$2,000 invented,
+and +$5,000 = **Edge's paper balance counted as net worth**.
+
+`compute_net_worth()` now sums the real feeds in Python and returns the total
+with a per-source breakdown, per-source age and a stale flag. It is injected
+into the prompt as a value the model must quote — and then **overwritten in the
+result after the model returns**, because a prompt instruction is not a gate
+(Critical Rule #10). Disagreements are logged. Same pattern already used for
+API costs.
+
+- **Paper money is excluded by construction** (Alpaca/Jerry, OANDA practice
+  books) and listed under `excluded`, so the omission is visible, not assumed.
+- A feed that fails to load contributes nothing **and** is named in `missing` —
+  a partial total can never be mistaken for a complete one.
+- The Telegram report prints the breakdown under the headline number, so the
+  figure is checkable rather than asserted.
+
+Current real net worth: **$36,578.25** (Robinhood $12,953.70, Kraken
+$13,446.40, Truist MMA $9,500.00, Truist Checking $676.95, TrustWallet $1.20).
+TrustWallet's feed is 23d stale and flags as such — its sync cron is `#HOLD`;
+at $1.20 it is immaterial. See [[../sessions/2026-07-30]].

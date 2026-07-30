@@ -4,6 +4,77 @@ Chronological. The *why* of every major call. Newest first.
 
 ---
 
+## Debug-output filtering belongs at the DESTINATION, not in each parser · 2026-07-30
+**Decision:** the guarantee that machine debug output never reaches Telegram is
+enforced in `telegram_personalities.wrap_message()` via a new
+`scripts/output_sanitizer.py` — not by fixing the parser that leaked.
+
+**Why:** the proximate bug was one header-strip loop in `run_lens_regime.sh`
+that `break`d on the first unrecognised line, so OpenRouter's
+`[provider-transport-fetch]` lines (which arrive *before* the metadata block)
+stopped the strip dead and the entire stdout became "the narrative". That
+parser is fixed too — but ~20 scripts shell out to a model CLI, the same defect
+can grow in any of them, and the failure mode is silent: nothing errors, Jase
+just gets a garbage message. A destination-layer guard covers every current and
+future sender for free. Jase's brief asked for exactly this framing: "that's a
+logging-destination bug, filter it at the notification layer regardless of what
+else goes wrong."
+
+**Conservative by construction:** a false positive silently deletes a line of a
+real report, which is worse than the leak it prevents. Every rule requires
+either a known machine-log shape or ≥4 `key=value` tokens on one line. Prose
+never matches. A body that is *entirely* noise becomes an explicit "no usable
+output" notice — never an empty bubble, never a dump (Rule #9).
+
+---
+
+## One daily-drawdown rail per BOOK, keyed on account id · 2026-07-30
+**Decision:** the turtle executor's DD state and balance files are keyed on the
+**OANDA account id**, not the UTC date alone and not the agent name.
+
+**Why:** Blade and Edge run the same executor on the same `*/15` cron minute
+against different practice books ($2,000 and $5,000). With state keyed only by
+date, whichever ticked first wrote its own balance as `day_start_balance` and
+the other read `(2000-5000)/5000 = -60%` against that foreign anchor, tripping
+the -4% rail. The halt is a day-scoped latch, so one crossed wire stopped
+**both** agents for the rest of every UTC day. Result: **203 decisions, 0
+orders** across two days, 83% of them `DAILY_DD_HALTED`. Blade and Edge were
+reported as "not trading"; the cause was this, not an absence of setups.
+
+Account id is the right key rather than agent name because it encodes the
+correct invariant: two agents sharing one account *should* share a rail (it is
+the same money); two agents on separate accounts must not. The rail can no
+longer be anchored to a balance that isn't its own.
+
+**Note for the record:** the 2026-07-28 activation entry below lists
+`/tmp/live_turtle_dd_YYYYMMDD.json per-UTC-day` among the rails "verified in
+cron context". It was verified — for one agent. The defect only appears when a
+second agent shares the minute, which is precisely what the same commit
+enabled. Verifying a rail on a single executor does not verify it under
+concurrency.
+
+---
+
+## Net worth is computed in code; the model may only quote it · 2026-07-30
+**Decision:** `victoria_brain.compute_net_worth()` sums the real-money feeds in
+Python; the model is handed the total to quote, and the value is **overwritten
+in the result after the model returns**.
+
+**Why:** `net_worth` was a field in the JSON output *template* — there was no
+computation anywhere, so the figure drifted with whichever model answered:
+$36,578 (correct), $38,578 (+$2,000, invented), $41,578 (+$5,000 — **Edge's
+paper balance counted as net worth**). Arithmetic is not a job for a language
+model, and net worth in particular must be reproducible: same inputs, same
+number, every run.
+
+The override is code-side and not merely a prompt instruction, per Critical
+Rule #10 — a prompt instruction is not a gate. This is the same pattern already
+used for API costs. Paper books are excluded by construction and *listed*, and
+a feed that fails to load is named in `missing` so a partial total cannot pass
+as a complete one (Rule #9).
+
+---
+
 ## Blade + Edge live-paper crons ACTIVATED, first-fire monitor armed · 2026-07-28
 **Decision:** `*/15 7-9,12-14 * * 1-5` cron for both Blade + Edge live
 turtle executors on their respective OANDA practice accounts. Every 15 min

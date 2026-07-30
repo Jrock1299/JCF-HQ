@@ -84,3 +84,38 @@ prep pings 10 min before each.
   entry/exit/sizing logic untouched.
   See [[../strategies/blade-d3-sizing#usd-pl-conversion]] and
   [[../sessions/2026-06-01]] for the change record.
+
+## Zero trades 2026-07-28 → 07-30 — shared DD breaker, not "no setup"
+
+The turtle executor logged **203 decisions and 0 orders** in its first two days.
+83% of those decisions were `DAILY_DD_HALTED`; the strategy was only allowed to
+evaluate a setup 8 times. This was never mean reversion failing to fire.
+
+**Root cause.** Blade and Edge run the same `live_turtle_executor.py` on the same
+`*/15` cron minute against **different OANDA books** — `…-001` at $2,000 (Blade)
+and `…-002` at $5,000 (Edge) — but the daily-drawdown state file was keyed only
+by UTC date. Whichever agent ticked first wrote its own balance as
+`day_start_balance`; the other measured its genuinely different balance against
+that foreign anchor:
+
+```
+(2000 - 5000) / 5000 = -60%  ->  breaches the -4% rail  ->  halted
+```
+
+The halt is a day-scoped latch, so one crossed wire stopped **both** agents for
+the rest of every UTC day, ~10 seconds after the first tick.
+`dashboard/live_turtle_balance.json` was shared the same way.
+
+**Fix.** Both files are keyed on the **OANDA account id** (`_book_key()`), not
+the agent name — *one daily-drawdown rail per book*. Two agents on one account
+should share a rail (same money); two agents on separate accounts must not.
+Verified: each book anchors to its own balance, neither halts the other, and the
+rail **still bites** (-5% halts and latches, the other agent unaffected).
+
+A further 10% of ticks were OANDA 401s from token burst-contention on the same
+cron minute — now retried via `scripts/oanda_retry.py`.
+
+First-fire Telegram alerts never triggered, which was **correct**: the monitor
+only fires on `SIGNAL_FIRED` and no order existed. It is healthy and armed.
+
+See [[../sessions/2026-07-30]].

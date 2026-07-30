@@ -313,6 +313,135 @@ def _format_agent_pnl(data: dict) -> str:
     return '\n'.join(lines)
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Net worth — computed here, NOT by the model
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Why this function exists (2026-07-30). `net_worth` was a field in the JSON
+# OUTPUT TEMPLATE the model fills in — there was no deterministic computation
+# anywhere. The model was handed a list of account balances and asked to total
+# them, so the reported figure drifted with whatever model happened to answer:
+#
+#     $36,578  — correct: the exact sum of the four real-money accounts
+#     $38,578  — +$2,000, no source
+#     $41,578  — +$5,000, the size of Edge's PAPER balance
+#
+# Arithmetic is not a job for a language model, and "net worth" in particular
+# must be reproducible: same inputs, same number, every run. So the total is
+# computed in Python from the same feeds, injected into the prompt as an
+# authoritative value, and — because a prompt instruction is not a gate
+# (Critical Rule #10) — OVERWRITTEN in the result after the model returns.
+#
+# PAPER MONEY IS NOT NET WORTH. Alpaca (Jerry) and the OANDA practice books
+# (Blade, Edge) are excluded by construction and listed under `excluded` so the
+# omission is visible rather than assumed. This matches
+# `scripts/net_worth_report.py`, which already drew that line correctly.
+
+_NW_STALE_DAYS = 20   # portfolio syncs run on the 1st and 15th, so <=15d is normal
+
+
+def _feed_age_days(filename: str):
+    """Age of a dashboard feed in days, preferring an embedded timestamp over
+    file mtime (Rule #9: a sync rewriting a file keeps mtime fresh while the
+    payload rots)."""
+    data = _load_json(DASHBOARD / filename, filename) or {}
+    for key in ('last_update', 'last_updated', 'updated', 'timestamp'):
+        raw = data.get(key)
+        if isinstance(raw, str) and raw:
+            try:
+                ts = datetime.fromisoformat(raw.replace('Z', '+00:00'))
+                if ts.tzinfo is None:
+                    ts = ts.replace(tzinfo=timezone.utc)
+                return (datetime.now(timezone.utc) - ts).total_seconds() / 86400
+            except ValueError:
+                pass
+    try:
+        mtime = (DASHBOARD / filename).stat().st_mtime
+        return (datetime.now(timezone.utc).timestamp() - mtime) / 86400
+    except OSError:
+        return None
+
+
+def compute_net_worth(plaid: dict, robinhood: dict, kraken: dict,
+                      trustwallet: dict, net_worth_cfg: dict) -> dict:
+    """Deterministic net worth from the real-money feeds.
+
+    Returns {total, sources, excluded, missing, computed_at}. Pure arithmetic —
+    no model, no rounding heuristics, no invented values. A feed that fails to
+    load contributes nothing AND is named in `missing`, so a partial total can
+    never be mistaken for a complete one.
+    """
+    sources, missing = [], []
+
+    def add(label, value, filename, note=''):
+        if value is None:
+            missing.append(label)
+            return
+        age = _feed_age_days(filename) if filename else None
+        sources.append({
+            'label': label,
+            'value': round(float(value), 2),
+            'age_days': round(age, 1) if age is not None else None,
+            'stale': bool(age is not None and age > _NW_STALE_DAYS),
+            'note': note,
+        })
+
+    add('Robinhood', _f((robinhood or {}).get('total_equity')) if robinhood else None,
+        'robinhood_data.json')
+    add('Kraken', _f((kraken or {}).get('total_usd')) if kraken else None,
+        'kraken_data.json')
+    add('TrustWallet', _f((trustwallet or {}).get('total_usd')) if trustwallet else None,
+        'trustwallet_data.json')
+
+    if plaid:
+        for acct in plaid.get('accounts', []) or []:
+            name = str(acct.get('name', '?')).strip()
+            label = name if name.lower().startswith('truist') else f'Truist {name}'
+            add(label, _f(acct.get('balance')), 'plaid_data.json')
+    else:
+        missing.append('Banks (Plaid)')
+
+    # Manually-maintained lines, counted only when non-zero.
+    for key, label in (('hysa', 'HYSA'), ('life_insurance', 'Life insurance')):
+        v = _f((net_worth_cfg or {}).get(key))
+        if v:
+            add(label, v, 'net_worth.json', note='manual')
+
+    total = round(sum(s['value'] for s in sources), 2)
+
+    return {
+        'total': total,
+        'sources': sources,
+        'missing': missing,
+        'excluded': [
+            'Alpaca / Jerry (PAPER)',
+            'OANDA practice books — Blade, Edge (PAPER)',
+        ],
+        'computed_at': datetime.now(timezone.utc).isoformat(),
+        'method': 'deterministic sum of real-money feeds (scripts-side, not model-computed)',
+    }
+
+
+def _format_net_worth(nw: dict) -> str:
+    """Render the computed net worth for the prompt — as a value the model must
+    quote verbatim, not a set of numbers for it to add up."""
+    lines = [
+        'NET WORTH (ALREADY COMPUTED — DO NOT RECALCULATE):',
+        f"  TOTAL REAL NET WORTH: ${nw['total']:,.2f}",
+        '  Components:',
+    ]
+    for s in nw['sources']:
+        age = '' if s['age_days'] is None else f"  [{s['age_days']:.0f}d old{' — STALE' if s['stale'] else ''}]"
+        note = f"  ({s['note']})" if s['note'] else ''
+        lines.append(f"    {s['label']}: ${s['value']:,.2f}{note}{age}")
+    if nw['missing']:
+        lines.append(f"  NOT COUNTED (feed unavailable): {', '.join(nw['missing'])}")
+    lines.append(f"  EXCLUDED as paper money: {', '.join(nw['excluded'])}")
+    lines.append('  You MUST use the TOTAL above verbatim in financial_summary.net_worth. '
+                 'Do not add, round, or re-derive it. Paper balances are NOT net worth.')
+    return '\n'.join(lines)
+
+
 def _format_accounts(plaid: dict, robinhood: dict, kraken: dict,
                      trustwallet: dict, net_worth: dict) -> str:
     lines = ['Account Balances:']
@@ -525,7 +654,19 @@ def _build_telegram_report(result: dict, svc_statuses: dict) -> str:
         verdict = 'acceptable. For now.' if nw_f > 40000 else 'concerning.'
         lines.append(f'Your net worth stands at ${nw_f:,.2f}. It is... {verdict}')
     except Exception:
-        lines.append(f'Net Worth: ${nw:,.2f}')
+        lines.append(f'Net Worth: {nw}')
+
+    # Source breakdown — the number must be checkable, not just asserted.
+    # Added 2026-07-30 after the figure drifted $36,578 -> $38,578 -> $41,578
+    # across runs with nothing in the report to show where it came from.
+    nwb = fs.get('net_worth_breakdown') or {}
+    for s in nwb.get('sources', []):
+        flag = ' ⚠️ STALE' if s.get('stale') else ''
+        lines.append(f"    {s['label']}: ${s['value']:,.2f}{flag}")
+    if nwb.get('missing'):
+        lines.append(f"    ⚠️ not counted (no feed): {', '.join(nwb['missing'])}")
+    if nwb.get('sources'):
+        lines.append('    (paper accounts excluded — Alpaca, OANDA practice)')
 
     lines += [
         '',
@@ -884,6 +1025,14 @@ def run_victoria() -> dict:
     sent_text   = _format_sentinel(sent_data)        if sent_data else 'Sentinel: unavailable'
     norman_text = _format_validation(lens_val_data, vic_val_data)
 
+    # Net worth is computed here and only QUOTED by the model — see
+    # compute_net_worth() for why the model must not do this arithmetic.
+    nw_computed = compute_net_worth(plaid_data, rb_data, kraken_data, tw_data, nw_data)
+    nw_text     = _format_net_worth(nw_computed)
+    print(f'[victoria] Net worth (deterministic): ${nw_computed["total"]:,.2f} '
+          f'from {len(nw_computed["sources"])} source(s)'
+          + (f'; MISSING {nw_computed["missing"]}' if nw_computed['missing'] else ''))
+
     svc_text = (
         'Service Status (systemctl):\n'
         + '\n'.join(f'  {svc}: {status}' for svc, status in svc_statuses.items())
@@ -906,6 +1055,7 @@ def run_victoria() -> dict:
         f"{edge_text}\n\n"
         f"{tao_text}\n\n"
         f"{accts_text}\n\n"
+        f"{nw_text}\n\n"
         f"{lens_text}\n\n"
         f"{sent_text}\n\n"
         f"{svc_text}\n\n"
@@ -970,6 +1120,19 @@ def run_victoria() -> dict:
         result['financial_summary']['api_costs_mtd']   = api_costs['total_mtd']
         # Ensure fix_prompts key always exists
         result.setdefault('fix_prompts', [])
+
+    # ── 6b. Net worth: overwrite whatever the model produced ──
+    # A prompt instruction is not a gate (Critical Rule #10). The prompt asks
+    # the model to quote the computed total verbatim; this makes it so. Logged
+    # when it disagrees, because a disagreement means the model tried to do the
+    # arithmetic itself and is worth seeing in the run log.
+    reported = result.get('financial_summary', {}).get('net_worth')
+    if reported is not None and abs(_f(reported) - nw_computed['total']) > 0.01:
+        print(f'[victoria] Net worth OVERRIDE: model said ${_f(reported):,.2f}, '
+              f'deterministic sum is ${nw_computed["total"]:,.2f} — using the sum')
+    result.setdefault('financial_summary', {})
+    result['financial_summary']['net_worth']           = nw_computed['total']
+    result['financial_summary']['net_worth_breakdown'] = nw_computed
 
     # ── 7. Save victoria_report.json ──
     result['_meta'] = {

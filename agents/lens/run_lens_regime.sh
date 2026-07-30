@@ -25,31 +25,38 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENGINE="$SCRIPT_DIR/lens_regime.py"
-LOGFILE="/root/.openclaw/logs/lens_regime.log"
 PYBIN="/root/.openclaw/venv/bin/python3"
 
+# LOGGING — this script writes to stdout/stderr ONLY. The cron line already
+# appends both to logs/lens_regime.log:
+#   0 6,12 * * 1-5 run_lens_regime.sh >> .../lens_regime.log 2>&1
+# Every line used to ALSO go through `| tee -a "$LOGFILE"` pointed at that same
+# file, so the log recorded each line twice — including "Telegram delivered",
+# which made a single correct send read as a double-send while diagnosing the
+# 2026-07-30 triple-message report. One writer, one copy.
+
 NOW="$(date -u '+%Y-%m-%d %H:%M UTC')"
-echo "======================================" | tee -a "$LOGFILE"
-echo "[$NOW] run_lens_regime.sh starting"     | tee -a "$LOGFILE"
+echo "======================================"
+echo "[$NOW] run_lens_regime.sh starting"
 
 if [ -n "${1:-}" ]; then
     INSTRUMENTS="$1"
-    echo "  Instrument override: $INSTRUMENTS" | tee -a "$LOGFILE"
+    echo "  Instrument override: $INSTRUMENTS"
 else
     INSTRUMENTS=""
 fi
 
 # ── Run regime engine ────────────────────────────────────────────────────────
-echo "  Running lens_regime.py..." | tee -a "$LOGFILE"
+echo "  Running lens_regime.py..."
 if [ -n "$INSTRUMENTS" ]; then
-    "$PYBIN" "$ENGINE" "$INSTRUMENTS" --monte-carlo 2>&1 | tee -a "$LOGFILE"
+    "$PYBIN" "$ENGINE" "$INSTRUMENTS" --monte-carlo 2>&1
 else
-    "$PYBIN" "$ENGINE" --monte-carlo 2>&1 | tee -a "$LOGFILE"
+    "$PYBIN" "$ENGINE" --monte-carlo 2>&1
 fi
 
 EXIT_CODE=${PIPESTATUS[0]}
 if [ "$EXIT_CODE" -ne 0 ]; then
-    echo "  ERROR: lens_regime.py exited with code $EXIT_CODE" | tee -a "$LOGFILE"
+    echo "  ERROR: lens_regime.py exited with code $EXIT_CODE"
     python3 -c "
 import sys; sys.path.insert(0,'/root/.openclaw/scripts')
 from hub_post import add_hub_message as hub_post
@@ -59,13 +66,15 @@ hub_post('lens','error','lens_regime.py failed (exit $EXIT_CODE)',tags=['error',
 fi
 
 # ── Narrative + Telegram delivery ────────────────────────────────────────────
-echo "  Generating Codex narrative and sending to Telegram..." | tee -a "$LOGFILE"
-python3 - <<'PYEOF' 2>&1 | tee -a "$LOGFILE"
+echo "  Generating Codex narrative and sending to Telegram..."
+python3 - <<'PYEOF' 2>&1
 import json, os, subprocess, sys, datetime
+from pathlib import Path
 
 sys.path.insert(0, '/root/.openclaw/scripts')
 from telegram_personalities import wrap_message
 from hub_post import add_hub_message as hub_post
+from output_sanitizer import strip_cli_noise
 
 DASHBOARD = '/root/.openclaw/dashboard/strategy_recommendation.json'
 NOTES_FILE = '/root/.openclaw/agents/lens/pre_session_notes.md'
@@ -158,17 +167,24 @@ def call_codex(prompt: str, timeout_s: int = 90) -> str | None:
             tail = (proc.stderr or proc.stdout or '').strip().splitlines()[-2:]
             print(f'  [codex] {model}: exit {proc.returncode} | {" | ".join(tail)}', file=sys.stderr)
             continue
-        text = proc.stdout
-        lines = text.splitlines()
-        body_start = 0
-        for i, ln in enumerate(lines):
-            if ln.startswith('model.run via') or ln.startswith('provider:') or ln.startswith('model:') or ln.startswith('outputs:'):
-                body_start = i + 1
-            else:
-                break
-        body = '\n'.join(lines[body_start:]).strip()
+        # Strip CLI/transport noise from ANYWHERE in the output.
+        #
+        # The previous version walked from line 0 and `break`d on the first line
+        # that wasn't one of four known metadata prefixes. On 2026-07-30 the
+        # OpenRouter path emitted `[provider-transport-fetch]` lines FIRST, so
+        # the loop broke immediately, body_start stayed 0, and the entire stdout
+        # — transport logs included — was returned as the narrative and sent to
+        # Telegram. Scan every line instead of trusting the ordering.
+        body, noise = strip_cli_noise(proc.stdout)
+        if noise:
+            print(f'  [codex] {model}: filtered {len(noise)} debug line(s) '
+                  f'from model output', file=sys.stderr)
+            for ln in noise:
+                print(f'    [filtered] {ln[:200]}', file=sys.stderr)
         if body:
             return body
+        print(f'  [codex] {model}: output was entirely CLI noise — no narrative',
+              file=sys.stderr)
     return None
 
 
@@ -209,7 +225,24 @@ with open(NOTES_FILE, 'w') as f:
     f.write(narrative + '\n')
 print(f'  Narrative written -> {NOTES_FILE}')
 
+# wrap_message sanitises the body (see telegram_personalities). Belt and braces:
+# call_codex already returned filtered text, but the fallback path above and any
+# future edit to this block route through the same guard.
 wrapped = wrap_message('lens', narrative)
+
+# ── One delivery per scheduled slot ──────────────────────────────────────────
+# The briefing is scheduled twice a day (06:00 pre-London, 12:00 pre-NY) and
+# each run is meant to produce exactly ONE Telegram message. A cron double-fire,
+# an overlapping manual run, or a retry wrapper would otherwise each send their
+# own copy. The slot key is the UTC date + hour, which is the granularity the
+# schedule actually has; a genuine re-run in a NEW slot still delivers.
+# Override with LENS_REGIME_FORCE_SEND=1 when deliberately re-sending.
+slot = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H')
+lock = Path(f'/tmp/lens_regime_sent_{slot}.lock')
+if lock.exists() and os.environ.get('LENS_REGIME_FORCE_SEND') != '1':
+    print(f'  Telegram SKIPPED — slot {slot} already delivered '
+          f'({lock.read_text().strip()}). Set LENS_REGIME_FORCE_SEND=1 to override.')
+    sys.exit(0)
 
 hub_post('lens', 'briefing', wrapped, tags=['briefing', 'pre-session', 'regime'])
 
@@ -220,10 +253,12 @@ send = subprocess.run([
     '--message', wrapped,
 ], capture_output=True, text=True, timeout=30)
 if send.returncode == 0:
+    lock.write_text(datetime.datetime.now(datetime.timezone.utc).isoformat())
     print('  Telegram delivered')
 else:
+    # No lock on failure — the next attempt in this slot SHOULD retry.
     print(f'  Telegram send failed (rc={send.returncode}): {(send.stderr or send.stdout)[:200]}', file=sys.stderr)
 PYEOF
 
-echo "[$NOW] run_lens_regime.sh complete" | tee -a "$LOGFILE"
-echo "======================================" | tee -a "$LOGFILE"
+echo "[$NOW] run_lens_regime.sh complete"
+echo "======================================"

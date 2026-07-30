@@ -29,11 +29,13 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
+sys.path.insert(0, '/root/.openclaw/scripts')
 sys.path.insert(0, '/root/.openclaw/agents/strategist')
 from strategy_engine import (
     fetch_candles, calc_indicators, calc_adr, ema_alignment,
     bb_squeeze_ratio, detect_regime, ADR_NORMAL,
 )
+from output_sanitizer import strip_cli_noise
 
 CACHE_DIR = '/tmp/h4_reads'
 CACHE_TTL_SECS = 1800  # reuse the read for up to 30 min within a session window
@@ -142,17 +144,19 @@ def _call_codex(prompt: str, timeout_s: int = 60):
             tail = (proc.stderr or proc.stdout).strip().splitlines()[-2:]
             logging.warning(f'h4_read {model} exit {proc.returncode}: {" | ".join(tail)}')
             continue
-        # Strip CLI metadata header
-        lines = proc.stdout.splitlines()
-        body_start = 0
-        for i, ln in enumerate(lines):
-            if ln.startswith(('model.run via', 'provider:', 'model:', 'outputs:')):
-                body_start = i + 1
-            else:
-                break
-        body = '\n'.join(lines[body_start:]).strip()
+        # Strip CLI metadata + transport noise from ANYWHERE in the output.
+        # The old leading-header walk broke on the first unrecognised line, so
+        # any noise emitted BEFORE the known prefixes (e.g. OpenRouter's
+        # `[provider-transport-fetch]` lines) passed straight through into the
+        # read. Same defect that leaked debug output into Lens's Telegram
+        # briefings on 2026-07-30.
+        body, noise = strip_cli_noise(proc.stdout)
+        if noise:
+            logging.warning(f'h4_read {model}: filtered {len(noise)} debug line(s): '
+                            f'{noise[0][:160]}')
         if body:
             return body
+        logging.warning(f'h4_read {model}: output was entirely CLI noise')
     return None
 
 

@@ -27,7 +27,10 @@ into actual paper orders on OANDA. Design:
   RAILS PRESERVED.
     - Max risk per trade: 0.75% of account equity (from library params.RISK_PCT).
     - Daily-DD circuit breaker: -4% of session-start balance halts new
-      entries for the rest of the UTC day.
+      entries for the rest of the UTC day. Scoped PER OANDA ACCOUNT — Blade
+      and Edge trade separate books on the same cron minute, and a shared
+      rail anchored one agent's breaker to the other's balance (see
+      `_book_key()`).
     - Min account balance: refuse to trade below $100 (Blade's floor).
     - Order tagging: every order carries a clientExtensions.id starting with
       `lens_turtle_` so we can filter our own positions in the account.
@@ -59,13 +62,17 @@ sys.path.insert(0, '/root/.openclaw/agents/lens')
 from strategy_library import iter_deployable, load as load_library  # noqa: E402
 from ict_backtest import _detect, atr, swing_highs, swing_lows      # noqa: E402
 from ict_strategies import BY_KEY, PARAMS, KILLZONES                # noqa: E402
+from oanda_retry import request_with_retry                          # noqa: E402
 
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 LOG_PATH        = Path('/root/.openclaw/agents/lens/live_turtle.log')
 TRADES_PATH     = Path('/root/.openclaw/dashboard/live_turtle_trades.json')
-BALANCE_PATH    = Path('/root/.openclaw/dashboard/live_turtle_balance.json')
-DD_STATE_PREFIX = '/tmp/live_turtle_dd_'  # per-UTC-date
+# Both of these are PER-BOOK, not global — the filename carries the OANDA
+# account id. See _book_key() for why sharing them across Blade and Edge halted
+# all trading for two days.
+BALANCE_PATH    = Path('/root/.openclaw/dashboard/live_turtle_balance.json')  # template; see _balance_path()
+DD_STATE_PREFIX = '/tmp/live_turtle_dd_'  # + <account-id>_<UTC-date>.json
 AUTH_PATH       = Path('/root/.openclaw/agents/main/agent/auth-profiles.json')
 
 # ── Rails ─────────────────────────────────────────────────────────────────────
@@ -125,9 +132,12 @@ def fetch_candles(instrument: str, granularity: str, count: int) -> list[dict]:
     r = InstrumentsCandles(instrument, params={
         'granularity': granularity, 'count': count, 'price': 'MBA',
     })
-    client.request(r)
+    # Retry transient throttling — Blade, Edge and the regime briefing share one
+    # practice token on the same */15 cron minute and OANDA returns 401 for part
+    # of that burst. See scripts/oanda_retry.py.
+    resp = request_with_retry(client, r, label=f'{instrument}/{granularity}') or {}
     out = []
-    for c in r.response.get('candles', []):
+    for c in resp.get('candles', []):
         if not c.get('complete'):
             continue
         mid = c.get('mid') or {}; bid = c.get('bid') or {}; ask = c.get('ask') or {}
@@ -165,8 +175,11 @@ def open_positions_for(instrument: str) -> list[dict]:
 def account_summary() -> dict:
     from oandapyV20.endpoints.accounts import AccountSummary
     client, acct = _oanda()
-    r = AccountSummary(acct); client.request(r)
-    return r.response.get('account', {})
+    r = AccountSummary(acct)
+    # Retried for the same reason as fetch_candles. This one matters more: a
+    # transient failure here used to propagate as ERROR for the whole tick, and
+    # the balance it returns feeds the daily-DD rail.
+    return (request_with_retry(client, r, label=f'account/{acct}') or {}).get('account', {})
 
 
 def place_bracket_market_order(instrument: str, units: int,
@@ -276,48 +289,95 @@ def place_bracket_market_order(instrument: str, units: int,
 # Balance + daily-DD rail
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _book_key() -> str:
+    """Identity of the book these rails protect: the OANDA account id.
+
+    ── The 2026-07-29/30 zero-trade bug ──────────────────────────────────────
+    Both the daily-DD state file and the balance file used to be global —
+    `/tmp/live_turtle_dd_<UTC-date>.json` and one `live_turtle_balance.json`
+    shared by every caller. But Blade and Edge run this same executor on the
+    SAME */15 cron minute against DIFFERENT OANDA practice accounts (…-001 at
+    $2,000 and …-002 at $5,000).
+
+    Whichever agent ticked first wrote its own balance as `day_start_balance`.
+    The other agent then read its genuinely different account balance against
+    that foreign anchor:
+
+        (2000 - 5000) / 5000 = -60%   ->  breaches the -4% rail  ->  halted
+
+    and because the halt is a day-scoped latch, that one crossed wire stopped
+    BOTH agents for the rest of every UTC day. `/tmp/live_turtle_dd_20260729`
+    and `…20260730` both show `halt_dd: -0.6` latched ~10 seconds after the
+    first tick of the day. Neither agent placed a single order.
+
+    Keying on the account id — not the agent name — is the correct invariant:
+    one daily-drawdown rail per book. Two agents sharing one account SHOULD
+    share a rail (it is the same money); two agents on separate accounts must
+    not. This also means the rail can never again be anchored to a balance
+    that isn't its own.
+    """
+    _, acct = _oanda()
+    return str(acct).replace('/', '_')
+
+
+def _balance_path() -> Path:
+    return BALANCE_PATH.with_name(f'live_turtle_balance_{_book_key()}.json')
+
+
 def _load_balance() -> float:
     try:
-        d = json.loads(BALANCE_PATH.read_text())
+        d = json.loads(_balance_path().read_text())
         return float(d.get('balance', STARTING_BALANCE_DEFAULT))
     except (FileNotFoundError, json.JSONDecodeError, KeyError, ValueError):
         return STARTING_BALANCE_DEFAULT
 
 
 def _save_balance(bal: float) -> None:
-    BALANCE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    BALANCE_PATH.write_text(json.dumps({
+    p = _balance_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({
         'balance': round(bal, 2),
+        'account_id': _book_key(),
         'updated': datetime.now(timezone.utc).isoformat(),
     }, indent=2))
 
 
 def _dd_state_path() -> str:
     d = datetime.now(timezone.utc).strftime('%Y%m%d')
-    return f'{DD_STATE_PREFIX}{d}.json'
+    return f'{DD_STATE_PREFIX}{_book_key()}_{d}.json'
 
 
 def _dd_check_and_maybe_halt(current_balance: float) -> bool:
     """Return True if we're already halted for the day (or should be). Persists
-    the day-start balance on first call each UTC day."""
+    the day-start balance on first call each UTC day, per book (see _book_key)."""
     p = Path(_dd_state_path())
     if not p.exists():
         p.write_text(json.dumps({
+            'account_id': _book_key(),
             'day_start_balance': round(current_balance, 2),
             'halted': False,
-        }))
+        }, indent=2))
         return False
     d = json.loads(p.read_text())
     if d.get('halted'):
         return True
     day_start = float(d.get('day_start_balance', current_balance))
+    if day_start <= 0:
+        # A zero/negative anchor makes the ratio below meaningless. Re-anchor
+        # rather than divide by it — Rule #9: no invented denominators.
+        log.warning(f'daily-DD anchor invalid ({day_start}) — re-anchoring to '
+                    f'{current_balance}')
+        d['day_start_balance'] = round(current_balance, 2)
+        p.write_text(json.dumps(d, indent=2))
+        return False
     dd = (current_balance - day_start) / day_start
     if dd <= -DAILY_DD_HALT_PCT:
         d['halted'] = True
         d['halted_at'] = datetime.now(timezone.utc).isoformat()
         d['halt_dd'] = round(dd, 4)
         p.write_text(json.dumps(d, indent=2))
-        log.warning(f'daily-DD halt tripped: dd={dd:.2%} (day_start={day_start})')
+        log.warning(f'daily-DD halt tripped on {_book_key()}: dd={dd:.2%} '
+                    f'(day_start={day_start}, now={current_balance})')
         return True
     return False
 

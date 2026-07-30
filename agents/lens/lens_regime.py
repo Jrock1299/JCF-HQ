@@ -70,6 +70,9 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s'
 )
 
+sys.path.insert(0, '/root/.openclaw/scripts')
+from oanda_retry import request_with_retry  # noqa: E402
+
 with open('/root/.openclaw/agents/main/agent/auth-profiles.json') as f:
     _auth = json.load(f)
 _creds = _auth['profiles']['oanda:default']
@@ -108,8 +111,15 @@ def fetch_oanda_candles(instrument, granularity, count=200):
         r = InstrumentsCandles(instrument, params={
             'granularity': granularity, 'count': count, 'price': 'M',
         })
-        client.request(r)
-        raw = r.response.get('candles', [])
+        # Retry transient failures. At 12:00 UTC this job shares the practice
+        # token with Blade's and Edge's turtle ticks on the same cron minute,
+        # and OANDA answers part of that burst with 401 "Insufficient
+        # authorization" — which is throttling, not an auth problem. Without
+        # the retry a single blip blanked SPX500/DE30/XAU for the whole
+        # briefing (2026-07-30). See scripts/oanda_retry.py.
+        raw = (request_with_retry(
+            client, r, label=f'{instrument}/{granularity}'
+        ) or {}).get('candles', [])
         out = []
         for c in raw:
             if not c.get('complete', True):

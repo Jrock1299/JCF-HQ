@@ -13,7 +13,25 @@ Usage:
 
     # Huncho's own system messages:
     wrapped = wrap_message('huncho', "Everything's runnin' smooth tonight.")
+
+SANITISATION (added 2026-07-30). Every body passing through `wrap_message` is
+run through `output_sanitizer.strip_cli_noise` first. Lens shipped two Telegram
+briefings with raw `[provider-transport-fetch]` transport logs glued to the top
+because one caller's header-strip was too narrow; rather than trust ~20 callers
+to each parse their model CLI correctly forever, the guarantee lives here at the
+destination. A body that is entirely noise becomes an explicit "no usable
+output" notice — never an empty bubble, never a transport dump.
 """
+import sys
+
+sys.path.insert(0, '/root/.openclaw/scripts')
+try:
+    from output_sanitizer import sanitize_outbound
+except Exception:                                    # pragma: no cover
+    # Never let the guard itself break delivery — an unsanitised message is
+    # bad, a message that never sends is worse.
+    def sanitize_outbound(text, notice=None):        # type: ignore[misc]
+        return text
 
 AGENT_EMOJIS = {
     'huncho':   '\U0001f451',   # 👑
@@ -47,6 +65,9 @@ def wrap_message(agent: str, body: str) -> str:
     agent_lower = agent.lower().strip()
     emoji = AGENT_EMOJIS.get(agent_lower, '')
     name = AGENT_DISPLAY.get(agent_lower, agent_lower.upper())
+
+    # Destination-layer guard — see the SANITISATION note in the module docstring.
+    body = sanitize_outbound(body)
 
     if agent_lower == 'huncho':
         return f'{emoji} HUNCHO\n{body}'
