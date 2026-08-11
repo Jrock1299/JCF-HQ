@@ -1,11 +1,11 @@
 {
   "agent:main:main": {
-    "sessionId": "d8819031-8abf-4465-aa79-fd0e0cbde3ee",
-    "updatedAt": 1780229149499,
+    "sessionId": "cf6275c6-eaa2-4ba3-a8b3-76836c639d4e",
+    "updatedAt": 1786453497307,
     "systemSent": true,
-    "abortedLastRun": false,
     "chatType": "direct",
     "deliveryContext": {
+      "channel": "telegram",
       "to": "telegram:797062420"
     },
     "lastTo": "telegram:797062420",
@@ -17,93 +17,124 @@
       "surface": "telegram",
       "chatType": "direct"
     },
-    "sessionFile": "/root/.openclaw/agents/main/sessions/d8819031-8abf-4465-aa79-fd0e0cbde3ee.jsonl",
     "compactionCount": 0,
     "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>clawhub</name>\n    <description>Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>coding-agent</name>\n    <description>Delegate coding tasks to Codex, Claude Code, or Pi agents via background process. Use when: (1) building/creating new features or apps, (2) reviewing PRs (spawn in temp dir), (3) refactoring large codebases, (4) iterative coding that needs file exploration. NOT for: simple one-liner fixes (just edit), reading code (use read tool), thread-bound ACP harness requests in chat (for example spawn/run Codex or Claude Code in a Discord thread; use sessions_spawn with runtime:&quot;acp&quot;), or any work in ~/clawd workspace (never spawn agents here). Claude Code: use --print --permission-mode bypassPermissions (no PTY). Codex/Pi/OpenCode: pty:true required.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/coding-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like &quot;create a skill&quot;, &quot;author a skill&quot;, &quot;tidy up a skill&quot;, &quot;improve this skill&quot;, &quot;review the skill&quot;, &quot;clean up the skill&quot;, &quot;audit the skill&quot;.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather and forecasts via wttr.in or Open-Meteo. Use when: user asks about weather, temperature, or forecasts for any location. NOT for: historical weather data, severe weather alerts, or detailed meteorological analysis. No API key needed.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;\n</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n</available_skills>",
       "skills": [
         {
-          "name": "clawhub",
-          "requiredEnv": []
+          "name": "browser-automation"
         },
         {
-          "name": "coding-agent",
-          "requiredEnv": []
+          "name": "canvas"
         },
         {
-          "name": "healthcheck"
-        },
-        {
-          "name": "skill-creator"
-        },
-        {
-          "name": "tmux",
-          "requiredEnv": []
-        },
-        {
-          "name": "weather",
-          "requiredEnv": []
+          "name": "clawhub"
         },
         {
           "name": "crypto-self-learning",
           "requiredEnv": []
         },
         {
+          "name": "diagram-maker"
+        },
+        {
           "name": "frontend-design-ultimate",
           "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
         },
         {
           "name": "last30days"
         },
         {
+          "name": "meme-maker",
+          "requiredEnv": []
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "node-inspect-debugger",
+          "requiredEnv": []
+        },
+        {
+          "name": "python-debugpy",
+          "requiredEnv": []
+        },
+        {
           "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
         },
         {
           "name": "skill-detector"
         },
         {
-          "name": "tavily"
+          "name": "spike"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
         },
         {
           "name": "typescript-pro"
+        },
+        {
+          "name": "weather"
         }
       ],
-      "version": 0
+      "version": 1785505053181,
+      "promptFormatVersion": 1,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "a61f068f2b409b4174e8ff2ef8a621d5a1e066c4e580f083d2820cf156905ad4",
+        "bytes": 8801
+      }
     },
-    "fallbackNoticeSelectedModel": "openai-codex/gpt-5.5-codex",
-    "fallbackNoticeActiveModel": "openai/gpt-5.3-codex",
-    "fallbackNoticeReason": "selected model unavailable",
-    "modelProvider": "openai",
-    "model": "gpt-5.5",
-    "contextTokens": 272000,
     "systemPromptReport": {
       "source": "run",
-      "generatedAt": 1780229026484,
-      "sessionId": "d8819031-8abf-4465-aa79-fd0e0cbde3ee",
+      "generatedAt": 1786453459320,
+      "sessionId": "cf6275c6-eaa2-4ba3-a8b3-76836c639d4e",
       "sessionKey": "agent:main:main",
       "provider": "openai",
-      "model": "gpt-5.5",
+      "model": "gpt-5.6-sol",
       "workspaceDir": "/root/.openclaw/workspace",
       "systemPrompt": {
-        "chars": 21727,
-        "projectContextChars": 11521,
-        "nonProjectContextChars": 10206
+        "chars": 26330,
+        "projectContextChars": 0,
+        "nonProjectContextChars": 26330,
+        "hash": "d7643929eb82c1788c272812c54447eddb9ad40e72442aff350c4fe4b96c0093"
       },
       "injectedWorkspaceFiles": [
         {
           "name": "AGENTS.md",
           "path": "/root/.openclaw/workspace/AGENTS.md",
           "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
+          "rawChars": 4241,
+          "injectedChars": 4241,
           "truncated": false
         },
         {
           "name": "SOUL.md",
           "path": "/root/.openclaw/workspace/SOUL.md",
           "missing": false,
-          "rawChars": 5984,
-          "injectedChars": 5984,
+          "rawChars": 8884,
+          "injectedChars": 8884,
           "truncated": false
         },
         {
@@ -135,138 +166,288 @@
           "path": "/root/.openclaw/workspace/HEARTBEAT.md",
           "missing": false,
           "rawChars": 626,
-          "injectedChars": 626,
-          "truncated": false
-        },
-        {
-          "name": "BOOTSTRAP.md",
-          "path": "/root/.openclaw/workspace/BOOTSTRAP.md",
-          "missing": true,
-          "rawChars": 0,
-          "injectedChars": 61,
+          "injectedChars": 0,
           "truncated": false
         },
         {
           "name": "MEMORY.md",
           "path": "/root/.openclaw/workspace/MEMORY.md",
           "missing": false,
-          "rawChars": 1088,
-          "injectedChars": 1088,
+          "rawChars": 1263,
+          "injectedChars": 0,
           "truncated": false
         }
       ],
       "skills": {
-        "promptChars": 0,
-        "entries": []
+        "promptChars": 8797,
+        "hash": "b230e95afb01652157d641947d2533f323c93526feee9dafde25d381a833380f",
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 371
+          },
+          {
+            "name": "canvas",
+            "blockChars": 289
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 331
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 498
+          },
+          {
+            "name": "diagram-maker",
+            "blockChars": 304
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 658
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 316
+          },
+          {
+            "name": "last30days",
+            "blockChars": 566
+          },
+          {
+            "name": "meme-maker",
+            "blockChars": 289
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 319
+          },
+          {
+            "name": "node-inspect-debugger",
+            "blockChars": 315
+          },
+          {
+            "name": "python-debugpy",
+            "blockChars": 303
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 690
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 297
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 480
+          },
+          {
+            "name": "spike",
+            "blockChars": 289
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 319
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 329
+          },
+          {
+            "name": "tavily",
+            "blockChars": 286
+          },
+          {
+            "name": "tmux",
+            "blockChars": 307
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 391
+          },
+          {
+            "name": "weather",
+            "blockChars": 327
+          }
+        ]
       },
       "tools": {
         "listChars": 0,
-        "schemaChars": 60,
+        "schemaChars": 9246,
         "entries": [
           {
-            "name": "cron",
-            "summaryChars": 4651,
+            "name": "message",
+            "summaryChars": 329,
+            "summaryHash": "5ee67e8d06b9f25874fbd74d5fce3eff56408239d2eced98f634b5ec36a0b2a9",
+            "schemaChars": 8035,
+            "schemaHash": "75054a0e0e960a45252653b9050e959858e5ec2f17d7daa3d7ca7ca40ed1607f",
+            "propertiesCount": 111
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 578,
+            "summaryHash": "c75061234ba01a4eb29ca223c1c63a44935e9e555ef2ca280722ba9e844db86d",
+            "schemaChars": 1151,
+            "schemaHash": "5e07e3a617574a8e1ed974ca0857b74a3f98b0ad90a5834e0711de92b3e8f89c",
+            "propertiesCount": 15
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 79,
+            "summaryHash": "f3782fc41c1522657e1d3494f486a2df998fed38a6b89dcf7f6934fb41424320",
+            "schemaChars": 60,
+            "schemaHash": "d803b8cd6aef950bd59c7467fe8ce4d612d0730f5b0270a521b792f7ef6e4550",
+            "propertiesCount": 1
+          },
+          {
+            "name": "heartbeat_respond",
+            "summaryChars": 102,
+            "summaryHash": "c70d4155716a7bd383fdab72017f40873d2bb65b16ef393a3c996d1777f9c7f2",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "image_generate",
-            "summaryChars": 600,
+            "summaryChars": 468,
+            "summaryHash": "d093313d17509b72795516c6ad7c92a9f1e8c7943239d570fd81347dc2557424",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 524,
+            "summaryHash": "67e4d3d73cbc844f2cc2ffb16cbbe3a6d4a58ec88a8cbe0bd0106515b6fec638",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 307,
+            "summaryHash": "59fd08c3f2947e0394c7d1aae5219763bf201537bef536228c6c4fd63724e415",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "get_goal",
+            "summaryChars": 71,
+            "summaryHash": "58dea7906d9e17e5f89a75fea24597ee068d8a56af824370dc27f8501374d6e3",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "create_goal",
+            "summaryChars": 155,
+            "summaryHash": "f01e3a63d673a410ba55213ce6bd3fa2b0d2279e8e780c18aa0cb5aa991b29b3",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "update_goal",
+            "summaryChars": 212,
+            "summaryHash": "285201690e5f2456b4cdcd252ff391709b84d69538df61bad694d3c0cfc19958",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+            "propertiesCount": null
+          },
+          {
+            "name": "skill_workshop",
+            "summaryChars": 171,
+            "summaryHash": "577c1d2b8f56bf3e9dd5e00463bbce8b8bf4cf201da9b21b588dcaa3bc6ed8cf",
+            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "sessions_list",
-            "summaryChars": 225,
+            "summaryChars": 150,
+            "summaryHash": "6991b34a692cbbecc50302184503776bf8d7317b336d649fcd9373beab5473dc",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "sessions_history",
-            "summaryChars": 180,
+            "summaryChars": 149,
+            "summaryHash": "09b418c8da696b361c021f66705dab0215a613f6c18a9722767f6129907e0dcd",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "sessions_send",
-            "summaryChars": 314,
+            "summaryChars": 282,
+            "summaryHash": "061e9ef3487676bb2a4fd4c0336bd973aaab5eea0725e7443c4cb17518cd1e78",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
-          },
-          {
-            "name": "sessions_spawn",
-            "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_yield",
-            "summaryChars": 97,
-            "schemaChars": 60,
-            "propertiesCount": 1
           },
           {
             "name": "subagents",
-            "summaryChars": 184,
+            "summaryChars": 132,
+            "summaryHash": "1c2ffd38549c0444b118d43736fc4b875ea1aaabc446bbf8bc1fc4ee9180cca4",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "session_status",
-            "summaryChars": 456,
+            "summaryChars": 278,
+            "summaryHash": "71177e543dc6235bad4b1a26761995681dcec27ab58dcb4f4f8a7fc9a7b2b5aa",
             "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "web_search",
-            "summaryChars": 83,
-            "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "web_fetch",
-            "summaryChars": 129,
+            "summaryChars": 93,
+            "summaryHash": "8875afbb51bd63673e5e6836ca31eeda73914a464862665cd73b346e28d28fd5",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "image",
-            "summaryChars": 260,
+            "summaryChars": 169,
+            "summaryHash": "a46820ca8952445d3663a8908bfa5d3adddff5b53d18b9d8e9eed8f9e593b494",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "memory_search",
             "summaryChars": 605,
+            "summaryHash": "0f918d28864d3682ae77731f149273997c84773592a466b18c7cd0121b599a05",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           },
           {
             "name": "memory_get",
             "summaryChars": 239,
+            "summaryHash": "bff1141a3da31a345c550337417efc9ace4da2909004606c727c59ca1a294495",
             "schemaChars": 0,
+            "schemaHash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
             "propertiesCount": null
           }
         ]
       }
     },
-    "inputTokens": 10458,
-    "outputTokens": 2047,
-    "cacheRead": 65024,
+    "inputTokens": 1286,
+    "outputTokens": 4,
+    "cacheRead": 34560,
     "cacheWrite": 0,
     "totalTokensFresh": true,
-    "totalTokens": 75482,
-    "sessionStartedAt": 1780228814317,
-    "lastInteractionAt": 1780229149495,
-    "agentHarnessId": "codex",
-    "status": "done",
-    "startedAt": 1780229025810,
-    "providerOverride": "openai",
-    "modelOverride": "gpt-5.3-codex",
-    "modelOverrideSource": "auto",
-    "modelOverrideFallbackOriginProvider": "openai-codex",
-    "modelOverrideFallbackOriginModel": "gpt-5.5-codex",
-    "estimatedCostUsd": 0.0082873,
+    "totalTokens": 35846,
+    "sessionStartedAt": 1786449611670,
+    "lastInteractionAt": 1786449673817,
+    "estimatedCostUsd": 0.02383,
     "compactionCheckpoints": [
       {
         "checkpointId": "051d498e-55c1-4cf4-997a-776876796c2c",
@@ -291,17 +472,44 @@
         }
       }
     ],
-    "authProfileOverride": "openai-codex:default",
+    "route": {
+      "channel": "telegram",
+      "target": {
+        "to": "telegram:797062420"
+      }
+    },
+    "agentHarnessId": "codex",
+    "pendingFinalDelivery": true,
+    "pendingFinalDeliveryText": "Model routing needs attention: OpenClaw is still configured for unsupported `openai/gpt-5.6-sol`, so active sessions have fallen back to MiniMax/Gemini instead of the approved `openai/gpt-5.6-terra`. No cron jobs or trader-cycle are active, and no sub-agent results are pending.",
+    "pendingFinalDeliveryCreatedAt": 1785499521360,
+    "lastChannel": "telegram",
+    "channel": "telegram",
+    "pendingFinalDeliveryContext": {
+      "channel": "telegram",
+      "to": "telegram:797062420"
+    },
+    "lastActivityAt": 1786449673817,
+    "pendingFinalDeliveryLastAttemptAt": 1785173563635,
+    "pendingFinalDeliveryAttemptCount": 1,
+    "pendingFinalDeliveryLastError": null,
+    "model": "gpt-5.6-terra",
+    "modelProvider": "openai",
+    "contextTokens": 372000,
+    "authProfileOverride": "openai:8jfrg55bnx@privaterelay.appleid.com",
     "authProfileOverrideSource": "auto",
     "authProfileOverrideCompactionCount": 0,
-    "endedAt": 1780229149088,
-    "runtimeMs": 123278
+    "sessionFile": "/root/.openclaw/agents/main/sessions/cf6275c6-eaa2-4ba3-a8b3-76836c639d4e.jsonl",
+    "status": "done",
+    "startedAt": 1786453459121,
+    "abortedLastRun": false,
+    "endedAt": 1786453497296,
+    "runtimeMs": 38175
   },
   "agent:main:telegram:direct:797062420": {
-    "sessionId": "2dafaa63-0ee8-4c18-841c-10ca8a74481b",
-    "updatedAt": 1779974477682,
-    "sessionStartedAt": 1779974356716,
-    "lastInteractionAt": 1779974356716,
+    "sessionId": "d8c509c3-fbce-4b6a-b210-e97e8e58bf63",
+    "updatedAt": 1784898824537,
+    "sessionStartedAt": 1784897810158,
+    "lastInteractionAt": 1784898783240,
     "systemSent": true,
     "abortedLastRun": false,
     "usageFamilyKey": "agent:main:telegram:direct:797062420",
@@ -309,9 +517,20 @@
       "f436f0f0-596e-4ca1-9540-e9eb1c92e30a",
       "f1a09b3c-d846-4ab6-aa4f-d262351a80db",
       "f44dcec8-73be-4c55-abed-4f7d54a91485",
-      "2dafaa63-0ee8-4c18-841c-10ca8a74481b"
+      "2dafaa63-0ee8-4c18-841c-10ca8a74481b",
+      "029fa4ee-0864-4e6a-aab2-3291c2e0d16d",
+      "7309cab7-dec4-4c27-a5a3-45be4b96117f",
+      "630cb4f9-e930-4610-8968-5b94a57f2b03",
+      "d8c509c3-fbce-4b6a-b210-e97e8e58bf63"
     ],
     "chatType": "direct",
+    "route": {
+      "channel": "telegram",
+      "accountId": "default",
+      "target": {
+        "to": "telegram:797062420"
+      }
+    },
     "deliveryContext": {
       "channel": "telegram",
       "to": "telegram:797062420",
@@ -329,21 +548,27 @@
       "to": "telegram:797062420",
       "accountId": "default"
     },
-    "sessionFile": "/root/.openclaw/agents/main/sessions/2dafaa63-0ee8-4c18-841c-10ca8a74481b.jsonl",
     "compactionCount": 0,
+    "totalTokens": 0,
+    "totalTokensFresh": false,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/d8c509c3-fbce-4b6a-b210-e97e8e58bf63.jsonl",
     "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
       "skills": [
         {
           "name": "browser-automation"
         },
         {
-          "name": "clawhub",
-          "requiredEnv": []
+          "name": "canvas"
+        },
+        {
+          "name": "clawhub"
         },
         {
           "name": "crypto-self-learning",
           "requiredEnv": []
+        },
+        {
+          "name": "diagram-maker"
         },
         {
           "name": "frontend-design-ultimate",
@@ -356,7 +581,19 @@
           "name": "last30days"
         },
         {
+          "name": "meme-maker",
+          "requiredEnv": []
+        },
+        {
           "name": "node-connect"
+        },
+        {
+          "name": "node-inspect-debugger",
+          "requiredEnv": []
+        },
+        {
+          "name": "python-debugpy",
+          "requiredEnv": []
         },
         {
           "name": "self-improvement"
@@ -366,6 +603,9 @@
         },
         {
           "name": "skill-detector"
+        },
+        {
+          "name": "spike"
         },
         {
           "name": "taskflow"
@@ -388,55 +628,73 @@
           "name": "typescript-pro"
         },
         {
-          "name": "weather",
-          "requiredEnv": []
+          "name": "weather"
         }
       ],
-      "version": 0
+      "version": 1784897679359,
+      "promptFormatVersion": 1,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "a61f068f2b409b4174e8ff2ef8a621d5a1e066c4e580f083d2820cf156905ad4",
+        "bytes": 8801
+      }
     },
-    "status": "done",
-    "startedAt": 1779974380747,
-    "providerOverride": "openai",
-    "modelOverride": "gpt-5.3-codex",
+    "providerOverride": "google",
+    "modelOverride": "gemini-3.1-pro-preview",
     "modelOverrideSource": "auto",
-    "modelOverrideFallbackOriginProvider": "openai-codex",
+    "modelOverrideFallbackOriginProvider": "openai",
     "modelOverrideFallbackOriginModel": "gpt-5.5-codex",
-    "endedAt": 1779974477227,
-    "runtimeMs": 96480,
-    "fallbackNoticeSelectedModel": "openai-codex/gpt-5.5-codex",
-    "fallbackNoticeActiveModel": "openai/gpt-5.3-codex",
+    "status": "done",
+    "startedAt": 1784898788787,
+    "fallbackNoticeSelectedModel": "openai/gpt-5.5-codex",
+    "fallbackNoticeActiveModel": "google/gemini-3.1-pro-preview",
     "fallbackNoticeReason": "model not found (+2 more attempts)",
-    "modelProvider": "openai",
-    "model": "gpt-5.3-codex",
-    "contextTokens": 400000,
+    "modelProvider": "google",
+    "model": "gemini-3.1-pro-preview",
+    "contextTokens": 200000,
     "systemPromptReport": {
       "source": "run",
-      "generatedAt": 1779974381220,
-      "sessionId": "2dafaa63-0ee8-4c18-841c-10ca8a74481b",
+      "generatedAt": 1784898788616,
+      "sessionId": "d8c509c3-fbce-4b6a-b210-e97e8e58bf63",
       "sessionKey": "agent:main:telegram:direct:797062420",
-      "provider": "openai",
-      "model": "gpt-5.3-codex",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
       "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 20000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "always",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
       "systemPrompt": {
-        "chars": 22003,
-        "projectContextChars": 11521,
-        "nonProjectContextChars": 10482
+        "chars": 37574,
+        "hash": "4592f331798d686035568e0e64f75afb7de53b1ad6f055dbf714a37399108577",
+        "projectContextChars": 15261,
+        "nonProjectContextChars": 22313
       },
       "injectedWorkspaceFiles": [
         {
           "name": "AGENTS.md",
           "path": "/root/.openclaw/workspace/AGENTS.md",
           "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
+          "rawChars": 4241,
+          "injectedChars": 4241,
           "truncated": false
         },
         {
           "name": "SOUL.md",
           "path": "/root/.openclaw/workspace/SOUL.md",
           "missing": false,
-          "rawChars": 5984,
-          "injectedChars": 5984,
+          "rawChars": 6241,
+          "injectedChars": 6241,
           "truncated": false
         },
         {
@@ -472,14 +730,6 @@
           "truncated": false
         },
         {
-          "name": "BOOTSTRAP.md",
-          "path": "/root/.openclaw/workspace/BOOTSTRAP.md",
-          "missing": true,
-          "rawChars": 0,
-          "injectedChars": 61,
-          "truncated": false
-        },
-        {
           "name": "MEMORY.md",
           "path": "/root/.openclaw/workspace/MEMORY.md",
           "missing": false,
@@ -489,54 +739,638 @@
         }
       ],
       "skills": {
-        "promptChars": 0,
-        "entries": []
+        "promptChars": 8797,
+        "hash": "b230e95afb01652157d641947d2533f323c93526feee9dafde25d381a833380f",
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 371
+          },
+          {
+            "name": "canvas",
+            "blockChars": 289
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 331
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 498
+          },
+          {
+            "name": "diagram-maker",
+            "blockChars": 304
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 658
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 316
+          },
+          {
+            "name": "last30days",
+            "blockChars": 566
+          },
+          {
+            "name": "meme-maker",
+            "blockChars": 289
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 319
+          },
+          {
+            "name": "node-inspect-debugger",
+            "blockChars": 315
+          },
+          {
+            "name": "python-debugpy",
+            "blockChars": 303
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 690
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 297
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 480
+          },
+          {
+            "name": "spike",
+            "blockChars": 289
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 319
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 329
+          },
+          {
+            "name": "tavily",
+            "blockChars": 286
+          },
+          {
+            "name": "tmux",
+            "blockChars": 307
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 391
+          },
+          {
+            "name": "weather",
+            "blockChars": 327
+          }
+        ]
       },
       "tools": {
         "listChars": 0,
-        "schemaChars": 7646,
+        "schemaChars": 24518,
         "entries": [
           {
+            "name": "read",
+            "summaryChars": 303,
+            "summaryHash": "b15dd29794ef5562ddee30a6282387ee7b40b9806c10ae2616daf75514ddc1f6",
+            "schemaChars": 304,
+            "schemaHash": "134f19bcabe3e29d63c5cebb38f1d2556759fd08adad6bc90a4b4d3cd1fb8441",
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "summaryHash": "c498a85576e187d069e8e8ea4f70f81bddd57829600d385ef61c4359fd634c9e",
+            "schemaChars": 776,
+            "schemaHash": "55866598f02c5e00ddfcbcae3df78081e3712de09a622bac7a6bc02ef2acc1bc",
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "summaryHash": "cdb1c46027b22d1f1b923b47bfe297821d9fe589a9f9d92994961948060a4d89",
+            "schemaChars": 225,
+            "schemaHash": "e98a2484f667cf7c22d76ca103bf2022bf9113dc63fe38b899e71c328cb1e833",
+            "propertiesCount": 2
+          },
+          {
+            "name": "apply_patch",
+            "summaryChars": 132,
+            "summaryHash": "432bf38688a4f011d2b765a441ac07e1fdfa9faf2051679adee04abcd9332d93",
+            "schemaChars": 153,
+            "schemaHash": "05521268363ff4f191472c90d69ef08a503ba9acf1d2febc50b3ee68db32ab65",
+            "propertiesCount": 1
+          },
+          {
+            "name": "exec",
+            "summaryChars": 539,
+            "summaryHash": "4825198988fbfa8ebf5c2a8fbe3946da0be639b1e3b737ceaa4364195bba3f04",
+            "schemaChars": 1285,
+            "schemaHash": "f911b57b6f5106018046fb52d1b136e43ea9c9dad10eb49dd1fdb474a2a8f6a9",
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 456,
+            "summaryHash": "55297e65d460e0e1e06e7fad4cedb75ffda8fac9fa8b10aa06d6cead3c5a76ea",
+            "schemaChars": 1062,
+            "schemaHash": "6739b75e60af14bd7cce8233e554fcde8869a7ddcb9814b1f897854d6bc90b88",
+            "propertiesCount": 12
+          },
+          {
             "name": "cron",
-            "summaryChars": 4651,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "summaryChars": 4062,
+            "summaryHash": "7038f1b185a7cdf7a40525eeca91ed39dfd7bbaf85e89027896af264de54b4d9",
+            "schemaChars": 8218,
+            "schemaHash": "ca8fa93a06c0215d228b566b7ac550695c1849d4e1eb6fcef351a373495e7beb",
+            "propertiesCount": 15
+          },
+          {
+            "name": "image_generate",
+            "summaryChars": 468,
+            "summaryHash": "d093313d17509b72795516c6ad7c92a9f1e8c7943239d570fd81347dc2557424",
+            "schemaChars": 2240,
+            "schemaHash": "36e2bbb5a4926bd6f645358328758fefb2d993847e6bdf79a9a47f090e1e9c49",
+            "propertiesCount": 16
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 524,
+            "summaryHash": "67e4d3d73cbc844f2cc2ffb16cbbe3a6d4a58ec88a8cbe0bd0106515b6fec638",
+            "schemaChars": 1003,
+            "schemaHash": "4a01530e59721ff13df864b895f39f9a75d859bcebca5c6ef2b9edcd952d6df4",
+            "propertiesCount": 10
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 307,
+            "summaryHash": "59fd08c3f2947e0394c7d1aae5219763bf201537bef536228c6c4fd63724e415",
+            "schemaChars": 1986,
+            "schemaHash": "19c41e22c249e2999dcb95328db0733cc51fe6284713d304b8ecb5d857f0a163",
+            "propertiesCount": 18
+          },
+          {
+            "name": "get_goal",
+            "summaryChars": 71,
+            "summaryHash": "58dea7906d9e17e5f89a75fea24597ee068d8a56af824370dc27f8501374d6e3",
+            "schemaChars": 33,
+            "schemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+            "propertiesCount": 0
+          },
+          {
+            "name": "create_goal",
+            "summaryChars": 155,
+            "summaryHash": "f01e3a63d673a410ba55213ce6bd3fa2b0d2279e8e780c18aa0cb5aa991b29b3",
+            "schemaChars": 267,
+            "schemaHash": "27ee794432736471bd76390e236cc7d7e98f8469a02656e7a27109041eea0f8c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "update_goal",
+            "summaryChars": 212,
+            "summaryHash": "285201690e5f2456b4cdcd252ff391709b84d69538df61bad694d3c0cfc19958",
+            "schemaChars": 207,
+            "schemaHash": "c37894492eedfad02f1e7fe1488900765bfe547f3b3f34cefbab4f7f57441c2c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "skill_workshop",
+            "summaryChars": 171,
+            "summaryHash": "577c1d2b8f56bf3e9dd5e00463bbce8b8bf4cf201da9b21b588dcaa3bc6ed8cf",
+            "schemaChars": 2199,
+            "schemaHash": "29863c07c3fc335fe9a42ccbac1f87ad173d6d8a056606ef763016756bed2f7a",
+            "propertiesCount": 13
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 163,
+            "summaryHash": "ea18cc44224e849c68cdf0a4839c295c1b20daf2699e2fc2be4c4e1552327455",
+            "schemaChars": 448,
+            "schemaHash": "07663770afb986afe52352b2b2e3a25fb80a2ab013e850ceae88cc4765aac08c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 150,
+            "summaryHash": "6991b34a692cbbecc50302184503776bf8d7317b336d649fcd9373beab5473dc",
+            "schemaChars": 372,
+            "schemaHash": "a60a69ccdc6478a50fdc55c66f0dd1705c779961637c8057794bfca6606e2c55",
+            "propertiesCount": 10
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 149,
+            "summaryHash": "09b418c8da696b361c021f66705dab0215a613f6c18a9722767f6129907e0dcd",
+            "schemaChars": 178,
+            "schemaHash": "f8d3ac26e2fcc9df292f7e185cc16dfe6b2a0baccc660e04948171a27078816a",
+            "propertiesCount": 4
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 282,
+            "summaryHash": "061e9ef3487676bb2a4fd4c0336bd973aaab5eea0725e7443c4cb17518cd1e78",
+            "schemaChars": 204,
+            "schemaHash": "17e4d3720aaccace0ef2e83f755bfda354fdda2ef42a6977c8d22419364fad54",
+            "propertiesCount": 5
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 578,
+            "summaryHash": "c75061234ba01a4eb29ca223c1c63a44935e9e555ef2ca280722ba9e844db86d",
+            "schemaChars": 1137,
+            "schemaHash": "83c10ad7f23702bdbac2b68cf34963eb8c65100cd2845ef418bbfbe79ff43118",
+            "propertiesCount": 15
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 79,
+            "summaryHash": "f3782fc41c1522657e1d3494f486a2df998fed38a6b89dcf7f6934fb41424320",
+            "schemaChars": 60,
+            "schemaHash": "b1c4c753820bc3096d85ef7a266a14c9fbe12450536db58076b75bb61d14dbbb",
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 132,
+            "summaryHash": "1c2ffd38549c0444b118d43736fc4b875ea1aaabc446bbf8bc1fc4ee9180cca4",
+            "schemaChars": 110,
+            "schemaHash": "bf24dc1af39651212dd4de19faf330e2581ca9edabf4762b4c6b58d0b073fc5e",
+            "propertiesCount": 2
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 278,
+            "summaryHash": "71177e543dc6235bad4b1a26761995681dcec27ab58dcb4f4f8a7fc9a7b2b5aa",
+            "schemaChars": 89,
+            "schemaHash": "d2995f3d69d126e98ac93eec3c2a9fe5556925bd7979a8e4b6b5a2bf62d329dd",
+            "propertiesCount": 2
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 65,
+            "summaryHash": "b38e9b3c079beaa988d3c576303660b91a55c2e72f56351da04160529173273f",
+            "schemaChars": 924,
+            "schemaHash": "a41bcf72b8e541ff9ce5edc716d94b8598c1f5a09a44ec6364efb4e81d01a914",
+            "propertiesCount": 12
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 93,
+            "summaryHash": "8875afbb51bd63673e5e6836ca31eeda73914a464862665cd73b346e28d28fd5",
+            "schemaChars": 303,
+            "schemaHash": "c33694803fe3f4c508bb3a038b89ece89fe4c336e8908cbf0defaa6e455ae5c2",
+            "propertiesCount": 3
+          },
+          {
+            "name": "image",
+            "summaryChars": 119,
+            "summaryHash": "0eae16e4e16f86cc74ea64bdd48812b0a1d86577fee36dc4cf2c6e7974c83ef6",
+            "schemaChars": 338,
+            "schemaHash": "d2a39f4e1bd459f0b3fd55a12d7f928299eb9c9b87ce6fd13c13cb0734fc2df1",
+            "propertiesCount": 6
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "summaryHash": "0f918d28864d3682ae77731f149273997c84773592a466b18c7cd0121b599a05",
+            "schemaChars": 209,
+            "schemaHash": "238423d67990ef4b3f57cb534158928afa5a0c19ede1a2027abcf8cfe14f6117",
+            "propertiesCount": 4
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "summaryHash": "bff1141a3da31a345c550337417efc9ace4da2909004606c727c59ca1a294495",
+            "schemaChars": 188,
+            "schemaHash": "5221d0ded7eec896b5e3176048bae5256d5523dc69ad557c265b6732725f14b0",
+            "propertiesCount": 4
+          }
+        ]
+      },
+      "currentTurn": {
+        "kind": "user_request",
+        "promptChars": 89,
+        "runtimeContextChars": 10137
+      }
+    },
+    "authProfileOverride": "google:default",
+    "authProfileOverrideSource": "auto",
+    "endedAt": 1784898824419,
+    "runtimeMs": 35632
+  },
+  "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18": {
+    "chatType": "direct",
+    "label": "Cron: daily-9am-ro-innovation",
+    "sessionId": "21bac813-098e-4c59-a9fb-5186b649ad64",
+    "updatedAt": 1784305258423,
+    "sessionStartedAt": 1783317600064,
+    "lastInteractionAt": 1783317600064,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/21bac813-098e-4c59-a9fb-5186b649ad64.jsonl",
+    "skillsSnapshot": {
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "clawhub",
+          "requiredEnv": []
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather",
+          "requiredEnv": []
+        }
+      ],
+      "version": 0,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "33049f9111a95f8032df532db59becbb171b3c3198b9c72e6b5c7b6075c48863",
+        "bytes": 6068
+      }
+    },
+    "modelProvider": "google",
+    "model": "gemini-3.1-pro-preview",
+    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1783317640207,
+      "sessionId": "21bac813-098e-4c59-a9fb-5186b649ad64",
+      "sessionKey": "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18:run:21bac813-098e-4c59-a9fb-5186b649ad64",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 12000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "once",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
+      "systemPrompt": {
+        "chars": 25921,
+        "projectContextChars": 14607,
+        "nonProjectContextChars": 11314
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 4241,
+          "injectedChars": 4241,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 6064,
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 324
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 244
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 451
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 611
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 271
+          },
+          {
+            "name": "last30days",
+            "blockChars": 519
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 272
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 643
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 257
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 433
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 272
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 282
+          },
+          {
+            "name": "tavily",
+            "blockChars": 239
+          },
+          {
+            "name": "tmux",
+            "blockChars": 246
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 344
+          },
+          {
+            "name": "weather",
+            "blockChars": 242
+          }
+        ]
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 23913,
+        "entries": [
+          {
+            "name": "read",
+            "summaryChars": 298,
+            "schemaChars": 304,
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "schemaChars": 776,
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "schemaChars": 225,
+            "propertiesCount": 2
+          },
+          {
+            "name": "exec",
+            "summaryChars": 446,
+            "schemaChars": 1140,
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 362,
+            "schemaChars": 1062,
+            "propertiesCount": 12
           },
           {
             "name": "message",
-            "summaryChars": 384,
-            "schemaChars": 7586,
+            "summaryChars": 131,
+            "schemaChars": 7431,
             "propertiesCount": 113
           },
           {
             "name": "image_generate",
             "summaryChars": 600,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 2525,
+            "propertiesCount": 15
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 150,
+            "schemaChars": 1368,
+            "propertiesCount": 11
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 225,
+            "schemaChars": 3949,
+            "propertiesCount": 21
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 251,
+            "schemaChars": 533,
+            "propertiesCount": 2
           },
           {
             "name": "sessions_list",
             "summaryChars": 225,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 339,
+            "propertiesCount": 9
           },
           {
             "name": "sessions_history",
             "summaryChars": 180,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 149,
+            "propertiesCount": 3
           },
           {
             "name": "sessions_send",
             "summaryChars": 314,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 203,
+            "propertiesCount": 5
           },
           {
             "name": "sessions_spawn",
             "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1343,
+            "propertiesCount": 17
           },
           {
             "name": "sessions_yield",
@@ -547,362 +1381,68 @@
           {
             "name": "subagents",
             "summaryChars": 184,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 179,
+            "propertiesCount": 4
           },
           {
             "name": "session_status",
             "summaryChars": 456,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 89,
+            "propertiesCount": 2
           },
           {
             "name": "web_search",
             "summaryChars": 83,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1142,
+            "propertiesCount": 12
           },
           {
             "name": "web_fetch",
             "summaryChars": 129,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 360,
+            "propertiesCount": 3
           },
           {
             "name": "image",
             "summaryChars": 260,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 342,
+            "propertiesCount": 6
           },
           {
             "name": "memory_search",
             "summaryChars": 605,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 208,
+            "propertiesCount": 4
           },
           {
             "name": "memory_get",
             "summaryChars": 239,
-            "schemaChars": 0,
-            "propertiesCount": null
-          }
-        ]
-      }
-    },
-    "inputTokens": 434,
-    "outputTokens": 71,
-    "cacheRead": 47616,
-    "cacheWrite": 0,
-    "estimatedCostUsd": 0.0100863,
-    "totalTokens": 48050,
-    "totalTokensFresh": true
-  },
-  "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18": {
-    "chatType": "direct",
-    "label": "Cron: daily-9am-ro-innovation",
-    "sessionId": "071ee5be-44c3-4f91-aa0a-7a21858dc7a8",
-    "updatedAt": 1780293600632,
-    "sessionStartedAt": 1780293600052,
-    "lastInteractionAt": 1780293600052,
-    "systemSent": true,
-    "sessionFile": "/root/.openclaw/agents/main/sessions/071ee5be-44c3-4f91-aa0a-7a21858dc7a8.jsonl",
-    "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
-      "skills": [
-        {
-          "name": "browser-automation"
-        },
-        {
-          "name": "clawhub",
-          "requiredEnv": []
-        },
-        {
-          "name": "crypto-self-learning",
-          "requiredEnv": []
-        },
-        {
-          "name": "frontend-design-ultimate",
-          "requiredEnv": []
-        },
-        {
-          "name": "healthcheck"
-        },
-        {
-          "name": "last30days"
-        },
-        {
-          "name": "node-connect"
-        },
-        {
-          "name": "self-improvement"
-        },
-        {
-          "name": "skill-creator"
-        },
-        {
-          "name": "skill-detector"
-        },
-        {
-          "name": "taskflow"
-        },
-        {
-          "name": "taskflow-inbox-triage"
-        },
-        {
-          "name": "tavily",
-          "primaryEnv": "TAVILY_API_KEY",
-          "requiredEnv": [
-            "TAVILY_API_KEY"
-          ]
-        },
-        {
-          "name": "tmux",
-          "requiredEnv": []
-        },
-        {
-          "name": "typescript-pro"
-        },
-        {
-          "name": "weather",
-          "requiredEnv": []
-        }
-      ],
-      "version": 0
-    },
-    "modelProvider": "openai",
-    "model": "gpt-5.3-codex",
-    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
-    "authProfileOverrideSource": "auto",
-    "authProfileOverrideCompactionCount": 0,
-    "systemPromptReport": {
-      "source": "run",
-      "generatedAt": 1780293639120,
-      "sessionId": "071ee5be-44c3-4f91-aa0a-7a21858dc7a8",
-      "sessionKey": "agent:main:cron:e0713bee-0b47-41f5-8844-e87975a75f18:run:071ee5be-44c3-4f91-aa0a-7a21858dc7a8",
-      "provider": "openai",
-      "model": "gpt-5.3-codex",
-      "workspaceDir": "/root/.openclaw/workspace",
-      "systemPrompt": {
-        "chars": 19107,
-        "projectContextChars": 9614,
-        "nonProjectContextChars": 9493
-      },
-      "injectedWorkspaceFiles": [
-        {
-          "name": "AGENTS.md",
-          "path": "/root/.openclaw/workspace/AGENTS.md",
-          "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
-          "truncated": false
-        },
-        {
-          "name": "SOUL.md",
-          "path": "/root/.openclaw/workspace/SOUL.md",
-          "missing": false,
-          "rawChars": 5984,
-          "injectedChars": 5984,
-          "truncated": false
-        },
-        {
-          "name": "TOOLS.md",
-          "path": "/root/.openclaw/workspace/TOOLS.md",
-          "missing": false,
-          "rawChars": 850,
-          "injectedChars": 850,
-          "truncated": false
-        },
-        {
-          "name": "IDENTITY.md",
-          "path": "/root/.openclaw/workspace/IDENTITY.md",
-          "missing": false,
-          "rawChars": 1360,
-          "injectedChars": 1360,
-          "truncated": false
-        },
-        {
-          "name": "USER.md",
-          "path": "/root/.openclaw/workspace/USER.md",
-          "missing": false,
-          "rawChars": 947,
-          "injectedChars": 947,
-          "truncated": false
-        }
-      ],
-      "skills": {
-        "promptChars": 0,
-        "entries": []
-      },
-      "tools": {
-        "listChars": 0,
-        "schemaChars": 60,
-        "entries": [
-          {
-            "name": "image_generate",
-            "summaryChars": 600,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_list",
-            "summaryChars": 225,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_history",
-            "summaryChars": 180,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_send",
-            "summaryChars": 314,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_spawn",
-            "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_yield",
-            "summaryChars": 97,
-            "schemaChars": 60,
-            "propertiesCount": 1
-          },
-          {
-            "name": "subagents",
-            "summaryChars": 184,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "session_status",
-            "summaryChars": 456,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "web_search",
-            "summaryChars": 83,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "web_fetch",
-            "summaryChars": 129,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "image",
-            "summaryChars": 260,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "memory_search",
-            "summaryChars": 605,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "memory_get",
-            "summaryChars": 239,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 186,
+            "propertiesCount": 4
           }
         ]
       }
     },
     "contextTokens": 200000,
-    "inputTokens": 592,
-    "outputTokens": 186,
-    "totalTokens": 48720,
+    "inputTokens": 15427,
+    "outputTokens": 575,
+    "totalTokens": 15427,
     "totalTokensFresh": true,
-    "cacheRead": 48128,
+    "cacheRead": 0,
     "cacheWrite": 0,
-    "estimatedCostUsd": 0.0120624
-  },
-  "agent:main:cron:d1b8e5e2-3f5a-4b47-9c21-crypto15min": {
-    "sessionId": "bb66b059-01bc-4408-813f-6f583698b33a",
-    "updatedAt": 1779127528041,
-    "systemSent": true,
-    "label": "Cron: oracle-crypto-scan-15m",
-    "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>clawhub</name>\n    <description>Use the ClawHub CLI to search, install, update, and publish agent skills from clawhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawhub CLI.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Host security hardening and risk-tolerance configuration for OpenClaw deployments. Use when a user asks for security audits, firewall/SSH/update hardening, risk posture, exposure review, OpenClaw cron scheduling for periodic checks, or version status checks on a machine running OpenClaw (laptop, workstation, Pi, VPS).</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather and forecasts via wttr.in or Open-Meteo. Use when: user asks about weather, temperature, or forecasts for any location. NOT for: historical weather data, severe weather alerts, or detailed meteorological analysis. No API key needed.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;\n</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n</available_skills>",
-      "skills": [
-        {
-          "name": "clawhub",
-          "requiredEnv": []
-        },
-        {
-          "name": "healthcheck"
-        },
-        {
-          "name": "skill-creator"
-        },
-        {
-          "name": "tmux",
-          "requiredEnv": []
-        },
-        {
-          "name": "weather",
-          "requiredEnv": []
-        },
-        {
-          "name": "crypto-self-learning",
-          "requiredEnv": []
-        },
-        {
-          "name": "frontend-design-ultimate",
-          "requiredEnv": []
-        },
-        {
-          "name": "last30days"
-        },
-        {
-          "name": "self-improvement"
-        },
-        {
-          "name": "skill-detector"
-        },
-        {
-          "name": "tavily"
-        },
-        {
-          "name": "typescript-pro"
-        }
-      ],
-      "version": 0
-    },
-    "modelProvider": "openai",
-    "model": "gpt-5.2-codex",
-    "authProfileOverride": "openai-codex:default",
-    "authProfileOverrideSource": "auto",
-    "authProfileOverrideCompactionCount": 0,
-    "contextTokens": 272000,
-    "inputTokens": 25528,
-    "outputTokens": 1826,
-    "totalTokens": 19509,
-    "totalTokensFresh": true,
-    "cacheRead": 49280,
-    "cacheWrite": 0
+    "estimatedCostUsd": 0.037754,
+    "agentHarnessId": "codex"
   },
   "agent:main:cron:b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01": {
     "chatType": "direct",
     "label": "Cron: robinhood-sync-8am",
-    "sessionId": "a9265b12-5dcf-4a63-8a30-b84b5856f313",
-    "updatedAt": 1780300800656,
-    "sessionStartedAt": 1780300800032,
-    "lastInteractionAt": 1780300800032,
+    "sessionId": "6e286f9e-0188-47af-bff4-720c45376c43",
+    "updatedAt": 1784305258637,
+    "sessionStartedAt": 1783411200052,
+    "lastInteractionAt": 1783411200052,
     "systemSent": true,
-    "sessionFile": "/root/.openclaw/agents/main/sessions/a9265b12-5dcf-4a63-8a30-b84b5856f313.jsonl",
+    "sessionFile": "/root/.openclaw/agents/main/sessions/6e286f9e-0188-47af-bff4-720c45376c43.jsonl",
     "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
       "skills": [
         {
           "name": "browser-automation"
@@ -962,262 +1502,52 @@
           "requiredEnv": []
         }
       ],
-      "version": 0
-    },
-    "modelProvider": "openai",
-    "model": "gpt-5.3-codex",
-    "authProfileOverride": "openai-codex:default",
-    "authProfileOverrideSource": "auto",
-    "authProfileOverrideCompactionCount": 0,
-    "systemPromptReport": {
-      "source": "run",
-      "generatedAt": 1780300834305,
-      "sessionId": "a9265b12-5dcf-4a63-8a30-b84b5856f313",
-      "sessionKey": "agent:main:cron:b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01:run:a9265b12-5dcf-4a63-8a30-b84b5856f313",
-      "provider": "openai",
-      "model": "gpt-5.3-codex",
-      "workspaceDir": "/root/.openclaw/workspace",
-      "systemPrompt": {
-        "chars": 19107,
-        "projectContextChars": 9614,
-        "nonProjectContextChars": 9493
-      },
-      "injectedWorkspaceFiles": [
-        {
-          "name": "AGENTS.md",
-          "path": "/root/.openclaw/workspace/AGENTS.md",
-          "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
-          "truncated": false
-        },
-        {
-          "name": "SOUL.md",
-          "path": "/root/.openclaw/workspace/SOUL.md",
-          "missing": false,
-          "rawChars": 5984,
-          "injectedChars": 5984,
-          "truncated": false
-        },
-        {
-          "name": "TOOLS.md",
-          "path": "/root/.openclaw/workspace/TOOLS.md",
-          "missing": false,
-          "rawChars": 850,
-          "injectedChars": 850,
-          "truncated": false
-        },
-        {
-          "name": "IDENTITY.md",
-          "path": "/root/.openclaw/workspace/IDENTITY.md",
-          "missing": false,
-          "rawChars": 1360,
-          "injectedChars": 1360,
-          "truncated": false
-        },
-        {
-          "name": "USER.md",
-          "path": "/root/.openclaw/workspace/USER.md",
-          "missing": false,
-          "rawChars": 947,
-          "injectedChars": 947,
-          "truncated": false
-        }
-      ],
-      "skills": {
-        "promptChars": 0,
-        "entries": []
-      },
-      "tools": {
-        "listChars": 0,
-        "schemaChars": 60,
-        "entries": [
-          {
-            "name": "image_generate",
-            "summaryChars": 600,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_list",
-            "summaryChars": 225,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_history",
-            "summaryChars": 180,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_send",
-            "summaryChars": 314,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_spawn",
-            "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "sessions_yield",
-            "summaryChars": 97,
-            "schemaChars": 60,
-            "propertiesCount": 1
-          },
-          {
-            "name": "subagents",
-            "summaryChars": 184,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "session_status",
-            "summaryChars": 456,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "web_search",
-            "summaryChars": 83,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "web_fetch",
-            "summaryChars": 129,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "image",
-            "summaryChars": 260,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "memory_search",
-            "summaryChars": 605,
-            "schemaChars": 0,
-            "propertiesCount": null
-          },
-          {
-            "name": "memory_get",
-            "summaryChars": 239,
-            "schemaChars": 0,
-            "propertiesCount": null
-          }
-        ]
+      "version": 0,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "33049f9111a95f8032df532db59becbb171b3c3198b9c72e6b5c7b6075c48863",
+        "bytes": 6068
       }
     },
-    "contextTokens": 200000,
-    "inputTokens": 278,
-    "outputTokens": 54,
-    "totalTokens": 42262,
-    "totalTokensFresh": true,
-    "cacheRead": 41984,
-    "cacheWrite": 0,
-    "estimatedCostUsd": 0.0085897
-  },
-  "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01": {
-    "label": "Cron: trustwallet-sync-8am",
-    "sessionId": "d6783dd2-159d-4d49-a79d-2b3a382b3dbb",
-    "updatedAt": 1780300854251,
-    "sessionStartedAt": 1780300853895,
-    "lastInteractionAt": 1780300853895,
-    "systemSent": true,
-    "sessionFile": "/root/.openclaw/agents/main/sessions/d6783dd2-159d-4d49-a79d-2b3a382b3dbb.jsonl",
-    "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
-      "skills": [
-        {
-          "name": "browser-automation"
-        },
-        {
-          "name": "clawhub",
-          "requiredEnv": []
-        },
-        {
-          "name": "crypto-self-learning",
-          "requiredEnv": []
-        },
-        {
-          "name": "frontend-design-ultimate",
-          "requiredEnv": []
-        },
-        {
-          "name": "healthcheck"
-        },
-        {
-          "name": "last30days"
-        },
-        {
-          "name": "node-connect"
-        },
-        {
-          "name": "self-improvement"
-        },
-        {
-          "name": "skill-creator"
-        },
-        {
-          "name": "skill-detector"
-        },
-        {
-          "name": "taskflow"
-        },
-        {
-          "name": "taskflow-inbox-triage"
-        },
-        {
-          "name": "tavily",
-          "primaryEnv": "TAVILY_API_KEY",
-          "requiredEnv": [
-            "TAVILY_API_KEY"
-          ]
-        },
-        {
-          "name": "tmux",
-          "requiredEnv": []
-        },
-        {
-          "name": "typescript-pro"
-        },
-        {
-          "name": "weather",
-          "requiredEnv": []
-        }
-      ],
-      "version": 0
-    },
-    "modelProvider": "openai",
-    "model": "gpt-5.3-codex",
+    "modelProvider": "google",
+    "model": "gemini-3.1-pro-preview",
     "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
     "authProfileOverrideSource": "auto",
     "authProfileOverrideCompactionCount": 0,
     "systemPromptReport": {
       "source": "run",
-      "generatedAt": 1780300881320,
-      "sessionId": "d6783dd2-159d-4d49-a79d-2b3a382b3dbb",
-      "sessionKey": "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01:run:d6783dd2-159d-4d49-a79d-2b3a382b3dbb",
-      "provider": "openai",
-      "model": "gpt-5.3-codex",
+      "generatedAt": 1783411235944,
+      "sessionId": "6e286f9e-0188-47af-bff4-720c45376c43",
+      "sessionKey": "agent:main:cron:b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01:run:6e286f9e-0188-47af-bff4-720c45376c43",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
       "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 12000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "once",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
       "systemPrompt": {
-        "chars": 19107,
-        "projectContextChars": 9614,
-        "nonProjectContextChars": 9493
+        "chars": 25921,
+        "projectContextChars": 14607,
+        "nonProjectContextChars": 11314
       },
       "injectedWorkspaceFiles": [
         {
           "name": "AGENTS.md",
           "path": "/root/.openclaw/workspace/AGENTS.md",
           "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
+          "rawChars": 4241,
+          "injectedChars": 4241,
           "truncated": false
         },
         {
@@ -1254,42 +1584,161 @@
         }
       ],
       "skills": {
-        "promptChars": 0,
-        "entries": []
+        "promptChars": 6064,
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 324
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 244
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 451
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 611
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 271
+          },
+          {
+            "name": "last30days",
+            "blockChars": 519
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 272
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 643
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 257
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 433
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 272
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 282
+          },
+          {
+            "name": "tavily",
+            "blockChars": 239
+          },
+          {
+            "name": "tmux",
+            "blockChars": 246
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 344
+          },
+          {
+            "name": "weather",
+            "blockChars": 242
+          }
+        ]
       },
       "tools": {
         "listChars": 0,
-        "schemaChars": 60,
+        "schemaChars": 23913,
         "entries": [
+          {
+            "name": "read",
+            "summaryChars": 298,
+            "schemaChars": 304,
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "schemaChars": 776,
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "schemaChars": 225,
+            "propertiesCount": 2
+          },
+          {
+            "name": "exec",
+            "summaryChars": 446,
+            "schemaChars": 1140,
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 362,
+            "schemaChars": 1062,
+            "propertiesCount": 12
+          },
+          {
+            "name": "message",
+            "summaryChars": 131,
+            "schemaChars": 7431,
+            "propertiesCount": 113
+          },
           {
             "name": "image_generate",
             "summaryChars": 600,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 2525,
+            "propertiesCount": 15
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 150,
+            "schemaChars": 1368,
+            "propertiesCount": 11
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 225,
+            "schemaChars": 3949,
+            "propertiesCount": 21
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 251,
+            "schemaChars": 533,
+            "propertiesCount": 2
           },
           {
             "name": "sessions_list",
             "summaryChars": 225,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 339,
+            "propertiesCount": 9
           },
           {
             "name": "sessions_history",
             "summaryChars": 180,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 149,
+            "propertiesCount": 3
           },
           {
             "name": "sessions_send",
             "summaryChars": 314,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 203,
+            "propertiesCount": 5
           },
           {
             "name": "sessions_spawn",
             "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1343,
+            "propertiesCount": 17
           },
           {
             "name": "sessions_yield",
@@ -1300,67 +1749,67 @@
           {
             "name": "subagents",
             "summaryChars": 184,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 179,
+            "propertiesCount": 4
           },
           {
             "name": "session_status",
             "summaryChars": 456,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 89,
+            "propertiesCount": 2
           },
           {
             "name": "web_search",
             "summaryChars": 83,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1142,
+            "propertiesCount": 12
           },
           {
             "name": "web_fetch",
             "summaryChars": 129,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 360,
+            "propertiesCount": 3
           },
           {
             "name": "image",
             "summaryChars": 260,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 342,
+            "propertiesCount": 6
           },
           {
             "name": "memory_search",
             "summaryChars": 605,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 208,
+            "propertiesCount": 4
           },
           {
             "name": "memory_get",
             "summaryChars": 239,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 186,
+            "propertiesCount": 4
           }
         ]
       }
     },
     "contextTokens": 200000,
-    "inputTokens": 230,
-    "outputTokens": 47,
-    "totalTokens": 42214,
+    "inputTokens": 18694,
+    "outputTokens": 152,
+    "totalTokens": 15479,
     "totalTokensFresh": true,
-    "cacheRead": 41984,
+    "cacheRead": 12125,
     "cacheWrite": 0,
-    "estimatedCostUsd": 0.0084077
+    "estimatedCostUsd": 0.041637,
+    "agentHarnessId": "codex"
   },
-  "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11": {
-    "label": "Cron: bball-stats-sync-8am",
-    "sessionId": "59baf36a-3021-4a94-82fe-63d4a7588801",
-    "updatedAt": 1780300892294,
-    "sessionStartedAt": 1780300892000,
-    "lastInteractionAt": 1780300892000,
+  "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01": {
+    "label": "Cron: trustwallet-sync-8am",
+    "sessionId": "7442b2fd-e2cb-46d9-a196-37463ad154ae",
+    "updatedAt": 1784305258652,
+    "sessionStartedAt": 1783411256365,
+    "lastInteractionAt": 1783411256365,
     "systemSent": true,
-    "sessionFile": "/root/.openclaw/agents/main/sessions/59baf36a-3021-4a94-82fe-63d4a7588801.jsonl",
+    "sessionFile": "/root/.openclaw/agents/main/sessions/7442b2fd-e2cb-46d9-a196-37463ad154ae.jsonl",
     "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
       "skills": [
         {
           "name": "browser-automation"
@@ -1420,33 +1869,52 @@
           "requiredEnv": []
         }
       ],
-      "version": 0
+      "version": 0,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "33049f9111a95f8032df532db59becbb171b3c3198b9c72e6b5c7b6075c48863",
+        "bytes": 6068
+      }
     },
-    "modelProvider": "openai",
-    "model": "gpt-5.3-codex",
-    "authProfileOverride": "openai-codex:default",
+    "modelProvider": "google",
+    "model": "gemini-3.1-pro-preview",
+    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
     "authProfileOverrideSource": "auto",
     "authProfileOverrideCompactionCount": 0,
     "systemPromptReport": {
       "source": "run",
-      "generatedAt": 1780300923862,
-      "sessionId": "59baf36a-3021-4a94-82fe-63d4a7588801",
-      "sessionKey": "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11:run:59baf36a-3021-4a94-82fe-63d4a7588801",
-      "provider": "openai",
-      "model": "gpt-5.3-codex",
+      "generatedAt": 1783411282947,
+      "sessionId": "7442b2fd-e2cb-46d9-a196-37463ad154ae",
+      "sessionKey": "agent:main:cron:c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01:run:7442b2fd-e2cb-46d9-a196-37463ad154ae",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
       "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 12000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "once",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
       "systemPrompt": {
-        "chars": 19107,
-        "projectContextChars": 9614,
-        "nonProjectContextChars": 9493
+        "chars": 25921,
+        "projectContextChars": 14607,
+        "nonProjectContextChars": 11314
       },
       "injectedWorkspaceFiles": [
         {
           "name": "AGENTS.md",
           "path": "/root/.openclaw/workspace/AGENTS.md",
           "missing": false,
-          "rawChars": 4086,
-          "injectedChars": 4086,
+          "rawChars": 4241,
+          "injectedChars": 4241,
           "truncated": false
         },
         {
@@ -1483,42 +1951,161 @@
         }
       ],
       "skills": {
-        "promptChars": 0,
-        "entries": []
+        "promptChars": 6064,
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 324
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 244
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 451
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 611
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 271
+          },
+          {
+            "name": "last30days",
+            "blockChars": 519
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 272
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 643
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 257
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 433
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 272
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 282
+          },
+          {
+            "name": "tavily",
+            "blockChars": 239
+          },
+          {
+            "name": "tmux",
+            "blockChars": 246
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 344
+          },
+          {
+            "name": "weather",
+            "blockChars": 242
+          }
+        ]
       },
       "tools": {
         "listChars": 0,
-        "schemaChars": 60,
+        "schemaChars": 23913,
         "entries": [
+          {
+            "name": "read",
+            "summaryChars": 298,
+            "schemaChars": 304,
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "schemaChars": 776,
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "schemaChars": 225,
+            "propertiesCount": 2
+          },
+          {
+            "name": "exec",
+            "summaryChars": 446,
+            "schemaChars": 1140,
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 362,
+            "schemaChars": 1062,
+            "propertiesCount": 12
+          },
+          {
+            "name": "message",
+            "summaryChars": 131,
+            "schemaChars": 7431,
+            "propertiesCount": 113
+          },
           {
             "name": "image_generate",
             "summaryChars": 600,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 2525,
+            "propertiesCount": 15
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 150,
+            "schemaChars": 1368,
+            "propertiesCount": 11
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 225,
+            "schemaChars": 3949,
+            "propertiesCount": 21
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 251,
+            "schemaChars": 533,
+            "propertiesCount": 2
           },
           {
             "name": "sessions_list",
             "summaryChars": 225,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 339,
+            "propertiesCount": 9
           },
           {
             "name": "sessions_history",
             "summaryChars": 180,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 149,
+            "propertiesCount": 3
           },
           {
             "name": "sessions_send",
             "summaryChars": 314,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 203,
+            "propertiesCount": 5
           },
           {
             "name": "sessions_spawn",
             "summaryChars": 419,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1343,
+            "propertiesCount": 17
           },
           {
             "name": "sessions_yield",
@@ -1529,63 +2116,67 @@
           {
             "name": "subagents",
             "summaryChars": 184,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 179,
+            "propertiesCount": 4
           },
           {
             "name": "session_status",
             "summaryChars": 456,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 89,
+            "propertiesCount": 2
           },
           {
             "name": "web_search",
             "summaryChars": 83,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 1142,
+            "propertiesCount": 12
           },
           {
             "name": "web_fetch",
             "summaryChars": 129,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 360,
+            "propertiesCount": 3
           },
           {
             "name": "image",
             "summaryChars": 260,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 342,
+            "propertiesCount": 6
           },
           {
             "name": "memory_search",
             "summaryChars": 605,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 208,
+            "propertiesCount": 4
           },
           {
             "name": "memory_get",
             "summaryChars": 239,
-            "schemaChars": 0,
-            "propertiesCount": null
+            "schemaChars": 186,
+            "propertiesCount": 4
           }
         ]
       }
     },
     "contextTokens": 200000,
-    "inputTokens": 233,
-    "outputTokens": 53,
-    "totalTokens": 42217,
+    "inputTokens": 6817,
+    "outputTokens": 572,
+    "totalTokens": 15808,
     "totalTokensFresh": true,
-    "cacheRead": 41984,
+    "cacheRead": 24328,
     "cacheWrite": 0,
-    "estimatedCostUsd": 0.008496950000000001
+    "estimatedCostUsd": 0.0253636,
+    "agentHarnessId": "codex"
   },
-  "agent:main:explicit:gateway-fallback-9deb6db4-930c-4223-bb74-68afc24e3d90": {
-    "sessionId": "gateway-fallback-9deb6db4-930c-4223-bb74-68afc24e3d90",
-    "updatedAt": 1780229036784,
-    "sessionStartedAt": 1780229025910,
+  "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11": {
+    "label": "Cron: bball-stats-sync-8am",
+    "sessionId": "5021fbe3-4a8e-4ddb-ba56-336415b2c402",
+    "updatedAt": 1784305258552,
+    "sessionStartedAt": 1783324939483,
+    "lastInteractionAt": 1783324939483,
+    "systemSent": true,
+    "sessionFile": "/root/.openclaw/agents/main/sessions/5021fbe3-4a8e-4ddb-ba56-336415b2c402.jsonl",
     "skillsSnapshot": {
-      "prompt": "\n\nThe following skills provide specialized instructions for specific tasks.\nUse the read tool to load a skill's file when the task matches its description.\nWhen a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.\n\n<available_skills>\n  <skill>\n    <name>browser-automation</name>\n    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>\n    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>clawhub</name>\n    <description>Search, install, update, sync, or publish agent skills with the ClawHub CLI and registry.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>crypto-self-learning</name>\n    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>\n    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>frontend-design-ultimate</name>\n    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>\n    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>healthcheck</name>\n    <description>Audit and harden hosts running OpenClaw for SSH, firewall, updates, exposure, cron checks, and risk posture.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>last30days</name>\n    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>\n    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>node-connect</name>\n    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>self-improvement</name>\n    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>\n    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-creator</name>\n    <description>Create, edit, improve, tidy, review, audit, or restructure AgentSkills and SKILL.md files.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>skill-detector</name>\n    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>\n    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow</name>\n    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>taskflow-inbox-triage</name>\n    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tavily</name>\n    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>\n    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>tmux</name>\n    <description>Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>typescript-pro</name>\n    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>\n    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>\n  </skill>\n  <skill>\n    <name>weather</name>\n    <description>Get current weather, rain, temperature, and forecasts for locations or travel planning.</description>\n    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>\n  </skill>\n</available_skills>",
       "skills": [
         {
           "name": "browser-automation"
@@ -1645,9 +2236,820 @@
           "requiredEnv": []
         }
       ],
-      "version": 0
+      "version": 0,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "33049f9111a95f8032df532db59becbb171b3c3198b9c72e6b5c7b6075c48863",
+        "bytes": 6068
+      }
     },
-    "lastInteractionAt": 1780229025922,
-    "sessionFile": "/root/.openclaw/agents/main/sessions/gateway-fallback-9deb6db4-930c-4223-bb74-68afc24e3d90.jsonl"
+    "modelProvider": "google",
+    "model": "gemini-3.1-pro-preview",
+    "authProfileOverride": "openai-codex:8jfrg55bnx@privaterelay.appleid.com",
+    "authProfileOverrideSource": "auto",
+    "authProfileOverrideCompactionCount": 0,
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1783324964100,
+      "sessionId": "5021fbe3-4a8e-4ddb-ba56-336415b2c402",
+      "sessionKey": "agent:main:cron:a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11:run:5021fbe3-4a8e-4ddb-ba56-336415b2c402",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 12000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "once",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
+      "systemPrompt": {
+        "chars": 25921,
+        "projectContextChars": 14607,
+        "nonProjectContextChars": 11314
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 4241,
+          "injectedChars": 4241,
+          "truncated": false
+        },
+        {
+          "name": "SOUL.md",
+          "path": "/root/.openclaw/workspace/SOUL.md",
+          "missing": false,
+          "rawChars": 5984,
+          "injectedChars": 5984,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        },
+        {
+          "name": "IDENTITY.md",
+          "path": "/root/.openclaw/workspace/IDENTITY.md",
+          "missing": false,
+          "rawChars": 1360,
+          "injectedChars": 1360,
+          "truncated": false
+        },
+        {
+          "name": "USER.md",
+          "path": "/root/.openclaw/workspace/USER.md",
+          "missing": false,
+          "rawChars": 947,
+          "injectedChars": 947,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 6064,
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 324
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 244
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 451
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 611
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 271
+          },
+          {
+            "name": "last30days",
+            "blockChars": 519
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 272
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 643
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 257
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 433
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 272
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 282
+          },
+          {
+            "name": "tavily",
+            "blockChars": 239
+          },
+          {
+            "name": "tmux",
+            "blockChars": 246
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 344
+          },
+          {
+            "name": "weather",
+            "blockChars": 242
+          }
+        ]
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 23913,
+        "entries": [
+          {
+            "name": "read",
+            "summaryChars": 298,
+            "schemaChars": 304,
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "schemaChars": 776,
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "schemaChars": 225,
+            "propertiesCount": 2
+          },
+          {
+            "name": "exec",
+            "summaryChars": 446,
+            "schemaChars": 1140,
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 362,
+            "schemaChars": 1062,
+            "propertiesCount": 12
+          },
+          {
+            "name": "message",
+            "summaryChars": 131,
+            "schemaChars": 7431,
+            "propertiesCount": 113
+          },
+          {
+            "name": "image_generate",
+            "summaryChars": 600,
+            "schemaChars": 2525,
+            "propertiesCount": 15
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 150,
+            "schemaChars": 1368,
+            "propertiesCount": 11
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 225,
+            "schemaChars": 3949,
+            "propertiesCount": 21
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 251,
+            "schemaChars": 533,
+            "propertiesCount": 2
+          },
+          {
+            "name": "sessions_list",
+            "summaryChars": 225,
+            "schemaChars": 339,
+            "propertiesCount": 9
+          },
+          {
+            "name": "sessions_history",
+            "summaryChars": 180,
+            "schemaChars": 149,
+            "propertiesCount": 3
+          },
+          {
+            "name": "sessions_send",
+            "summaryChars": 314,
+            "schemaChars": 203,
+            "propertiesCount": 5
+          },
+          {
+            "name": "sessions_spawn",
+            "summaryChars": 419,
+            "schemaChars": 1343,
+            "propertiesCount": 17
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 97,
+            "schemaChars": 60,
+            "propertiesCount": 1
+          },
+          {
+            "name": "subagents",
+            "summaryChars": 184,
+            "schemaChars": 179,
+            "propertiesCount": 4
+          },
+          {
+            "name": "session_status",
+            "summaryChars": 456,
+            "schemaChars": 89,
+            "propertiesCount": 2
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 83,
+            "schemaChars": 1142,
+            "propertiesCount": 12
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 129,
+            "schemaChars": 360,
+            "propertiesCount": 3
+          },
+          {
+            "name": "image",
+            "summaryChars": 260,
+            "schemaChars": 342,
+            "propertiesCount": 6
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "schemaChars": 208,
+            "propertiesCount": 4
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "schemaChars": 186,
+            "propertiesCount": 4
+          }
+        ]
+      }
+    },
+    "contextTokens": 200000,
+    "inputTokens": 7040,
+    "outputTokens": 538,
+    "totalTokens": 16005,
+    "totalTokensFresh": true,
+    "cacheRead": 24314,
+    "cacheWrite": 0,
+    "estimatedCostUsd": 0.0253988,
+    "agentHarnessId": "codex"
+  },
+  "agent:main:telegram:group:@telegram": {
+    "chatType": "group",
+    "channel": "telegram",
+    "groupId": "@telegram",
+    "displayName": "telegram:@telegram",
+    "origin": {
+      "label": "telegram:group:@telegram",
+      "provider": "telegram",
+      "surface": "telegram",
+      "chatType": "group",
+      "from": "telegram:group:@telegram",
+      "to": "telegram:@telegram"
+    },
+    "sessionId": "3d4ca152-05c0-4031-93e7-5e85ee840383",
+    "updatedAt": 1781769806353,
+    "sessionStartedAt": 1781769806353,
+    "deliveryContext": {
+      "channel": "telegram"
+    },
+    "lastChannel": "telegram",
+    "route": {
+      "channel": "telegram"
+    }
+  },
+  "agent:main:subagent:5c6b929c-e772-40bb-b25b-781774d0075f": {
+    "spawnDepth": 1,
+    "subagentRole": "leaf",
+    "subagentControlScope": "none",
+    "inheritedToolDeny": [
+      "cron",
+      "gateway",
+      "nodes"
+    ],
+    "inheritedToolAllow": [
+      "read",
+      "edit",
+      "write",
+      "apply_patch",
+      "exec",
+      "process",
+      "image_generate",
+      "music_generate",
+      "video_generate",
+      "get_goal",
+      "create_goal",
+      "update_goal",
+      "skill_workshop",
+      "update_plan",
+      "sessions_list",
+      "sessions_history",
+      "sessions_send",
+      "sessions_spawn",
+      "sessions_yield",
+      "subagents",
+      "session_status",
+      "web_search",
+      "web_fetch",
+      "image",
+      "memory_search",
+      "memory_get"
+    ],
+    "thinkingLevel": "off",
+    "sessionId": "4529996c-edf7-4c51-b5e0-9bde4fd66147",
+    "updatedAt": 1784379972296,
+    "sessionStartedAt": 1784379870884,
+    "spawnedBy": "agent:main:main",
+    "spawnedWorkspaceDir": "/root/.openclaw/workspace",
+    "lastInteractionAt": 1784379971681,
+    "route": {
+      "target": {
+        "to": "telegram:797062420"
+      }
+    },
+    "deliveryContext": {
+      "to": "telegram:797062420"
+    },
+    "lastTo": "telegram:797062420",
+    "skillsSnapshot": {
+      "skills": [
+        {
+          "name": "browser-automation"
+        },
+        {
+          "name": "canvas"
+        },
+        {
+          "name": "clawhub"
+        },
+        {
+          "name": "crypto-self-learning",
+          "requiredEnv": []
+        },
+        {
+          "name": "diagram-maker"
+        },
+        {
+          "name": "frontend-design-ultimate",
+          "requiredEnv": []
+        },
+        {
+          "name": "healthcheck"
+        },
+        {
+          "name": "last30days"
+        },
+        {
+          "name": "meme-maker",
+          "requiredEnv": []
+        },
+        {
+          "name": "node-connect"
+        },
+        {
+          "name": "node-inspect-debugger",
+          "requiredEnv": []
+        },
+        {
+          "name": "python-debugpy",
+          "requiredEnv": []
+        },
+        {
+          "name": "self-improvement"
+        },
+        {
+          "name": "skill-creator"
+        },
+        {
+          "name": "skill-detector"
+        },
+        {
+          "name": "spike"
+        },
+        {
+          "name": "taskflow"
+        },
+        {
+          "name": "taskflow-inbox-triage"
+        },
+        {
+          "name": "tavily",
+          "primaryEnv": "TAVILY_API_KEY",
+          "requiredEnv": [
+            "TAVILY_API_KEY"
+          ]
+        },
+        {
+          "name": "tmux",
+          "requiredEnv": []
+        },
+        {
+          "name": "typescript-pro"
+        },
+        {
+          "name": "weather"
+        }
+      ],
+      "version": 1784307101519,
+      "promptFormatVersion": 1,
+      "promptRef": {
+        "version": 1,
+        "algorithm": "sha256",
+        "hash": "a61f068f2b409b4174e8ff2ef8a621d5a1e066c4e580f083d2820cf156905ad4",
+        "bytes": 8801
+      }
+    },
+    "sessionFile": "/root/.openclaw/agents/main/sessions/4529996c-edf7-4c51-b5e0-9bde4fd66147.jsonl",
+    "status": "done",
+    "startedAt": 1784379871244,
+    "model": "gemini-3.1-pro-preview",
+    "modelProvider": "google",
+    "lastActivityAt": 1784379971681,
+    "contextTokens": 200000,
+    "agentHarnessId": "openclaw",
+    "systemPromptReport": {
+      "source": "run",
+      "generatedAt": 1784379874212,
+      "sessionId": "4529996c-edf7-4c51-b5e0-9bde4fd66147",
+      "sessionKey": "agent:main:subagent:5c6b929c-e772-40bb-b25b-781774d0075f",
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "workspaceDir": "/root/.openclaw/workspace",
+      "bootstrapMaxChars": 20000,
+      "bootstrapTotalMaxChars": 60000,
+      "bootstrapTruncation": {
+        "warningMode": "always",
+        "warningShown": false,
+        "truncatedFiles": 0,
+        "nearLimitFiles": 0,
+        "totalNearLimit": false
+      },
+      "sandbox": {
+        "mode": "off",
+        "sandboxed": false
+      },
+      "systemPrompt": {
+        "chars": 21627,
+        "hash": "501e6bc7c46c21d60a08cbb7667215894829ef98b3073ed0614fd55389640030",
+        "projectContextChars": 8384,
+        "nonProjectContextChars": 13243
+      },
+      "injectedWorkspaceFiles": [
+        {
+          "name": "AGENTS.md",
+          "path": "/root/.openclaw/workspace/AGENTS.md",
+          "missing": false,
+          "rawChars": 4241,
+          "injectedChars": 4241,
+          "truncated": false
+        },
+        {
+          "name": "TOOLS.md",
+          "path": "/root/.openclaw/workspace/TOOLS.md",
+          "missing": false,
+          "rawChars": 850,
+          "injectedChars": 850,
+          "truncated": false
+        }
+      ],
+      "skills": {
+        "promptChars": 8797,
+        "hash": "b230e95afb01652157d641947d2533f323c93526feee9dafde25d381a833380f",
+        "entries": [
+          {
+            "name": "browser-automation",
+            "blockChars": 371
+          },
+          {
+            "name": "canvas",
+            "blockChars": 289
+          },
+          {
+            "name": "clawhub",
+            "blockChars": 331
+          },
+          {
+            "name": "crypto-self-learning",
+            "blockChars": 498
+          },
+          {
+            "name": "diagram-maker",
+            "blockChars": 304
+          },
+          {
+            "name": "frontend-design-ultimate",
+            "blockChars": 658
+          },
+          {
+            "name": "healthcheck",
+            "blockChars": 316
+          },
+          {
+            "name": "last30days",
+            "blockChars": 566
+          },
+          {
+            "name": "meme-maker",
+            "blockChars": 289
+          },
+          {
+            "name": "node-connect",
+            "blockChars": 319
+          },
+          {
+            "name": "node-inspect-debugger",
+            "blockChars": 315
+          },
+          {
+            "name": "python-debugpy",
+            "blockChars": 303
+          },
+          {
+            "name": "self-improvement",
+            "blockChars": 690
+          },
+          {
+            "name": "skill-creator",
+            "blockChars": 297
+          },
+          {
+            "name": "skill-detector",
+            "blockChars": 480
+          },
+          {
+            "name": "spike",
+            "blockChars": 289
+          },
+          {
+            "name": "taskflow",
+            "blockChars": 319
+          },
+          {
+            "name": "taskflow-inbox-triage",
+            "blockChars": 329
+          },
+          {
+            "name": "tavily",
+            "blockChars": 286
+          },
+          {
+            "name": "tmux",
+            "blockChars": 307
+          },
+          {
+            "name": "typescript-pro",
+            "blockChars": 391
+          },
+          {
+            "name": "weather",
+            "blockChars": 327
+          }
+        ]
+      },
+      "tools": {
+        "listChars": 0,
+        "schemaChars": 14210,
+        "entries": [
+          {
+            "name": "read",
+            "summaryChars": 303,
+            "summaryHash": "b15dd29794ef5562ddee30a6282387ee7b40b9806c10ae2616daf75514ddc1f6",
+            "schemaChars": 304,
+            "schemaHash": "134f19bcabe3e29d63c5cebb38f1d2556759fd08adad6bc90a4b4d3cd1fb8441",
+            "propertiesCount": 3
+          },
+          {
+            "name": "edit",
+            "summaryChars": 326,
+            "summaryHash": "c498a85576e187d069e8e8ea4f70f81bddd57829600d385ef61c4359fd634c9e",
+            "schemaChars": 776,
+            "schemaHash": "55866598f02c5e00ddfcbcae3df78081e3712de09a622bac7a6bc02ef2acc1bc",
+            "propertiesCount": 2
+          },
+          {
+            "name": "write",
+            "summaryChars": 127,
+            "summaryHash": "cdb1c46027b22d1f1b923b47bfe297821d9fe589a9f9d92994961948060a4d89",
+            "schemaChars": 225,
+            "schemaHash": "e98a2484f667cf7c22d76ca103bf2022bf9113dc63fe38b899e71c328cb1e833",
+            "propertiesCount": 2
+          },
+          {
+            "name": "apply_patch",
+            "summaryChars": 132,
+            "summaryHash": "432bf38688a4f011d2b765a441ac07e1fdfa9faf2051679adee04abcd9332d93",
+            "schemaChars": 153,
+            "schemaHash": "05521268363ff4f191472c90d69ef08a503ba9acf1d2febc50b3ee68db32ab65",
+            "propertiesCount": 1
+          },
+          {
+            "name": "exec",
+            "summaryChars": 446,
+            "summaryHash": "369f5e5e195c647ab1e3cfad282e6d25488d4b9fe269f1157e273a546ca80295",
+            "schemaChars": 1285,
+            "schemaHash": "f911b57b6f5106018046fb52d1b136e43ea9c9dad10eb49dd1fdb474a2a8f6a9",
+            "propertiesCount": 12
+          },
+          {
+            "name": "process",
+            "summaryChars": 362,
+            "summaryHash": "21d78afb643a24f211fe9aa86c748f165ca82f1dc21bbaf6e3e6d6d4d4411d86",
+            "schemaChars": 1062,
+            "schemaHash": "6739b75e60af14bd7cce8233e554fcde8869a7ddcb9814b1f897854d6bc90b88",
+            "propertiesCount": 12
+          },
+          {
+            "name": "image_generate",
+            "summaryChars": 468,
+            "summaryHash": "d093313d17509b72795516c6ad7c92a9f1e8c7943239d570fd81347dc2557424",
+            "schemaChars": 2240,
+            "schemaHash": "36e2bbb5a4926bd6f645358328758fefb2d993847e6bdf79a9a47f090e1e9c49",
+            "propertiesCount": 16
+          },
+          {
+            "name": "music_generate",
+            "summaryChars": 524,
+            "summaryHash": "67e4d3d73cbc844f2cc2ffb16cbbe3a6d4a58ec88a8cbe0bd0106515b6fec638",
+            "schemaChars": 1003,
+            "schemaHash": "4a01530e59721ff13df864b895f39f9a75d859bcebca5c6ef2b9edcd952d6df4",
+            "propertiesCount": 10
+          },
+          {
+            "name": "video_generate",
+            "summaryChars": 307,
+            "summaryHash": "59fd08c3f2947e0394c7d1aae5219763bf201537bef536228c6c4fd63724e415",
+            "schemaChars": 1986,
+            "schemaHash": "19c41e22c249e2999dcb95328db0733cc51fe6284713d304b8ecb5d857f0a163",
+            "propertiesCount": 18
+          },
+          {
+            "name": "get_goal",
+            "summaryChars": 71,
+            "summaryHash": "58dea7906d9e17e5f89a75fea24597ee068d8a56af824370dc27f8501374d6e3",
+            "schemaChars": 33,
+            "schemaHash": "8243f0af367f188a376f2c17b5eabe872a2f7a979813e0d4e2be6d594c2aa259",
+            "propertiesCount": 0
+          },
+          {
+            "name": "create_goal",
+            "summaryChars": 155,
+            "summaryHash": "f01e3a63d673a410ba55213ce6bd3fa2b0d2279e8e780c18aa0cb5aa991b29b3",
+            "schemaChars": 267,
+            "schemaHash": "27ee794432736471bd76390e236cc7d7e98f8469a02656e7a27109041eea0f8c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "update_goal",
+            "summaryChars": 212,
+            "summaryHash": "285201690e5f2456b4cdcd252ff391709b84d69538df61bad694d3c0cfc19958",
+            "schemaChars": 207,
+            "schemaHash": "c37894492eedfad02f1e7fe1488900765bfe547f3b3f34cefbab4f7f57441c2c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "skill_workshop",
+            "summaryChars": 171,
+            "summaryHash": "577c1d2b8f56bf3e9dd5e00463bbce8b8bf4cf201da9b21b588dcaa3bc6ed8cf",
+            "schemaChars": 2199,
+            "schemaHash": "29863c07c3fc335fe9a42ccbac1f87ad173d6d8a056606ef763016756bed2f7a",
+            "propertiesCount": 13
+          },
+          {
+            "name": "update_plan",
+            "summaryChars": 163,
+            "summaryHash": "ea18cc44224e849c68cdf0a4839c295c1b20daf2699e2fc2be4c4e1552327455",
+            "schemaChars": 448,
+            "schemaHash": "07663770afb986afe52352b2b2e3a25fb80a2ab013e850ceae88cc4765aac08c",
+            "propertiesCount": 2
+          },
+          {
+            "name": "sessions_yield",
+            "summaryChars": 79,
+            "summaryHash": "f3782fc41c1522657e1d3494f486a2df998fed38a6b89dcf7f6934fb41424320",
+            "schemaChars": 60,
+            "schemaHash": "b1c4c753820bc3096d85ef7a266a14c9fbe12450536db58076b75bb61d14dbbb",
+            "propertiesCount": 1
+          },
+          {
+            "name": "web_search",
+            "summaryChars": 65,
+            "summaryHash": "b38e9b3c079beaa988d3c576303660b91a55c2e72f56351da04160529173273f",
+            "schemaChars": 924,
+            "schemaHash": "a41bcf72b8e541ff9ce5edc716d94b8598c1f5a09a44ec6364efb4e81d01a914",
+            "propertiesCount": 12
+          },
+          {
+            "name": "web_fetch",
+            "summaryChars": 93,
+            "summaryHash": "8875afbb51bd63673e5e6836ca31eeda73914a464862665cd73b346e28d28fd5",
+            "schemaChars": 303,
+            "schemaHash": "c33694803fe3f4c508bb3a038b89ece89fe4c336e8908cbf0defaa6e455ae5c2",
+            "propertiesCount": 3
+          },
+          {
+            "name": "image",
+            "summaryChars": 119,
+            "summaryHash": "0eae16e4e16f86cc74ea64bdd48812b0a1d86577fee36dc4cf2c6e7974c83ef6",
+            "schemaChars": 338,
+            "schemaHash": "d2a39f4e1bd459f0b3fd55a12d7f928299eb9c9b87ce6fd13c13cb0734fc2df1",
+            "propertiesCount": 6
+          },
+          {
+            "name": "memory_search",
+            "summaryChars": 605,
+            "summaryHash": "0f918d28864d3682ae77731f149273997c84773592a466b18c7cd0121b599a05",
+            "schemaChars": 209,
+            "schemaHash": "238423d67990ef4b3f57cb534158928afa5a0c19ede1a2027abcf8cfe14f6117",
+            "propertiesCount": 4
+          },
+          {
+            "name": "memory_get",
+            "summaryChars": 239,
+            "summaryHash": "bff1141a3da31a345c550337417efc9ace4da2909004606c727c59ca1a294495",
+            "schemaChars": 188,
+            "schemaHash": "5221d0ded7eec896b5e3176048bae5256d5523dc69ad557c265b6732725f14b0",
+            "propertiesCount": 4
+          }
+        ]
+      },
+      "currentTurn": {
+        "promptChars": 1390,
+        "runtimeContextChars": 60
+      }
+    },
+    "contextBudgetStatus": {
+      "schemaVersion": 1,
+      "source": "pre-prompt-estimate",
+      "updatedAt": 1784379874280,
+      "provider": "google",
+      "model": "gemini-3.1-pro-preview",
+      "route": "fits",
+      "shouldCompact": false,
+      "estimatedPromptTokens": 7046,
+      "contextTokenBudget": 200000,
+      "promptBudgetBeforeReserve": 180000,
+      "reserveTokens": 20000,
+      "effectiveReserveTokens": 20000,
+      "remainingPromptBudgetTokens": 172954,
+      "overflowTokens": 0,
+      "toolResultReducibleChars": 0,
+      "messageCount": 0,
+      "unwindowedMessageCount": 0,
+      "sessionId": "4529996c-edf7-4c51-b5e0-9bde4fd66147"
+    },
+    "endedAt": 1784379972290,
+    "runtimeMs": 99665
+  },
+  "agent:main:dashboard:a46a7346-d874-4a05-92d9-dcf7321e4da5": {
+    "sessionId": "3e488ec3-8d0d-4d06-b70a-b77bfa362ab4",
+    "sessionFile": "/root/.openclaw/agents/main/sessions/3e488ec3-8d0d-4d06-b70a-b77bfa362ab4.jsonl",
+    "updatedAt": 1785434640997,
+    "providerOverride": "openrouter",
+    "modelOverride": "minimax/minimax-m2.5",
+    "modelOverrideSource": "auto",
+    "modelProvider": "openai",
+    "model": "gpt-5.6-terra",
+    "parentSessionKey": "agent:main:main"
   }
 }

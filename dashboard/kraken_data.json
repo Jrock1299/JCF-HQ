@@ -1,55 +1,76 @@
 {
-  "last_updated": "2026-04-15T20:00:03+00:00",
-  "total_usd": 8772.55,
+  "last_updated": "2026-08-01T06:00:05+00:00",
+  "total_usd": 8456.04,
   "holdings": [
     {
       "asset": "XRP",
       "kraken_ticker": "XXRP",
-      "balance": 2651.016141,
-      "price_usd": 1.4004,
-      "value_usd": 3712.51
-    },
-    {
-      "asset": "ETH",
-      "kraken_ticker": "XETH",
-      "balance": 1.28801316,
-      "price_usd": 2376.71,
-      "value_usd": 3061.23
+      "balance": 5704.698171,
+      "price_usd": 1.0631,
+      "value_usd": 6064.44
     },
     {
       "asset": "LINK",
       "kraken_ticker": "LINK",
-      "balance": 105.87215749,
-      "price_usd": 9.329,
-      "value_usd": 987.68
+      "balance": 196.95016749,
+      "price_usd": 8.1982,
+      "value_usd": 1614.63
     },
     {
       "asset": "ADA",
       "kraken_ticker": "ADA",
-      "balance": 2613.07232226,
-      "price_usd": 0.249,
-      "value_usd": 650.67
-    },
-    {
-      "asset": "SUI",
-      "kraken_ticker": "SUI",
-      "balance": 284.01541,
-      "price_usd": 0.9679,
-      "value_usd": 274.9
+      "balance": 4557.02137274,
+      "price_usd": 0.1703,
+      "value_usd": 776.12
     },
     {
       "asset": "SOL",
       "kraken_ticker": "SOL",
-      "balance": 1.00001023,
-      "price_usd": 85.55,
-      "value_usd": 85.55
+      "balance": 0.00664797,
+      "price_usd": 72.88,
+      "value_usd": 0.48
+    },
+    {
+      "asset": "ETH",
+      "kraken_ticker": "XETH",
+      "balance": 0.00019662,
+      "price_usd": 1865.48,
+      "value_usd": 0.37
+    },
+    {
+      "asset": "SOL03.S",
+      "kraken_ticker": "SOL03.S",
+      "balance": 23.56820165,
+      "price_usd": 0.0,
+      "value_usd": 0.0
+    },
+    {
+      "asset": "ETH2.S",
+      "kraken_ticker": "ETH2.S",
+      "balance": 1.50379802,
+      "price_usd": 0.0,
+      "value_usd": 0.0
+    },
+    {
+      "asset": "BABY",
+      "kraken_ticker": "BABY",
+      "balance": 0.35059,
+      "price_usd": 0.0127,
+      "value_usd": 0.0
+    },
+    {
+      "asset": "XBT.B",
+      "kraken_ticker": "XBT.B",
+      "balance": 0.01061705,
+      "price_usd": 0.0,
+      "value_usd": 0.0
     },
     {
       "asset": "USD",
       "kraken_ticker": "ZUSD",
-      "balance": 0.0068,
+      "balance": 0.0039,
       "price_usd": 1.0,
-      "value_usd": 0.01
+      "value_usd": 0.0
     }
   ]
 }

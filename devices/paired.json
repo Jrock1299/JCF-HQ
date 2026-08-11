@@ -57,19 +57,28 @@
     ],
     "tokens": {
       "operator": {
-        "token": "tvjonmmTo6byg_TvB7qo88G6N65pKVTF7nz9mq8WMZE",
+        "token": "HXe0fpMVVJN3-LyGxABFnZ2bGR8BzYRDtvP6dlorhkE",
         "role": "operator",
         "scopes": [
           "operator.admin",
           "operator.approvals",
-          "operator.pairing"
+          "operator.pairing",
+          "operator.read",
+          "operator.write"
         ],
+        "issuer": {
+          "kind": "shared-gateway-auth",
+          "generation": "dxvC4IRgkeXZSScFlSDYQX6cfH1llmftv7p2VAKmM1s"
+        },
         "createdAtMs": 1771957203171,
-        "lastUsedAtMs": 1774894308062
+        "rotatedAtMs": 1785434483957,
+        "lastUsedAtMs": 1785434642809
       }
     },
     "createdAtMs": 1771957203170,
-    "approvedAtMs": 1771957203170
+    "approvedAtMs": 1771957203170,
+    "lastSeenAtMs": 1785434642809,
+    "lastSeenReason": "device-token-auth"
   },
   "9bb6224f70dd843975d8a02859e4822a62785980faed01b55388d44a1b4c48f7": {
     "deviceId": "9bb6224f70dd843975d8a02859e4822a62785980faed01b55388d44a1b4c48f7",
@@ -112,7 +121,9 @@
       }
     },
     "createdAtMs": 1772455976970,
-    "approvedAtMs": 1772494902701
+    "approvedAtMs": 1772494902701,
+    "lastSeenAtMs": 1786448081957,
+    "lastSeenReason": "connect"
   },
   "83c83413e36ed1b9a6466c8e1776864550cce51af04c94c73acba0005cc3ae43": {
     "deviceId": "83c83413e36ed1b9a6466c8e1776864550cce51af04c94c73acba0005cc3ae43",

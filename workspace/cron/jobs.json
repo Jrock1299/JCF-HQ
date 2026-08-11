@@ -73,7 +73,7 @@
       "id": "7d10a576-b024-4e6a-9ced-6d97ce7d332c",
       "agentId": "crisp",
       "name": "crisp-asia",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495702869,
       "updatedAtMs": 1772611299600,
       "schedule": {
@@ -106,7 +106,7 @@
       "id": "fc8567cd-cdaf-4eec-be2f-5e83d77d85c2",
       "agentId": "crisp",
       "name": "crisp-ny-1330",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495704510,
       "updatedAtMs": 1772635542313,
       "schedule": {
@@ -139,7 +139,7 @@
       "id": "643cb79f-a20d-45f9-9494-378b0bba8c68",
       "agentId": "crisp",
       "name": "crisp-ny-1415",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495706117,
       "updatedAtMs": 1772640071491,
       "schedule": {
@@ -172,7 +172,7 @@
       "id": "d6843065-a896-4db7-bcbe-e00603046e38",
       "agentId": "crisp",
       "name": "crisp-ny-1600",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495707718,
       "updatedAtMs": 1772640035626,
       "schedule": {
@@ -205,7 +205,7 @@
       "id": "166430e9-16da-4a00-91ae-c4f1d3873e48",
       "agentId": "blade",
       "name": "blade-asia",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495709251,
       "updatedAtMs": 1772611325292,
       "schedule": {
@@ -238,7 +238,7 @@
       "id": "2b8c6d2a-2b2e-4c31-9b8c-1a5f48b9b111",
       "agentId": "blade",
       "name": "blade-london",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772617680000,
       "updatedAtMs": 1772628334089,
       "schedule": {
@@ -271,7 +271,7 @@
       "id": "f17b59a7-e8eb-44d7-b275-995fe7fa5d69",
       "agentId": "blade",
       "name": "blade-ny-1330",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495710900,
       "updatedAtMs": 1772635578739,
       "schedule": {
@@ -304,7 +304,7 @@
       "id": "463fdabb-66de-42a6-aa56-fe2463aa4f43",
       "agentId": "blade",
       "name": "blade-ny-1415",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495712547,
       "updatedAtMs": 1772640075445,
       "schedule": {
@@ -337,7 +337,7 @@
       "id": "9bbb2f62-749b-496d-99b0-18d3745ccb4c",
       "agentId": "blade",
       "name": "blade-ny-1600",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772495714167,
       "updatedAtMs": 1772640065059,
       "schedule": {
@@ -370,7 +370,7 @@
       "id": "b5e2a5a7-1a5e-4f29-8c2a-8d2e4a4a2a01",
       "name": "robinhood-sync-8am",
       "description": "Sync Robinhood balances + trades to HQ",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772646180000,
       "updatedAtMs": 1772646180000,
       "schedule": {
@@ -399,7 +399,7 @@
       "id": "c7c6c9aa-20d7-4c9d-9f8b-7b7a7a0e1a01",
       "name": "trustwallet-sync-8am",
       "description": "Sync Trust Wallet balances to HQ",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772646185000,
       "updatedAtMs": 1772646185000,
       "schedule": {
@@ -428,7 +428,7 @@
       "id": "a2c7f8a4-6c1b-4c2d-9aa8-4f2b1a6d0c11",
       "name": "bball-stats-sync-8am",
       "description": "Scrape EuroBasket stats for Jase",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772646240000,
       "updatedAtMs": 1772646240000,
       "schedule": {
@@ -456,7 +456,7 @@
       "id": "e0713bee-0b47-41f5-8844-e87975a75f18",
       "agentId": "main",
       "name": "weekly-9am-ro-innovation",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772496113546,
       "updatedAtMs": 1772607604643,
       "schedule": {
@@ -490,7 +490,7 @@
       "id": "d1b8e5e2-3f5a-4b47-9c21-crypto15min",
       "name": "oracle-crypto-scan-15m",
       "description": "Oracle crypto 15m scanner",
-      "enabled": true,
+      "enabled": false,
       "createdAtMs": 1772652022001,
       "updatedAtMs": 1772652022001,
       "schedule": {

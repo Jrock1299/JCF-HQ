@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-07-28T14:10:50.808267+00:00",
+  "note": "SPARSE \u2014 activity counts only. Simulated-performance scoring needs multiple runs + price resolution; not enough history yet to rank wallets by profitability. Not fabricating early conviction.",
+  "wallets": [
+    {
+      "wallet": "DgzmR8nUzJvZJpsyRrtGDz9HvtWxVqHrSNJ1dkWZnxaQ",
+      "buys": 8,
+      "sells": 0,
+      "events": 8,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+      "buys": 8,
+      "sells": 0,
+      "events": 8,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "8vMKJrgH9bYC5EdEzz62EyRFn2UJt1iHzQ2PqB8DNhEz",
+      "buys": 8,
+      "sells": 0,
+      "events": 8,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "DqRbgA91j8qrK5usP5RQgraxooUFoWk8QEPgwfbzpkCd",
+      "buys": 7,
+      "sells": 0,
+      "events": 7,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "4WbeDhRxyj9m8Uh7GZSNpW7DFh989oTFguTE4c2A2cgK",
+      "buys": 7,
+      "sells": 0,
+      "events": 7,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "CdUVvJejajyxyrGZCbB2HSdafKRjYBfDKDUUtkwBw8NU",
+      "buys": 4,
+      "sells": 2,
+      "events": 6,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "FbEyx5eZZS4pPV5n8wzzrZTEiwZoowMxXqPjgszRY7WX",
+      "buys": 6,
+      "sells": 0,
+      "events": 6,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "BMpufZdBFjmio58P4dghJ8bsuG8z4XcHNygkZHezoqmp",
+      "buys": 5,
+      "sells": 0,
+      "events": 5,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "ERChPsQfkwwCsAfzr2YxiFJixf3CtGW5pZr1eDPj4PSC",
+      "buys": 5,
+      "sells": 0,
+      "events": 5,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "CyUzaWdesP4qKL7iMrgQ3Ku6XoJn2YfLytmkUm6Hmfyn",
+      "buys": 3,
+      "sells": 1,
+      "events": 4,
+      "sim_pnl": "pending (insufficient history)"
+    },
+    {
+      "wallet": "Ebp6TuQUXc5oQkgHceKojmmQczTcSmyp67J2BugsdGZw",
+      "buys": 3,
+      "sells": 0,
+      "events": 3,
+      "sim_pnl": "pending (insufficient history)"
+    }
+  ]
+}

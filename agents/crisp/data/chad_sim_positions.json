@@ -1,0 +1,198 @@
+{
+  "positions": [
+    {
+      "id": "sim_5twuNF56_1785247874",
+      "opened_at": "2026-07-28T14:11:14.110387+00:00",
+      "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+      "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+      "wallet_signature": "5twuNF56f97HEYweickw8MiH3WnfG17pXigGTskBCZKxnjFNX1B6xHsU8WkKNduHposhZYUQ11DztaScb5iLkqSK",
+      "notional_usd": 10.0,
+      "qty": 84761.92494331546,
+      "entry_price": 0.00011797749999999999,
+      "stop_pct": -0.3,
+      "take_profit": null,
+      "sim_mode": true,
+      "lag_seconds": 12,
+      "slippage_bps": 250,
+      "sparse_gate": true,
+      "gate_decision": {
+        "ts": "2026-07-28T14:11:14.086406+00:00",
+        "decision": "DEFER",
+        "detail": "gates passed: 4/4",
+        "gates": [
+          {
+            "name": "smart_money",
+            "passed": true,
+            "reason": "tracked",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "tracked_count": 12
+            }
+          },
+          {
+            "name": "wallet_quality",
+            "passed": true,
+            "reason": "scoreboard sparse (no WR yet)",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "sparse": true
+            }
+          },
+          {
+            "name": "liquidity",
+            "passed": true,
+            "reason": "liq=$27,483 vol24h=$2,341,814",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "liq_usd": 27482.63,
+              "vol24": 2341814.26,
+              "pair": "HJSBAawsTuE3rvZAQp5L9zEHR1zhqP6YDDPKTVJhXePY",
+              "dex": "pumpswap"
+            }
+          },
+          {
+            "name": "onchain_safety",
+            "passed": true,
+            "reason": "authorities renounced; top-5 share 23.5%",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "top5_share": 0.2353380377973002
+            }
+          }
+        ]
+      },
+      "status": "open",
+      "last_updated": "2026-07-28T14:11:14.110430+00:00"
+    },
+    {
+      "id": "sim_5bcVjc9R_1785247874",
+      "opened_at": "2026-07-28T14:11:14.431122+00:00",
+      "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+      "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+      "wallet_signature": "5bcVjc9RHDWQd79tFbkqahJVEh1WuzD1oATvaWbQ14pEb7L1F2mT6JgjyU9QGQa8pCUjoFjDjJKV3qum388CHXoM",
+      "notional_usd": 10.0,
+      "qty": 84761.92494331546,
+      "entry_price": 0.00011797749999999999,
+      "stop_pct": -0.3,
+      "take_profit": null,
+      "sim_mode": true,
+      "lag_seconds": 12,
+      "slippage_bps": 250,
+      "sparse_gate": true,
+      "gate_decision": {
+        "ts": "2026-07-28T14:11:14.410892+00:00",
+        "decision": "DEFER",
+        "detail": "gates passed: 4/4",
+        "gates": [
+          {
+            "name": "smart_money",
+            "passed": true,
+            "reason": "tracked",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "tracked_count": 12
+            }
+          },
+          {
+            "name": "wallet_quality",
+            "passed": true,
+            "reason": "scoreboard sparse (no WR yet)",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "sparse": true
+            }
+          },
+          {
+            "name": "liquidity",
+            "passed": true,
+            "reason": "liq=$27,483 vol24h=$2,341,814",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "liq_usd": 27482.63,
+              "vol24": 2341814.26,
+              "pair": "HJSBAawsTuE3rvZAQp5L9zEHR1zhqP6YDDPKTVJhXePY",
+              "dex": "pumpswap"
+            }
+          },
+          {
+            "name": "onchain_safety",
+            "passed": true,
+            "reason": "authorities renounced; top-5 share 23.5%",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "top5_share": 0.2353380377973002
+            }
+          }
+        ]
+      },
+      "status": "open",
+      "last_updated": "2026-07-28T14:11:14.431142+00:00"
+    },
+    {
+      "id": "sim_oyvRsnrM_1785247874",
+      "opened_at": "2026-07-28T14:11:14.767774+00:00",
+      "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+      "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+      "wallet_signature": "oyvRsnrMVnPtf2w5CVa4gQdDwgtAoKHryBGgdyHa2shtaTJqcvB2LvUB5QH4hGqi9BEawroodSmf7LJg7p7Bvhx",
+      "notional_usd": 10.0,
+      "qty": 84761.92494331546,
+      "entry_price": 0.00011797749999999999,
+      "stop_pct": -0.3,
+      "take_profit": null,
+      "sim_mode": true,
+      "lag_seconds": 12,
+      "slippage_bps": 250,
+      "sparse_gate": true,
+      "gate_decision": {
+        "ts": "2026-07-28T14:11:14.739676+00:00",
+        "decision": "DEFER",
+        "detail": "gates passed: 4/4",
+        "gates": [
+          {
+            "name": "smart_money",
+            "passed": true,
+            "reason": "tracked",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "tracked_count": 12
+            }
+          },
+          {
+            "name": "wallet_quality",
+            "passed": true,
+            "reason": "scoreboard sparse (no WR yet)",
+            "detail": {
+              "wallet": "4DDZk1fSiZ9Kxn1C1kt1TeC8FMVTf81qm2ZuBjAfuu8p",
+              "sparse": true
+            }
+          },
+          {
+            "name": "liquidity",
+            "passed": true,
+            "reason": "liq=$27,483 vol24h=$2,341,814",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "liq_usd": 27482.63,
+              "vol24": 2341814.26,
+              "pair": "HJSBAawsTuE3rvZAQp5L9zEHR1zhqP6YDDPKTVJhXePY",
+              "dex": "pumpswap"
+            }
+          },
+          {
+            "name": "onchain_safety",
+            "passed": true,
+            "reason": "authorities renounced; top-5 share 23.5%",
+            "detail": {
+              "mint": "Gihvutvj8wvAFLrazDgoHewwfy75ozjv3bGGdr87pump",
+              "top5_share": 0.2353380377973002
+            }
+          }
+        ]
+      },
+      "status": "open",
+      "last_updated": "2026-07-28T14:11:14.767800+00:00"
+    }
+  ],
+  "bankroll_usd": 1000.0,
+  "schema": "jcf.chad.sim/v1"
+}

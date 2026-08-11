@@ -1,8 +1,29 @@
 {
-  "stocks": 16997.11,
+  "stocks": 12954.53,
   "options": 0.0,
   "roth_ira": 0.0,
-  "total_equity": 16725.21,
-  "last_update": "2026-05-08T09:00:02+00:00",
-  "trades": []
+  "total_equity": 12953.7,
+  "last_update": "2026-07-24T15:21:49+00:00",
+  "trades": [
+    {
+      "date": "2026-06-25",
+      "asset": "NVDA",
+      "direction": "Long",
+      "entry": 195.62,
+      "exit": 195.62,
+      "pnl": 0.0,
+      "status": "Closed",
+      "account": "robinhood"
+    },
+    {
+      "date": "2026-06-25",
+      "asset": "SPCX",
+      "direction": "Long",
+      "entry": 150.97,
+      "exit": 150.97,
+      "pnl": 0.0,
+      "status": "Closed",
+      "account": "robinhood"
+    }
+  ]
 }

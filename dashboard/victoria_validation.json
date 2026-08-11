@@ -1,36 +1,37 @@
 {
-  "date": "2026-07-27",
+  "date": "2026-08-09",
   "agent_reports": {
     "jerry": {
-      "total_trades": 116,
-      "win_rate": 35.3,
-      "profit_factor": 0.972,
-      "sharpe": -0.005,
-      "sortino": -0.016,
-      "max_drawdown_pct": 13.4,
-      "max_drawdown_abs": -15075.28,
-      "max_drawdown_basis": "account_equity",
-      "account_wiped": false,
-      "total_pnl": -599.29,
-      "expectancy": -5.17,
-      "max_consec_losses": 18,
+      "total_trades": 121,
+      "win_rate": 36.4,
+      "profit_factor": 0.951,
+      "sharpe": -0.008,
+      "max_drawdown_pct": 14.0,
       "monte_carlo": {
-        "median_outcome": 96739.47,
-        "worst_case_5pct": 82321.11,
-        "best_case_95pct": 121152.32,
+        "median_outcome": 96439.69,
+        "worst_case_5pct": 81748.95,
+        "best_case_95pct": 120263.57,
         "ruin_probability": 0.0,
         "double_probability": 0.0,
         "starting_balance": 98924.93
       },
       "verdict": "FAIL",
+      "recommendation": "Keep Jerry parked. The sample is large enough to convict it: -$1,121.59 total P&L and -$9.27 expectancy per trade, with a 0.951 profit factor and negative Sharpe. The 0.0% Monte Carlo ruin estimate is not absolution; it models survival of a negative-expectancy process, not its worthiness for capital. Rebuild only after a setup-level attribution identifies what is destroying expectancy, then require stressed-cost and walk-forward evidence before redeployment.",
+      "sortino": -0.028,
+      "max_drawdown_abs": -15872.4,
+      "max_drawdown_basis": "account_equity",
+      "account_wiped": false,
+      "total_pnl": -1121.59,
+      "expectancy": -9.27,
+      "max_consec_losses": 16,
       "deterministic_verdict": "FAIL",
       "balance_source": "jerry_portfolio.json balance (98,924.93, as of 2026-07-27)",
       "freshness": {
         "source": "/root/.openclaw/agents/jerry/data/trade_history.json",
         "ok": true,
         "reason": "fresh",
-        "as_of": "2026-07-24T18:54:42.756839+00:00",
-        "age_days": 2.95,
+        "as_of": "2026-07-29T14:35:48.200026+00:00",
+        "age_days": 10.89,
         "stale_after_days": 14,
         "basis": "newest_record:timestamp",
         "detail": "",
@@ -43,14 +44,7 @@
       "win_rate": 0,
       "profit_factor": 0,
       "sharpe": 0,
-      "sortino": 0,
       "max_drawdown_pct": 0,
-      "max_drawdown_abs": null,
-      "max_drawdown_basis": null,
-      "account_wiped": false,
-      "total_pnl": 0,
-      "expectancy": 0,
-      "max_consec_losses": 0,
       "monte_carlo": {
         "median_outcome": 0,
         "worst_case_5pct": 0,
@@ -60,6 +54,14 @@
         "starting_balance": null
       },
       "verdict": "STALE_DATA",
+      "recommendation": "Crisp, internally Chad, has only six trades and its newest record is 117 days old, from 2026-04-14. This is an expired regime, not a current strategy assessment. Restore the BTC/USDT closed-trade feed, preserve trade-level risk and execution-cost fields, and collect at least 20 current trades before issuing any performance or sizing conclusion.",
+      "sortino": 0,
+      "max_drawdown_abs": null,
+      "max_drawdown_basis": null,
+      "account_wiped": false,
+      "total_pnl": 0,
+      "expectancy": 0,
+      "max_consec_losses": 0,
       "deterministic_verdict": "STALE_DATA",
       "balance_source": "paper account notional (10,000)",
       "freshness": {
@@ -67,24 +69,32 @@
         "ok": false,
         "reason": "stale",
         "as_of": "2026-04-14T22:34:09.772855+00:00",
-        "age_days": 103.8,
+        "age_days": 116.56,
         "stale_after_days": 14,
         "basis": "newest_record:timestamp",
         "detail": "",
-        "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (104d ago)"
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (117d ago)"
       },
       "notes": [],
-      "data_status": "Newest trade is 104 days old (Apr 14, 2026). Not graded \u2014 a verdict here would describe a period that has already ended."
+      "data_status": "Newest trade is 117 days old (Apr 14, 2026). Not graded \u2014 a verdict here would describe a period that has already ended."
     }
   },
   "portfolio_summary": {
-    "total_pnl": 0,
+    "total_pnl": -1121.59,
     "correlation_risk": "unknown",
-    "overall_assessment": "Report generation failed"
+    "overall_assessment": "There is no deployable two-agent portfolio. Jerry is a statistically supported failure, while Crisp is locked as STALE_DATA; its current behavior and correlation to Jerry cannot be measured. Combined risk must be treated as unquantified until Crisp produces current data and Jerry demonstrates positive expectancy under stress."
   },
-  "recommendations": [],
+  "recommendations": [
+    "Do not deploy or increase Jerry. Its 121-trade sample fails on expectancy, profit factor, and Sharpe.",
+    "Repair Crisp's stale paper-account and closed-trade pipeline before considering a restart.",
+    "For any future restart, cap fixed-fractional risk at 1% per trade and combined open portfolio heat below 6% until both systems have current validated samples.",
+    "Require a five-year, multi-regime backtest; parameter sensitivity sweep; 1.5-2x execution-friction test; and walk-forward replication before either strategy can earn a DEPLOY decision."
+  ],
   "alerts": [
-    "Victoria validation report generation failed \u2014 check victoria.log"
+    "Jerry failed deterministic validation: -$1,121.59 total P&L, -$9.27 expectancy per trade, 0.951 profit factor, and -0.008 Sharpe.",
+    "Jerry suffered a 14.0% maximum drawdown and a 16-trade maximum consecutive-loss streak.",
+    "Jerry's balance source is dated 2026-07-27 and should be refreshed before any capital decision.",
+    "Crisp is locked as STALE_DATA: 6 trades, newest dated 2026-04-14, 117 days old."
   ],
   "_regime": {
     "jerry": {
@@ -92,7 +102,7 @@
       "worst_hour_utc": 15,
       "best_day_of_week": "Mon",
       "worst_day_of_week": "Tue",
-      "overall_mean_pnl": -5.17,
+      "overall_mean_pnl": -9.27,
       "recent_mean_pnl": -161.77,
       "divergence_z": 0.14,
       "recent_divergence": false
@@ -104,7 +114,7 @@
     "output_tokens": 0,
     "cost_usd": 0.0,
     "model": "openai/gpt-5.6-terra",
-    "generated_at": "2026-07-27T17:40:02.012040+00:00",
+    "generated_at": "2026-08-09T12:02:14.553050+00:00",
     "validator": "victoria",
     "covers": [
       "jerry",
@@ -125,8 +135,8 @@
         "source": "/root/.openclaw/agents/jerry/data/trade_history.json",
         "ok": true,
         "reason": "fresh",
-        "as_of": "2026-07-24T18:54:42.756839+00:00",
-        "age_days": 2.95,
+        "as_of": "2026-07-29T14:35:48.200026+00:00",
+        "age_days": 10.89,
         "stale_after_days": 14,
         "basis": "newest_record:timestamp",
         "detail": "",
@@ -137,11 +147,11 @@
         "ok": false,
         "reason": "stale",
         "as_of": "2026-04-14T22:34:09.772855+00:00",
-        "age_days": 103.8,
+        "age_days": 116.56,
         "stale_after_days": 14,
         "basis": "newest_record:timestamp",
         "detail": "",
-        "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (104d ago)"
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (117d ago)"
       }
     }
   }

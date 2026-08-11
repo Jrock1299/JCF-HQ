@@ -9587,5 +9587,91 @@
       "cost_usd": 0.01836,
       "model": "claude-sonnet-4-6"
     }
+  },
+  {
+    "date": "2026-07-24",
+    "trades_today": 5,
+    "pnl_today": 0.0,
+    "wins": 2,
+    "losses": 1,
+    "assessment": "Execution discipline worked mechanically: LW and RTX reached take-profit, while OKLO equity was stopped. Performance measurement failed operationally: every closed trade and the last 10-trade history records $0.00 P&L, so there is no usable realized-return record despite five executions. The book is carrying three positions whose original insider theses are contradicted by current insider selling.",
+    "open_positions_review": [
+      {
+        "symbol": "AZO",
+        "action": "hold",
+        "reason": "Small position, unrealized gain of $14.40, and no adverse Sentinel signal supplied.",
+        "adjust_sl": "$2,930"
+      },
+      {
+        "symbol": "OKLO260821C00060000",
+        "action": "close",
+        "reason": "The calls are down $110.00, the underlying equity was stopped today, and OKLO now carries an insider-sell signal. The catalyst thesis has failed.",
+        "adjust_sl": null
+      },
+      {
+        "symbol": "PAM",
+        "action": "hold",
+        "reason": "Unrealized gain is $408.52. Retain only with a trailing stop to protect the move.",
+        "adjust_sl": "$83.50"
+      },
+      {
+        "symbol": "SOFI",
+        "action": "close",
+        "reason": "Unrealized loss is $680.34 and three insider sells totaling $399,194 directly contradict the original long thesis.",
+        "adjust_sl": null
+      },
+      {
+        "symbol": "TEM",
+        "action": "close",
+        "reason": "Unrealized loss is $595.78 and five insider sells totaling $2,510,123 confirm distribution. Do not average down.",
+        "adjust_sl": null
+      },
+      {
+        "symbol": "VST",
+        "action": "trim",
+        "reason": "Unrealized gain is $1,084.96, but five insider sells totaling $3,691,227 justify taking profit and reducing exposure.",
+        "adjust_sl": "$158.00"
+      }
+    ],
+    "strategy_scores": [
+      {
+        "name": "Sentinel insider momentum",
+        "score": "MARGINAL",
+        "notes": "Signals produced both winners and failed longs, but realized P&L is recorded as $0.00 across the history. The strategy cannot be evaluated until settlement and exit P&L logging is fixed."
+      },
+      {
+        "name": "Take-profit and stop-loss execution",
+        "score": "WORKING",
+        "notes": "LW and RTX reached take-profit; OKLO equity was stopped rather than allowed to compound."
+      },
+      {
+        "name": "Long-dated speculative calls",
+        "score": "KILL IT",
+        "notes": "The OKLO August $60 calls are down 30.6% while the equity setup stopped out. No replacement option trade until the underlying confirms."
+      },
+      {
+        "name": "Time-stop exits",
+        "score": "MARGINAL",
+        "notes": "NVDA and repeated KMPR trades exited by time stop with $0.00 recorded P&L; the rule may be preventing losses, but the data cannot prove it creates returns."
+      }
+    ],
+    "insights_for_tomorrow": [
+      "Exit SOFI and TEM; trim VST. These are active insider-distribution conflicts, not dip-buy candidates.",
+      "Close the OKLO August $60 calls and prohibit new long calls when the underlying equity has already triggered its stop.",
+      "Do not open UUUU or IREN at the open. Require a first-30-minute breakout with volume confirmation; cap each at 3-4% of equity.",
+      "Repair realized P&L and options-entry logging before judging win rate, expectancy, or any strategy allocation."
+    ],
+    "risk_assessment": {
+      "concentration": "medium",
+      "max_correlated_exposure": "Approximately 20% of portfolio value is deployed across six names, with concentration in high-beta AI, power, nuclear, and growth themes through TEM, VST, OKLO, and SOFI.",
+      "overall_risk": "elevated"
+    },
+    "_meta": {
+      "timestamp": "2026-07-24T20:31:20.615166+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cost_usd": 0.0,
+      "model": "openai/gpt-5.6-terra"
+    }
   }
 ]

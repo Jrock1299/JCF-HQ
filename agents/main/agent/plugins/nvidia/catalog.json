@@ -1,0 +1,159 @@
+{
+  "generatedBy": "openclaw-plugin-model-catalog-v1",
+  "providers": {
+    "nvidia": {
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "models": [
+        {
+          "id": "minimaxai/minimax-m2.5",
+          "name": "MiniMax M2.5",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 196608,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "minimaxai/minimax-m2.7",
+          "name": "Minimax M2.7",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 196608,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "moonshotai/kimi-k2.5",
+          "name": "Kimi K2.5",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "nvidia/nemotron-3-super-120b-a12b",
+          "name": "NVIDIA Nemotron 3 Super 120B",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "nvidia/nemotron-3-ultra-550b-a55b",
+          "name": "NVIDIA Nemotron 3 Ultra 550B",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 16384,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "z-ai/glm-5.1",
+          "name": "GLM 5.1",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 202752,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        },
+        {
+          "id": "z-ai/glm5",
+          "name": "GLM-5",
+          "api": "openai-completions",
+          "baseUrl": "https://integrate.api.nvidia.com/v1",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 202752,
+          "maxTokens": 8192,
+          "compat": {
+            "requiresStringContent": true
+          }
+        }
+      ],
+      "api": "openai-completions",
+      "apiKey": "NVIDIA_API_KEY"
+    }
+  }
+}

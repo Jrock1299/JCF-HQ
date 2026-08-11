@@ -1,0 +1,2649 @@
+{
+  "generated_at": "2026-07-27T18:47:12.882559+00:00",
+  "starting_balance": 10000.0,
+  "min_trades_for_verdict": 100,
+  "params": {
+    "SWING_K": 2,
+    "LOOKBACK_POOLS": 50,
+    "DISPLACEMENT_ATR_MULT": 1.0,
+    "ATR_PERIOD": 14,
+    "FVG_MAX_AGE_BARS": 12,
+    "MSS_MAX_BARS_AFTER_SWEEP": 20,
+    "ENTRY_MAX_WAIT_BARS": 12,
+    "STOP_BUFFER_ATR": 0.25,
+    "MIN_STOP_ATR": 0.5,
+    "MIN_RR": 2.0,
+    "RISK_PCT": 0.0075,
+    "ICC_VOL_MULT": 1.5,
+    "ICC_RANGE_ATR_MULT": 1.0
+  },
+  "results": [
+    {
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 96,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 96,
+        "total_pnl": -707.95,
+        "win_rate": 33.3,
+        "wins": 32,
+        "losses": 64,
+        "breakevens": 0,
+        "avg_win": 138.7,
+        "avg_loss": -80.41,
+        "gross_win": 4438.3,
+        "gross_loss": -5146.25,
+        "profit_factor": 0.862,
+        "expectancy": -7.37,
+        "mean_pnl": -7.37,
+        "std_pnl": 105.11,
+        "sharpe": -0.07,
+        "sortino": -1.47,
+        "max_drawdown_abs": -1499.34,
+        "max_drawdown_pct": 14.1,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 6,
+        "trades_per_year": 12.0,
+        "sharpe_annualised": -0.242,
+        "expectancy_R": -0.0926,
+        "fixed_size_pnl": -667.0,
+        "annualisation_factor": 12.0
+      },
+      "monte_carlo": {
+        "median_final": 9279.92,
+        "p5_final": 7584.82,
+        "p95_final": 11016.73,
+        "mean_final": 9286.76,
+        "median_max_drawdown": -1450.33,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 2,
+          "pnl": 33.26,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 12,
+          "pnl": 222.82,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 17,
+          "pnl": -7.19,
+          "wr": 35.3
+        },
+        "2021": {
+          "n": 6,
+          "pnl": 197.01,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 14,
+          "pnl": -298.33,
+          "wr": 28.6
+        },
+        "2023": {
+          "n": 12,
+          "pnl": -1.84,
+          "wr": 33.3
+        },
+        "2024": {
+          "n": 8,
+          "pnl": -413.65,
+          "wr": 12.5
+        },
+        "2025": {
+          "n": 16,
+          "pnl": -385.99,
+          "wr": 25.0
+        },
+        "2026": {
+          "n": 9,
+          "pnl": -54.04,
+          "wr": 33.3
+        }
+      },
+      "final_balance": 9112.56,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 1,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "1 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 1,
+        "total_pnl": 55.62,
+        "win_rate": 100.0,
+        "wins": 1,
+        "losses": 0,
+        "breakevens": 0,
+        "avg_win": 55.62,
+        "avg_loss": 0.0,
+        "gross_win": 55.62,
+        "gross_loss": -0.0,
+        "profit_factor": Infinity,
+        "expectancy": 55.62,
+        "mean_pnl": 55.62,
+        "std_pnl": 0.0,
+        "sharpe": 0.0,
+        "sortino": 0.0,
+        "max_drawdown_abs": 0.0,
+        "max_drawdown_pct": 0.0,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 0,
+        "sharpe_annualised": 0.0,
+        "annualisation_factor": 0.11
+      },
+      "monte_carlo": {},
+      "regimes": {
+        "2020": {
+          "n": 1,
+          "pnl": 55.62,
+          "wr": 100.0
+        }
+      },
+      "final_balance": 10050.09,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "1 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 967,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe 0.440 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.040).",
+      "stats": {
+        "n": 967,
+        "total_pnl": 3704.54,
+        "win_rate": 46.5,
+        "wins": 450,
+        "losses": 517,
+        "breakevens": 0,
+        "avg_win": 102.23,
+        "avg_loss": -81.82,
+        "gross_win": 46003.24,
+        "gross_loss": -42298.7,
+        "profit_factor": 1.088,
+        "expectancy": 3.83,
+        "mean_pnl": 3.83,
+        "std_pnl": 95.49,
+        "sharpe": 0.04,
+        "sortino": 0.406,
+        "max_drawdown_abs": -2040.14,
+        "max_drawdown_pct": 17.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 16,
+        "trades_per_year": 120.9,
+        "sharpe_annualised": 0.44,
+        "expectancy_R": 0.046,
+        "fixed_size_pnl": 3336.0,
+        "annualisation_factor": 120.9
+      },
+      "monte_carlo": {
+        "median_final": 13746.74,
+        "p5_final": 8853.93,
+        "p95_final": 18623.16,
+        "mean_final": 13753.96,
+        "median_max_drawdown": -2253.75,
+        "ruin_probability": 0.64,
+        "double_probability": 2.61,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 46,
+          "pnl": 1332.01,
+          "wr": 58.7
+        },
+        "2019": {
+          "n": 119,
+          "pnl": -1766.68,
+          "wr": 42.0
+        },
+        "2020": {
+          "n": 101,
+          "pnl": 828.37,
+          "wr": 47.5
+        },
+        "2021": {
+          "n": 96,
+          "pnl": 483.93,
+          "wr": 44.8
+        },
+        "2022": {
+          "n": 135,
+          "pnl": 35.06,
+          "wr": 42.2
+        },
+        "2023": {
+          "n": 146,
+          "pnl": 695.24,
+          "wr": 47.9
+        },
+        "2024": {
+          "n": 149,
+          "pnl": 239.68,
+          "wr": 47.0
+        },
+        "2025": {
+          "n": 108,
+          "pnl": 2023.62,
+          "wr": 53.7
+        },
+        "2026": {
+          "n": 67,
+          "pnl": -166.69,
+          "wr": 40.3
+        }
+      },
+      "final_balance": 9550.83,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.040 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 3570,
+      "verdict": "FAIL",
+      "why": "Ruin probability 74.1% exceeds the 10% ceiling.",
+      "stats": {
+        "n": 3570,
+        "total_pnl": 9042740.43,
+        "win_rate": 58.0,
+        "wins": 2072,
+        "losses": 1498,
+        "breakevens": 0,
+        "avg_win": 11895.16,
+        "avg_loss": -10416.58,
+        "gross_win": 24646777.94,
+        "gross_loss": -15604037.51,
+        "profit_factor": 1.58,
+        "expectancy": 2532.98,
+        "mean_pnl": 2532.98,
+        "std_pnl": 21576.1,
+        "sharpe": 0.117,
+        "sortino": 0.161,
+        "max_drawdown_abs": -684688.89,
+        "max_drawdown_pct": 7.4,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 14,
+        "trades_per_year": 446.2,
+        "sharpe_annualised": 2.472,
+        "expectancy_R": 0.2423,
+        "fixed_size_pnl": 64883.0,
+        "annualisation_factor": 446.2
+      },
+      "monte_carlo": {
+        "median_final": 9049599.52,
+        "p5_final": 6965834.06,
+        "p95_final": 11167849.56,
+        "mean_final": 9053197.5,
+        "median_max_drawdown": -393570.73,
+        "ruin_probability": 74.1,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 198,
+          "pnl": 5647.06,
+          "wr": 61.6
+        },
+        "2019": {
+          "n": 368,
+          "pnl": 10071.15,
+          "wr": 56.8
+        },
+        "2020": {
+          "n": 388,
+          "pnl": 36270.14,
+          "wr": 57.7
+        },
+        "2021": {
+          "n": 421,
+          "pnl": 72355.56,
+          "wr": 56.8
+        },
+        "2022": {
+          "n": 472,
+          "pnl": 234929.74,
+          "wr": 58.3
+        },
+        "2023": {
+          "n": 566,
+          "pnl": 831820.14,
+          "wr": 59.7
+        },
+        "2024": {
+          "n": 420,
+          "pnl": 1058401.55,
+          "wr": 55.2
+        },
+        "2025": {
+          "n": 476,
+          "pnl": 3931995.62,
+          "wr": 60.5
+        },
+        "2026": {
+          "n": 261,
+          "pnl": 2861249.47,
+          "wr": 55.6
+        }
+      },
+      "final_balance": 7472780.78,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Ruin probability 74.1% exceeds the 10% ceiling."
+        }
+      ]
+    },
+    {
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 39,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "39 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 39,
+        "total_pnl": -559.83,
+        "win_rate": 28.2,
+        "wins": 11,
+        "losses": 28,
+        "breakevens": 0,
+        "avg_win": 147.27,
+        "avg_loss": -77.85,
+        "gross_win": 1619.97,
+        "gross_loss": -2179.8,
+        "profit_factor": 0.743,
+        "expectancy": -14.35,
+        "mean_pnl": -14.35,
+        "std_pnl": 103.67,
+        "sharpe": -0.138,
+        "sortino": -4.433,
+        "max_drawdown_abs": -1012.01,
+        "max_drawdown_pct": 9.8,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 9,
+        "trades_per_year": 4.9,
+        "sharpe_annualised": -0.305,
+        "expectancy_R": -0.1845,
+        "fixed_size_pnl": -540.0,
+        "annualisation_factor": 4.9
+      },
+      "monte_carlo": {
+        "median_final": 9413.75,
+        "p5_final": 8404.92,
+        "p95_final": 10536.59,
+        "mean_final": 9436.7,
+        "median_max_drawdown": -966.82,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 2,
+          "pnl": 33.26,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 1,
+          "pnl": -80.74,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 8,
+          "pnl": 44.02,
+          "wr": 37.5
+        },
+        "2021": {
+          "n": 2,
+          "pnl": 63.03,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 5,
+          "pnl": -391.94,
+          "wr": 0.0
+        },
+        "2023": {
+          "n": 6,
+          "pnl": 44.53,
+          "wr": 33.3
+        },
+        "2024": {
+          "n": 4,
+          "pnl": -88.6,
+          "wr": 25.0
+        },
+        "2025": {
+          "n": 8,
+          "pnl": -168.11,
+          "wr": 25.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": -15.28,
+          "wr": 33.3
+        }
+      },
+      "final_balance": 9378.91,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "39 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "instrument": "SPX500_USD",
+      "n": 106,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe 0.197 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.054).",
+      "stats": {
+        "n": 106,
+        "total_pnl": 649.09,
+        "win_rate": 42.5,
+        "wins": 45,
+        "losses": 61,
+        "breakevens": 0,
+        "avg_win": 132.68,
+        "avg_loss": -87.23,
+        "gross_win": 5970.4,
+        "gross_loss": -5321.31,
+        "profit_factor": 1.122,
+        "expectancy": 6.12,
+        "mean_pnl": 6.12,
+        "std_pnl": 112.68,
+        "sharpe": 0.054,
+        "sortino": 0.857,
+        "max_drawdown_abs": -816.6,
+        "max_drawdown_pct": 7.1,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 13.2,
+        "sharpe_annualised": 0.197,
+        "expectancy_R": 0.0714,
+        "fixed_size_pnl": 568.0,
+        "annualisation_factor": 13.2
+      },
+      "monte_carlo": {
+        "median_final": 10631.47,
+        "p5_final": 8792.15,
+        "p95_final": 12558.24,
+        "mean_final": 10651.09,
+        "median_max_drawdown": -997.11,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -80.9,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 12,
+          "pnl": 137.49,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 20,
+          "pnl": 439.66,
+          "wr": 45.0
+        },
+        "2021": {
+          "n": 6,
+          "pnl": -53.71,
+          "wr": 33.3
+        },
+        "2022": {
+          "n": 20,
+          "pnl": 100.29,
+          "wr": 40.0
+        },
+        "2023": {
+          "n": 14,
+          "pnl": 220.78,
+          "wr": 50.0
+        },
+        "2024": {
+          "n": 11,
+          "pnl": 474.74,
+          "wr": 54.5
+        },
+        "2025": {
+          "n": 15,
+          "pnl": -426.85,
+          "wr": 26.7
+        },
+        "2026": {
+          "n": 7,
+          "pnl": -162.41,
+          "wr": 42.9
+        }
+      },
+      "final_balance": 10353.87,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.054 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "instrument": "SPX500_USD",
+      "n": 34,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 34,
+        "total_pnl": 550.06,
+        "win_rate": 47.1,
+        "wins": 16,
+        "losses": 18,
+        "breakevens": 0,
+        "avg_win": 128.57,
+        "avg_loss": -83.72,
+        "gross_win": 2057.06,
+        "gross_loss": -1507.0,
+        "profit_factor": 1.365,
+        "expectancy": 16.18,
+        "mean_pnl": 16.18,
+        "std_pnl": 112.84,
+        "sharpe": 0.143,
+        "sortino": 1.942,
+        "max_drawdown_abs": -282.75,
+        "max_drawdown_pct": 2.8,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 3,
+        "trades_per_year": 4.2,
+        "sharpe_annualised": 0.295,
+        "expectancy_R": 0.1943,
+        "fixed_size_pnl": 496.0,
+        "annualisation_factor": 4.2
+      },
+      "monte_carlo": {
+        "median_final": 10545.81,
+        "p5_final": 9489.97,
+        "p95_final": 11619.74,
+        "mean_final": 10555.49,
+        "median_max_drawdown": -453.06,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2019": {
+          "n": 2,
+          "pnl": -163.98,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 4,
+          "pnl": -92.48,
+          "wr": 25.0
+        },
+        "2021": {
+          "n": 1,
+          "pnl": 138.42,
+          "wr": 100.0
+        },
+        "2022": {
+          "n": 9,
+          "pnl": -59.99,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 4,
+          "pnl": 211.58,
+          "wr": 75.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": 562.32,
+          "wr": 100.0
+        },
+        "2025": {
+          "n": 6,
+          "pnl": -128.82,
+          "wr": 33.3
+        },
+        "2026": {
+          "n": 5,
+          "pnl": 83.01,
+          "wr": 60.0
+        }
+      },
+      "final_balance": 10457.27,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 96,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 96,
+        "total_pnl": 769.79,
+        "win_rate": 40.6,
+        "wins": 39,
+        "losses": 57,
+        "breakevens": 0,
+        "avg_win": 136.51,
+        "avg_loss": -79.9,
+        "gross_win": 5324.0,
+        "gross_loss": -4554.21,
+        "profit_factor": 1.169,
+        "expectancy": 8.02,
+        "mean_pnl": 8.02,
+        "std_pnl": 108.03,
+        "sharpe": 0.074,
+        "sortino": 2.42,
+        "max_drawdown_abs": -709.44,
+        "max_drawdown_pct": 6.8,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 12.0,
+        "sharpe_annualised": 0.256,
+        "expectancy_R": 0.0997,
+        "fixed_size_pnl": 718.0,
+        "annualisation_factor": 12.0
+      },
+      "monte_carlo": {
+        "median_final": 10768.05,
+        "p5_final": 9018.8,
+        "p95_final": 12529.34,
+        "mean_final": 10763.97,
+        "median_max_drawdown": -846.72,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": -91.08,
+          "wr": 25.0
+        },
+        "2019": {
+          "n": 22,
+          "pnl": 93.52,
+          "wr": 40.9
+        },
+        "2020": {
+          "n": 17,
+          "pnl": 464.57,
+          "wr": 47.1
+        },
+        "2021": {
+          "n": 9,
+          "pnl": -500.54,
+          "wr": 11.1
+        },
+        "2022": {
+          "n": 6,
+          "pnl": -25.18,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 8,
+          "pnl": 1.74,
+          "wr": 37.5
+        },
+        "2024": {
+          "n": 11,
+          "pnl": 469.5,
+          "wr": 54.5
+        },
+        "2025": {
+          "n": 7,
+          "pnl": 108.68,
+          "wr": 42.9
+        },
+        "2026": {
+          "n": 12,
+          "pnl": 248.58,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 10649.58,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "96 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "n": 0,
+        "sharpe_annualised": 0.0,
+        "annualisation_factor": 252.0
+      },
+      "monte_carlo": {},
+      "regimes": {},
+      "final_balance": 10000.0,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "NO_DATA",
+          "to": "NO_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "No trades generated."
+        }
+      ]
+    },
+    {
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 752,
+      "verdict": "MARGINAL",
+      "why": "PF 1.286, ann. Sharpe 1.134 \u2014 positive but not strong.",
+      "stats": {
+        "n": 752,
+        "total_pnl": 13698.51,
+        "win_rate": 47.9,
+        "wins": 360,
+        "losses": 392,
+        "breakevens": 0,
+        "avg_win": 171.1,
+        "avg_loss": -122.19,
+        "gross_win": 61597.17,
+        "gross_loss": -47898.66,
+        "profit_factor": 1.286,
+        "expectancy": 18.22,
+        "mean_pnl": 18.22,
+        "std_pnl": 156.1,
+        "sharpe": 0.117,
+        "sortino": 0.521,
+        "max_drawdown_abs": -2584.57,
+        "max_drawdown_pct": 10.1,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 94.0,
+        "sharpe_annualised": 1.134,
+        "expectancy_R": 0.1497,
+        "fixed_size_pnl": 8445.0,
+        "annualisation_factor": 94.0
+      },
+      "monte_carlo": {
+        "median_final": 23685.44,
+        "p5_final": 16647.92,
+        "p95_final": 30629.54,
+        "mean_final": 23671.35,
+        "median_max_drawdown": -2150.13,
+        "ruin_probability": 0.08,
+        "double_probability": 85.04,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 31,
+          "pnl": 191.34,
+          "wr": 41.9
+        },
+        "2019": {
+          "n": 89,
+          "pnl": 591.64,
+          "wr": 47.2
+        },
+        "2020": {
+          "n": 80,
+          "pnl": 1736.9,
+          "wr": 51.2
+        },
+        "2021": {
+          "n": 93,
+          "pnl": 591.76,
+          "wr": 44.1
+        },
+        "2022": {
+          "n": 91,
+          "pnl": -148.78,
+          "wr": 40.7
+        },
+        "2023": {
+          "n": 112,
+          "pnl": 4302.97,
+          "wr": 54.5
+        },
+        "2024": {
+          "n": 102,
+          "pnl": 3748.92,
+          "wr": 52.0
+        },
+        "2025": {
+          "n": 91,
+          "pnl": 3647.16,
+          "wr": 51.6
+        },
+        "2026": {
+          "n": 63,
+          "pnl": -963.4,
+          "wr": 39.7
+        }
+      },
+      "final_balance": 20564.86,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "MARGINAL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.117 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 3282,
+      "verdict": "FAIL",
+      "why": "Ruin probability 72.1% exceeds the 10% ceiling.",
+      "stats": {
+        "n": 3282,
+        "total_pnl": 57785071.61,
+        "win_rate": 61.7,
+        "wins": 2025,
+        "losses": 1257,
+        "breakevens": 0,
+        "avg_win": 60499.86,
+        "avg_loss": -51493.35,
+        "gross_win": 122512208.89,
+        "gross_loss": -64727137.28,
+        "profit_factor": 1.893,
+        "expectancy": 17606.66,
+        "mean_pnl": 17606.66,
+        "std_pnl": 128437.35,
+        "sharpe": 0.137,
+        "sortino": 0.175,
+        "max_drawdown_abs": -2559260.99,
+        "max_drawdown_pct": 6.5,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 12,
+        "trades_per_year": 410.2,
+        "sharpe_annualised": 2.775,
+        "expectancy_R": 0.3419,
+        "fixed_size_pnl": 84163.0,
+        "annualisation_factor": 410.2
+      },
+      "monte_carlo": {
+        "median_final": 57664952.99,
+        "p5_final": 46093063.9,
+        "p95_final": 69819398.57,
+        "mean_final": 57824614.78,
+        "median_max_drawdown": -2004750.79,
+        "ruin_probability": 72.08,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 151,
+          "pnl": 5286.15,
+          "wr": 57.6
+        },
+        "2019": {
+          "n": 395,
+          "pnl": 15879.35,
+          "wr": 57.2
+        },
+        "2020": {
+          "n": 377,
+          "pnl": 53591.74,
+          "wr": 62.1
+        },
+        "2021": {
+          "n": 399,
+          "pnl": 116694.8,
+          "wr": 60.4
+        },
+        "2022": {
+          "n": 513,
+          "pnl": 576987.8,
+          "wr": 60.6
+        },
+        "2023": {
+          "n": 467,
+          "pnl": 2948349.18,
+          "wr": 66.4
+        },
+        "2024": {
+          "n": 387,
+          "pnl": 8121102.1,
+          "wr": 64.3
+        },
+        "2025": {
+          "n": 362,
+          "pnl": 22293687.55,
+          "wr": 63.8
+        },
+        "2026": {
+          "n": 231,
+          "pnl": 23653492.94,
+          "wr": 58.9
+        }
+      },
+      "final_balance": 53332333.98,
+      "skipped_low_rr": 1,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Ruin probability 72.1% exceeds the 10% ceiling."
+        }
+      ]
+    },
+    {
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 24,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "24 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 24,
+        "total_pnl": 54.61,
+        "win_rate": 37.5,
+        "wins": 9,
+        "losses": 15,
+        "breakevens": 0,
+        "avg_win": 138.32,
+        "avg_loss": -79.35,
+        "gross_win": 1244.89,
+        "gross_loss": -1190.28,
+        "profit_factor": 1.046,
+        "expectancy": 2.28,
+        "mean_pnl": 2.28,
+        "std_pnl": 108.91,
+        "sharpe": 0.021,
+        "sortino": 1.182,
+        "max_drawdown_abs": -336.61,
+        "max_drawdown_pct": 3.3,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 4,
+        "trades_per_year": 3.0,
+        "sharpe_annualised": 0.036,
+        "expectancy_R": 0.0287,
+        "fixed_size_pnl": 52.0,
+        "annualisation_factor": 3.0
+      },
+      "monte_carlo": {
+        "median_final": 10041.96,
+        "p5_final": 9210.76,
+        "p95_final": 10951.32,
+        "mean_final": 10055.01,
+        "median_max_drawdown": -485.55,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2019": {
+          "n": 8,
+          "pnl": 182.13,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 2,
+          "pnl": 63.16,
+          "wr": 50.0
+        },
+        "2021": {
+          "n": 2,
+          "pnl": -160.97,
+          "wr": 0.0
+        },
+        "2022": {
+          "n": 2,
+          "pnl": 65.85,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 1,
+          "pnl": -77.68,
+          "wr": 0.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": 208.94,
+          "wr": 66.7
+        },
+        "2025": {
+          "n": 3,
+          "pnl": -236.82,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": 10.0,
+          "wr": 33.3
+        }
+      },
+      "final_balance": 10031.72,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "24 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "instrument": "DE30_EUR",
+      "n": 90,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "90 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 90,
+        "total_pnl": -1572.36,
+        "win_rate": 31.1,
+        "wins": 28,
+        "losses": 62,
+        "breakevens": 0,
+        "avg_win": 105.25,
+        "avg_loss": -72.89,
+        "gross_win": 2946.99,
+        "gross_loss": -4519.35,
+        "profit_factor": 0.652,
+        "expectancy": -17.47,
+        "mean_pnl": -17.47,
+        "std_pnl": 85.67,
+        "sharpe": -0.204,
+        "sortino": -2.048,
+        "max_drawdown_abs": -1841.48,
+        "max_drawdown_pct": 18.4,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 19,
+        "trades_per_year": 11.2,
+        "sharpe_annualised": -0.684,
+        "expectancy_R": -0.2399,
+        "fixed_size_pnl": -1620.0,
+        "annualisation_factor": 11.2
+      },
+      "monte_carlo": {
+        "median_final": 8428.42,
+        "p5_final": 7124.99,
+        "p95_final": 9786.66,
+        "mean_final": 8439.84,
+        "median_max_drawdown": -1885.27,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -79.79,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 22,
+          "pnl": -158.45,
+          "wr": 40.9
+        },
+        "2020": {
+          "n": 16,
+          "pnl": -965.27,
+          "wr": 6.2
+        },
+        "2021": {
+          "n": 12,
+          "pnl": -454.06,
+          "wr": 16.7
+        },
+        "2022": {
+          "n": 6,
+          "pnl": 159.72,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 9,
+          "pnl": -341.35,
+          "wr": 22.2
+        },
+        "2024": {
+          "n": 7,
+          "pnl": 238.56,
+          "wr": 57.1
+        },
+        "2025": {
+          "n": 5,
+          "pnl": -31.02,
+          "wr": 40.0
+        },
+        "2026": {
+          "n": 12,
+          "pnl": 59.3,
+          "wr": 41.7
+        }
+      },
+      "final_balance": 8265.97,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "90 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "instrument": "DE30_EUR",
+      "n": 37,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "37 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 37,
+        "total_pnl": -813.8,
+        "win_rate": 29.7,
+        "wins": 11,
+        "losses": 26,
+        "breakevens": 0,
+        "avg_win": 111.89,
+        "avg_loss": -78.64,
+        "gross_win": 1230.81,
+        "gross_loss": -2044.61,
+        "profit_factor": 0.602,
+        "expectancy": -21.99,
+        "mean_pnl": -21.99,
+        "std_pnl": 89.89,
+        "sharpe": -0.245,
+        "sortino": -3.284,
+        "max_drawdown_abs": -972.11,
+        "max_drawdown_pct": 9.7,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 7,
+        "trades_per_year": 4.6,
+        "sharpe_annualised": -0.527,
+        "expectancy_R": -0.2804,
+        "fixed_size_pnl": -778.0,
+        "annualisation_factor": 4.6
+      },
+      "monte_carlo": {
+        "median_final": 9171.36,
+        "p5_final": 8310.53,
+        "p95_final": 10097.67,
+        "mean_final": 9188.72,
+        "median_max_drawdown": -1050.55,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2019": {
+          "n": 12,
+          "pnl": -348.17,
+          "wr": 33.3
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -240.07,
+          "wr": 16.7
+        },
+        "2021": {
+          "n": 6,
+          "pnl": -255.35,
+          "wr": 16.7
+        },
+        "2022": {
+          "n": 2,
+          "pnl": 262.22,
+          "wr": 100.0
+        },
+        "2023": {
+          "n": 5,
+          "pnl": -191.26,
+          "wr": 20.0
+        },
+        "2024": {
+          "n": 2,
+          "pnl": 63.59,
+          "wr": 50.0
+        },
+        "2025": {
+          "n": 2,
+          "pnl": -149.08,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 2,
+          "pnl": 44.32,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 9114.04,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "37 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 118,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe 0.273 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.071).",
+      "stats": {
+        "n": 118,
+        "total_pnl": 886.08,
+        "win_rate": 42.4,
+        "wins": 50,
+        "losses": 68,
+        "breakevens": 0,
+        "avg_win": 128.1,
+        "avg_loss": -81.16,
+        "gross_win": 6405.11,
+        "gross_loss": -5519.03,
+        "profit_factor": 1.161,
+        "expectancy": 7.51,
+        "mean_pnl": 7.51,
+        "std_pnl": 105.42,
+        "sharpe": 0.071,
+        "sortino": 1.464,
+        "max_drawdown_abs": -1146.29,
+        "max_drawdown_pct": 11.2,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 14.8,
+        "sharpe_annualised": 0.273,
+        "expectancy_R": 0.0932,
+        "fixed_size_pnl": 825.0,
+        "annualisation_factor": 14.8
+      },
+      "monte_carlo": {
+        "median_final": 10875.99,
+        "p5_final": 9035.84,
+        "p95_final": 12763.31,
+        "mean_final": 10887.13,
+        "median_max_drawdown": -919.33,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 3,
+          "pnl": -26.32,
+          "wr": 33.3
+        },
+        "2019": {
+          "n": 22,
+          "pnl": 179.34,
+          "wr": 45.5
+        },
+        "2020": {
+          "n": 14,
+          "pnl": -47.9,
+          "wr": 35.7
+        },
+        "2021": {
+          "n": 15,
+          "pnl": -718.65,
+          "wr": 20.0
+        },
+        "2022": {
+          "n": 16,
+          "pnl": 137.57,
+          "wr": 43.8
+        },
+        "2023": {
+          "n": 13,
+          "pnl": 637.08,
+          "wr": 61.5
+        },
+        "2024": {
+          "n": 13,
+          "pnl": 471.48,
+          "wr": 53.8
+        },
+        "2025": {
+          "n": 16,
+          "pnl": 49.74,
+          "wr": 37.5
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 203.74,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 10682.21,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.071 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "n": 0,
+        "sharpe_annualised": 0.0,
+        "annualisation_factor": 252.0
+      },
+      "monte_carlo": {},
+      "regimes": {},
+      "final_balance": 10000.0,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "NO_DATA",
+          "to": "NO_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "No trades generated."
+        }
+      ]
+    },
+    {
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 747,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe 0.145 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.015).",
+      "stats": {
+        "n": 747,
+        "total_pnl": 979.57,
+        "win_rate": 46.3,
+        "wins": 346,
+        "losses": 401,
+        "breakevens": 0,
+        "avg_win": 91.87,
+        "avg_loss": -76.83,
+        "gross_win": 31787.19,
+        "gross_loss": -30807.62,
+        "profit_factor": 1.032,
+        "expectancy": 1.31,
+        "mean_pnl": 1.31,
+        "std_pnl": 89.53,
+        "sharpe": 0.015,
+        "sortino": 0.047,
+        "max_drawdown_abs": -2848.56,
+        "max_drawdown_pct": 25.6,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 7,
+        "trades_per_year": 93.4,
+        "sharpe_annualised": 0.145,
+        "expectancy_R": 0.0166,
+        "fixed_size_pnl": 932.0,
+        "annualisation_factor": 93.4
+      },
+      "monte_carlo": {
+        "median_final": 10984.37,
+        "p5_final": 6881.3,
+        "p95_final": 15057.72,
+        "mean_final": 11010.06,
+        "median_max_drawdown": -2350.04,
+        "ruin_probability": 1.93,
+        "double_probability": 0.02,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 34,
+          "pnl": -530.87,
+          "wr": 38.2
+        },
+        "2019": {
+          "n": 116,
+          "pnl": 544.71,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 87,
+          "pnl": 859.96,
+          "wr": 54.0
+        },
+        "2021": {
+          "n": 103,
+          "pnl": -1785.71,
+          "wr": 35.9
+        },
+        "2022": {
+          "n": 90,
+          "pnl": -513.71,
+          "wr": 42.2
+        },
+        "2023": {
+          "n": 90,
+          "pnl": 786.55,
+          "wr": 51.1
+        },
+        "2024": {
+          "n": 90,
+          "pnl": 485.51,
+          "wr": 48.9
+        },
+        "2025": {
+          "n": 90,
+          "pnl": 1518.42,
+          "wr": 51.1
+        },
+        "2026": {
+          "n": 47,
+          "pnl": -385.29,
+          "wr": 36.2
+        }
+      },
+      "final_balance": 8869.19,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.015 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 3678,
+      "verdict": "FAIL",
+      "why": "Ruin probability 68.0% exceeds the 10% ceiling.",
+      "stats": {
+        "n": 3678,
+        "total_pnl": 3619941.12,
+        "win_rate": 57.9,
+        "wins": 2128,
+        "losses": 1550,
+        "breakevens": 0,
+        "avg_win": 4613.09,
+        "avg_loss": -3997.88,
+        "gross_win": 9816661.31,
+        "gross_loss": -6196720.19,
+        "profit_factor": 1.584,
+        "expectancy": 984.21,
+        "mean_pnl": 984.21,
+        "std_pnl": 8735.72,
+        "sharpe": 0.113,
+        "sortino": 0.15,
+        "max_drawdown_abs": -226049.98,
+        "max_drawdown_pct": 5.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 13,
+        "trades_per_year": 459.8,
+        "sharpe_annualised": 2.423,
+        "expectancy_R": 0.2471,
+        "fixed_size_pnl": 68162.0,
+        "annualisation_factor": 459.8
+      },
+      "monte_carlo": {
+        "median_final": 3637711.16,
+        "p5_final": 2766853.42,
+        "p95_final": 4505611.54,
+        "mean_final": 3634461.17,
+        "median_max_drawdown": -164466.77,
+        "ruin_probability": 68.05,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 217,
+          "pnl": 1227.75,
+          "wr": 51.6
+        },
+        "2019": {
+          "n": 448,
+          "pnl": 8896.48,
+          "wr": 58.3
+        },
+        "2020": {
+          "n": 447,
+          "pnl": 18998.65,
+          "wr": 60.0
+        },
+        "2021": {
+          "n": 405,
+          "pnl": 23800.04,
+          "wr": 54.6
+        },
+        "2022": {
+          "n": 474,
+          "pnl": 71784.35,
+          "wr": 55.9
+        },
+        "2023": {
+          "n": 477,
+          "pnl": 214062.7,
+          "wr": 61.0
+        },
+        "2024": {
+          "n": 515,
+          "pnl": 637355.32,
+          "wr": 60.0
+        },
+        "2025": {
+          "n": 460,
+          "pnl": 1576643.24,
+          "wr": 59.8
+        },
+        "2026": {
+          "n": 235,
+          "pnl": 1067172.59,
+          "wr": 53.6
+        }
+      },
+      "final_balance": 3273813.41,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Ruin probability 68.0% exceeds the 10% ceiling."
+        }
+      ]
+    },
+    {
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 40,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "40 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 40,
+        "total_pnl": 875.14,
+        "win_rate": 47.5,
+        "wins": 19,
+        "losses": 21,
+        "breakevens": 0,
+        "avg_win": 140.2,
+        "avg_loss": -85.18,
+        "gross_win": 2663.82,
+        "gross_loss": -1788.68,
+        "profit_factor": 1.489,
+        "expectancy": 21.88,
+        "mean_pnl": 21.88,
+        "std_pnl": 115.21,
+        "sharpe": 0.19,
+        "sortino": 3.485,
+        "max_drawdown_abs": -500.2,
+        "max_drawdown_pct": 4.8,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 6,
+        "trades_per_year": 5.0,
+        "sharpe_annualised": 0.425,
+        "expectancy_R": 0.2568,
+        "fixed_size_pnl": 770.0,
+        "annualisation_factor": 5.0
+      },
+      "monte_carlo": {
+        "median_final": 10876.56,
+        "p5_final": 9697.43,
+        "p95_final": 12088.54,
+        "mean_final": 10882.39,
+        "median_max_drawdown": -458.55,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 1,
+          "pnl": -81.45,
+          "wr": 0.0
+        },
+        "2019": {
+          "n": 6,
+          "pnl": 307.82,
+          "wr": 66.7
+        },
+        "2020": {
+          "n": 5,
+          "pnl": -184.93,
+          "wr": 20.0
+        },
+        "2021": {
+          "n": 1,
+          "pnl": -91.32,
+          "wr": 0.0
+        },
+        "2022": {
+          "n": 5,
+          "pnl": 267.03,
+          "wr": 60.0
+        },
+        "2023": {
+          "n": 5,
+          "pnl": 238.78,
+          "wr": 60.0
+        },
+        "2024": {
+          "n": 8,
+          "pnl": 468.9,
+          "wr": 62.5
+        },
+        "2025": {
+          "n": 9,
+          "pnl": -49.69,
+          "wr": 33.3
+        }
+      },
+      "final_balance": 10808.11,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "40 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "instrument": "XAU_USD",
+      "n": 119,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe 0.374 below 0.5 \u2014 no risk-adjusted edge (per-trade 0.097).",
+      "stats": {
+        "n": 119,
+        "total_pnl": 1193.58,
+        "win_rate": 47.9,
+        "wins": 57,
+        "losses": 62,
+        "breakevens": 0,
+        "avg_win": 113.73,
+        "avg_loss": -85.31,
+        "gross_win": 6482.87,
+        "gross_loss": -5289.29,
+        "profit_factor": 1.226,
+        "expectancy": 10.03,
+        "mean_pnl": 10.03,
+        "std_pnl": 103.6,
+        "sharpe": 0.097,
+        "sortino": 1.629,
+        "max_drawdown_abs": -735.18,
+        "max_drawdown_pct": 7.1,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 5,
+        "trades_per_year": 14.9,
+        "sharpe_annualised": 0.374,
+        "expectancy_R": 0.1176,
+        "fixed_size_pnl": 1049.0,
+        "annualisation_factor": 14.9
+      },
+      "monte_carlo": {
+        "median_final": 11190.47,
+        "p5_final": 9360.73,
+        "p95_final": 13075.49,
+        "mean_final": 11195.93,
+        "median_max_drawdown": -838.37,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": 31.13,
+          "wr": 50.0
+        },
+        "2019": {
+          "n": 20,
+          "pnl": -116.62,
+          "wr": 45.0
+        },
+        "2020": {
+          "n": 10,
+          "pnl": -31.08,
+          "wr": 40.0
+        },
+        "2021": {
+          "n": 24,
+          "pnl": -45.33,
+          "wr": 41.7
+        },
+        "2022": {
+          "n": 18,
+          "pnl": 465.6,
+          "wr": 55.6
+        },
+        "2023": {
+          "n": 13,
+          "pnl": 783.8,
+          "wr": 69.2
+        },
+        "2024": {
+          "n": 13,
+          "pnl": -359.83,
+          "wr": 30.8
+        },
+        "2025": {
+          "n": 11,
+          "pnl": 216.33,
+          "wr": 54.5
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 249.58,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 10863.51,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe 0.097 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "instrument": "XAU_USD",
+      "n": 49,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "49 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 49,
+        "total_pnl": -27.02,
+        "win_rate": 42.9,
+        "wins": 21,
+        "losses": 28,
+        "breakevens": 0,
+        "avg_win": 107.75,
+        "avg_loss": -81.77,
+        "gross_win": 2262.68,
+        "gross_loss": -2289.7,
+        "profit_factor": 0.988,
+        "expectancy": -0.55,
+        "mean_pnl": -0.55,
+        "std_pnl": 98.83,
+        "sharpe": -0.006,
+        "sortino": -0.114,
+        "max_drawdown_abs": -943.37,
+        "max_drawdown_pct": 9.2,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 6.1,
+        "sharpe_annualised": -0.015,
+        "expectancy_R": -0.0057,
+        "fixed_size_pnl": -21.0,
+        "annualisation_factor": 6.1
+      },
+      "monte_carlo": {
+        "median_final": 9964.96,
+        "p5_final": 8881.7,
+        "p95_final": 11104.09,
+        "mean_final": 9977.4,
+        "median_max_drawdown": -712.2,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2019": {
+          "n": 8,
+          "pnl": 49.01,
+          "wr": 50.0
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -49.34,
+          "wr": 33.3
+        },
+        "2021": {
+          "n": 13,
+          "pnl": -517.0,
+          "wr": 23.1
+        },
+        "2022": {
+          "n": 8,
+          "pnl": 110.6,
+          "wr": 50.0
+        },
+        "2023": {
+          "n": 4,
+          "pnl": 248.06,
+          "wr": 75.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": -27.42,
+          "wr": 33.3
+        },
+        "2025": {
+          "n": 4,
+          "pnl": 167.66,
+          "wr": 75.0
+        },
+        "2026": {
+          "n": 3,
+          "pnl": -8.59,
+          "wr": 33.3
+        }
+      },
+      "final_balance": 9854.23,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "49 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_core",
+      "name": "ICT Core (sweep \u2192 displacement/MSS \u2192 FVG entry)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 108,
+      "verdict": "FAIL",
+      "why": "Annualised Sharpe -0.180 below 0.5 \u2014 no risk-adjusted edge (per-trade -0.049).",
+      "stats": {
+        "n": 108,
+        "total_pnl": -511.27,
+        "win_rate": 39.8,
+        "wins": 43,
+        "losses": 65,
+        "breakevens": 0,
+        "avg_win": 112.32,
+        "avg_loss": -82.17,
+        "gross_win": 4829.65,
+        "gross_loss": -5340.92,
+        "profit_factor": 0.904,
+        "expectancy": -4.73,
+        "mean_pnl": -4.73,
+        "std_pnl": 96.88,
+        "sharpe": -0.049,
+        "sortino": -0.603,
+        "max_drawdown_abs": -972.8,
+        "max_drawdown_pct": 9.5,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 7,
+        "trades_per_year": 13.5,
+        "sharpe_annualised": -0.18,
+        "expectancy_R": -0.058,
+        "fixed_size_pnl": -470.0,
+        "annualisation_factor": 13.5
+      },
+      "monte_carlo": {
+        "median_final": 9463.08,
+        "p5_final": 7820.47,
+        "p95_final": 11129.29,
+        "mean_final": 9468.28,
+        "median_max_drawdown": -1324.08,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 5,
+          "pnl": 142.03,
+          "wr": 60.0
+        },
+        "2019": {
+          "n": 13,
+          "pnl": -123.19,
+          "wr": 38.5
+        },
+        "2020": {
+          "n": 16,
+          "pnl": -300.38,
+          "wr": 31.2
+        },
+        "2021": {
+          "n": 17,
+          "pnl": -53.08,
+          "wr": 41.2
+        },
+        "2022": {
+          "n": 16,
+          "pnl": -300.81,
+          "wr": 31.2
+        },
+        "2023": {
+          "n": 7,
+          "pnl": 191.98,
+          "wr": 57.1
+        },
+        "2024": {
+          "n": 17,
+          "pnl": 10.47,
+          "wr": 41.2
+        },
+        "2025": {
+          "n": 8,
+          "pnl": -53.49,
+          "wr": 37.5
+        },
+        "2026": {
+          "n": 9,
+          "pnl": -24.8,
+          "wr": 44.4
+        }
+      },
+      "final_balance": 9187.86,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Sharpe -0.049 below 0.5 \u2014 no risk-adjusted edge."
+        }
+      ]
+    },
+    {
+      "strategy": "silver_bullet",
+      "name": "Silver Bullet (NY 15:00-16:00 killzone FVG)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 0,
+      "verdict": "NO_DATA",
+      "why": "No trades generated.",
+      "stats": {
+        "n": 0,
+        "sharpe_annualised": 0.0,
+        "annualisation_factor": 252.0
+      },
+      "monte_carlo": {},
+      "regimes": {},
+      "final_balance": 10000.0,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "NO_DATA",
+          "to": "NO_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "No trades generated."
+        }
+      ]
+    },
+    {
+      "strategy": "ifvg",
+      "name": "IFVG (inverse FVG reversal)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 653,
+      "verdict": "FAIL",
+      "why": "Ruin probability 78.7% exceeds the 10% ceiling.",
+      "stats": {
+        "n": 653,
+        "total_pnl": -5914.55,
+        "win_rate": 41.5,
+        "wins": 271,
+        "losses": 382,
+        "breakevens": 0,
+        "avg_win": 44.87,
+        "avg_loss": -47.31,
+        "gross_win": 12159.25,
+        "gross_loss": -18073.8,
+        "profit_factor": 0.673,
+        "expectancy": -9.06,
+        "mean_pnl": -9.06,
+        "std_pnl": 52.43,
+        "sharpe": -0.173,
+        "sortino": -0.404,
+        "max_drawdown_abs": -6423.09,
+        "max_drawdown_pct": 61.5,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 8,
+        "trades_per_year": 81.6,
+        "sharpe_annualised": -1.563,
+        "expectancy_R": -0.1914,
+        "fixed_size_pnl": -9374.0,
+        "annualisation_factor": 81.6
+      },
+      "monte_carlo": {
+        "median_final": 4072.37,
+        "p5_final": 1918.34,
+        "p95_final": 6281.69,
+        "mean_final": 4078.87,
+        "median_max_drawdown": -6169.49,
+        "ruin_probability": 78.7,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 39,
+          "pnl": -688.96,
+          "wr": 35.9
+        },
+        "2019": {
+          "n": 96,
+          "pnl": -1843.75,
+          "wr": 40.6
+        },
+        "2020": {
+          "n": 82,
+          "pnl": -796.84,
+          "wr": 43.9
+        },
+        "2021": {
+          "n": 97,
+          "pnl": -1043.05,
+          "wr": 41.2
+        },
+        "2022": {
+          "n": 70,
+          "pnl": -512.85,
+          "wr": 41.4
+        },
+        "2023": {
+          "n": 74,
+          "pnl": -84.35,
+          "wr": 43.2
+        },
+        "2024": {
+          "n": 65,
+          "pnl": -456.61,
+          "wr": 36.9
+        },
+        "2025": {
+          "n": 78,
+          "pnl": -385.3,
+          "wr": 39.7
+        },
+        "2026": {
+          "n": 52,
+          "pnl": -102.84,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 2275.34,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Ruin probability 78.7% exceeds the 10% ceiling."
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup",
+      "name": "Turtle Soup (sweep reversal, no MSS wait)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 3232,
+      "verdict": "FAIL",
+      "why": "Ruin probability 13.4% exceeds the 10% ceiling.",
+      "stats": {
+        "n": 3232,
+        "total_pnl": 287098.53,
+        "win_rate": 60.8,
+        "wins": 1966,
+        "losses": 1266,
+        "breakevens": 0,
+        "avg_win": 469.7,
+        "avg_loss": -502.63,
+        "gross_win": 923428.25,
+        "gross_loss": -636329.72,
+        "profit_factor": 1.451,
+        "expectancy": 88.83,
+        "mean_pnl": 88.83,
+        "std_pnl": 699.92,
+        "sharpe": 0.127,
+        "sortino": 0.18,
+        "max_drawdown_abs": -15921.13,
+        "max_drawdown_pct": 10.7,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 12,
+        "trades_per_year": 404.0,
+        "sharpe_annualised": 2.553,
+        "expectancy_R": 0.1762,
+        "fixed_size_pnl": 42703.0,
+        "annualisation_factor": 404.0
+      },
+      "monte_carlo": {
+        "median_final": 297120.91,
+        "p5_final": 231309.34,
+        "p95_final": 363252.52,
+        "mean_final": 296857.51,
+        "median_max_drawdown": -12724.19,
+        "ruin_probability": 13.4,
+        "double_probability": 100.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 217,
+          "pnl": 3939.5,
+          "wr": 62.7
+        },
+        "2019": {
+          "n": 411,
+          "pnl": 5139.39,
+          "wr": 58.2
+        },
+        "2020": {
+          "n": 496,
+          "pnl": 9894.57,
+          "wr": 61.9
+        },
+        "2021": {
+          "n": 476,
+          "pnl": 15231.08,
+          "wr": 60.1
+        },
+        "2022": {
+          "n": 292,
+          "pnl": 15766.02,
+          "wr": 60.3
+        },
+        "2023": {
+          "n": 307,
+          "pnl": 31965.68,
+          "wr": 61.9
+        },
+        "2024": {
+          "n": 367,
+          "pnl": 48605.6,
+          "wr": 58.0
+        },
+        "2025": {
+          "n": 372,
+          "pnl": 82821.19,
+          "wr": 62.6
+        },
+        "2026": {
+          "n": 294,
+          "pnl": 73735.5,
+          "wr": 63.3
+        }
+      },
+      "final_balance": 208397.9,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "FAIL",
+          "to": "FAIL",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "Ruin probability 13.4% exceeds the 10% ceiling."
+        }
+      ]
+    },
+    {
+      "strategy": "power_of_three",
+      "name": "Power of Three (Accumulation \u2192 Manipulation \u2192 Distribution)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 34,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 34,
+        "total_pnl": -301.31,
+        "win_rate": 38.2,
+        "wins": 13,
+        "losses": 21,
+        "breakevens": 0,
+        "avg_win": 107.16,
+        "avg_loss": -80.69,
+        "gross_win": 1393.11,
+        "gross_loss": -1694.42,
+        "profit_factor": 0.822,
+        "expectancy": -8.86,
+        "mean_pnl": -8.86,
+        "std_pnl": 93.87,
+        "sharpe": -0.094,
+        "sortino": -1.692,
+        "max_drawdown_abs": -793.88,
+        "max_drawdown_pct": 7.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 5,
+        "trades_per_year": 4.2,
+        "sharpe_annualised": -0.194,
+        "expectancy_R": -0.1107,
+        "fixed_size_pnl": -282.0,
+        "annualisation_factor": 4.2
+      },
+      "monte_carlo": {
+        "median_final": 9694.21,
+        "p5_final": 8824.56,
+        "p95_final": 10596.97,
+        "mean_final": 9702.95,
+        "median_max_drawdown": -688.97,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 3,
+          "pnl": -114.76,
+          "wr": 33.3
+        },
+        "2019": {
+          "n": 3,
+          "pnl": -251.98,
+          "wr": 0.0
+        },
+        "2020": {
+          "n": 2,
+          "pnl": -157.13,
+          "wr": 0.0
+        },
+        "2021": {
+          "n": 4,
+          "pnl": 36.05,
+          "wr": 50.0
+        },
+        "2022": {
+          "n": 6,
+          "pnl": -77.78,
+          "wr": 33.3
+        },
+        "2023": {
+          "n": 2,
+          "pnl": 248.48,
+          "wr": 100.0
+        },
+        "2024": {
+          "n": 6,
+          "pnl": 125.74,
+          "wr": 50.0
+        },
+        "2025": {
+          "n": 6,
+          "pnl": -85.62,
+          "wr": 33.3
+        },
+        "2026": {
+          "n": 2,
+          "pnl": -24.31,
+          "wr": 50.0
+        }
+      },
+      "final_balance": 9614.4,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "34 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_ob",
+      "name": "ICT + order-block entry (ICC control)",
+      "family": "ICT",
+      "instrument": "CHF_JPY",
+      "n": 86,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "86 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 86,
+        "total_pnl": -289.18,
+        "win_rate": 43.0,
+        "wins": 37,
+        "losses": 49,
+        "breakevens": 0,
+        "avg_win": 97.67,
+        "avg_loss": -79.65,
+        "gross_win": 3613.84,
+        "gross_loss": -3903.02,
+        "profit_factor": 0.926,
+        "expectancy": -3.36,
+        "mean_pnl": -3.36,
+        "std_pnl": 90.91,
+        "sharpe": -0.037,
+        "sortino": -0.497,
+        "max_drawdown_abs": -1301.72,
+        "max_drawdown_pct": 13.0,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 10,
+        "trades_per_year": 10.8,
+        "sharpe_annualised": -0.121,
+        "expectancy_R": -0.0427,
+        "fixed_size_pnl": -276.0,
+        "annualisation_factor": 10.8
+      },
+      "monte_carlo": {
+        "median_final": 9680.17,
+        "p5_final": 8323.07,
+        "p95_final": 11093.49,
+        "mean_final": 9695.16,
+        "median_max_drawdown": -1017.51,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2018": {
+          "n": 4,
+          "pnl": -181.37,
+          "wr": 25.0
+        },
+        "2019": {
+          "n": 4,
+          "pnl": -136.8,
+          "wr": 25.0
+        },
+        "2020": {
+          "n": 14,
+          "pnl": -337.21,
+          "wr": 28.6
+        },
+        "2021": {
+          "n": 15,
+          "pnl": 94.73,
+          "wr": 53.3
+        },
+        "2022": {
+          "n": 12,
+          "pnl": -594.25,
+          "wr": 16.7
+        },
+        "2023": {
+          "n": 5,
+          "pnl": 113.04,
+          "wr": 60.0
+        },
+        "2024": {
+          "n": 14,
+          "pnl": -0.71,
+          "wr": 42.9
+        },
+        "2025": {
+          "n": 12,
+          "pnl": 190.53,
+          "wr": 50.0
+        },
+        "2026": {
+          "n": 6,
+          "pnl": 562.86,
+          "wr": 100.0
+        }
+      },
+      "final_balance": 9424.31,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "86 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    },
+    {
+      "strategy": "ict_icc",
+      "name": "ICT + ICC (institutional order-block entry)",
+      "family": "ICT+ICC",
+      "instrument": "CHF_JPY",
+      "n": 33,
+      "verdict": "INSUFFICIENT_DATA",
+      "why": "33 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only.",
+      "stats": {
+        "n": 33,
+        "total_pnl": -1187.62,
+        "win_rate": 24.2,
+        "wins": 8,
+        "losses": 25,
+        "breakevens": 0,
+        "avg_win": 110.28,
+        "avg_loss": -82.79,
+        "gross_win": 882.23,
+        "gross_loss": -2069.85,
+        "profit_factor": 0.426,
+        "expectancy": -35.99,
+        "mean_pnl": -35.99,
+        "std_pnl": 89.58,
+        "sharpe": -0.402,
+        "sortino": -3.961,
+        "max_drawdown_abs": -1523.34,
+        "max_drawdown_pct": 14.9,
+        "max_drawdown_basis": "account_equity",
+        "account_wiped": false,
+        "max_consec_losses": 10,
+        "trades_per_year": 4.1,
+        "sharpe_annualised": -0.816,
+        "expectancy_R": -0.4356,
+        "fixed_size_pnl": -1078.0,
+        "annualisation_factor": 4.1
+      },
+      "monte_carlo": {
+        "median_final": 8782.81,
+        "p5_final": 8024.13,
+        "p95_final": 9675.27,
+        "mean_final": 8809.94,
+        "median_max_drawdown": -1359.78,
+        "ruin_probability": 0.0,
+        "double_probability": 0.0,
+        "simulations": 10000,
+        "starting_balance": 10000.0
+      },
+      "regimes": {
+        "2019": {
+          "n": 1,
+          "pnl": 228.94,
+          "wr": 100.0
+        },
+        "2020": {
+          "n": 6,
+          "pnl": -294.43,
+          "wr": 16.7
+        },
+        "2021": {
+          "n": 9,
+          "pnl": -165.0,
+          "wr": 44.4
+        },
+        "2022": {
+          "n": 7,
+          "pnl": -571.26,
+          "wr": 0.0
+        },
+        "2023": {
+          "n": 4,
+          "pnl": -124.8,
+          "wr": 25.0
+        },
+        "2024": {
+          "n": 3,
+          "pnl": -215.02,
+          "wr": 0.0
+        },
+        "2025": {
+          "n": 2,
+          "pnl": -152.83,
+          "wr": 0.0
+        },
+        "2026": {
+          "n": 1,
+          "pnl": 106.78,
+          "wr": 100.0
+        }
+      },
+      "final_balance": 8687.93,
+      "skipped_low_rr": 0,
+      "verdict_history": [
+        {
+          "from": "INSUFFICIENT_DATA",
+          "to": "INSUFFICIENT_DATA",
+          "reason": "gate switched from per-trade to annualised Sharpe (2026-07-27)",
+          "old_why": "33 trades \u2014 below the 100-trade floor. Not graded. Any performance figure here is descriptive only."
+        }
+      ]
+    }
+  ],
+  "methodology_notes": {
+    "compounding_artifact": "total_pnl / final_balance COMPOUND position size off a growing balance with fractional units and no liquidity cap. For high-frequency models this explodes: turtle_soup/DE30 reports $57.8M from $10k, which is arithmetic, not a forecast. Use expectancy_R and fixed_size_pnl for a realistic read \u2014 the same model at FIXED $75 risk/trade returns ~$84k over 8 years.",
+    "sharpe_frequency_bias": "The shared gate FAILs any model with per-trade Sharpe < 0.5. That is an extraordinarily high bar \u2014 mean P&L half a standard deviation PER TRADE \u2014 which essentially no real strategy meets, and it penalises high-frequency models that accumulate edge across many small trades. sharpe_annualised (per-trade Sharpe x sqrt(trades/yr)) is reported alongside: turtle_soup scores 2.4-2.8 annualised while failing the per-trade test. The gate was NOT changed after seeing these results \u2014 moving a threshold to make things pass is how backtests get talked into deployment. Flagged for Jase.",
+    "gate_unchanged": true
+  },
+  "regraded_at": "2026-07-27T20:19:20.055684+00:00",
+  "gate_note": "Verdicts regraded 2026-07-27 under ANNUALISED Sharpe. Trade statistics unchanged; only the Sharpe basis and therefore the verdict re-tier are recomputed. See scripts/regrade_ict_research.py."
+}

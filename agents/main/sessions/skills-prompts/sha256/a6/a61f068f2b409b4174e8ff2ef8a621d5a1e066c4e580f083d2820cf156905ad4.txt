@@ -1,0 +1,141 @@
+
+
+The following skills provide specialized instructions for specific tasks.
+Use the read tool to load a skill's file when the task matches its description.
+If a skill's <version> differs from a previous turn, re-read its SKILL.md before using it.
+When a skill file references a relative path, resolve it against the skill directory (parent of SKILL.md / dirname of the path) and use that absolute path in tool commands.
+
+<available_skills>
+  <skill>
+    <name>browser-automation</name>
+    <description>Use when controlling web pages with the OpenClaw browser tool, especially multi-step flows, login checks, tab management, or recovery from stale refs/timeouts.</description>
+    <location>~/.openclaw/plugin-skills/browser-automation/SKILL.md</location>
+    <version>sha256:608bed60aca52631</version>
+  </skill>
+  <skill>
+    <name>canvas</name>
+    <description>Present HTML on connected OpenClaw node canvases, navigate/eval/snapshot, and debug canvas host URLs.</description>
+    <location>~/.openclaw/plugin-skills/canvas/SKILL.md</location>
+    <version>sha256:7419e23f242397b3</version>
+  </skill>
+  <skill>
+    <name>clawhub</name>
+    <description>Search ClawHub for skills when a requested capability is not already available; install, verify, update, publish, or sync skills.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/clawhub/SKILL.md</location>
+    <version>sha256:6bb70d95cbd1a545</version>
+  </skill>
+  <skill>
+    <name>crypto-self-learning</name>
+    <description>Self-learning system for crypto trading. Logs trades with full context (indicators, market conditions), analyzes patterns of wins/losses, and auto-updates trading rules. Use to log trades, analyze performance, identify what works/fails, and continuously improve trading accuracy.</description>
+    <location>~/.openclaw/workspace/skills/crypto-self-learning/SKILL.md</location>
+    <version>sha256:c43d5abb2048886d</version>
+  </skill>
+  <skill>
+    <name>diagram-maker</name>
+    <description>Create SVG/HTML or Excalidraw diagrams for concepts, architecture, flows, and whiteboards.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/diagram-maker/SKILL.md</location>
+    <version>sha256:6195e03fcb04a1a6</version>
+  </skill>
+  <skill>
+    <name>frontend-design-ultimate</name>
+    <description>Create distinctive, production-grade static sites with React, Tailwind CSS, and shadcn/ui — no mockups needed. Generates bold, memorable designs from plain text requirements with anti-AI-slop aesthetics, mobile-first responsive patterns, and single-file bundling. Use when building landing pages, marketing sites, portfolios, dashboards, or any static web UI. Supports both Vite (pure static) and Next.js (Vercel deploy) workflows.</description>
+    <location>~/.openclaw/workspace/skills/frontend-design-ultimate/SKILL.md</location>
+    <version>sha256:bd947c267ecb1e73</version>
+  </skill>
+  <skill>
+    <name>healthcheck</name>
+    <description>Audit/harden OpenClaw hosts: SSH, firewall, updates, exposure, backups, disk encryption, gateway security.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/healthcheck/SKILL.md</location>
+    <version>sha256:518ec6e0482cf1c7</version>
+  </skill>
+  <skill>
+    <name>last30days</name>
+    <description>Research any topic from the last 30 days on Reddit + X + Web, synthesize findings, and write copy-paste-ready prompts. Use when the user wants recent social/web research on a topic, asks &quot;what are people saying about X&quot;, or wants to learn current best practices. Requires OPENAI_API_KEY and/or XAI_API_KEY for full Reddit+X access, falls back to web search.</description>
+    <location>~/.openclaw/workspace/skills/last30days/SKILL.md</location>
+    <version>sha256:3f3a34755d0b763e</version>
+  </skill>
+  <skill>
+    <name>meme-maker</name>
+    <description>Search meme templates, suggest formats, and generate local or hosted image memes.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/meme-maker/SKILL.md</location>
+    <version>sha256:8b8832f9f0f58b16</version>
+  </skill>
+  <skill>
+    <name>node-connect</name>
+    <description>Diagnose OpenClaw Android, iOS, or macOS node pairing, QR/setup code, route, auth, and connection failures.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/node-connect/SKILL.md</location>
+    <version>sha256:cc39026fd84e5cfa</version>
+  </skill>
+  <skill>
+    <name>node-inspect-debugger</name>
+    <description>Debug Node.js with node inspect, --inspect, breakpoints, CDP, heap, and CPU profiles.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/node-inspect-debugger/SKILL.md</location>
+    <version>sha256:50d2f6828eaf4bbf</version>
+  </skill>
+  <skill>
+    <name>python-debugpy</name>
+    <description>Debug Python with pdb, breakpoint(), post-mortem inspection, and debugpy remote attach.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/python-debugpy/SKILL.md</location>
+    <version>sha256:bfb1891204b67260</version>
+  </skill>
+  <skill>
+    <name>self-improvement</name>
+    <description>Captures learnings, errors, and corrections to enable continuous improvement. Use when: (1) A command or operation fails unexpectedly, (2) User corrects Claude (&apos;No, that&apos;s wrong...&apos;, &apos;Actually...&apos;), (3) User requests a capability that doesn&apos;t exist, (4) An external API or tool fails, (5) Claude realizes its knowledge is outdated or incorrect, (6) A better approach is discovered for a recurring task. Also review learnings before major tasks.</description>
+    <location>~/.openclaw/workspace/skills/self-improving-agent/SKILL.md</location>
+    <version>sha256:cec6d90543ea51c1</version>
+  </skill>
+  <skill>
+    <name>skill-creator</name>
+    <description>Create, edit, audit, tidy, validate, or restructure AgentSkills and SKILL.md files.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/skill-creator/SKILL.md</location>
+    <version>sha256:d15b25d332d835eb</version>
+  </skill>
+  <skill>
+    <name>skill-detector</name>
+    <description>Intelligent skill creation assistant that detects workflow patterns, auto-drafts skills, improves existing ones, and learns your style over time. Runs passively in every conversation. Use actively with &quot;analyze my skills&quot; or &quot;what skills should I make?&quot;</description>
+    <location>~/.openclaw/workspace/skills/skill-detector/SKILL.md</location>
+    <version>sha256:b77da32fd78d3113</version>
+  </skill>
+  <skill>
+    <name>spike</name>
+    <description>Run throwaway prototypes to validate feasibility, compare approaches, and report a verdict.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/spike/SKILL.md</location>
+    <version>sha256:1258cde2d0e53267</version>
+  </skill>
+  <skill>
+    <name>taskflow</name>
+    <description>Coordinate multi-step detached tasks as one durable TaskFlow job with owner context, state, waits, and child tasks.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/taskflow/SKILL.md</location>
+    <version>sha256:d8b6a48d329aef0a</version>
+  </skill>
+  <skill>
+    <name>taskflow-inbox-triage</name>
+    <description>Example TaskFlow pattern for inbox triage, intent routing, waiting on replies, and later summaries.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/taskflow-inbox-triage/SKILL.md</location>
+    <version>sha256:1fe28cd924d8ae2d</version>
+  </skill>
+  <skill>
+    <name>tavily</name>
+    <description>AI-optimized web search via Tavily API. Returns concise, relevant results for AI agents.</description>
+    <location>~/.openclaw/workspace/skills/tavily-search/SKILL.md</location>
+    <version>sha256:c1c4f168eb62dc1b</version>
+  </skill>
+  <skill>
+    <name>tmux</name>
+    <description>Control tmux sessions/panes for interactive CLIs: list, capture output, send keys, paste text, monitor prompts.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/tmux/SKILL.md</location>
+    <version>sha256:98b6b8392ec57e11</version>
+  </skill>
+  <skill>
+    <name>typescript-pro</name>
+    <description>Use when building TypeScript applications requiring advanced type systems, generics, or full-stack type safety. Invoke for type guards, utility types, tRPC integration, monorepo setup.</description>
+    <location>~/.openclaw/workspace/skills/typescript-pro/SKILL.md</location>
+    <version>sha256:1b7d4082f6de1f23</version>
+  </skill>
+  <skill>
+    <name>weather</name>
+    <description>Current weather and forecasts with web_fetch, falling back to wttr.in curl for locations, rain, temperature, travel planning.</description>
+    <location>/usr/lib/node_modules/openclaw/skills/weather/SKILL.md</location>
+    <version>sha256:62ab4821aa873949</version>
+  </skill>
+</available_skills>

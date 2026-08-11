@@ -2,6 +2,7 @@
 
 ## User preferences
 - Reports must be TEXT ONLY; never send images or charts. Plain text with emojis and spacing.
+- System Upgrades: Generate a structured "System Upgrade Report" (Status, Location, Capabilities, Operational Impact) for the team anytime a new tool or system is downloaded.
 - Oracle bankroll is $500.
 - NY session opens at 13:30 UTC (9:30 AM EDT) during daylight saving time.
 

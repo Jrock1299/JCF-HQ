@@ -1,113 +1,56 @@
 {
-  "date": "2026-05-31",
-  "week_focus": "Prioritized trading-agent upgrades: Claude skills, financial MCP servers, backtesting engines, and dashboard charting infrastructure.",
+  "date": "2026-07-18",
+  "week_focus": "Finding MCP servers, OpenClaw skills, and agent orchestration tools to enhance JCF HQ's trading, research, and management capabilities.",
   "findings": [
     {
-      "category": "TRADING",
-      "name": "tradermonty/claude-trading-skills",
-      "url": "https://github.com/tradermonty/claude-trading-skills",
-      "description": "A Claude Code skills repository focused on equity investors and traders, with workflows for market analysis, technical charting, economic calendars, and trading strategy development. It appears directly aligned with Claude Code's SKILL.md pattern and is the closest match to an installable trading skill pack.",
-      "relevance": "This is directly useful for JCF HQ because Crisp, Blade, and Oracle can borrow structured workflows for backtesting, signal generation, and market-data reasoning instead of relying on loose prompts.",
+      "name": "CoinCap MCP Server",
+      "category": "TRADING & INVESTING",
+      "url": "https://www.npmjs.com/package/@coincap/coincap-mcp-server",
       "priority": "HIGH",
-      "install_ready": true
+      "install_ready": false,
+      "why_it_matters": "Enables Huncho and Crisp to fetch real-time cryptocurrency data, historical trends, and technical analysis tools directly into their context without needing custom API integrations. Essential for evaluating crypto setups."
     },
     {
-      "category": "TRADING",
-      "name": "Alpaca MCP Server",
-      "url": "https://alpaca.markets/mcp-server",
-      "description": "Alpaca's MCP server connects AI assistants to Alpaca's trading and market-data APIs. It supports natural-language research, account inspection, market analysis, and order workflows through a structured MCP interface.",
-      "relevance": "This matters for JCF HQ because it could give Crisp a cleaner bridge into equities, crypto, options, and paper/live execution workflows while keeping tool calls auditable.",
+      "name": "Composer Trade MCP",
+      "category": "TRADING & INVESTING",
+      "url": "https://mcp.so/servers/composer-trade-mcp",
       "priority": "HIGH",
-      "install_ready": false
+      "install_ready": false,
+      "why_it_matters": "Allows LLMs to backtest investment ideas and execute automated trading strategies. This directly aligns with Crisp and Blade's mission to optimize and execute trades programmatically."
     },
     {
-      "category": "TRADING",
-      "name": "EODHD Financial Data MCP Server",
-      "url": "https://eodhd.com/financial-apis/mcp-server-for-financial-data-by-eodhd",
-      "description": "EODHD provides an MCP server for real-time and historical financial data, including equities, fundamentals, technical analysis, and macroeconomic indicators. It exposes financial API documentation as MCP resources, making it easier for agents to discover available data safely.",
-      "relevance": "This could strengthen Oracle and long-term stock research by giving agents structured access to fundamentals, macro context, and historical market data without custom scraping.",
+      "name": "Agent HQ",
+      "category": "AUTOMATION & AGENTS",
+      "url": "https://agent-hq.io/",
       "priority": "HIGH",
-      "install_ready": false
+      "install_ready": false,
+      "why_it_matters": "A mission control system designed to orchestrate and manage multiple AI agents. For JCF HQ, it provides a centralized UI to assign tasks, monitor progress, and review audit logs for Huncho, Crisp, Blade, and Oracle."
     },
     {
-      "category": "TRADING",
-      "name": "Financial Datasets MCP Server",
-      "url": "https://docs.financialdatasets.ai/mcp-server",
-      "description": "Financial Datasets offers an MCP server for real-time financial data such as stock prices, financial statements, SEC filings, and news. The server is designed for AI assistants that need structured company and market context.",
-      "relevance": "This is useful for JCF HQ's research layer because Oracle can use filings, earnings, and news context to validate market theses before surfacing opportunities.",
+      "name": "Awesome OpenClaw Skills (VoltAgent)",
+      "category": "AUTOMATION & AGENTS",
+      "url": "https://github.com/VoltAgent/awesome-openclaw-skills",
       "priority": "HIGH",
-      "install_ready": false
+      "install_ready": true,
+      "why_it_matters": "A centralized repository of skills designed specifically for OpenClaw. Since JCF HQ runs on OpenClaw, this provides ready-to-install drop-in capabilities to immediately expand the agents' toolsets."
     },
     {
-      "category": "TRADING",
-      "name": "NautilusTrader",
-      "url": "https://nautilustrader.io/",
-      "description": "NautilusTrader is a high-performance open-source trading engine for backtesting and live algorithmic strategies. Its Rust core with Python integration focuses on deterministic execution, event-driven design, and research-to-live parity.",
-      "relevance": "This is a serious candidate for upgrading Crisp or Blade's backtesting layer because it is built for production-grade strategy validation, not just notebook experiments.",
-      "priority": "HIGH",
-      "install_ready": false
-    },
-    {
-      "category": "TRADING",
-      "name": "OpenBB",
-      "url": "https://github.com/OpenBB-finance/OpenBB",
-      "description": "OpenBB is an open-source investment research platform with Python-first access to equities, crypto, macro, derivatives, and alternative data. It is designed for extensible financial analysis and automation.",
-      "relevance": "JCF HQ could use OpenBB as a research backend for Oracle and dashboard enrichment, especially for cross-asset context and repeatable market scans.",
+      "name": "MCP Dashboard (bryankthompson)",
+      "category": "DASHBOARD & UI",
+      "url": "https://github.com/bryankthompson/mcp-dashboard",
       "priority": "MEDIUM",
-      "install_ready": false
+      "install_ready": false,
+      "why_it_matters": "An open-source web dashboard for monitoring multiple MCP servers. Provides JCF HQ with observability into which tools the agents are calling, performance metrics, and error rates."
     },
     {
-      "category": "AUTOMATION",
-      "name": "Claude Code Agent Teams",
-      "url": "https://code.claude.com/docs/en/agent-teams",
-      "description": "Agent Teams is Anthropic's Claude Code orchestration feature for coordinating multiple agents with separate context windows, dependencies, and direct teammate communication. It is built for larger coding and research tasks where parallel specialists improve throughput.",
-      "relevance": "This maps cleanly onto JCF HQ's Huncho-to-sub-agent structure and could improve how Crisp, Blade, Oracle, and dashboard agents coordinate without dumping all context into one thread.",
-      "priority": "HIGH",
-      "install_ready": false
-    },
-    {
-      "category": "AUTOMATION",
-      "name": "MCP Registry Preview",
-      "url": "https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/",
-      "description": "The official MCP Registry is an open catalog and API for discovering public MCP servers. It standardizes server metadata and gives developers a central place to find, evaluate, and integrate MCP tools.",
-      "relevance": "This should become part of Lucy's weekly scout workflow because it can surface new financial, browser, database, and automation MCP servers before they hit mainstream lists.",
+      "name": "Wrike MCP Server",
+      "category": "GENERAL PRODUCTIVITY",
+      "url": "https://help.wrike.com/hc/en-us/articles/34605829225746-Wrike-Model-Context-Protocol-MCP",
       "priority": "MEDIUM",
-      "install_ready": false
-    },
-    {
-      "category": "DASHBOARD",
-      "name": "TradingView Lightweight Charts",
-      "url": "https://github.com/tradingview/lightweight-charts",
-      "description": "TradingView Lightweight Charts is an open-source charting library optimized for financial time-series visualization. It supports candlesticks, line charts, histograms, responsive layouts, and high-performance rendering.",
-      "relevance": "This is a strong fit for JCF HQ dashboards because Crisp, Blade, and Oracle outputs can be rendered as fast, readable market panels without heavy charting dependencies.",
-      "priority": "HIGH",
-      "install_ready": false
-    },
-    {
-      "category": "PRODUCTIVITY",
-      "name": "Langfuse",
-      "url": "https://github.com/langfuse/langfuse",
-      "description": "Langfuse is an open-source LLM observability platform for tracing agent runs, prompts, tool calls, evaluations, and costs. It helps teams inspect where agents fail, drift, or spend too much.",
-      "relevance": "This could give JCF HQ better visibility into trading-agent decisions, weekly scout runs, and model spend, which matters if agents are operating on schedules or touching financial workflows.",
-      "priority": "MEDIUM",
-      "install_ready": false
+      "install_ready": false,
+      "why_it_matters": "Integrates project management directly with AI models. This allows Huncho to autonomously create, track, and manage long-term tasks, research goals, and weekly performance reviews for Jase."
     }
   ],
-  "top_pick": "tradermonty/claude-trading-skills",
-  "summary": "This week's strongest signal is that trading-focused Claude Code skills and financial MCP servers are maturing fast enough to be useful for JCF HQ now. The best immediate win is tradermonty/claude-trading-skills because it is closest to a direct installable skill pack and matches the way Huncho already coordinates specialist agents. Alpaca, EODHD, and Financial Datasets are the strongest MCP/API candidates for structured market data and execution workflows. For infrastructure, Claude Agent Teams and Langfuse are worth tracking because they improve coordination, traceability, and reliability across the agent roster.",
-  "_meta": {
-    "timestamp": "2026-05-31T12:05:49.598793+00:00",
-    "focus": null,
-    "model": "openai/gpt-5.5",
-    "queries": [
-      "claude code skills trading",
-      "claude code skills finance",
-      "MCP server trading",
-      "claude code skills new this week",
-      "anthropic MCP registry",
-      "MCP server financial data",
-      "open source algo trading python 2026",
-      "claude code agent orchestration"
-    ]
-  }
+  "top_pick": "Awesome OpenClaw Skills (VoltAgent)",
+  "summary": "This week's research focused on expanding JCF HQ's operational capabilities through the Model Context Protocol (MCP) and agent orchestration. The top finds are specialized MCP servers for real-time crypto data (CoinCap) and automated trading (Composer), which will directly empower Crisp and Blade. Additionally, discovering the Awesome OpenClaw Skills repository provides an immediate, install-ready pathway to upgrade Huncho's capabilities. For infrastructure, Agent HQ and open-source MCP dashboards offer the necessary UI and observability to manage the growing team of sub-agents effectively."
 }

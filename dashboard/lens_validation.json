@@ -1,5 +1,5 @@
 {
-  "date": "2026-07-27",
+  "date": "2026-08-09",
   "agent_reports": {
     "blade": {
       "total_trades": 0,
@@ -16,8 +16,11 @@
         "starting_balance": null
       },
       "verdict": "NO_DATA",
-      "recommendation": "Blade cannot be assessed. agent_trades.json and the pre-migration TradeLocker feed contain zero trades, and blade_balance.json is $0 after the July 17 clean-slate reset. Set the Round 2 starting balance, restore a reliable OANDA trade export into the dashboard pipeline, and collect at least 20 closed trades before any statistical conclusion.",
+      "recommendation": "Blade has no OANDA trade data and its clean-slate balance is $0.00. Set the funded starting balance, capture every closed trade with realized P&L, initial risk, stop distance, fees, and session tag, then reassess only after at least 20 current trades. No claim of edge, sizing quality, or Monte Carlo safety is defensible.",
       "sortino": 0,
+      "max_drawdown_abs": null,
+      "max_drawdown_basis": null,
+      "account_wiped": false,
       "total_pnl": 0,
       "expectancy": 0,
       "max_consec_losses": 0,
@@ -54,8 +57,11 @@
         "starting_balance": null
       },
       "verdict": "NO_DATA",
-      "recommendation": "Edge cannot be assessed. There is no P&L sample, and edge_portfolio.json is stale by 61 days despite showing a $5,000 balance. Restore current portfolio synchronization and closed-trade logging; do not treat the May 27 balance as deployable capital or run Monte Carlo until the source is current and at least 20 trades exist.",
+      "recommendation": "Edge has no P&L sample and its $5,000 portfolio source is stale by 74 days. Refresh the portfolio feed and log trade-level P&L, initial dollar risk, stop distance, and execution costs. Until 20 current usable trades exist, the balance is paper capital, not proof of a strategy.",
       "sortino": 0,
+      "max_drawdown_abs": null,
+      "max_drawdown_basis": null,
+      "account_wiped": false,
       "total_pnl": 0,
       "expectancy": 0,
       "max_consec_losses": 0,
@@ -66,11 +72,11 @@
         "ok": false,
         "reason": "stale",
         "as_of": "2026-05-27T17:18:17.942549+00:00",
-        "age_days": 61.01,
+        "age_days": 73.78,
         "stale_after_days": 14,
         "basis": "field:updated",
         "detail": "",
-        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (61d ago)"
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (74d ago)"
       },
       "notes": [],
       "data_status": "No P&L data available"
@@ -79,21 +85,19 @@
   "portfolio_summary": {
     "total_pnl": 0.0,
     "correlation_risk": "unknown",
-    "overall_assessment": "There is no validated portfolio. Both agents are locked at NO_DATA, so total P&L, correlation, drawdown, Sharpe, profit factor, and ruin probability are unknown\u2014not zero. Any claim of edge, safety, or readiness would be fabricated."
+    "overall_assessment": "There is no validated portfolio. Both systems have zero usable trades, no valid Monte Carlo outputs, and no basis for measuring correlation, portfolio heat, ruin probability, or combined risk."
   },
   "recommendations": [
-    "Do not allocate new live capital to Blade or Edge until their respective data pipelines produce current, closed-trade P&L records.",
-    "Set Blade's explicit Round 2 starting balance and ingest OANDA executions, fills, fees, stops, and realized P&L into /root/.openclaw/dashboard/agent_trades.json.",
-    "Repair Edge's portfolio and trade synchronization; replace the May 27 stale snapshot with current timestamped balance, positions, and closed-trade data.",
-    "After 20 closed trades per agent, run the full review: five-year multi-regime backtest, parameter sensitivity sweep, 1.5-2x execution-friction stress test, and out-of-sample walk-forward validation.",
-    "When trading resumes, enforce risk at or below 1% per trade and total combined Blade-plus-Edge open risk below 6%."
+    "Do not deploy or increase capital for Blade or Edge.",
+    "Implement current closed-trade ingestion and daily freshness alerts for both systems.",
+    "Use fixed-fractional risk of no more than 1% per trade when trading resumes, with total combined open risk capped below 6% until a validated sample exists.",
+    "Before any deployment verdict, require a rule-codified strategy, five-year multi-regime backtest, parameter-sensitivity sweep, stressed execution costs, and out-of-sample walk-forward validation."
   ],
   "alerts": [
-    "BLADE DATA FAILURE: agent_trades.json is empty; no OANDA trade evidence is available for review.",
-    "BLADE BALANCE UNSET: blade_balance.json reports $0 after the July 17 Round 2 reset.",
-    "EDGE DATA FAILURE: no P&L records are available.",
-    "EDGE STALE DATA: edge_portfolio.json was last updated May 27, 2026, 61 days ago.",
-    "Neither agent meets the 20-trade minimum. No statistical verdict beyond NO_DATA is permitted."
+    "Blade source /root/.openclaw/dashboard/agent_trades.json contains no trades.",
+    "Blade's clean-slate balance source is $0.00 and requires a funded baseline.",
+    "Edge has no P&L data.",
+    "Edge portfolio data was last updated on 2026-05-27, 74 days stale."
   ],
   "_regime": {
     "blade": {},
@@ -104,7 +108,7 @@
     "output_tokens": 0,
     "cost_usd": 0.0,
     "model": "openai/gpt-5.6-terra",
-    "generated_at": "2026-07-27T17:31:01.636269+00:00",
+    "generated_at": "2026-08-09T12:01:52.374837+00:00",
     "validator": "lens",
     "covers": [
       "blade",
@@ -138,11 +142,11 @@
         "ok": false,
         "reason": "stale",
         "as_of": "2026-05-27T17:18:17.942549+00:00",
-        "age_days": 61.01,
+        "age_days": 73.78,
         "stale_after_days": 14,
         "basis": "field:updated",
         "detail": "",
-        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (61d ago)"
+        "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (74d ago)"
       }
     }
   }

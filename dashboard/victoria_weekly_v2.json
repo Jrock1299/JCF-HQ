@@ -1,0 +1,106 @@
+{
+  "schema": "jcf.agent_report/v1",
+  "agent": "victoria",
+  "kind": "weekly",
+  "date": "2026-08-09",
+  "generated_at": "2026-08-09T12:01:33.767162+00:00",
+  "tier1_text": "\ud83e\udddb\u200d\u2640\ufe0f VICTORIA \u2014 WEEKLY 2026-08-09\n\nNothing to action today. Hold everything.\n\n\u2022 Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded\n\u2022 Jerry: FAIL on 121 trades \u2014 not deployable as-is\n\u2022 Chad: no verdict \u2014 feed is out of date \u2014 cannot judge\n\n\u26a0\ufe0f Not current: Blade, Chad, Edge \u2014 no verdict issued on these.\n\nFull breakdown on the dashboard \u2192",
+  "decision": [
+    "Nothing to action today. Hold everything."
+  ],
+  "headlines": [
+    "Blade: no verdict \u2014 nothing to judge \u2014 no trades recorded",
+    "Edge: no verdict \u2014 nothing to judge \u2014 no trades recorded",
+    "Jerry: FAIL on 121 trades \u2014 not deployable as-is",
+    "Chad: no verdict \u2014 feed is out of date \u2014 cannot judge"
+  ],
+  "metrics": [
+    {
+      "term": "profit_factor",
+      "label": "Profit factor",
+      "value": 0.951,
+      "subject": "Jerry",
+      "display": "0.951",
+      "plain": "losing \u2014 under $1 won per $1 lost",
+      "rendered": "Jerry profit factor 0.951 (losing \u2014 under $1 won per $1 lost)"
+    },
+    {
+      "term": "sharpe",
+      "label": "Sharpe",
+      "value": -0.008,
+      "subject": "Jerry",
+      "display": "-0.008",
+      "plain": "losing money after you account for risk",
+      "rendered": "Jerry sharpe -0.008 (losing money after you account for risk)"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Decision",
+      "body": "No action required.",
+      "rows": [],
+      "collapsed": false
+    },
+    {
+      "title": "Reasoning",
+      "body": "",
+      "rows": [],
+      "collapsed": true
+    }
+  ],
+  "provenance": {
+    "Blade": {
+      "source": "/root/.openclaw/dashboard/agent_trades.json",
+      "ok": false,
+      "reason": "empty",
+      "as_of": null,
+      "age_days": null,
+      "stale_after_days": 14,
+      "basis": "",
+      "detail": "",
+      "marker": "\u26a0\ufe0f NO DATA \u2014 source empty"
+    },
+    "Edge": {
+      "source": "/root/.openclaw/dashboard/edge_portfolio.json",
+      "ok": false,
+      "reason": "stale",
+      "as_of": "2026-05-27T17:18:17.942549+00:00",
+      "age_days": 66.78,
+      "stale_after_days": 14,
+      "basis": "field:updated",
+      "detail": "",
+      "marker": "\u26a0\ufe0f STALE \u2014 last updated May 27, 2026 (67d ago)"
+    },
+    "Jerry": {
+      "source": "/root/.openclaw/agents/jerry/data/trade_history.json",
+      "ok": true,
+      "reason": "fresh",
+      "as_of": "2026-07-29T14:35:48.200026+00:00",
+      "age_days": 3.89,
+      "stale_after_days": 14,
+      "basis": "newest_record:timestamp",
+      "detail": "",
+      "marker": ""
+    },
+    "Chad": {
+      "source": "/root/.openclaw/agents/crisp/data/trade_history.json",
+      "ok": false,
+      "reason": "stale",
+      "as_of": "2026-04-14T22:34:09.772855+00:00",
+      "age_days": 109.56,
+      "stale_after_days": 14,
+      "basis": "newest_record:timestamp",
+      "detail": "",
+      "marker": "\u26a0\ufe0f STALE \u2014 last updated Apr 14, 2026 (110d ago)"
+    }
+  },
+  "degraded_sources": [
+    "Blade",
+    "Chad",
+    "Edge"
+  ],
+  "glossary_used": [
+    "profit_factor",
+    "sharpe"
+  ]
+}

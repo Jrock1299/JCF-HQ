@@ -1,0 +1,58 @@
+
+# BLADE sessions
+# CRISP sessions
+# JCF-SENTINEL
+# SESSION PREP (fires 2 min before each Blade session)
+# STRATEGIST — pre-session analysis (UTC times, before Blade/Crisp sessions)
+*/2 * * * * /root/.openclaw/scripts/sync_dashboard_public.sh >> /root/.openclaw/logs/sync_dashboard_public.log 2>&1
+*/30 * * * * TRADELOCKER_PASS=sdCbx>R9Dc python3 /root/.openclaw/scripts/sync_tradelocker.py >> /root/.openclaw/logs/tradelocker_sync.log 2>&1
+*/5 * * * * python3 /root/.openclaw/scripts/sync_agent_pnl.py >> /root/.openclaw/logs/agent_pnl.log 2>&1
+0 6 1,15 * * /usr/bin/python3 /root/.openclaw/scripts/plaid/sync_plaid_transactions.py >> /root/.openclaw/logs/plaid_tx.log 2>&1
+0 12 * * 1-5 /root/.openclaw/agents/strategist/run_research.sh >> /root/.openclaw/agents/strategist/run_research.log 2>&1
+0 14 * * 1-5 /root/.openclaw/scripts/sentinel/run_sentinel.sh
+0 20 * * 1-5 /root/.openclaw/scripts/sentinel/run_sentinel.sh
+0 21 * * * /root/.openclaw/agents/victoria/run_victoria.sh
+0 23 * * * /root/.openclaw/scripts/daily_cost_tracker.sh
+0 6 * * 1-5 /root/.openclaw/agents/strategist/run_research.sh >> /root/.openclaw/agents/strategist/run_research.log 2>&1
+# 0 7 * * * python3 /root/.openclaw/scripts/send_dashboard.py >> /root/.openclaw/logs/morning_report.log 2>&1  # Replaced by daily_briefing.py
+0 7 * * * python3 /root/.openclaw/scripts/daily_briefing.py >> /root/.openclaw/logs/daily_briefing.log 2>&1
+0 8 * * * /root/.openclaw/scripts/scrape_bball_stats.py >> /root/.openclaw/dashboard/bball_stats.log 2>&1
+0 6 1,15 * * python3 /root/.openclaw/scripts/sync_robinhood.py >> /root/.openclaw/logs/robinhood.log 2>&1
+0 6 1,15 * * python3 /root/.openclaw/scripts/sync_trustwallet.py >> /root/.openclaw/logs/trustwallet.log 2>&1
+0 8 * * 1-5 /root/.openclaw/scripts/sentinel/run_sentinel.sh
+0 8 * * 6 /root/.openclaw/venv/bin/python3 /root/.openclaw/agents/strategist/deep_backtest.py >> /root/.openclaw/agents/strategist/deep_backtest.log 2>&1
+0 8 * * 6 python3 /root/.openclaw/scripts/enrichment_tracker.py >> /root/.openclaw/logs/enrichment_tracker.log 2>&1
+30 21 * * * python3 /root/.openclaw/scripts/sync_market_data.py >> /root/.openclaw/logs/market_data.log 2>&1
+30 5 * * * python3 /root/.openclaw/scripts/sync_market_data.py >> /root/.openclaw/logs/market_data.log 2>&1
+50 23 * * 1-5 timeout 7200 bash /root/.openclaw/agents/blade/bot/run_session.sh ASIA >> /root/.openclaw/agents/blade/bot/blade.log 2>&1
+55 17 * * 1-5 timeout 7200 bash /root/.openclaw/agents/blade/bot/run_session.sh NY_PM >> /root/.openclaw/agents/blade/bot/blade.log 2>&1
+# 55 23 * * 1-5 timeout 7200 bash /root/.openclaw/agents/crisp/bot/run_session.sh ASIAN >> /root/.openclaw/agents/crisp/bot/crisp.log 2>&1
+# 55 4 * * 1-5 /root/.openclaw/agents/lens/bot/run_lens.sh  # Replaced by lens_brain.py
+55 4 * * 1-5 /root/.openclaw/agents/lens/run_lens_brain.sh >> /root/.openclaw/agents/lens/bot/lens.log 2>&1
+55 7 * * 1-5 timeout 7200 bash /root/.openclaw/agents/blade/bot/run_session.sh LONDON >> /root/.openclaw/agents/blade/bot/blade.log 2>&1
+TZ=America/New_York
+TZ=UTC
+# Tao Agent — Data Collection (3x daily)
+0 3,11,19 * * *   cd /root/.openclaw/agents/tao && python3 tao_data_collector.py >> tao.log 2>&1
+# Tao Agent — Subnet Scoring (daily 06:00 UTC)
+0 6 * * *         cd /root/.openclaw/agents/tao && python3 tao_subnet_scorer.py >> tao.log 2>&1
+# Tao Agent — DCA Engine (2x daily, checks entry conditions)
+0 9,21 * * *      cd /root/.openclaw/agents/tao && python3 tao_dca_engine.py >> tao.log 2>&1
+# Tao Agent — Profit Monitor (every 6 hours)
+0 0,6,12,18 * * * cd /root/.openclaw/agents/tao && python3 tao_profit_monitor.py >> tao.log 2>&1
+# Tao Agent — Weekly Compounder + Report (Saturday 08:00 UTC)
+0 8 * * 6         cd /root/.openclaw/agents/tao && python3 tao_compounder.py >> tao.log 2>&1
+# Kraken sync (2x daily, same schedule as Robinhood)
+0 6 1,15 * * python3 /root/.openclaw/scripts/sync_kraken.py >> /root/.openclaw/logs/kraken_sync.log 2>&1
+0 10 * * 6 /root/.openclaw/agents/norman/run_norman.sh
+0 12 * * 0 cd /root/.openclaw/agents/lucy && python3 lucy_brain.py --research >> /root/.openclaw/logs/lucy.log 2>&1
+# SESSION END — unified reports (reads agent_trades.json + trade_history.json)
+0  6  * * 1-5 python3 /root/.openclaw/scripts/session_end_notify.py ASIA >> /root/.openclaw/logs/session_end_notify.log 2>&1
+30 13 * * 1-5 python3 /root/.openclaw/scripts/session_end_notify.py LONDON >> /root/.openclaw/logs/session_end_notify.log 2>&1
+0  21 * * 1-5 python3 /root/.openclaw/scripts/session_end_notify.py NY_PM >> /root/.openclaw/logs/session_end_notify.log 2>&1
+0 7 * * 1 /root/.openclaw/agents/victoria/run_victoria_weekly.sh
+# SESSION PREP PINGS (Huncho voice, 10 min before each session)
+40 23 * * 1-5 bash /root/.openclaw/scripts/session_prep_ping.sh ASIA >> /root/.openclaw/logs/session_prep.log 2>&1
+45 7 * * 1-5 bash /root/.openclaw/scripts/session_prep_ping.sh LONDON >> /root/.openclaw/logs/session_prep.log 2>&1
+15 13 * * 1-5 bash /root/.openclaw/scripts/session_prep_ping.sh NY_OPEN >> /root/.openclaw/logs/session_prep.log 2>&1
+45 17 * * 1-5 bash /root/.openclaw/scripts/session_prep_ping.sh NY_PM >> /root/.openclaw/logs/session_prep.log 2>&1

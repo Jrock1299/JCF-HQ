@@ -66,6 +66,67 @@
         }
       ],
       "apiKey": "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"
+    },
+    "kimi-code": {
+      "baseUrl": "https://api.kimi.com/coding/",
+      "models": [
+        {
+          "id": "kimi-for-coding",
+          "name": "Kimi Code",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "kimi-code",
+          "name": "Kimi Code (legacy kimi-code)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "k2p5",
+          "name": "Kimi Code (legacy k2p5)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        }
+      ],
+      "apiKey": "KIMI_API_KEY",
+      "api": "anthropic-messages",
+      "headers": {
+        "User-Agent": "claude-code/0.1.0"
+      }
     }
   }
 }

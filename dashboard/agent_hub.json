@@ -1,483 +1,6 @@
 {
   "messages": [
     {
-      "timestamp": "2026-05-18T06:45:02.855554+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$22.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:05:02.606078+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 LONG SPX500 @ 7381.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:11:02.799649+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$45.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:15:02.558490+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7375.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:26:02.802344+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$13.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:30:02.506299+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7386.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:38:02.663409+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$37.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:42:02.504277+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7373.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:45:03.519233+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 -$42.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:55:02.701887+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$21.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T07:56:02.552110+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7378.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T08:18:03.356454+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 +$36.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T08:42:03.008527+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7391.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T08:49:02.753407+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$17.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T08:53:02.490518+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7399.00",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T09:04:02.734875+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$13.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T11:55:02.124635+00:00",
-      "agent": "blade",
-      "type": "status",
-      "message": "NY_EARLY starting. Balance: $2000.00",
-      "tags": [
-        "session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:00:02.416657+00:00",
-      "agent": "strategist",
-      "type": "status",
-      "message": "Strategy analysis starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:00:20.673102+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "Strategy analysis complete | Regime: TRENDING\nSKIP:  SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
-      "tags": [
-        "analysis",
-        "strategy"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:00:20.871110+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "STRATEGY UPDATE | Regime: TRENDING\n  \u26d4 SPX500_USD: 48/100 \u2192 SWEEP_FADE bullish\n  \u26d4 DE30_EUR: 32/100 \u2192 ORB bearish\n  \u26d4 XAU_USD: 52/100 \u2192 ORB bearish\n  \u26d4 BTC_USD: 50/100 \u2192 SWEEP_FADE bearish",
-      "tags": [
-        "strategy",
-        "analysis",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:01:03.312984+00:00",
-      "agent": "strategist",
-      "type": "strategy",
-      "message": "\ud83d\udcca PRE-SESSION BRIEFING | May 18\n\n\ud83d\udcc8 REGIME: TRENDING \u2014 Trend Mode\n\n\u2501\u2501\u2501 SPX500 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 48/100 | \u26d4 WATCH ONLY\nBias: Bullish (H4/Daily partial, price above 50EMA 7387.2)\nADR: 82.4\nStrategy: Sweep Fade\nKey Level: 7358.80 (H4 low \u2014 sweep target)\nFVG: 7383.20 (bullish, in-trend)\n\ud83c\udfaf Alert: Wick below 7358.80 then reclaim \u2192 long fade\n\n\u2501\u2501\u2501 DE30 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 32/100 | \u26d4 HARD AVOID\nBias: Bearish (below 50EMA 24197.9)\nADR: 418.1 \u26a0\ufe0f Abnormal\nStrategy: ORB 08:00\u201308:15\nKey Level: 24188.00 (prior day low)\n\u26a0\ufe0f Abnormal ADR + lowest score \u2014 stand down; ORB only if it triggers cleanly at standard size\n\n\u2501\u2501\u2501 XAU/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 52/100 | \ud83d\udc40 BEST SETUP TODAY\nBias: Bearish (H4 + H1 aligned, below 50EMA 4644.4)\nADR: 104.8 \u26a0\ufe0f Abnormal\nStrategy: ORB 13:30\u201314:00\nKey Level: 4572.77 (H4 high \u2014 invalidation)\nFVG: present (counter-trend bullish \u2014 be selective)\n\ud83c\udfaf Alert: NY ORB break short with H4 alignment; respect 4572.77 as stop\n\n\u2501\u2501\u2501 BTC/USD \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nScore: 50/100 | \u26d4 WATCH ONLY\nBias: Bearish (H1 aligned, below 50EMA 79143.5)\nADR: 2006.0\nStrategy: Sweep Fade\nKey Level: 76735.16 (prior day low \u2014 sweep target)\nFVG: present (counter-trend bullish \u2014 fade-only context)\n\ud83c\udfaf Alert: Sweep <76735 then rejection wick \u2192 short continuation fade\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udde0 LENS: Bearish skew \u2014 3 of 4 instruments below 50EMA, but lens flat at neutral 50% so no swing-mode firepower today.\n\ud83d\udccb BOTTOM LINE: Focus the session on XAU 13:30 NY ORB short \u2014 only setup with H4+H1 alignment, but trim size for abnormal ADR.",
-      "tags": [
-        "strategy",
-        "narrative",
-        "pre-session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:07:02.626596+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7401.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:16:02.734696+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$5.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:21:02.537672+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7400.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:23:02.742017+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$21.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:27:02.503462+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7404.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:28:02.769015+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$9.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:35:23.272220+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG SPX500 @ 7413.00 | SL:7393.80 | TPs:7416.00/7418.00/7423.00 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny_early"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:35:32.971838+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG XAU @ 4559.90 | SL:4544.41 | TPs:4562.90/4564.90/4569.90 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny_early"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T12:35:39.035759+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG DE30 @ 24221.50 | SL:24115.50 | TPs:24224.50/24226.50/24231.50 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny_early"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:04:02.643469+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7426.40",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:25:01.900806+00:00",
-      "agent": "blade",
-      "type": "status",
-      "message": "NY starting. Balance: $2000.00",
-      "tags": [
-        "session"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:25:03.440667+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$3.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:30:15.157558+00:00",
-      "agent": "blade",
-      "type": "status",
-      "message": "NY_EARLY complete. 9 trades. Balance: $2078.00.",
-      "tags": [
-        "session",
-        "complete"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:48:07.543587+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG DE30 @ 24393.30 | SL:24304.30 | TPs:24396.30/24398.30/24403.30 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:52:02.638046+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7424.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:52:06.411991+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG SPX500 @ 7425.60 | SL:7400.30 | TPs:7428.60/7430.60/7435.60 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T13:54:20.877477+00:00",
-      "agent": "blade",
-      "type": "trade",
-      "message": "\ud83d\udfe2 BLADE LONG XAU @ 4580.89 | SL:4561.81 | TPs:4583.89/4585.89/4590.89 | units:2",
-      "tags": [
-        "trading",
-        "entry",
-        "ny"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:00:02.649997+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 SHORT SPX500 @ 7429.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:02:02.768300+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$27.50",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:07:02.925715+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 SHORT SPX500 @ 7423.60",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:09:02.757300+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 CLOSE SPX500 -$10.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m1"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:10:02.697078+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M5 CLOSE SPX500 +$10.00",
-      "tags": [
-        "trading",
-        "exit",
-        "m5"
-      ]
-    },
-    {
-      "timestamp": "2026-05-18T14:15:02.537394+00:00",
-      "agent": "edge",
-      "type": "trade",
-      "message": "EDGE-M1 LONG SPX500 @ 7422.80",
-      "tags": [
-        "trading",
-        "entry",
-        "m1"
-      ]
-    },
-    {
       "timestamp": "2026-05-18T14:23:02.795064+00:00",
       "agent": "edge",
       "type": "trade",
@@ -5125,6 +4648,452 @@
       "tags": [
         "briefing",
         "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-27T04:55:01.543057+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-27T04:57:50.372137+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T04:55:03.096612+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T04:57:49.658961+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T06:00:02.912678+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T06:00:36.317877+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: RANGING | bias=bearish | lens=bearish 62% | conv=77.4/100 strong\n  DE30_EUR: RANGING | bias=bullish | lens=neutral 50% | conv=90.0/100 strong\n  XAU_USD: RANGING | bias=neutral | lens=neutral 50% | conv=75.0/100 strong\n  BTC_USD: TRENDING | bias=bearish | lens=neutral 45% | conv=75.0/100 strong",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T06:01:10.853279+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=858 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 28\n\nREGIME: RANGING - Index and gold price action favors boundary trades, while BTC maintains a bearish trend.\n\nSPX500_USD: RANGING | bias BEARISH | Lens BEARISH 62% | conv 77.4/100 | ADR 84.1\n  Bearish alignment favors selling range resistance rather than chasing weakness.\n\nDE30_EUR: RANGING | bias BULLISH | Lens NEUTRAL 50% | conv 90.0/100 | ADR 377.2\n  Strong bullish convergence favors buying range support despite the neutral Lens read.\n\nXAU_USD: RANGING | bias NEUTRAL | Lens NEUTRAL 50% | conv 75.0/100 | ADR 79.1\n  Bearish convergence conflicts with the neutral range, so avoid directional entries near mid-range.\n\nBTC_USD: TRENDING | bias BEARISH | Lens NEUTRAL 45% | conv 75.0/100 | ADR 1496.7\n  The bearish trend and convergence favor selling rallies despite neutral Lens conviction.\n\nMACRO SUMMARY: Cross-asset direction is mixed, with bearish SPX and BTC offset by bullish DE30 and neutral gold.\nBOTTOM LINE: Sell BTC_USD rallies in line with its bearish trend and 75/100 bearish convergence.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T12:00:02.858193+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T12:00:33.229254+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: TRENDING\n  BTC_USD: TRENDING | bias=bearish | lens=neutral 45% | conv=75.0/100 strong",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-28T12:01:03.215521+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=890 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 28\n\nREGIME: TRENDING - Directional conditions favor continuation, but only BTC has actionable local data.\n\nSPX500_USD: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nDE30_EUR: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nXAU_USD: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nBTC_USD: TRENDING | bias BEARISH | Lens NEUTRAL 45% | conv 75/100 | ADR 1496.7\n  Bearish trend continuation is favored, with strong convergence offset by a neutral Lens read.\n\nMACRO SUMMARY: Cross-asset alignment is unavailable; BTC alone shows a confirmed bearish tactical trend.\nBOTTOM LINE: Favor BTC_USD shorts on continuation below the H4 EMA50 near 64582.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T04:55:01.749080+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T04:57:36.054982+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T06:00:02.495805+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T06:00:29.271890+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: RANGING | bias=bearish | lens=bearish 62% | conv=77.4/100 strong\n  DE30_EUR: RANGING | bias=bullish | lens=neutral 50% | conv=90.0/100 strong\n  XAU_USD: RANGING | bias=bearish | lens=neutral 42% | conv=90.0/100 strong\n  BTC_USD: TRENDING | bias=bearish | lens=neutral 45% | conv=75.0/100 strong",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T06:01:00.277346+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=901 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 29\n\nREGIME: RANGING - Mean reversion dominates, but BTC retains a directional bearish tape.\n\nSPX500_USD: RANGING | bias BEARISH | Lens BEARISH 62% | conv 77.4/100 | ADR 82.8\n  Bearish alignment favors selling range resistance rather than chasing breakdowns.\n\nDE30_EUR: RANGING | bias BULLISH | Lens NEUTRAL 50% | conv 90.0/100 | ADR 357.9\n  Strong bullish convergence favors buying range support, despite a neutral Lens.\n\nXAU_USD: RANGING | bias BEARISH | Lens NEUTRAL 42% | conv 90.0/100 | ADR 74.0\n  Strong bearish convergence favors fading rallies within the range.\n\nBTC_USD: TRENDING | bias BEARISH | Lens NEUTRAL 45% | conv 75.0/100 | ADR 1547.2\n  The bearish trend and convergence favor selling weak rebounds.\n\nMACRO SUMMARY: Cross-asset direction is mixed, with bearish pressure in SPX, gold, and BTC offset by bullish European equities.\nBOTTOM LINE: Sell weak BTC_USD rebounds in line with its bearish trend and 75.0 convergence.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T12:00:03.260103+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T12:00:27.657044+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: RANGING | bias=bearish | lens=bearish 62% | conv=77.4/100 strong\n  DE30_EUR: RANGING | bias=bullish | lens=neutral 50% | conv=90.0/100 strong\n  XAU_USD: RANGING | bias=bearish | lens=neutral 42% | conv=90.0/100 strong\n  BTC_USD: RANGING | bias=bearish | lens=neutral 45% | conv=75.0/100 strong",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-29T12:00:58.405363+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=1033 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 29\n\nREGIME: RANGING - Mean reversion dominates; trade range edges and avoid chasing.\n\nSPX500_USD: RANGING | bias BEARISH | Lens BEARISH 62% | conv 77.4/100 | ADR 82.8\n  Bearish alignment favors selling failed rallies near resistance.\n\nDE30_EUR: RANGING | bias BULLISH | Lens NEUTRAL 50% | conv 90.0/100 | ADR 357.9\n  Strong bullish convergence favors buying support, despite a neutral Lens read.\n\nXAU_USD: RANGING | bias BEARISH | Lens NEUTRAL 42% | conv 90.0/100 | ADR 74.0\n  Strong bearish convergence favors selling resistance while the range holds.\n\nBTC_USD: RANGING | bias BEARISH | Lens NEUTRAL 45% | conv 75.0/100 | ADR 1601.6\n  Bearish alignment favors fading rebounds rather than selling range lows.\n\nMACRO SUMMARY: Cross-asset signals lean bearish but remain transitional, with DE30 strength opposing weakness in SPX, gold, and bitcoin.\nBOTTOM LINE: Sell SPX500_USD on a failed rally into range resistance.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T04:55:01.914402+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T04:57:57.315707+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T06:00:02.436424+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T06:00:27.911914+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: TRENDING | bias=bearish | lens=bearish 66% | conv=78.2/100 strong\n  DE30_EUR: COMPRESSED | bias=bullish | lens=neutral 50% | conv=90.0/100 strong\n  XAU_USD: RANGING | bias=bearish | lens=neutral 51% | conv=90.0/100 strong\n  BTC_USD: RANGING | bias=bearish | lens=bearish 62% | conv=77.4/100 strong",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T06:00:57.946625+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=1172 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 30\n\nREGIME: RANGING - Mixed local regimes favor selective execution over broad directional exposure.\n\nSPX500_USD: TRENDING | bias BEARISH | Lens BEARISH 66% | conv 78.2/100 | ADR 95.0\n  Bearish trend and strong downside convergence support selling failed rebounds.\n\nDE30_EUR: COMPRESSED | bias BULLISH | Lens NEUTRAL 50% | conv 90.0/100 | ADR 358.6\n  Bullish alignment is strong, but compression requires waiting for expansion before entry.\n\nXAU_USD: RANGING | bias BEARISH | Lens NEUTRAL 51% | conv 90.0/100 | ADR 79.6\n  Bearish convergence favors selling range resistance, not chasing weakness.\n\nBTC_USD: RANGING | bias BEARISH | Lens BEARISH 62% | conv 77.4/100 | ADR 1445.6\n  Bearish alignment favors range-high shorts until price establishes a clean breakdown.\n\nMACRO SUMMARY: Bearish alignment dominates SPX, gold, and bitcoin, while bullish DE30 remains trapped in compression.\nBOTTOM LINE: Sell SPX500_USD failed rebounds within its established bearish trend.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T12:00:02.779857+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T12:00:35.519468+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  BTC_USD: RANGING | bias=neutral | lens=bearish 62% | conv=46.2/100 weak",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T12:01:04.377009+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "\ud83c\udf10 LENS\n[provider-transport-fetch] [model-fetch] start provider=openrouter api=openai-completions model=openrouter/auto method=POST url=https://openrouter.ai/api/v1/chat/completions timeoutMs=undefined proxy=none policy=custom\n[provider-transport-fetch] [model-fetch] response provider=openrouter api=openai-completions model=openrouter/auto status=200 elapsedMs=1084 contentType=text/event-stream\nmodel.run via local\nprovider: openrouter\nmodel: openrouter/auto\noutputs: 1\nJuly 30\n\nREGIME: RANGING - Directional conviction is low; favor range discipline over breakout anticipation.\n\nSPX500_USD: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nDE30_EUR: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nXAU_USD: UNKNOWN | bias NEUTRAL | Lens NEUTRAL 0% | conv 0/100 | ADR N/A\n  Data unavailable; standing down on that read.\n\nBTC_USD: RANGING | bias NEUTRAL | Lens BEARISH 62% | conv 46.2/100 | ADR 1492.9\n  Trade range edges only; weak convergence and bearish Lens pressure argue against chasing upside.\n\nMACRO SUMMARY: Cross-asset alignment is unavailable; BTC alone shows a conflicted, range-bound tactical backdrop.\nBOTTOM LINE: Stand aside on BTC_USD until price reaches a defined range edge or confirms expansion.\n\n- Lens\n\u2014 via H",
+      "tags": [
+        "briefing",
+        "pre-session",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T16:51:59.182673+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Regime briefing starting: SPX500_USD, DE30_EUR, XAU_USD, BTC_USD",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-30T16:52:16.541571+00:00",
+      "agent": "lens",
+      "type": "briefing",
+      "message": "Regime briefing | Overall: RANGING\n  SPX500_USD: TRENDING | bias=bearish | lens=bearish 66% | conv=78.2/100 strong\n  DE30_EUR: RANGING | bias=bullish | lens=neutral 50% | conv=90.0/100 strong\n  XAU_USD: RANGING | bias=neutral | lens=neutral 51% | conv=55.0/100 moderate\n  BTC_USD: RANGING | bias=neutral | lens=bearish 62% | conv=46.2/100 weak",
+      "tags": [
+        "briefing",
+        "regime"
+      ]
+    },
+    {
+      "timestamp": "2026-07-31T04:55:02.129256+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-07-31T04:57:56.002994+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-03T04:55:01.267300+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-03T04:57:27.226038+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-04T04:55:02.230888+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-04T04:57:43.769116+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-05T04:55:02.192259+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-05T04:57:58.293827+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-06T04:55:02.136859+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-06T04:57:51.649266+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-07T04:55:02.286866+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-07T04:57:48.806802+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-10T04:55:01.399828+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-10T05:00:26.039812+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-11T04:55:02.190781+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain starting. Claude AI + web search macro analysis.",
+      "tags": [
+        "macro",
+        "analysis"
+      ]
+    },
+    {
+      "timestamp": "2026-08-11T04:57:32.831160+00:00",
+      "agent": "lens",
+      "type": "status",
+      "message": "Lens Brain complete. market_bias.json updated.",
+      "tags": [
+        "macro",
+        "analysis"
       ]
     }
   ],

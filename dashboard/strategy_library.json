@@ -1,6 +1,6 @@
 {
   "schema": "jcf.strategy_library/v1",
-  "updated_at": "2026-07-28T08:59:56.212013+00:00",
+  "updated_at": "2026-07-28T13:42:11.503406+00:00",
   "written_by": "lens (ict_research.py)",
   "readers": [
     "blade",
@@ -95,6 +95,21 @@
         "4. Target: opposing pool; RR >= 2.0.",
         "5. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": true,
+        "require_sweep": true,
+        "require_mss": false,
+        "require_displacement": false,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "MARKET_ON_CLOSE"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -112,7 +127,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": true
+      "deployable": true,
+      "content_hash": "d14cce4c90e5"
     },
     {
       "id": "ict.turtle_soup.XAU_USD",
@@ -199,6 +215,21 @@
         "4. Target: opposing pool; RR >= 2.0.",
         "5. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": true,
+        "require_sweep": true,
+        "require_mss": false,
+        "require_displacement": false,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "MARKET_ON_CLOSE"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -216,7 +247,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": true
+      "deployable": true,
+      "content_hash": "564045822744"
     },
     {
       "id": "ict.turtle_soup.SPX500_USD",
@@ -303,6 +335,21 @@
         "4. Target: opposing pool; RR >= 2.0.",
         "5. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": true,
+        "require_sweep": true,
+        "require_mss": false,
+        "require_displacement": false,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "MARKET_ON_CLOSE"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -320,7 +367,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": true
+      "deployable": true,
+      "content_hash": "5d206101f2e8"
     }
   ],
   "not_validated": [
@@ -409,6 +457,21 @@
         "4. Target: opposing pool; RR >= 2.0.",
         "5. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": true,
+        "require_sweep": true,
+        "require_mss": false,
+        "require_displacement": false,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "MARKET_ON_CLOSE"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -426,7 +489,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "7a5337695d92"
     },
     {
       "id": "ict.ifvg.DE30_EUR",
@@ -512,6 +576,21 @@
         "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
         "6. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "IFVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -529,7 +608,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "fb2e2d1982e9"
     },
     {
       "id": "ict.ict_ob.XAU_USD",
@@ -612,6 +692,21 @@
       "rules": [
         "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -629,7 +724,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "6c5721e88779"
     },
     {
       "id": "ict.ict_core.XAU_USD",
@@ -719,6 +815,21 @@
         "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
         "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -736,7 +847,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "e04a981dab4e"
     },
     {
       "id": "ict.ict_ob.SPX500_USD",
@@ -819,6 +931,21 @@
       "rules": [
         "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -836,7 +963,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "ff770b784474"
     },
     {
       "id": "ict.ifvg.SPX500_USD",
@@ -922,6 +1050,21 @@
         "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
         "6. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "IFVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -939,7 +1082,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "9b831a542770"
     },
     {
       "id": "ict.ifvg.XAU_USD",
@@ -1025,6 +1169,21 @@
         "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
         "6. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "IFVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1042,7 +1201,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "76d3510572a7"
     },
     {
       "id": "ict.ict_core.CHF_JPY",
@@ -1132,6 +1292,21 @@
         "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
         "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1149,7 +1324,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "659755c07f59"
     },
     {
       "id": "ict.ifvg.CHF_JPY",
@@ -1235,6 +1411,21 @@
         "4. Stop: beyond the zone + 0.25 x ATR. 5. RR >= 2.0.",
         "6. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "IFVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1252,7 +1443,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "0b648438fea0"
     },
     {
       "id": "ict.silver_bullet.SPX500_USD",
@@ -1299,6 +1491,20 @@
         "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
         "5. Target: next opposing pool; RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": false,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "NY_SB"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1316,7 +1522,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "e738a578a123"
     },
     {
       "id": "ict.power_of_three.XAU_USD",
@@ -1398,6 +1605,21 @@
         "4. Entry: FVG 50% of the distribution leg.",
         "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": true,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1415,7 +1637,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "047ba8d72af3"
     },
     {
       "id": "ict.ict_icc.SPX500_USD",
@@ -1496,6 +1719,21 @@
         "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
         "8. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "ICC_OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": true,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1513,7 +1751,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "ec9e902fd5cc"
     },
     {
       "id": "ict.ict_core.DE30_EUR",
@@ -1603,6 +1842,21 @@
         "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
         "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1620,7 +1874,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "27b1930b1082"
     },
     {
       "id": "ict.power_of_three.DE30_EUR",
@@ -1702,6 +1957,21 @@
         "4. Entry: FVG 50% of the distribution leg.",
         "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": true,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1719,7 +1989,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "a7d1fa4a0852"
     },
     {
       "id": "ict.ict_icc.XAU_USD",
@@ -1800,6 +2071,21 @@
         "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
         "8. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "ICC_OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": true,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1817,7 +2103,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "7fbc4be10281"
     },
     {
       "id": "ict.ict_ob.CHF_JPY",
@@ -1900,6 +2187,21 @@
       "rules": [
         "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -1917,7 +2219,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "fae51a4cf779"
     },
     {
       "id": "ict.ict_core.SPX500_USD",
@@ -2007,6 +2310,21 @@
         "7. Target: next opposing liquidity pool; reject setup if RR < 2.0.",
         "8. Sessions: London 07:00-10:00 and NY 12:00-15:00 UTC only."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2024,7 +2342,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "d461a6a03dee"
     },
     {
       "id": "ict.power_of_three.CHF_JPY",
@@ -2111,6 +2430,21 @@
         "4. Entry: FVG 50% of the distribution leg.",
         "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": true,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2128,7 +2462,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "a762d7a37e79"
     },
     {
       "id": "ict.power_of_three.SPX500_USD",
@@ -2215,6 +2550,21 @@
         "4. Entry: FVG 50% of the distribution leg.",
         "5. Stop beyond the manipulation extreme + 0.25 x ATR. RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": true,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2232,7 +2582,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "d1ea7f53ec3a"
     },
     {
       "id": "ict.ict_ob.DE30_EUR",
@@ -2315,6 +2666,21 @@
       "rules": [
         "As ict_core, but entry zone = order block (last opposing candle before displacement), no volume/range filter."
       ],
+      "execution": {
+        "entry_zone": "OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2332,7 +2698,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "b49735065fb7"
     },
     {
       "id": "ict.ict_icc.DE30_EUR",
@@ -2413,6 +2780,21 @@
         "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
         "8. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "ICC_OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": true,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2430,7 +2812,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "c901ad8d7fe2"
     },
     {
       "id": "ict.ict_icc.CHF_JPY",
@@ -2511,6 +2894,21 @@
         "6. Stop beyond sweep extreme + 0.25 x ATR. 7. RR >= 2.0.",
         "8. Sessions: London + NY killzones."
       ],
+      "execution": {
+        "entry_zone": "ICC_OB",
+        "reverse_on_sweep": false,
+        "require_sweep": true,
+        "require_mss": true,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": true,
+        "htf_bias_required": true,
+        "killzones": [
+          "LONDON",
+          "NY"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2528,7 +2926,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "688171a068d2"
     },
     {
       "id": "ict.silver_bullet.DE30_EUR",
@@ -2569,6 +2968,20 @@
         "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
         "5. Target: next opposing pool; RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": false,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "NY_SB"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2586,7 +2999,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "03c42c5ff672"
     },
     {
       "id": "ict.silver_bullet.XAU_USD",
@@ -2627,6 +3041,20 @@
         "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
         "5. Target: next opposing pool; RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": false,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "NY_SB"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2644,7 +3072,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "ee35b4e9ae0f"
     },
     {
       "id": "ict.silver_bullet.CHF_JPY",
@@ -2685,6 +3114,20 @@
         "4. Stop: beyond the displacement leg origin + 0.25 x ATR.",
         "5. Target: next opposing pool; RR >= 2.0."
       ],
+      "execution": {
+        "entry_zone": "FVG",
+        "reverse_on_sweep": false,
+        "require_sweep": false,
+        "require_mss": false,
+        "require_displacement": true,
+        "require_amd": false,
+        "icc_filter": false,
+        "htf_bias_required": true,
+        "killzones": [
+          "NY_SB"
+        ],
+        "entry_type": "LIMIT_AT_ZONE_50"
+      },
       "params": {
         "SWING_K": 2,
         "LOOKBACK_POOLS": 50,
@@ -2702,7 +3145,8 @@
       },
       "source": "agents/lens/ict_research.py",
       "researched_at": "2026-07-28T05:21:58.338166+00:00",
-      "deployable": false
+      "deployable": false,
+      "content_hash": "7a8a754708fb"
     }
   ]
 }
